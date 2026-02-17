@@ -1,0 +1,21 @@
+# IONOS Deploy Now Configuration
+version: 1
+runtime: nodejs18
+buildCommand: "npm run build"
+outputDirectory: ".next"
+nodeVersion: "18"
+environment:
+  NODE_ENV: production
+  DATABASE_URL: file:./dev.db
+  NEXTAUTH_URL: "https://boardgametools.de"
+  NEXTAUTH_SECRET: "your-secret-here"
+  BGG_API_URL: "https://boardgamegeek.com/xmlapi2"
+  BGG_AUTH_TOKEN: "9b7355f8-b8c0-4b26-9a82-befb849b69e5"
+routes:
+  - type: "rewrite"
+    source: "/(.*)"
+    destination: "/index.html"
+staticSites:
+  - from: "public"
+    to: "/"
+    serveAt: "/"

@@ -14,7 +14,7 @@ on:
         type: string
 
 env:
-  DEPLOYMENT_FOLDER: public
+  DEPLOYMENT_FOLDER: .next
 
 jobs:
 # Please do not rename this job
@@ -30,7 +30,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: v22.x
+          node-version: v18.x
 
       - name: Build Node assets
         env:
@@ -39,8 +39,12 @@ jobs:
           CI: true
           DATABASE_URL: file:./dev.db
           SITE_URL: ${{ inputs.site-url }}
+          NEXTAUTH_URL: ${{ inputs.site-url }}
+          NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
+          NODE_ENV: production
         run: |
           npm ci
+          npx prisma generate
           npm run build
 
 # Please do not touch the following action
