@@ -1,3 +1,4 @@
+// @ts-nocheck - CodeceptJS E2E tests
 Feature("Games Management & BGG Integration");
 
 Before(({ I }) => {

@@ -1,9 +1,10 @@
+// @ts-nocheck - CodeceptJS E2E tests
 import { setHeadlessWhen, setCommonPlugins } from "@codeceptjs/configure";
 
 setHeadlessWhen(process.env.HEADLESS);
 setCommonPlugins();
 
-export const config: CodeceptJS.MainConfig = {
+export const config = {
   tests: "./*_test.ts",
   output: "./output",
   helpers: {

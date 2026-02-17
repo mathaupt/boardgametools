@@ -41,6 +41,10 @@ sudo chmod +x /usr/local/bin/docker-compose
 git clone https://github.com/mathaupt/boardgametools.git
 cd boardgametools
 
+# Dependencies installieren und builden
+npm ci
+npm run build
+
 # Dockerfile erstellen
 cat > Dockerfile << 'EOF'
 FROM node:18-alpine AS builder
@@ -193,7 +197,7 @@ git clone https://github.com/mathaupt/boardgametools.git
 cd boardgametools
 
 # Dependencies installieren
-npm ci --production
+npm ci
 
 # Umgebungsvariablen konfigurieren
 cp .env.example .env.production
@@ -207,6 +211,9 @@ npm run build
 
 # Prisma Client generieren
 npx prisma generate
+
+# Build überprüfen
+ls -la .next/standalone/
 ```
 
 #### 4. PM2 Konfiguration

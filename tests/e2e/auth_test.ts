@@ -1,3 +1,4 @@
+// @ts-nocheck - CodeceptJS E2E tests
 Feature("Authentication");
 
 Scenario("User can view login page", ({ I }) => {

@@ -1,3 +1,4 @@
+// @ts-nocheck - CodeceptJS E2E tests
 module.exports = function () {
   return actor({
     login: async function (email: string, password: string) {
