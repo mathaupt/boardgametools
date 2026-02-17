@@ -1,9 +1,9 @@
 # IONOS Deploy Now Configuration
 version: 1
-runtime: nodejs18
+runtime: nodejs20
 buildCommand: "npm run build"
 outputDirectory: ".next"
-nodeVersion: "18"
+nodeVersion: "20"
 environment:
   NODE_ENV: production
   DATABASE_URL: file:./dev.db
