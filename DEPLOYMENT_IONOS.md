@@ -341,7 +341,20 @@ echo "0 2 * * * /path/to/backup.sh" | crontab -
 
 ### Häufige Probleme
 
-#### 1. Port 3000 nicht erreichbar
+#### 1. 403 Forbidden Error (IONOS GitHub Deployment)
+Das häufigste Problem bei IONOS Deployment über GitHub:
+
+**Ursache:** IONOS führt nicht automatisch `npm run build` aus
+**Lösung:** Siehe [IONOS_403_FIX.md](./IONOS_403_FIX.md) für vollständige Anleitung
+
+**Quick Fix:**
+```bash
+# GitHub Actions Workflow verwenden
+# .github/workflows/deploy.yml ist bereits vorbereitet
+# Nur GitHub Secrets konfigurieren
+```
+
+#### 2. Port 3000 nicht erreichbar
 ```bash
 # Firewall prüfen
 sudo ufw status
@@ -353,7 +366,7 @@ sudo netstat -tlnp | grep :3000
 sudo nginx -t
 ```
 
-#### 2. Datenbank-Fehler
+#### 3. Datenbank-Fehler
 ```bash
 # Prisma Migrationen prüfen
 docker-compose exec app npx prisma migrate status
@@ -362,7 +375,7 @@ docker-compose exec app npx prisma migrate status
 docker-compose exec app npx prisma migrate reset
 ```
 
-#### 3. Memory Issues
+#### 4. Memory Issues
 ```bash
 # PM2 Memory-Limits anpassen
 pm2 delete boardgametools
