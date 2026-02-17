@@ -34,8 +34,8 @@ jobs:
 
       - name: Build Node assets
         env:
-          BGG_API_URL: https://boardgamegeek.com/xmlapi2
-          BGG_AUTH_TOKEN: 9b7355f8-b8c0-4b26-9a82-befb849b69e5
+          BGG_API_URL: ${{ secrets.BGG_API_URL }}
+          BGG_AUTH_TOKEN: ${{ secrets.BGG_AUTH_TOKEN }}
           CI: true
           DATABASE_URL: file:./dev.db
           SITE_URL: ${{ inputs.site-url }}
