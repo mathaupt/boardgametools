@@ -1,0 +1,100 @@
+# IONOS Deploy Now Build Workflow
+# This workflow is automatically triggered by IONOS Deploy Now
+
+name: "Deploy Now: Build and Deploy"
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+env:
+  NODE_ENV: production
+  DATABASE_URL: file:./dev.db
+  BGG_API_URL: ${{ secrets.BGG_API_URL }}
+  BGG_AUTH_TOKEN: ${{ secrets.BGG_AUTH_TOKEN }}
+  NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL }}
+  NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci --include=dev
+      
+    - name: Generate Prisma Client
+      run: npx prisma generate
+      
+    - name: Build application
+      run: npm run build
+      
+    - name: Create deployment package
+      run: |
+        mkdir deployment
+        cp -r .next deployment/
+        cp -r public deployment/
+        cp -r node_modules deployment/
+        cp -r prisma deployment/
+        cp package.json deployment/
+        cp package-lock.json deployment/
+        
+    - name: Create .env file
+      run: |
+        echo "NODE_ENV=production" > deployment/.env
+        echo "DATABASE_URL=file:./dev.db" >> deployment/.env
+        echo "NEXTAUTH_URL=${{ secrets.NEXTAUTH_URL }}" >> deployment/.env
+        echo "NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }}" >> deployment/.env
+        echo "BGG_API_URL=${{ secrets.BGG_API_URL }}" >> deployment/.env
+        echo "BGG_AUTH_TOKEN=${{ secrets.BGG_AUTH_TOKEN }}" >> deployment/.env
+        
+    - name: Create startup script
+      run: |
+        cat > deployment/start.sh << 'EOF'
+        #!/bin/bash
+        cd /app
+        
+        # Create data directory
+        mkdir -p data
+        
+        # Generate Prisma client
+        npx prisma generate
+        
+        # Run migrations
+        npx prisma migrate deploy || echo "No migrations to run"
+        
+        # Start application
+        npm start
+        EOF
+        chmod +x deployment/start.sh
+        
+    - name: Upload to IONOS
+      uses: appleboy/scp-action@v0.1.7
+      with:
+        host: access-5019782947.app-ionos.space
+        username: ${{ secrets.IONOS_SSH_USER }}
+        key: ${{ secrets.IONOS_SSH_KEY }}
+        source: "deployment/*"
+        target: "/app"
+        strip_components: 1
+        
+    - name: Deploy on IONOS
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: access-5019782947.app-ionos.space
+        username: ${{ secrets.IONOS_SSH_USER }}
+        key: ${{ secrets.IONOS_SSH_KEY }}
+        script: |
+          cd /app
+          chmod +x start.sh
+          ./start.sh
