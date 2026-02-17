@@ -1,0 +1,195 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// USER & AUTH
+// ============================================
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  passwordHash  String
+  name          String
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  ownedGames      Game[]
+  createdSessions GameSession[]
+  sessionPlayers  SessionPlayer[]
+  ownedGroups     Group[]
+  groupMembers    GroupMember[]
+  createdEvents   Event[]
+  eventInvites    EventInvite[]
+  gameProposals   GameProposal[]
+  votes           Vote[]
+}
+
+// ============================================
+// GAMES
+// ============================================
+
+model Game {
+  id              String    @id @default(cuid())
+  name            String
+  description     String?
+  minPlayers      Int       @default(1)
+  maxPlayers      Int       @default(4)
+  playTimeMinutes Int?
+  complexity      Int?      // 1-5 scale
+  bggId           String?   // BoardGameGeek ID
+  imageUrl        String?
+  ownerId         String
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  // Relations
+  owner           User            @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  sessions        GameSession[]
+  proposals       GameProposal[]
+  selectedEvents  Event[]         @relation("SelectedGame")
+}
+
+// ============================================
+// GAME SESSIONS
+// ============================================
+
+model GameSession {
+  id              String    @id @default(cuid())
+  gameId          String
+  playedAt        DateTime  @default(now())
+  durationMinutes Int?
+  notes           String?
+  createdById     String
+  createdAt       DateTime  @default(now())
+
+  // Relations
+  game            Game            @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  createdBy       User            @relation(fields: [createdById], references: [id], onDelete: Cascade)
+  players         SessionPlayer[]
+}
+
+model SessionPlayer {
+  id          String    @id @default(cuid())
+  sessionId   String
+  userId      String
+  score       Int?
+  isWinner    Boolean   @default(false)
+  placement   Int?
+
+  // Relations
+  session     GameSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([sessionId, userId])
+}
+
+// ============================================
+// GROUPS
+// ============================================
+
+model Group {
+  id          String    @id @default(cuid())
+  name        String
+  description String?
+  ownerId     String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relations
+  owner       User          @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  members     GroupMember[]
+  events      Event[]
+}
+
+model GroupMember {
+  id        String    @id @default(cuid())
+  groupId   String
+  userId    String
+  role      String    @default("member") // owner, admin, member
+  joinedAt  DateTime  @default(now())
+
+  // Relations
+  group     Group     @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([groupId, userId])
+}
+
+// ============================================
+// EVENTS & VOTING
+// ============================================
+
+model Event {
+  id              String    @id @default(cuid())
+  title           String
+  description     String?
+  eventDate       DateTime
+  location        String?
+  status          String    @default("draft") // draft, voting, closed
+  createdById     String
+  groupId         String?
+  selectedGameId  String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  // Relations
+  createdBy       User            @relation(fields: [createdById], references: [id], onDelete: Cascade)
+  group           Group?          @relation(fields: [groupId], references: [id], onDelete: SetNull)
+  selectedGame    Game?           @relation("SelectedGame", fields: [selectedGameId], references: [id], onDelete: SetNull)
+  invites         EventInvite[]
+  proposals       GameProposal[]
+}
+
+model EventInvite {
+  id          String    @id @default(cuid())
+  eventId     String
+  userId      String
+  status      String    @default("pending") // pending, accepted, declined
+  invitedAt   DateTime  @default(now())
+  respondedAt DateTime?
+
+  // Relations
+  event       Event     @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, userId])
+}
+
+model GameProposal {
+  id          String    @id @default(cuid())
+  eventId     String
+  gameId      String
+  proposedById String
+  createdAt   DateTime  @default(now())
+
+  // Relations
+  event       Event     @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  game        Game      @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  proposedBy  User      @relation(fields: [proposedById], references: [id], onDelete: Cascade)
+  votes       Vote[]
+
+  @@unique([eventId, gameId])
+}
+
+model Vote {
+  id          String    @id @default(cuid())
+  proposalId  String
+  userId      String
+  createdAt   DateTime  @default(now())
+
+  // Relations
+  proposal    GameProposal @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([proposalId, userId])
+}
