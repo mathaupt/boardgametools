@@ -106,6 +106,38 @@ curl "http://localhost:3000/api/bgg/13" \
   -H "Cookie: next-auth.session-token=YOUR_SESSION_TOKEN"
 ```
 
+## Deployment
+
+### 📦 IONOS Deployment
+
+Eine detaillierte Deployment-Anleitung für IONOS Hosting findest du in **[DEPLOYMENT_IONOS.md](./DEPLOYMENT_IONOS.md)**.
+
+Die Anleitung deckt ab:
+- Docker Deployment (empfohlen)
+- Manuelleses Node.js Deployment
+- SSL-Konfiguration mit Let's Encrypt
+- PM2 Prozess-Management
+- Backup-Strategien
+- Monitoring & Fehlerbehebung
+
+### 🚀 Schnell-Deployment (Docker)
+
+```bash
+# 1. Repository klonen
+git clone https://github.com/mathaupt/boardgametools.git
+cd boardgametools
+
+# 2. Umgebungsvariablen konfigurieren
+cp .env.example .env.production
+# .env.production mit deinen Werten bearbeiten
+
+# 3. Docker starten
+docker-compose up -d --build
+
+# 4. Datenbank initialisieren
+docker-compose exec app npx prisma migrate deploy
+```
+
 ## Lizenz
 
 MIT
