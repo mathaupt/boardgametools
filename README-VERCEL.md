@@ -6,10 +6,10 @@ The current deployment is failing because Vercel cannot access the SQLite databa
 
 ### Problem
 ```
-PrismaClientKnownRequestError: The table `public.User` does not exist in the current database.
+PrismaClientKnownRequestError: The column `GameSession.durationMinutes` does not exist in the current database.
 ```
 
-**Root Cause:** Database schema was not created/migrated in the PostgreSQL database.
+**Root Cause:** Database schema was incomplete - missing columns in GameSession and SessionPlayer tables.
 
 ### Solution Options
 
@@ -28,12 +28,22 @@ BGG_API_URL="https://boardgamegeek.com/xmlapi2"
 BGG_AUTH_TOKEN="9303a540-4f7e-4eb9-bf74-ea99dc6ae652"
 ```
 
-### Step 2: Create Database Schema
+### Step 2: Create Complete Database Schema
 
 **Option A: Manual SQL Execution**
 1. Connect to your PostgreSQL database
 2. Run the SQL from `prisma/migrations/init_postgres.sql`
-3. This creates all tables (User, Game, Event, etc.)
+3. Add missing columns:
+```sql
+-- Add missing GameSession columns
+ALTER TABLE public."GameSession" ADD COLUMN "durationMinutes" INTEGER;
+ALTER TABLE public."GameSession" ADD COLUMN "createdAt" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP;
+
+-- Add missing SessionPlayer columns
+ALTER TABLE public."SessionPlayer" ADD COLUMN "score" INTEGER;
+ALTER TABLE public."SessionPlayer" ADD COLUMN "isWinner" BOOLEAN DEFAULT false;
+ALTER TABLE public."SessionPlayer" ADD COLUMN "placement" INTEGER;
+```
 
 **Option B: Prisma Migration (if you have local PostgreSQL)**
 ```bash
@@ -47,11 +57,19 @@ npx prisma generate
 
 ### Step 3: Verify Database Schema
 ```sql
--- Check if tables exist
-SELECT table_name FROM information_schema.tables 
-WHERE table_schema = 'public' AND table_type = 'BASE TABLE';
+-- Check GameSession columns
+SELECT column_name FROM information_schema.columns 
+WHERE table_schema = 'public' AND table_name = 'GameSession'
+ORDER BY ordinal_position;
 
--- Should show: User, Game, GameSession, SessionPlayer, Group, GroupMember, Event, GameProposal, Vote, EventInvite
+-- Should show: id, playedAt, notes, createdById, gameId, durationMinutes, createdAt
+
+-- Check SessionPlayer columns
+SELECT column_name FROM information_schema.columns 
+WHERE table_schema = 'public' AND table_name = 'SessionPlayer'
+ORDER BY ordinal_position;
+
+-- Should show: id, userId, sessionId, joinedAt, score, isWinner, placement
 ```
 
 ### Step 4: Create Admin User
@@ -84,6 +102,56 @@ datasource db {
   url      = env("SQL_DATABASE_URL")
 }
 ```
+
+## Important: Complete Schema Required
+
+**The database schema must match the Prisma schema exactly!**
+
+### Required Tables and Columns:
+
+#### GameSession Table:
+- ✅ id (text)
+- ✅ playedAt (timestamp)
+- ✅ notes (text)
+- ✅ createdById (text)
+- ✅ gameId (text)
+- ✅ **durationMinutes (integer)** - Was missing!
+- ✅ **createdAt (timestamp)** - Was missing!
+
+#### SessionPlayer Table:
+- ✅ id (text)
+- ✅ userId (text)
+- ✅ sessionId (text)
+- ✅ joinedAt (timestamp)
+- ✅ **score (integer)** - Was missing!
+- ✅ **isWinner (boolean)** - Was missing!
+- ✅ **placement (integer)** - Was missing!
+
+## Quick Fix for Testing
+
+If you need to fix the existing database quickly:
+
+```sql
+-- Add missing GameSession columns
+ALTER TABLE public."GameSession" ADD COLUMN "durationMinutes" INTEGER;
+ALTER TABLE public."GameSession" ADD COLUMN "createdAt" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP;
+
+-- Add missing SessionPlayer columns
+ALTER TABLE public."SessionPlayer" ADD COLUMN "score" INTEGER;
+ALTER TABLE public."SessionPlayer" ADD COLUMN "isWinner" BOOLEAN DEFAULT false;
+ALTER TABLE public."SessionPlayer" ADD COLUMN "placement" INTEGER;
+```
+
+## Troubleshooting
+
+### Error: "The column `GameSession.durationMinutes` does not exist"
+**Solution:** Add the missing column with the SQL above.
+
+### Error: "Invalid prisma.gameSession.findMany() invocation"
+**Solution:** Ensure all required columns exist in the GameSession table.
+
+### Error: "Connection refused"
+**Solution:** Check if the PostgreSQL database is accessible and credentials are correct.
 
 ## Option 2: Use Vercel PostgreSQL (Alternative)
 
