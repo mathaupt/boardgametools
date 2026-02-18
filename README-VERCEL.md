@@ -127,6 +127,14 @@ datasource db {
 - ✅ **isWinner (boolean)** - Was missing!
 - ✅ **placement (integer)** - Was missing!
 
+#### EventInvite Table:
+- ✅ id (text)
+- ✅ eventId (text)
+- ✅ userId (text)
+- ✅ status (text)
+- ✅ invitedAt (timestamp)
+- ✅ **respondedAt (timestamp)** - Was missing!
+
 ## Quick Fix for Testing
 
 If you need to fix the existing database quickly:
@@ -140,11 +148,17 @@ ALTER TABLE public."GameSession" ADD COLUMN "createdAt" TIMESTAMP(3) DEFAULT CUR
 ALTER TABLE public."SessionPlayer" ADD COLUMN "score" INTEGER;
 ALTER TABLE public."SessionPlayer" ADD COLUMN "isWinner" BOOLEAN DEFAULT false;
 ALTER TABLE public."SessionPlayer" ADD COLUMN "placement" INTEGER;
+
+-- Add missing EventInvite columns
+ALTER TABLE public."EventInvite" ADD COLUMN "respondedAt" TIMESTAMP(3);
 ```
 
 ## Troubleshooting
 
 ### Error: "The column `GameSession.durationMinutes` does not exist"
+**Solution:** Add the missing column with the SQL above.
+
+### Error: "The column `EventInvite.respondedAt` does not exist"
 **Solution:** Add the missing column with the SQL above.
 
 ### Error: "Invalid prisma.gameSession.findMany() invocation"
