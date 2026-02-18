@@ -4,6 +4,7 @@ import { Sidebar } from "@/components/layout/sidebar";
 import { Header } from "@/components/layout/header";
 import { Navbar } from "@/components/layout/navbar";
 import { SessionProvider } from "next-auth/react";
+import { Toaster } from "@/components/ui/toaster";
 
 export default async function DashboardLayout({
   children,
@@ -32,6 +33,7 @@ export default async function DashboardLayout({
             <main className="flex-1 p-4 md:p-6 bg-muted/30">{children}</main>
           </div>
         </div>
+        <Toaster />
       </div>
     </SessionProvider>
   );

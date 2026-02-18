@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Trophy, ThumbsUp, ThumbsDown, Users, Star, Gamepad } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
 
 interface Proposal {
   id: string;
@@ -44,6 +45,7 @@ export default function VotingClient({
   const [voting, setVoting] = useState<string | null>(null);
   const [localUserVoteIds, setLocalUserVoteIds] = useState<Set<string>>(userVoteIds);
   const [localProposals, setLocalProposals] = useState(proposals);
+  const { toast } = useToast();
 
   const handleVote = async (proposalId: string) => {
     if (!userId || isPast || voting) return;
@@ -73,7 +75,11 @@ export default function VotingClient({
       
     } catch (error) {
       console.error('Vote error:', error);
-      alert('Fehler beim Abstimmen');
+      toast({
+        title: "Fehler beim Abstimmen",
+        description: "Bitte versuche es erneut.",
+        variant: "destructive",
+      });
     } finally {
       setVoting(null);
     }
@@ -107,7 +113,11 @@ export default function VotingClient({
       
     } catch (error) {
       console.error('Remove vote error:', error);
-      alert('Fehler beim Entfernen des Votes');
+      toast({
+        title: "Fehler beim Entfernen des Votes",
+        description: "Bitte versuche es erneut.",
+        variant: "destructive",
+      });
     } finally {
       setVoting(null);
     }

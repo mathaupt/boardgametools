@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { ArrowLeft, Plus, Users, Star, Trophy, Vote, X, Search, ExternalLink, Gamepad2 } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
 
 interface ProposalWithDetails extends GameProposal {
   game: Game;
@@ -20,6 +21,7 @@ export default function EventVotingPage() {
   const params = useParams();
   const router = useRouter();
   const eventId = params.id as string;
+  const { toast } = useToast();
   
   const [event, setEvent] = useState<Event | null>(null);
   const [proposals, setProposals] = useState<ProposalWithDetails[]>([]);
@@ -114,7 +116,11 @@ export default function EventVotingPage() {
       
     } catch (error) {
       console.error('Vote error:', error);
-      alert('Fehler beim Abstimmen');
+      toast({
+        title: "Fehler beim Abstimmen",
+        description: "Bitte versuche es erneut.",
+        variant: "destructive",
+      });
     } finally {
       setVoting(null);
     }
@@ -141,7 +147,11 @@ export default function EventVotingPage() {
       
     } catch (error) {
       console.error('Remove vote error:', error);
-      alert('Fehler beim Entfernen des Votes');
+      toast({
+        title: "Fehler beim Entfernen des Votes",
+        description: "Bitte versuche es erneut.",
+        variant: "destructive",
+      });
     } finally {
       setVoting(null);
     }
@@ -166,7 +176,11 @@ export default function EventVotingPage() {
       
     } catch (error) {
       console.error('Add proposal error:', error);
-      alert('Fehler beim Hinzufügen des Vorschlags');
+      toast({
+        title: "Fehler beim Hinzufügen des Vorschlags",
+        description: "Bitte versuche es erneut.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -245,11 +259,19 @@ export default function EventVotingPage() {
       setSearchQuery("");
       setBggResults([]);
       
-      alert(`Spiel "${bggGame.name}" wurde importiert und vorgeschlagen!`);
+      toast({
+        title: "Spiel importiert",
+        description: `"${bggGame.name}" wurde erfolgreich importiert und vorgeschlagen!`,
+        variant: "success",
+      });
       
     } catch (error) {
       console.error('BGG import error:', error);
-      alert('Fehler beim Importieren des Spiels');
+      toast({
+        title: "Fehler beim Importieren des Spiels",
+        description: "Bitte versuche es erneut.",
+        variant: "destructive",
+      });
     }
   };
 
