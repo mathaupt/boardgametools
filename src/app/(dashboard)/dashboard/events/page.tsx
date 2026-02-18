@@ -2,9 +2,10 @@ import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Plus, Calendar, MapPin, Users, Vote, Trophy } from "lucide-react";
-import Link from "next/link";
 import Image from "next/image";
+import Link from "next/link";
 import { GameTooltip } from "@/components/ui/game-tooltip";
 
 export default async function EventsPage() {
@@ -149,28 +150,26 @@ export default async function EventsPage() {
                     <div className="flex flex-wrap gap-2">
                       {event.proposals.slice(0, 3).map((proposal) => (
                         <div key={proposal.id} className="flex items-center gap-2 bg-card px-2 py-1 rounded text-sm border border-border">
-                          {/* Game Image */}
                           {proposal.game.imageUrl && (
                             <div className="relative w-6 h-6 flex-shrink-0">
                               <Image
                                 src={proposal.game.imageUrl}
                                 alt={proposal.game.name}
-                                fill
+                                width={24}
+                                height={24}
                                 className="object-cover rounded"
-                                sizes="24px"
+                                onError={(e) => {
+                                  e.currentTarget.src = '/placeholder-game.png';
+                                }}
                               />
                             </div>
                           )}
-                          
-                          {/* Game Name */}
-                          <span className="text-foreground min-w-0 flex-1">{proposal.game.name}</span>
-                          
-                          {/* Votes with Tooltip */}
-                          <GameTooltip votes={proposal.votes}>
-                            <span className="text-muted-foreground cursor-help hover:text-foreground transition-colors">
-                              ({proposal._count.votes} Votes)
-                            </span>
-                          </GameTooltip>
+                          <div>
+                            <div className="font-medium text-xs truncate max-w-[100px]">{proposal.game.name}</div>
+                            <div className="text-xs text-muted-foreground">
+                              {proposal._count.votes} Votes
+                            </div>
+                          </div>
                         </div>
                       ))}
                       {event.proposals.length > 3 && (

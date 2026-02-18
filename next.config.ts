@@ -6,6 +6,16 @@ const nextConfig: NextConfig = {
       '@': './src',
     },
   },
+  images: {
+    domains: ['cf.geekdo-images.com'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'cf.geekdo-images.com',
+        pathname: '/**',
+      },
+    ],
+  },
   webpack: (config, { dev }) => {
     if (dev) {
       config.watchOptions = {
