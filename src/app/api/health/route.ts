@@ -11,9 +11,11 @@ export async function GET() {
     const gameCount = await prisma.game.count();
     const sessionCount = await prisma.gameSession.count();
     
-    // Prüfe Migration Status
+    // Prüfe Migration Status (SQLite-kompatibel)
     const migrations = await prisma.$queryRaw`
-      SELECT name, migrated_at FROM _prisma_migrations ORDER BY migrated_at DESC
+      SELECT migration_name as name, finished_at as migrated_at 
+      FROM _prisma_migrations 
+      ORDER BY finished_at DESC
     ` as Array<{name: string, migrated_at: string}>;
     
     return NextResponse.json({

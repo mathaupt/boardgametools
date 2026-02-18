@@ -53,20 +53,24 @@ export default async function DashboardPage() {
                 Spiel hinzufügen
               </Button>
             </Link>
-            <Link href="/dashboard/games/import">
+            <Link href="/dashboard/bgg">
               <Button variant="outline" className="w-full justify-start">
                 <Gamepad2 className="h-4 w-4 mr-2" />
                 BGG Import
               </Button>
             </Link>
-            <Button variant="outline" disabled className="w-full justify-start">
-              <CalendarDays className="h-4 w-4 mr-2" />
-              Session erstellen
-            </Button>
-            <Button variant="outline" disabled className="w-full justify-start">
-              <Vote className="h-4 w-4 mr-2" />
-              Event planen
-            </Button>
+            <Link href="/dashboard/sessions/new">
+              <Button variant="outline" className="w-full justify-start">
+                <CalendarDays className="h-4 w-4 mr-2" />
+                Session erstellen
+              </Button>
+            </Link>
+            <Link href="/dashboard/events/new">
+              <Button variant="outline" className="w-full justify-start">
+                <Vote className="h-4 w-4 mr-2" />
+                Event planen
+              </Button>
+            </Link>
           </div>
         </CardContent>
       </Card>
@@ -88,17 +92,21 @@ export default async function DashboardPage() {
           </Card>
         </Link>
 
-        <Card className="opacity-60">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Sessions</CardTitle>
-            <CalendarDays className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{sessionsCount}</div>
-            <p className="text-xs text-muted-foreground">gespielte Partien</p>
-            <p className="text-xs text-muted-foreground mt-2 italic">Demnächst verfügbar</p>
-          </CardContent>
-        </Card>
+        <Link href="/dashboard/sessions">
+          <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium">Sessions</CardTitle>
+              <CalendarDays className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{sessionsCount}</div>
+              <p className="text-xs text-muted-foreground">gespielte Partien</p>
+              <Button variant="ghost" size="sm" className="mt-2 p-0 h-auto text-xs">
+                Verwalten <ArrowRight className="h-3 w-3 ml-1" />
+              </Button>
+            </CardContent>
+          </Card>
+        </Link>
 
         <Card className="opacity-60">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -112,17 +120,21 @@ export default async function DashboardPage() {
           </CardContent>
         </Card>
 
-        <Card className="opacity-60">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Events</CardTitle>
-            <Vote className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{eventsCount}</div>
-            <p className="text-xs text-muted-foreground">angenommene Einladungen</p>
-            <p className="text-xs text-muted-foreground mt-2 italic">Demnächst verfügbar</p>
-          </CardContent>
-        </Card>
+        <Link href="/dashboard/events">
+          <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium">Events</CardTitle>
+              <Vote className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{eventsCount}</div>
+              <p className="text-xs text-muted-foreground">angenommene Einladungen</p>
+              <Button variant="ghost" size="sm" className="mt-2 p-0 h-auto text-xs">
+                Verwalten <ArrowRight className="h-3 w-3 ml-1" />
+              </Button>
+            </CardContent>
+          </Card>
+        </Link>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
