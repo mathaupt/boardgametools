@@ -86,8 +86,8 @@ INSERT INTO "User" (
 ) VALUES (
   'admin-001',
   'soulsaver83@gmail.com',
-  '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj6ukx.LFUpO', -- Admin123!
-  'Admin User',
+  '$2b$12$4px50NjuNV3BDe4Bg6Kr3..CcV8mhVcppC5.rto5AMw73NorWf8Ru', -- BoardGameAdmin2026!
+  'Matthias Haupt',
   'ADMIN',
   true,
   NOW(),
