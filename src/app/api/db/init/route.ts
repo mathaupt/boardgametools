@@ -3,10 +3,10 @@ import prisma from "@/lib/db";
 
 export async function POST() {
   try {
-    // Prüfe ob DATABASE_URL gesetzt ist
-    if (!process.env.DATABASE_URL) {
+    // Prüfe ob SQL_DATABASE_URL gesetzt ist
+    if (!process.env.SQL_DATABASE_URL) {
       return NextResponse.json(
-        { error: "DATABASE_URL environment variable is not set" },
+        { error: "SQL_DATABASE_URL environment variable is not set" },
         { status: 500 }
       );
     }
@@ -56,7 +56,7 @@ export async function POST() {
     return NextResponse.json(
       { 
         error: error instanceof Error ? error.message : "Unknown error",
-        details: "Check DATABASE_URL and database permissions"
+        details: "Check SQL_DATABASE_URL and database permissions"
       },
       { status: 500 }
     );

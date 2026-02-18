@@ -17,13 +17,8 @@ You have external PostgreSQL database variables available:
 
 1. **Update Environment Variables in Vercel**
    ```
-   # Use one of these external PostgreSQL URLs:
-   DATABASE_URL="your-external-postgres-connection-string"
-   
-   # Or map one of these to DATABASE_URL:
-   # SQL_DATABASE_URL
-   # SQL_POSTGRES_URL  
-   # SQL_PRISMA_DATABASE_URL
+   # Use this external PostgreSQL URL:
+   SQL_DATABASE_URL="your-external-postgres-connection-string"
    
    NEXTAUTH_URL="https://your-app.vercel.app"
    NEXTAUTH_SECRET="your-super-secret-key"
@@ -35,7 +30,7 @@ You have external PostgreSQL database variables available:
    ```prisma
    datasource db {
      provider = "postgresql"
-     url      = env("DATABASE_URL")
+     url      = env("SQL_DATABASE_URL")
    }
    ```
 
