@@ -1,5 +1,7 @@
 # BoardGameTools
 
+Version: 0.1.0
+
 Eine Webanwendung zur Verwaltung von Brettspielen, Spielsessions und Events mit Voting-Funktionalität.
 
 ## Features
