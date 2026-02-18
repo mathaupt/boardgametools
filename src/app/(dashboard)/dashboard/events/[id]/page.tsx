@@ -3,7 +3,7 @@ import prisma from "@/lib/db";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Calendar, MapPin, Users, Vote, Mail, Plus, Trophy, Share2, Download, ThumbsUp, ThumbsDown } from "lucide-react";
+import { ArrowLeft, Calendar, MapPin, Users, Vote, Mail, Plus, Trophy, Share2, Download, ThumbsUp, ThumbsDown, Gamepad } from "lucide-react";
 import Link from "next/link";
 import VotingClient from "./voting-client";
 
@@ -207,9 +207,25 @@ export default async function EventDetailPage({
                   <span>{new Date(event.createdAt).toLocaleDateString('de-DE')}</span>
                 </div>
                 {event.selectedGame && (
-                  <div className="flex justify-between">
-                    <span>Ausgewähltes Spiel:</span>
-                    <span>{event.selectedGame.name}</span>
+                  <div className="flex items-center gap-3">
+                    <span className="text-sm text-muted-foreground">Ausgewähltes Spiel:</span>
+                    <div className="flex items-center gap-2">
+                      {event.selectedGame.imageUrl ? (
+                        <img 
+                          src={event.selectedGame.imageUrl} 
+                          alt={event.selectedGame.name}
+                          className="w-8 h-8 rounded object-cover border border-border"
+                          onError={(e) => {
+                            e.currentTarget.src = '/placeholder-game.png';
+                          }}
+                        />
+                      ) : (
+                        <div className="w-8 h-8 rounded bg-muted border border-border flex items-center justify-center">
+                          <Gamepad className="h-4 w-4 text-muted-foreground" />
+                        </div>
+                      )}
+                      <span className="font-medium">{event.selectedGame.name}</span>
+                    </div>
                   </div>
                 )}
               </div>

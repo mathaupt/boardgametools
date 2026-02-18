@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Trophy, ThumbsUp, ThumbsDown, Users, Star } from "lucide-react";
+import { Trophy, ThumbsUp, ThumbsDown, Users, Star, Gamepad } from "lucide-react";
 
 interface Proposal {
   id: string;
@@ -14,6 +14,7 @@ interface Proposal {
     maxPlayers: number;
     playTimeMinutes: number | null;
     complexity: number | null;
+    imageUrl?: string | null;
   };
   proposedBy: {
     name: string;
@@ -124,6 +125,24 @@ export default function VotingClient({
               {index === 0 && selectedGameId && (
                 <Trophy className="h-5 w-5 text-warning flex-shrink-0 mt-0.5 sm:mt-0" aria-label="Trophy für führendes Spiel" />
               )}
+              {/* Game Image */}
+              <div className="flex-shrink-0">
+                {proposal.game.imageUrl ? (
+                  <img 
+                    src={proposal.game.imageUrl} 
+                    alt={proposal.game.name}
+                    className="w-16 h-16 rounded-lg object-cover border border-border"
+                    onError={(e) => {
+                      // Fallback to placeholder if image fails to load
+                      e.currentTarget.src = '/placeholder-game.png';
+                    }}
+                  />
+                ) : (
+                  <div className="w-16 h-16 rounded-lg bg-muted border border-border flex items-center justify-center">
+                    <Gamepad className="h-8 w-8 text-muted-foreground" />
+                  </div>
+                )}
+              </div>
               <div className="flex-1 min-w-0">
                 <div className="font-medium text-lg text-foreground break-words">{proposal.game.name}</div>
                 <div className="text-sm text-muted-foreground mb-2">

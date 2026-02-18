@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { ArrowLeft, Plus, Users, Star, Trophy, Vote, X, Search, ExternalLink } from "lucide-react";
+import { ArrowLeft, Plus, Users, Star, Trophy, Vote, X, Search, ExternalLink, Gamepad2 } from "lucide-react";
 
 interface ProposalWithDetails extends GameProposal {
   game: Game;
@@ -342,6 +342,23 @@ export default function EventVotingPage() {
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
+                        {/* Game Image */}
+                        <div className="flex-shrink-0">
+                          {proposal.game.imageUrl ? (
+                            <img 
+                              src={proposal.game.imageUrl} 
+                              alt={proposal.game.name}
+                              className="w-12 h-12 rounded-lg object-cover border border-border"
+                              onError={(e) => {
+                                e.currentTarget.src = '/placeholder-game.png';
+                              }}
+                            />
+                          ) : (
+                            <div className="w-12 h-12 rounded-lg bg-muted border border-border flex items-center justify-center">
+                              <Gamepad2 className="h-6 w-6 text-muted-foreground" />
+                            </div>
+                          )}
+                        </div>
                         <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-white ${
                           index === 0 ? 'bg-yellow-500' : 
                           index === 1 ? 'bg-gray-400' : 
@@ -466,11 +483,30 @@ export default function EventVotingPage() {
                   ) : (
                     availableGames.map((game) => (
                       <div key={game.id} className="flex items-center justify-between p-3 border rounded-lg">
-                        <div>
-                          <div className="font-medium">{game.name}</div>
-                          <div className="text-sm text-gray-500">
-                            {game.minPlayers}-{game.maxPlayers} Spieler
-                            {game.complexity && ` • ${game.complexity}/5 Komplexität`}
+                        <div className="flex items-center gap-3">
+                          {/* Game Image */}
+                          <div className="flex-shrink-0">
+                            {game.imageUrl ? (
+                              <img 
+                                src={game.imageUrl} 
+                                alt={game.name}
+                                className="w-10 h-10 rounded-lg object-cover border border-border"
+                                onError={(e) => {
+                                  e.currentTarget.src = '/placeholder-game.png';
+                                }}
+                              />
+                            ) : (
+                              <div className="w-10 h-10 rounded-lg bg-muted border border-border flex items-center justify-center">
+                                <Gamepad2 className="h-5 w-5 text-muted-foreground" />
+                              </div>
+                            )}
+                          </div>
+                          <div>
+                            <div className="font-medium">{game.name}</div>
+                            <div className="text-sm text-gray-500">
+                              {game.minPlayers}-{game.maxPlayers} Spieler
+                              {game.complexity && ` • ${game.complexity}/5 Komplexität`}
+                            </div>
                           </div>
                         </div>
                         <Button
@@ -508,11 +544,30 @@ export default function EventVotingPage() {
                       </p>
                       {bggResults.map((game) => (
                         <div key={game.bggId} className="flex items-center justify-between p-3 border rounded-lg">
-                          <div className="flex-1">
-                            <div className="font-medium">{game.name}</div>
-                            {game.yearPublished && (
-                              <div className="text-sm text-gray-500">{game.yearPublished}</div>
-                            )}
+                          <div className="flex items-center gap-3 flex-1">
+                            {/* Game Image */}
+                            <div className="flex-shrink-0">
+                              {game.imageUrl ? (
+                                <img 
+                                  src={game.imageUrl} 
+                                  alt={game.name}
+                                  className="w-10 h-10 rounded-lg object-cover border border-border"
+                                  onError={(e) => {
+                                    e.currentTarget.src = '/placeholder-game.png';
+                                  }}
+                                />
+                              ) : (
+                                <div className="w-10 h-10 rounded-lg bg-muted border border-border flex items-center justify-center">
+                                  <Gamepad2 className="h-5 w-5 text-muted-foreground" />
+                                </div>
+                              )}
+                            </div>
+                            <div className="flex-1">
+                              <div className="font-medium">{game.name}</div>
+                              {game.yearPublished && (
+                                <div className="text-sm text-gray-500">{game.yearPublished}</div>
+                              )}
+                            </div>
                           </div>
                           <div className="flex items-center gap-2">
                             <Button
