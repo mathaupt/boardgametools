@@ -262,7 +262,7 @@ export default async function EventDetailPage({
             <VotingClient 
               proposals={event.proposals} 
               eventId={event.id} 
-              userId={userId}
+              userId={userId || null}
               userVoteIds={userVoteIds}
               isPast={isPast}
               selectedGameId={event.selectedGame?.id}

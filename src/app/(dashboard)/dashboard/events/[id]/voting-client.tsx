@@ -12,8 +12,8 @@ interface Proposal {
     name: string;
     minPlayers: number;
     maxPlayers: number;
-    playTimeMinutes?: number;
-    complexity?: number;
+    playTimeMinutes: number | null;
+    complexity: number | null;
   };
   proposedBy: {
     name: string;

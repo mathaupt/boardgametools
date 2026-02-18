@@ -90,8 +90,7 @@ export async function POST(
     const vote = await prisma.vote.create({
       data: {
         proposalId: id, // Session ID als Proposal ID verwenden
-        userId: session.user.id,
-        gameId: gameId // Spiel für das gevotet wird
+        userId: session.user.id
       },
       include: {
         user: true

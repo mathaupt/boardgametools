@@ -212,7 +212,7 @@ export default function EventSharePage() {
                     <Checkbox
                       id={user.id}
                       checked={selectedUsers.includes(user.id)}
-                      onCheckedChange={() => handleUserToggle(user.id)}
+                      onChange={() => handleUserToggle(user.id)}
                     />
                     <div className="flex-1">
                       <Label htmlFor={user.id} className="font-medium cursor-pointer">
