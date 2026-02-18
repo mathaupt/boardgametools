@@ -11,7 +11,43 @@ PrismaClientInitializationError: Unable to open the database file
 
 ### Solution Options
 
-## Option 1: Use Vercel PostgreSQL (Recommended)
+## Option 1: Use External PostgreSQL Database
+
+You have external PostgreSQL database variables available:
+
+1. **Update Environment Variables in Vercel**
+   ```
+   # Use one of these external PostgreSQL URLs:
+   DATABASE_URL="your-external-postgres-connection-string"
+   
+   # Or map one of these to DATABASE_URL:
+   # SQL_DATABASE_URL
+   # SQL_POSTGRES_URL  
+   # SQL_PRISMA_DATABASE_URL
+   
+   NEXTAUTH_URL="https://your-app.vercel.app"
+   NEXTAUTH_SECRET="your-super-secret-key"
+   BGG_API_URL="https://boardgamegeek.com/xmlapi2"
+   BGG_AUTH_TOKEN="9303a540-4f7e-4eb9-bf74-ea99dc6ae652"
+   ```
+
+2. **Prisma Schema is already configured for PostgreSQL**
+   ```prisma
+   datasource db {
+     provider = "postgresql"
+     url      = env("DATABASE_URL")
+   }
+   ```
+
+3. **Run Database Migration**
+   ```bash
+   npx prisma migrate dev
+   npx prisma generate
+   ```
+
+## Option 2: Use Vercel PostgreSQL (Alternative)
+
+If you prefer Vercel's managed PostgreSQL:
 
 1. **Add PostgreSQL Database to Vercel**
    - Go to your Vercel project dashboard
@@ -28,15 +64,7 @@ PrismaClientInitializationError: Unable to open the database file
    BGG_AUTH_TOKEN="9303a540-4f7e-4eb9-bf74-ea99dc6ae652"
    ```
 
-3. **Update Prisma Schema**
-   ```prisma
-   datasource db {
-     provider = "postgresql"
-     url      = env("DATABASE_URL")
-   }
-   ```
-
-4. **Run Database Migration**
+3. **Run Database Migration**
    ```bash
    npx prisma migrate dev
    npx prisma generate
