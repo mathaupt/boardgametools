@@ -22,6 +22,12 @@ interface Invite {
   status: "pending" | "accepted" | "declined";
 }
 
+interface UserOption {
+  id: string;
+  name: string;
+  email: string;
+}
+
 export default function EventInvitePage() {
   const params = useParams();
   const router = useRouter();
@@ -30,19 +36,30 @@ export default function EventInvitePage() {
   const [event, setEvent] = useState<any>(null);
   const [invites, setInvites] = useState<Invite[]>([]);
   const [newEmail, setNewEmail] = useState("");
+  const [users, setUsers] = useState<UserOption[]>([]);
+  const [selectedUserId, setSelectedUserId] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [userInviteSaving, setUserInviteSaving] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         // Event und bestehende Einladungen laden
-        const eventRes = await fetch(`/api/events/${eventId}`);
+        const [eventRes, usersRes] = await Promise.all([
+          fetch(`/api/events/${eventId}`),
+          fetch('/api/users'),
+        ]);
         
         if (eventRes.ok) {
           const eventData = await eventRes.json();
           setEvent(eventData);
           setInvites(eventData.invites || []);
+        }
+
+        if (usersRes.ok) {
+          const userData = await usersRes.json();
+          setUsers(userData);
         }
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -70,7 +87,8 @@ export default function EventInvitePage() {
       });
 
       if (!response.ok) {
-        throw new Error('Fehler beim Hinzufügen der Einladung');
+        const errorData = await response.json().catch(() => null);
+        throw new Error(errorData?.error || 'Fehler beim Hinzufügen der Einladung');
       }
 
       const newInvite = await response.json();
@@ -79,9 +97,38 @@ export default function EventInvitePage() {
       
     } catch (error) {
       console.error('Add invite error:', error);
-      alert('Fehler beim Hinzufügen der Einladung');
+      alert(error instanceof Error ? error.message : 'Fehler beim Hinzufügen der Einladung');
     } finally {
       setSaving(false);
+    }
+  };
+
+  const addUserInvite = async () => {
+    if (!selectedUserId) return;
+
+    setUserInviteSaving(true);
+    try {
+      const response = await fetch(`/api/events/${eventId}/invites`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userId: selectedUserId }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null);
+        throw new Error(errorData?.error || 'Fehler beim Hinzufügen der Einladung');
+      }
+
+      const newInvite = await response.json();
+      setInvites(prev => [...prev, newInvite]);
+      setSelectedUserId("");
+    } catch (error) {
+      console.error('Add user invite error:', error);
+      alert(error instanceof Error ? error.message : 'Fehler beim Hinzufügen der Einladung');
+    } finally {
+      setUserInviteSaving(false);
     }
   };
 
@@ -184,7 +231,7 @@ export default function EventInvitePage() {
           <CardHeader>
             <CardTitle>Neue Einladung</CardTitle>
             <CardDescription>
-              Lade weitere Personen per E-Mail ein
+              Lade weitere Personen per E-Mail ein oder wähle vorhandene Nutzer
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -202,6 +249,34 @@ export default function EventInvitePage() {
                 <Button onClick={addInvite} disabled={saving || !newEmail.trim()}>
                   <Plus className="h-4 w-4 mr-2" />
                   {saving ? 'Wird hinzugefügt...' : 'Hinzufügen'}
+                </Button>
+              </div>
+            </div>
+
+            <div className="pt-2 border-t">
+              <Label htmlFor="user-select">Bestehenden Nutzer auswählen</Label>
+              <div className="flex gap-2 mt-1">
+                <select
+                  id="user-select"
+                  className="flex-1 border rounded px-3 py-2 text-sm"
+                  value={selectedUserId}
+                  onChange={(e) => setSelectedUserId(e.target.value)}
+                >
+                  <option value="">Nutzer auswählen...</option>
+                  {users
+                    .filter(user => !invites.some(inv => inv.userId === user.id))
+                    .map(user => (
+                      <option key={user.id} value={user.id}>
+                        {user.name} ({user.email})
+                      </option>
+                    ))}
+                </select>
+                <Button
+                  onClick={addUserInvite}
+                  disabled={userInviteSaving || !selectedUserId}
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  {userInviteSaving ? 'Wird hinzugefügt...' : 'Einladen'}
                 </Button>
               </div>
             </div>

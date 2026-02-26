@@ -15,11 +15,11 @@ export async function POST(
 
   try {
     const body = await request.json();
-    const { email } = body;
+    const { email, userId } = body;
 
-    if (!email) {
+    if (!email && !userId) {
       return NextResponse.json({ 
-        error: "Missing required field: email" 
+        error: "Either email or userId is required" 
       }, { status: 400 });
     }
 
@@ -32,11 +32,22 @@ export async function POST(
       return NextResponse.json({ error: "Event not found" }, { status: 404 });
     }
 
+    // Ziel-User ermitteln (entweder über userId oder E-Mail)
+    const targetUser = userId
+      ? await prisma.user.findUnique({ where: { id: userId } })
+      : await prisma.user.findUnique({ where: { email } });
+
+    if (!targetUser) {
+      return NextResponse.json({ 
+        error: "User not found - only existing users can be invited" 
+      }, { status: 404 });
+    }
+
     // Prüfe ob User bereits eingeladen ist
     const existingInvite = await prisma.eventInvite.findFirst({
       where: { 
         eventId: id,
-        user: { email: email }
+        userId: targetUser.id,
       }
     });
 
@@ -46,22 +57,11 @@ export async function POST(
       }, { status: 400 });
     }
 
-    // Suche nach existierendem User
-    const user = await prisma.user.findUnique({
-      where: { email }
-    });
-
-    if (!user) {
-      return NextResponse.json({ 
-        error: "User not found - only existing users can be invited" 
-      }, { status: 404 });
-    }
-
     // Erstelle Einladung
     const invite = await prisma.eventInvite.create({
       data: {
         eventId: id,
-        userId: user.id,
+        userId: targetUser.id,
         status: "pending"
       },
       include: {

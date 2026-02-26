@@ -47,6 +47,7 @@ Die Skills im `skills/` Verzeichnis beschreiben detailliert wie Features funktio
 | `session-tracking` | Spielsessions erfassen und auswerten |
 | `event-voting` | Events mit Voting-System organisieren |
 | `statistics` | Statistiken und Auswertungen |
+| `accessibility` | Verbindliche Regeln für Farbkontrast, Schriftgrößen und Fokuszustände |
 
 **Lies den relevanten Skill bevor du an einem Feature arbeitest!**
 
@@ -113,6 +114,7 @@ export async function GET() {
 - Tailwind CSS Klassen verwenden
 - `cn()` Utility für bedingte Klassen
 - CSS Variablen für Theming (definiert in `globals.css`)
+- **Accessibility first**: Mindestens WCAG AA Kontrast (4.5:1 für Text), deutliche Fokuszustände, ausreichend große Touch-Flächen (>44px) und semantische Beschriftungen.
 
 ## Wichtige Dateien
 

@@ -264,6 +264,114 @@ export async function searchBGGGames(query: string): Promise<Array<{ bggId: stri
   }
 }
 
+export interface BGGCollectionItem {
+  bggId: string;
+  name: string;
+  yearPublished: number | null;
+  thumbnailUrl: string | null;
+  imageUrl: string | null;
+  minPlayers: number | null;
+  maxPlayers: number | null;
+  playTimeMinutes: number | null;
+  rating: number | null;
+  numPlays: number;
+}
+
+export async function fetchBGGCollection(username: string): Promise<BGGCollectionItem[]> {
+  const url = `${BGG_API_URL}/collection?username=${encodeURIComponent(username)}&own=1&excludesubtype=boardgameexpansion`;
+
+  const headers: Record<string, string> = {
+    Accept: "application/xml",
+    "User-Agent": "BoardGameTools/1.0 (contact@example.com)",
+  };
+  if (BGG_AUTH_TOKEN) {
+    headers["Authorization"] = `Bearer ${BGG_AUTH_TOKEN}`;
+  }
+
+  // BGG collection API may return 202 while queuing - retry up to 3 times
+  for (let attempt = 0; attempt < 3; attempt++) {
+    if (attempt > 0) {
+      await new Promise((resolve) => setTimeout(resolve, 4000));
+    }
+
+    const response = await fetch(url, { headers });
+
+    if (response.status === 202) {
+      console.log(`BGG collection queued (202), attempt ${attempt + 1}/3...`);
+      continue;
+    }
+
+    if (response.status === 429) {
+      console.log("BGG rate limited (429), waiting 10s...");
+      await new Promise((resolve) => setTimeout(resolve, 10000));
+      continue;
+    }
+
+    if (!response.ok) {
+      console.error(`BGG collection API error: ${response.status}`);
+      throw new Error(`BGG API returned ${response.status}`);
+    }
+
+    const xml = await response.text();
+
+    if (xml.includes('errors') || xml.includes('<error>')) {
+      const msgMatch = xml.match(/<message>([^<]*)<\/message>/i);
+      throw new Error(msgMatch ? msgMatch[1] : "BGG returned an error");
+    }
+
+    return parseBGGCollectionResponse(xml);
+  }
+
+  throw new Error("BGG collection request timed out after retries");
+}
+
+function parseBGGCollectionResponse(xml: string): BGGCollectionItem[] {
+  const results: BGGCollectionItem[] = [];
+  const itemRegex = /<item[^>]*objectid="(\d+)"[^>]*>([^]*?)<\/item>/gi;
+  let match;
+
+  while ((match = itemRegex.exec(xml)) !== null) {
+    const bggId = match[1];
+    const itemXml = match[2];
+
+    const nameMatch = itemXml.match(/<name[^>]*sortindex[^>]*>([^<]+)<\/name>/i);
+    if (!nameMatch) continue;
+
+    const name = nameMatch[1]
+      .replace(/&amp;/g, "&")
+      .replace(/&lt;/g, "<")
+      .replace(/&gt;/g, ">")
+      .replace(/&quot;/g, '"')
+      .trim();
+
+    const yearMatch = itemXml.match(/<yearpublished>(\d+)<\/yearpublished>/i);
+    const thumbnailMatch = itemXml.match(/<thumbnail>([^<]+)<\/thumbnail>/i);
+    const imageMatch = itemXml.match(/<image>([^<]+)<\/image>/i);
+    const minPlayersMatch = itemXml.match(/<minplayers>(\d+)<\/minplayers>/i);
+    const maxPlayersMatch = itemXml.match(/<maxplayers>(\d+)<\/maxplayers>/i);
+    const playTimeMatch = itemXml.match(/<playingtime>(\d+)<\/playingtime>/i);
+    const ratingMatch = itemXml.match(/<rating[^>]*value="([^"]+)"/i);
+    const numPlaysMatch = itemXml.match(/<numplays>(\d+)<\/numplays>/i);
+
+    const ratingValue = ratingMatch ? parseFloat(ratingMatch[1]) : null;
+
+    results.push({
+      bggId,
+      name,
+      yearPublished: yearMatch ? parseInt(yearMatch[1]) : null,
+      thumbnailUrl: thumbnailMatch ? thumbnailMatch[1].trim() : null,
+      imageUrl: imageMatch ? imageMatch[1].trim() : null,
+      minPlayers: minPlayersMatch ? parseInt(minPlayersMatch[1]) : null,
+      maxPlayers: maxPlayersMatch ? parseInt(maxPlayersMatch[1]) : null,
+      playTimeMinutes: playTimeMatch ? parseInt(playTimeMatch[1]) : null,
+      rating: ratingValue && !isNaN(ratingValue) ? Math.round(ratingValue * 10) / 10 : null,
+      numPlays: numPlaysMatch ? parseInt(numPlaysMatch[1]) : 0,
+    });
+  }
+
+  return results;
+}
+
 function parseBGGSearchResponse(xml: string): Array<{ bggId: string; name: string; yearPublished: number | null }> {
   console.log("BGG XML response length:", xml.length);
   console.log("BGG XML preview:", xml.substring(0, 200) + "...");

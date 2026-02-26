@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { ArrowLeft, Plus, Users, Star, Trophy, Vote, X, Search, ExternalLink, Gamepad2 } from "lucide-react";
+import { ArrowLeft, Plus, Users, Star, Trophy, Vote, X, Search, ExternalLink, Gamepad2, Trash2 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 
 interface ProposalWithDetails extends GameProposal {
@@ -15,6 +15,16 @@ interface ProposalWithDetails extends GameProposal {
   proposedBy: User;
   _count: { votes: number };
   userVoted?: boolean;
+  userHasVoted?: boolean;
+}
+
+interface EventResponse extends Event {
+  proposals: ProposalWithDetails[];
+  invites: Array<{ id: string; userId: string; user: User; status: string }>;
+  createdBy: User;
+  selectedGame: Game | null;
+  currentUserId: string;
+  isCreator: boolean;
 }
 
 export default function EventVotingPage() {
@@ -23,15 +33,17 @@ export default function EventVotingPage() {
   const eventId = params.id as string;
   const { toast } = useToast();
   
-  const [event, setEvent] = useState<Event | null>(null);
+  const [event, setEvent] = useState<EventResponse | null>(null);
   const [proposals, setProposals] = useState<ProposalWithDetails[]>([]);
   const [games, setGames] = useState<Game[]>([]);
   const [loading, setLoading] = useState(true);
   const [voting, setVoting] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [collectionSearch, setCollectionSearch] = useState("");
   const [bggResults, setBggResults] = useState<any[]>([]);
   const [bggLoading, setBggLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<"collection" | "bgg">("collection");
+  const [deletingProposal, setDeletingProposal] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -51,28 +63,15 @@ export default function EventVotingPage() {
         ]);
         
         if (eventRes.ok) {
-          const eventData = await eventRes.json();
+          const eventData: EventResponse = await eventRes.json();
           setEvent(eventData);
-          
-          // User Votes prüfen für jedes Proposal
-          const proposalsWithVotes = await Promise.all(
-            eventData.proposals.map(async (proposal: any) => {
-              const voteRes = await fetch(`/api/events/${eventId}/votes?proposalId=${proposal.id}`, {
-            headers: {
-              'Content-Type': 'application/json',
-            }
-          });
-              const hasVoted = voteRes.ok;
-              
-              return {
-                ...proposal,
-                userVoted: hasVoted
-              };
-            })
-          );
-          
-          // Sortieren nach Vote Count
-          setProposals(proposalsWithVotes.sort((a, b) => b._count.votes - a._count.votes));
+
+          const normalizedProposals = eventData.proposals.map((proposal) => ({
+            ...proposal,
+            userVoted: proposal.userHasVoted ?? proposal.userVoted ?? false,
+          }));
+
+          setProposals(normalizedProposals.sort((a, b) => b._count.votes - a._count.votes));
         }
         
         if (gamesRes.ok) {
@@ -168,7 +167,8 @@ export default function EventVotingPage() {
       });
 
       if (!response.ok) {
-        throw new Error('Fehler beim Hinzufügen des Vorschlags');
+        const errorData = await response.json().catch(() => null);
+        throw new Error(errorData?.error || 'Fehler beim Hinzufügen des Vorschlags');
       }
 
       const newProposal = await response.json();
@@ -178,9 +178,38 @@ export default function EventVotingPage() {
       console.error('Add proposal error:', error);
       toast({
         title: "Fehler beim Hinzufügen des Vorschlags",
-        description: "Bitte versuche es erneut.",
+        description: error instanceof Error ? error.message : "Bitte versuche es erneut.",
         variant: "destructive",
       });
+    }
+  };
+
+  const handleDeleteProposal = async (proposalId: string) => {
+    setDeletingProposal(proposalId);
+    try {
+      const response = await fetch(`/api/events/${eventId}/proposals?proposalId=${proposalId}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null);
+        throw new Error(errorData?.error || 'Fehler beim Löschen des Vorschlags');
+      }
+
+      setProposals(prev => prev.filter(p => p.id !== proposalId));
+      toast({
+        title: 'Vorschlag gelöscht',
+        description: 'Das Spiel wurde aus der Vorschlagsliste entfernt.',
+      });
+    } catch (error) {
+      console.error('Delete proposal error:', error);
+      toast({
+        title: 'Fehler beim Löschen',
+        description: error instanceof Error ? error.message : 'Bitte versuche es erneut.',
+        variant: 'destructive',
+      });
+    } finally {
+      setDeletingProposal(null);
     }
   };
 
@@ -305,6 +334,10 @@ export default function EventVotingPage() {
     !proposals.some(p => p.gameId === game.id)
   );
 
+  const filteredCollection = availableGames.filter(game =>
+    game.name.toLowerCase().includes(collectionSearch.trim().toLowerCase())
+  );
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -422,6 +455,22 @@ export default function EventVotingPage() {
                         <div className="text-2xl font-bold">{proposal._count.votes}</div>
                         <div className="text-sm text-gray-500">Votes</div>
                       </div>
+                      {(event?.isCreator || proposal.proposedById === event?.currentUserId) && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleDeleteProposal(proposal.id)}
+                          disabled={deletingProposal === proposal.id}
+                          className="text-muted-foreground hover:text-destructive"
+                          aria-label="Vorschlag löschen"
+                        >
+                          {deletingProposal === proposal.id ? (
+                            <span className="text-xs">...</span>
+                          ) : (
+                            <Trash2 className="h-4 w-4" />
+                          )}
+                        </Button>
+                      )}
                     </div>
                   </div>
                 </CardHeader>
@@ -503,44 +552,59 @@ export default function EventVotingPage() {
                       Alle Spiele wurden bereits vorgeschlagen
                     </p>
                   ) : (
-                    availableGames.map((game) => (
-                      <div key={game.id} className="flex items-center justify-between p-3 border rounded-lg">
-                        <div className="flex items-center gap-3">
-                          {/* Game Image */}
-                          <div className="flex-shrink-0">
-                            {game.imageUrl ? (
-                              <img 
-                                src={game.imageUrl} 
-                                alt={game.name}
-                                className="w-10 h-10 rounded-lg object-cover border border-border"
-                                onError={(e) => {
-                                  e.currentTarget.src = '/placeholder-game.png';
-                                }}
-                              />
-                            ) : (
-                              <div className="w-10 h-10 rounded-lg bg-muted border border-border flex items-center justify-center">
-                                <Gamepad2 className="h-5 w-5 text-muted-foreground" />
-                              </div>
-                            )}
-                          </div>
-                          <div>
-                            <div className="font-medium">{game.name}</div>
-                            <div className="text-sm text-gray-500">
-                              {game.minPlayers}-{game.maxPlayers} Spieler
-                              {game.complexity && ` • ${game.complexity}/5 Komplexität`}
-                            </div>
-                          </div>
-                        </div>
-                        <Button
-                          size="sm"
-                          onClick={() => handleAddProposal(game.id)}
-                          className="flex items-center gap-1"
-                        >
-                          <Plus className="h-3 w-3" />
-                          Vorschlagen
-                        </Button>
+                    <>
+                      <div className="flex gap-2">
+                        <Input
+                          placeholder="Spiel suchen..."
+                          value={collectionSearch}
+                          onChange={(e) => setCollectionSearch(e.target.value)}
+                        />
                       </div>
-                    ))
+                      {filteredCollection.length === 0 ? (
+                        <p className="text-gray-500 text-center py-4">
+                          {collectionSearch ? `Keine Treffer für "${collectionSearch}"` : "Keine Spiele verfügbar"}
+                        </p>
+                      ) : (
+                        filteredCollection.map((game) => (
+                          <div key={game.id} className="flex items-center justify-between p-3 border rounded-lg">
+                            <div className="flex items-center gap-3">
+                              {/* Game Image */}
+                              <div className="flex-shrink-0">
+                                {game.imageUrl ? (
+                                  <img 
+                                    src={game.imageUrl} 
+                                    alt={game.name}
+                                    className="w-10 h-10 rounded-lg object-cover border border-border"
+                                    onError={(e) => {
+                                      e.currentTarget.src = '/placeholder-game.png';
+                                    }}
+                                  />
+                                ) : (
+                                  <div className="w-10 h-10 rounded-lg bg-muted border border-border flex items-center justify-center">
+                                    <Gamepad2 className="h-5 w-5 text-muted-foreground" />
+                                  </div>
+                                )}
+                              </div>
+                              <div>
+                                <div className="font-medium">{game.name}</div>
+                                <div className="text-sm text-gray-500">
+                                  {game.minPlayers}-{game.maxPlayers} Spieler
+                                  {game.complexity && ` • ${game.complexity}/5 Komplexität`}
+                                </div>
+                              </div>
+                            </div>
+                            <Button
+                              size="sm"
+                              onClick={() => handleAddProposal(game.id)}
+                              className="flex items-center gap-1"
+                            >
+                              <Plus className="h-3 w-3" />
+                              Vorschlagen
+                            </Button>
+                          </div>
+                        ))
+                      )}
+                    </>
                   )}
                 </>
               ) : (

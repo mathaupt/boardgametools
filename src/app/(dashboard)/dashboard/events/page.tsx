@@ -150,7 +150,7 @@ export default async function EventsPage() {
                     <div className="flex flex-wrap gap-2">
                       {event.proposals.slice(0, 3).map((proposal) => (
                         <div key={proposal.id} className="flex items-center gap-2 bg-card px-2 py-1 rounded text-sm border border-border">
-                          {proposal.game.imageUrl && (
+                          {proposal.game.imageUrl ? (
                             <div className="relative w-6 h-6 flex-shrink-0">
                               <Image
                                 src={proposal.game.imageUrl}
@@ -158,10 +158,11 @@ export default async function EventsPage() {
                                 width={24}
                                 height={24}
                                 className="object-cover rounded"
-                                onError={(e) => {
-                                  e.currentTarget.src = '/placeholder-game.png';
-                                }}
                               />
+                            </div>
+                          ) : (
+                            <div className="w-6 h-6 flex items-center justify-center rounded bg-muted text-[10px] text-muted-foreground">
+                              🎲
                             </div>
                           )}
                           <div>

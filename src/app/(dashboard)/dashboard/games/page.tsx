@@ -3,7 +3,7 @@ import prisma from "@/lib/db";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Plus, Users, Clock, Star, Download } from "lucide-react";
+import { Plus, Users, Clock, Star, Download, ImageIcon } from "lucide-react";
 
 export default async function GamesPage() {
   const session = await auth();
@@ -56,7 +56,22 @@ export default async function GamesPage() {
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {games.map((game) => (
             <Link key={game.id} href={`/dashboard/games/${game.id}`}>
-              <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
+              <Card className="hover:shadow-md transition-shadow cursor-pointer h-full overflow-hidden">
+                <div className="w-full h-48 bg-muted">
+                  {game.imageUrl ? (
+                    <img
+                      src={game.imageUrl}
+                      alt={game.name}
+                      className="h-full w-full object-cover"
+                      loading="lazy"
+                    />
+                  ) : (
+                    <div className="h-full w-full flex flex-col items-center justify-center text-muted-foreground gap-2">
+                      <ImageIcon className="h-6 w-6" />
+                      <span className="text-xs">Kein Bild</span>
+                    </div>
+                  )}
+                </div>
                 <CardHeader>
                   <CardTitle className="line-clamp-1">{game.name}</CardTitle>
                   {game.description && (

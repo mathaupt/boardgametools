@@ -86,6 +86,25 @@ export async function POST(request: NextRequest) {
     }
 
     // Erstelle Event
+    const organizerInvite = {
+      userId: session.user.id,
+      status: "accepted" as const,
+    };
+
+    const additionalInvites = inviteEmails ? await Promise.all(
+      inviteEmails.map(async (email: string) => {
+        const user = await prisma.user.findUnique({
+          where: { email }
+        });
+        
+        return {
+          userId: user?.id || null,
+          email: user ? null : email,
+          status: "pending" as const,
+        };
+      })
+    ) : [];
+
     const newEvent = await prisma.event.create({
       data: {
         title,
@@ -94,21 +113,9 @@ export async function POST(request: NextRequest) {
         location: location || null,
         groupId: groupId || null,
         createdById: session.user.id,
-        invites: inviteEmails ? {
-          create: await Promise.all(
-            inviteEmails.map(async (email: string) => {
-              const user = await prisma.user.findUnique({
-                where: { email }
-              });
-              
-              return {
-                userId: user?.id || null,
-                email: user ? null : email, // Store email if user not found
-                status: "pending"
-              };
-            })
-          )
-        } : undefined
+        invites: {
+          create: [organizerInvite, ...additionalInvites],
+        },
       },
       include: {
         invites: {

@@ -4,7 +4,12 @@ import Link from "next/link";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Gamepad2, CalendarDays, Users, Vote, ArrowRight } from "lucide-react";
-import type { GameSession, Event } from "@prisma/client";
+import type { GameSession, Event, Game, GameProposal } from "@prisma/client";
+
+type UpcomingEvent = Event & {
+  selectedGame: Game | null;
+  proposals: (GameProposal & { game: Game })[];
+};
 
 export default async function DashboardPage() {
   const session = await auth();
@@ -14,7 +19,14 @@ export default async function DashboardPage() {
     prisma.game.count({ where: { ownerId: userId } }),
     prisma.gameSession.count({ where: { createdById: userId } }),
     prisma.groupMember.count({ where: { userId } }),
-    prisma.eventInvite.count({ where: { userId, status: "accepted" } }),
+    prisma.event.count({
+      where: {
+        OR: [
+          { createdById: userId },
+          { invites: { some: { userId } } },
+        ],
+      },
+    }),
   ]);
 
   const recentSessions = await prisma.gameSession.findMany({
@@ -24,10 +36,23 @@ export default async function DashboardPage() {
     take: 5,
   });
 
-  const upcomingEvents = await prisma.event.findMany({
+  const upcomingEvents: UpcomingEvent[] = await prisma.event.findMany({
     where: {
-      invites: { some: { userId, status: "accepted" } },
       eventDate: { gte: new Date() },
+      OR: [
+        { createdById: userId },
+        { invites: { some: { userId, status: "accepted" } } },
+      ],
+    },
+    include: {
+      selectedGame: true,
+      proposals: {
+        include: {
+          game: true,
+        },
+        orderBy: { createdAt: "desc" },
+        take: 3,
+      },
     },
     orderBy: { eventDate: "asc" },
     take: 5,
@@ -137,7 +162,7 @@ export default async function DashboardPage() {
         </Link>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2">
+      <div className="grid gap-6 lg:grid-cols-3">
         <Card>
           <CardHeader>
             <CardTitle>Letzte Sessions</CardTitle>
@@ -161,22 +186,90 @@ export default async function DashboardPage() {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Kommende Events</CardTitle>
-            <CardDescription>Deine nächsten Spieleabende</CardDescription>
+        <Card className="lg:col-span-2 border border-primary/30 bg-primary/5">
+          <CardHeader className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+              <CardTitle className="flex items-center gap-2 text-primary">
+                <Vote className="h-5 w-5" />
+                Kommende Events
+              </CardTitle>
+              <CardDescription>Deine nächsten Spieleabende und Abstimmungen</CardDescription>
+            </div>
+            <Link href="/dashboard/events/new">
+              <Button size="sm" variant="outline">
+                Neues Event planen
+              </Button>
+            </Link>
           </CardHeader>
           <CardContent>
             {upcomingEvents.length === 0 ? (
-              <p className="text-sm text-muted-foreground">Keine anstehenden Events.</p>
+              <div className="flex flex-col items-center gap-3 py-6 text-center text-muted-foreground">
+                <div className="text-4xl">📅</div>
+                <p className="text-sm">Keine anstehenden Events. Plane deinen nächsten Spieleabend!</p>
+              </div>
             ) : (
               <ul className="space-y-3">
-                {upcomingEvents.map((evt: Event) => (
-                  <li key={evt.id} className="flex justify-between items-center">
-                    <span className="font-medium">{evt.title}</span>
-                    <span className="text-sm text-muted-foreground">
-                      {new Date(evt.eventDate).toLocaleDateString("de-DE")}
-                    </span>
+                {upcomingEvents.map((evt: UpcomingEvent) => (
+                  <li key={evt.id}>
+                    <Link
+                      href={`/dashboard/events/${evt.id}`}
+                      className="block rounded-lg border border-primary/10 bg-white px-4 py-4 shadow-sm transition-all hover:border-primary/40 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
+                    >
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <p className="font-semibold text-slate-900">{evt.title}</p>
+                          {evt.location && (
+                            <p className="text-sm text-slate-600">{evt.location}</p>
+                          )}
+                        </div>
+                        <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
+                          {new Date(evt.eventDate).toLocaleDateString("de-DE", {
+                            weekday: "short",
+                            day: "2-digit",
+                            month: "short",
+                          })}
+                        </span>
+                      </div>
+
+                      <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
+                        {evt.selectedGame ? (
+                          <span className="inline-flex items-center rounded-full bg-emerald-100/60 px-2.5 py-1 text-emerald-700">
+                            🎯 Ausgewählt: {evt.selectedGame.name}
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center rounded-full bg-amber-100/60 px-2.5 py-1 text-amber-700">
+                            🔄 Voting läuft
+                          </span>
+                        )}
+
+                        {evt.proposals.length > 0 && (
+                          <div className="flex items-center gap-2">
+                            {evt.proposals.map((proposal) => (
+                              <div
+                                key={proposal.id}
+                                className="h-12 w-12 overflow-hidden rounded-full border border-border bg-muted"
+                                title={proposal.game.name}
+                              >
+                                {proposal.game.imageUrl ? (
+                                  <img
+                                    src={proposal.game.imageUrl}
+                                    alt={proposal.game.name}
+                                    className="h-full w-full object-cover"
+                                  />
+                                ) : (
+                                  <div className="flex h-full w-full items-center justify-center text-xs text-slate-600">
+                                    🎲
+                                  </div>
+                                )}
+                              </div>
+                            ))}
+                            <span className="text-[12px] font-medium text-slate-600">
+                              {evt.proposals.length} Vorschläge
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    </Link>
                   </li>
                 ))}
               </ul>

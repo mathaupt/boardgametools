@@ -26,7 +26,11 @@ export async function GET(
           include: {
             game: true,
             proposedBy: true,
-            _count: { select: { votes: true } }
+            _count: { select: { votes: true } },
+            votes: {
+              where: { userId: session.user.id },
+              select: { id: true },
+            },
           }
         },
         selectedGame: true
@@ -45,7 +49,18 @@ export async function GET(
       return NextResponse.json({ error: "Access denied" }, { status: 403 });
     }
 
-    return NextResponse.json(event);
+    const eventResponse = {
+      ...event,
+      proposals: event.proposals.map(proposal => ({
+        ...proposal,
+        userHasVoted: proposal.votes.length > 0,
+        votes: undefined,
+      })),
+      currentUserId: session.user.id,
+      isCreator,
+    };
+
+    return NextResponse.json(eventResponse);
   } catch (error) {
     console.error("Error fetching event:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
