@@ -1,29 +1,23 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
-// Mock the module before importing
-const mockSearchBGGGames = vi.fn();
-const mockFetchBGGGame = vi.fn();
+const originalEnv = { ...process.env };
+const originalFetch = global.fetch;
 
-vi.mock("@/lib/bgg", () => ({
-  searchBGGGames: mockSearchBGGGames,
-  fetchBGGGame: mockFetchBGGGame,
-}));
-
-import { searchBGGGames, fetchBGGGame } from "@/lib/bgg";
-
-// Mock environment variables
-const originalEnv = process.env;
+async function loadBGGLib() {
+  vi.resetModules();
+  return import("@/lib/bgg");
+}
 
 describe("BGG API", () => {
   beforeEach(() => {
     vi.resetAllMocks();
     process.env = { ...originalEnv };
-    // Clear require cache to reload env vars
-    vi.clearAllMocks();
+    global.fetch = originalFetch;
   });
 
   afterEach(() => {
-    process.env = originalEnv;
+    process.env = { ...originalEnv };
+    global.fetch = originalFetch;
   });
 
   describe("searchBGGGames", () => {
@@ -38,6 +32,8 @@ describe("BGG API", () => {
         ok: true,
         text: () => Promise.resolve(`<items></items>`),
       });
+
+      const { searchBGGGames } = await loadBGGLib();
 
       await searchBGGGames("catan");
 
@@ -64,6 +60,8 @@ describe("BGG API", () => {
         text: () => Promise.resolve(`<items></items>`),
       });
 
+      const { searchBGGGames } = await loadBGGLib();
+
       await searchBGGGames("catan");
 
       expect(mockFetch).toHaveBeenCalledWith(
@@ -87,6 +85,13 @@ describe("BGG API", () => {
       const mockFetch = vi.fn();
       global.fetch = mockFetch;
 
+      const setTimeoutSpy = vi
+        .spyOn(global, "setTimeout")
+        .mockImplementation(((cb: (...args: any[]) => void) => {
+          cb();
+          return 0 as unknown as ReturnType<typeof setTimeout>;
+        }) as any);
+
       // First call returns 202 (processing)
       mockFetch.mockResolvedValueOnce({
         ok: false,
@@ -100,12 +105,16 @@ describe("BGG API", () => {
         text: () => Promise.resolve(`<items></items>`),
       });
 
+      const { searchBGGGames } = await loadBGGLib();
+
       await searchBGGGames("catan");
 
       // Both calls should include the token
       expect(mockFetch).toHaveBeenCalledTimes(2);
       expect(mockFetch.mock.calls[0][1].headers.Authorization).toBe("Bearer test-token-123");
       expect(mockFetch.mock.calls[1][1].headers.Authorization).toBe("Bearer test-token-123");
+
+      setTimeoutSpy.mockRestore();
     });
   });
 
@@ -120,6 +129,8 @@ describe("BGG API", () => {
         ok: true,
         text: () => Promise.resolve(`<items><item type="boardgame" id="13"><name type="primary" value="Catan"/></item></items>`),
       });
+
+      const { fetchBGGGame } = await loadBGGLib();
 
       await fetchBGGGame("13");
 
@@ -144,6 +155,8 @@ describe("BGG API", () => {
         ok: true,
         text: () => Promise.resolve(`<items><item type="boardgame" id="13"><name type="primary" value="Catan"/></item></items>`),
       });
+
+      const { fetchBGGGame } = await loadBGGLib();
 
       await fetchBGGGame("13");
 
@@ -171,6 +184,8 @@ describe("BGG API", () => {
         ok: false,
         status: 404,
       });
+
+      const { fetchBGGGame } = await loadBGGLib();
 
       const result = await fetchBGGGame("999");
 

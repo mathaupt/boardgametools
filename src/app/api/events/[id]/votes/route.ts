@@ -25,11 +25,23 @@ export async function POST(
 
     // Prüfe ob Event existiert
     const event = await prisma.event.findUnique({
-      where: { id }
+      where: { id },
+      include: {
+        invites: {
+          select: { userId: true }
+        }
+      }
     });
 
     if (!event) {
       return NextResponse.json({ error: "Event not found" }, { status: 404 });
+    }
+
+    const isInvited = event.invites.some((invite) => invite.userId === session.user.id);
+    const hasAccess = event.createdById === session.user.id || isInvited || event.isPublic;
+
+    if (!hasAccess) {
+      return NextResponse.json({ error: "Access denied" }, { status: 403 });
     }
 
     // Prüfe ob Proposal existiert

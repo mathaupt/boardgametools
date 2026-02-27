@@ -11,6 +11,7 @@ export async function GET() {
   const games = await prisma.game.findMany({
     where: { ownerId: session.user.id },
     orderBy: { name: "asc" },
+    include: { _count: { select: { sessions: true } } },
   });
 
   return NextResponse.json(games);

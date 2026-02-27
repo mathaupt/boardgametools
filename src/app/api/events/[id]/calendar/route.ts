@@ -59,7 +59,7 @@ export async function GET(
       event.invites.forEach((invite) => {
         const status = invite.status === "accepted" ? "✅" : 
                       invite.status === "declined" ? "❌" : "⏳";
-        description += `${status} ${invite.user.name}\n`;
+        description += `${status} ${invite.user?.name ?? "Unbekannt"}\n`;
       });
     }
 

@@ -1,6 +1,22 @@
 const BGG_API_URL = "https://boardgamegeek.com/xmlapi2";
 const BGG_AUTH_TOKEN = process.env.BGG_AUTH_TOKEN;
 
+function decodeHtmlEntities(value: string | null | undefined): string | null {
+  if (value == null) {
+    return value ?? null;
+  }
+
+  return value
+    .replace(/&amp;/gi, "&")
+    .replace(/&lt;/gi, "<")
+    .replace(/&gt;/gi, ">")
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;|&apos;|&#x27;/gi, "'")
+    .replace(/&#10;|&#x0a;/gi, "\n")
+    .replace(/&#13;|&#x0d;/gi, "\r")
+    .replace(/&nbsp;/gi, " ");
+}
+
 export interface BGGGameData {
   bggId: string;
   name: string;
@@ -46,7 +62,8 @@ function parseAllXMLAttributeValues(xml: string, tag: string, typeAttr?: string)
   const regex = new RegExp(`<${tag}[^>]*${typeFilter}[^>]*value="([^"]*)"`, "gi");
   let match;
   while ((match = regex.exec(xml)) !== null) {
-    results.push(match[1]);
+    const decoded = decodeHtmlEntities(match[1]);
+    results.push(decoded ?? match[1]);
   }
   return results;
 }
@@ -79,22 +96,15 @@ export async function fetchBGGGame(bggId: string): Promise<BGGGameData | null> {
     }
 
     const primaryNameMatch = xml.match(/<name type="primary"[^>]*value="([^"]*)"/);
-    const name = primaryNameMatch ? primaryNameMatch[1] : null;
+    const name = decodeHtmlEntities(primaryNameMatch ? primaryNameMatch[1] : null);
 
     if (!name) {
       return null;
     }
 
     const descriptionMatch = xml.match(/<description>([^]*?)<\/description>/);
-    let description = descriptionMatch ? descriptionMatch[1] : "";
-    description = description
-      .replace(/&amp;/g, "&")
-      .replace(/&lt;/g, "<")
-      .replace(/&gt;/g, ">")
-      .replace(/&quot;/g, '"')
-      .replace(/&#10;/g, "\n")
-      .replace(/<[^>]*>/g, "")
-      .trim();
+    let description = decodeHtmlEntities(descriptionMatch ? descriptionMatch[1] : "") ?? "";
+    description = description.replace(/<[^>]*>/g, "").trim();
 
     const yearPublished = parseXMLAttributeValue(xml, "yearpublished");
     const minPlayers = parseXMLAttributeValue(xml, "minplayers");
@@ -115,10 +125,12 @@ export async function fetchBGGGame(bggId: string): Promise<BGGGameData | null> {
     const numRatingsMatch = xml.match(/<usersrated[^>]*value="([^"]*)"/);
     const numRatings = numRatingsMatch ? parseInt(numRatingsMatch[1]) : null;
 
-    const categories = parseAllXMLAttributeValues(xml, "link", "boardgamecategory");
-    const mechanics = parseAllXMLAttributeValues(xml, "link", "boardgamemechanic");
-    const designers = parseAllXMLAttributeValues(xml, "link", "boardgamedesigner");
-    const publishers = parseAllXMLAttributeValues(xml, "link", "boardgamepublisher");
+    const decodeArray = (values: string[]) => values.map((value) => decodeHtmlEntities(value) ?? value);
+
+    const categories = decodeArray(parseAllXMLAttributeValues(xml, "link", "boardgamecategory"));
+    const mechanics = decodeArray(parseAllXMLAttributeValues(xml, "link", "boardgamemechanic"));
+    const designers = decodeArray(parseAllXMLAttributeValues(xml, "link", "boardgamedesigner"));
+    const publishers = decodeArray(parseAllXMLAttributeValues(xml, "link", "boardgamepublisher"));
 
     return {
       bggId,
@@ -131,8 +143,8 @@ export async function fetchBGGGame(bggId: string): Promise<BGGGameData | null> {
       minPlayTime: minPlayTime ? parseInt(minPlayTime) : null,
       maxPlayTime: maxPlayTime ? parseInt(maxPlayTime) : null,
       complexity: complexity ? Math.round(complexity * 10) / 10 : null,
-      imageUrl: imageMatch ? imageMatch[1] : null,
-      thumbnailUrl: thumbnailMatch ? thumbnailMatch[1] : null,
+      imageUrl: imageMatch ? decodeHtmlEntities(imageMatch[1]) : null,
+      thumbnailUrl: thumbnailMatch ? decodeHtmlEntities(thumbnailMatch[1]) : null,
       categories,
       mechanics,
       designers,
@@ -337,12 +349,8 @@ function parseBGGCollectionResponse(xml: string): BGGCollectionItem[] {
     const nameMatch = itemXml.match(/<name[^>]*sortindex[^>]*>([^<]+)<\/name>/i);
     if (!nameMatch) continue;
 
-    const name = nameMatch[1]
-      .replace(/&amp;/g, "&")
-      .replace(/&lt;/g, "<")
-      .replace(/&gt;/g, ">")
-      .replace(/&quot;/g, '"')
-      .trim();
+    const name = decodeHtmlEntities(nameMatch[1])?.trim();
+    if (!name) continue;
 
     const yearMatch = itemXml.match(/<yearpublished>(\d+)<\/yearpublished>/i);
     const thumbnailMatch = itemXml.match(/<thumbnail>([^<]+)<\/thumbnail>/i);
@@ -359,8 +367,8 @@ function parseBGGCollectionResponse(xml: string): BGGCollectionItem[] {
       bggId,
       name,
       yearPublished: yearMatch ? parseInt(yearMatch[1]) : null,
-      thumbnailUrl: thumbnailMatch ? thumbnailMatch[1].trim() : null,
-      imageUrl: imageMatch ? imageMatch[1].trim() : null,
+      thumbnailUrl: thumbnailMatch ? (decodeHtmlEntities(thumbnailMatch[1])?.trim() ?? null) : null,
+      imageUrl: imageMatch ? (decodeHtmlEntities(imageMatch[1])?.trim() ?? null) : null,
       minPlayers: minPlayersMatch ? parseInt(minPlayersMatch[1]) : null,
       maxPlayers: maxPlayersMatch ? parseInt(maxPlayersMatch[1]) : null,
       playTimeMinutes: playTimeMatch ? parseInt(playTimeMatch[1]) : null,
@@ -391,7 +399,7 @@ function parseBGGSearchResponse(xml: string): Array<{ bggId: string; name: strin
     if (nameMatch) {
       results.push({
         bggId,
-        name: nameMatch[1],
+        name: decodeHtmlEntities(nameMatch[1]) ?? nameMatch[1],
         yearPublished: yearMatch ? parseInt(yearMatch[1]) : null,
       });
     }

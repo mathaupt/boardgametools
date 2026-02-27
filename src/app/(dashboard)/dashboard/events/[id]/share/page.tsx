@@ -9,6 +9,8 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ArrowLeft, Share2, Users, Search, Check, X } from "lucide-react";
+import { PublicShareCard } from "../public-share-card";
+import { getPublicBaseUrl } from "@/lib/public-link";
 
 interface User {
   id: string;
@@ -34,6 +36,7 @@ export default function EventSharePage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
   const [sharing, setSharing] = useState(false);
+  const publicBaseUrl = getPublicBaseUrl();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -71,7 +74,7 @@ export default function EventSharePage() {
     user.email.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const alreadyInvitedUserIds = existingInvites.map(invite => invite.user.id);
+  const alreadyInvitedUserIds = existingInvites.filter(invite => invite.user).map(invite => invite.user!.id);
   const availableUsers = filteredUsers.filter(user => 
     !alreadyInvitedUserIds.includes(user.id)
   );
@@ -146,6 +149,8 @@ export default function EventSharePage() {
     );
   }
 
+  const publicUrl = event?.shareToken ? `${publicBaseUrl}/public/event/${event.shareToken}` : null;
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -171,6 +176,16 @@ export default function EventSharePage() {
           </CardDescription>
         </CardHeader>
       </Card>
+
+      <div className="grid grid-cols-1 gap-6">
+        <PublicShareCard
+          eventId={event.id}
+          initialIsPublic={event.isPublic}
+          initialShareToken={event.shareToken}
+          initialPublicUrl={publicUrl}
+          canManage={!!event.isCreator}
+        />
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* User Auswahl */}
@@ -259,11 +274,11 @@ export default function EventSharePage() {
                   <div key={invite.id} className="flex items-center justify-between p-3 border rounded-lg">
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center text-sm">
-                        {invite.user.name[0].toUpperCase()}
+                        {invite.user?.name?.[0]?.toUpperCase() ?? "?"}
                       </div>
                       <div>
-                        <div className="font-medium">{invite.user.name}</div>
-                        <div className="text-sm text-gray-500">{invite.user.email}</div>
+                        <div className="font-medium">{invite.user?.name ?? "Unbekannt"}</div>
+                        <div className="text-sm text-gray-500">{invite.user?.email ?? ""}</div>
                       </div>
                     </div>
                     

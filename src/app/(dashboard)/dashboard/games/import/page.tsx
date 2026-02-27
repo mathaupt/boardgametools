@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -64,6 +64,10 @@ export default function ImportBGGPage() {
   const [isImporting, setIsImporting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const [existingBggIds, setExistingBggIds] = useState<Set<string>>(new Set());
+  const [isLoadingExistingGames, setIsLoadingExistingGames] = useState(true);
+  const [existingGamesError, setExistingGamesError] = useState<string | null>(null);
+
   // Collection import state
   const [collectionDialogOpen, setCollectionDialogOpen] = useState(false);
   const [bggUsername, setBggUsername] = useState("");
@@ -77,6 +81,40 @@ export default function ImportBGGPage() {
     event.currentTarget.onerror = null;
     event.currentTarget.src = "/window.svg";
   };
+
+  // Load existing collection once so we can block duplicate imports by exact BGG ID
+  useEffect(() => {
+    let isMounted = true;
+    async function loadExistingGames() {
+      try {
+        const response = await fetch("/api/games");
+        if (!response.ok) {
+          throw new Error("Failed to load existing games");
+        }
+        const games: Array<{ bggId?: string | null }> = await response.json();
+        const ids = games
+          .map((game) => game.bggId)
+          .filter((id): id is string => Boolean(id));
+        if (isMounted) {
+          setExistingBggIds(new Set(ids));
+        }
+      } catch (err) {
+        console.error("Error loading existing games", err);
+        if (isMounted) {
+          setExistingGamesError("Konnte bestehende Sammlung nicht prüfen – Duplikate werden serverseitig geblockt.");
+        }
+      } finally {
+        if (isMounted) {
+          setIsLoadingExistingGames(false);
+        }
+      }
+    }
+
+    loadExistingGames();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   async function handleSearch(e: React.FormEvent) {
     e.preventDefault();
@@ -129,6 +167,11 @@ export default function ImportBGGPage() {
   async function handleImport() {
     if (!selectedGame) return;
 
+    if (existingBggIds.has(selectedGame.bggId)) {
+      setError("Dieses Spiel ist bereits in deiner Sammlung");
+      return;
+    }
+
     setIsImporting(true);
     setError(null);
 
@@ -142,8 +185,18 @@ export default function ImportBGGPage() {
       if (response.ok) {
         router.push("/dashboard/games");
         router.refresh();
+        setExistingBggIds((prev) => {
+          const next = new Set(prev);
+          next.add(selectedGame.bggId);
+          return next;
+        });
       } else if (response.status === 409) {
         setError("Dieses Spiel ist bereits in deiner Sammlung");
+        setExistingBggIds((prev) => {
+          const next = new Set(prev);
+          next.add(selectedGame.bggId);
+          return next;
+        });
       } else {
         setError("Import fehlgeschlagen");
       }
@@ -175,8 +228,10 @@ export default function ImportBGGPage() {
 
       const items: BGGCollectionItem[] = data.collection;
       setCollection(items);
-      // Pre-select all games
-      setSelectedBggIds(new Set(items.map((g) => g.bggId)));
+      const selectableIds = items
+        .map((g) => g.bggId)
+        .filter((id): id is string => Boolean(id) && !existingBggIds.has(id));
+      setSelectedBggIds(new Set(selectableIds));
     } catch {
       setCollectionError("Verbindungsfehler – bitte erneut versuchen");
     } finally {
@@ -185,14 +240,21 @@ export default function ImportBGGPage() {
   }
 
   function toggleSelectAll() {
-    if (selectedBggIds.size === collection.length) {
+    const selectableIds = collection
+      .map((g) => g.bggId)
+      .filter((id): id is string => Boolean(id) && !existingBggIds.has(id));
+
+    if (selectedBggIds.size === selectableIds.length) {
       setSelectedBggIds(new Set());
     } else {
-      setSelectedBggIds(new Set(collection.map((g) => g.bggId)));
+      setSelectedBggIds(new Set(selectableIds));
     }
   }
 
   function toggleGame(bggId: string) {
+    if (!bggId || existingBggIds.has(bggId)) {
+      return;
+    }
     setSelectedBggIds((prev) => {
       const next = new Set(prev);
       if (next.has(bggId)) {
@@ -214,7 +276,17 @@ export default function ImportBGGPage() {
     let imported = 0;
     let skipped = 0;
 
+    const newlyImportedIds: string[] = [];
     for (const bggId of Array.from(selectedBggIds)) {
+      if (!bggId) {
+        continue;
+      }
+
+      if (existingBggIds.has(bggId)) {
+        skipped++;
+        continue;
+      }
+
       try {
         const response = await fetch("/api/games/import-bgg", {
           method: "POST",
@@ -223,8 +295,10 @@ export default function ImportBGGPage() {
         });
         if (response.ok) {
           imported++;
+          newlyImportedIds.push(bggId);
         } else if (response.status === 409) {
           skipped++;
+          newlyImportedIds.push(bggId);
         } else {
           skipped++;
         }
@@ -235,6 +309,14 @@ export default function ImportBGGPage() {
 
     setIsBulkImporting(false);
     setBulkImportResult({ imported, skipped });
+
+    if (newlyImportedIds.length > 0) {
+      setExistingBggIds((prev) => {
+        const next = new Set(prev);
+        newlyImportedIds.forEach((id) => next.add(id));
+        return next;
+      });
+    }
   }
 
   return (
@@ -336,8 +418,9 @@ export default function ImportBGGPage() {
                         className="flex items-center gap-3 px-3 py-2 hover:bg-accent cursor-pointer"
                       >
                         <Checkbox
-                          checked={selectedBggIds.has(game.bggId)}
-                          onChange={() => toggleGame(game.bggId)}
+                          checked={game.bggId ? selectedBggIds.has(game.bggId) : false}
+                          onChange={() => game.bggId && toggleGame(game.bggId)}
+                          disabled={!game.bggId || existingBggIds.has(game.bggId)}
                         />
                         {game.thumbnailUrl ? (
                           <img
@@ -352,7 +435,12 @@ export default function ImportBGGPage() {
                           </div>
                         )}
                         <div className="flex-1 min-w-0">
-                          <div className="font-medium truncate">{game.name}</div>
+                          <div className="font-medium truncate flex items-center gap-2">
+                            <span>{game.name}</span>
+                            {game.bggId && existingBggIds.has(game.bggId) && (
+                              <span className="text-xs text-muted-foreground">(bereits importiert)</span>
+                            )}
+                          </div>
                           <div className="flex gap-3 text-xs text-muted-foreground">
                             {game.yearPublished && <span>{game.yearPublished}</span>}
                             {game.minPlayers && game.maxPlayers && (
@@ -389,7 +477,7 @@ export default function ImportBGGPage() {
               <Button variant="outline" onClick={() => setCollectionDialogOpen(false)}>
                 Schließen
               </Button>
-              {collection.length > 0 && !bulkImportResult && (
+              {collection.length > 0 && (
                 <Button
                   onClick={handleBulkImport}
                   disabled={isBulkImporting || selectedBggIds.size === 0}
@@ -408,7 +496,11 @@ export default function ImportBGGPage() {
                 </Button>
               )}
               {bulkImportResult && (
-                <Button onClick={() => { setCollectionDialogOpen(false); router.push("/dashboard/games"); router.refresh(); }}>
+                <Button onClick={() => {
+                  setCollectionDialogOpen(false);
+                  router.push("/dashboard/games");
+                  router.refresh();
+                }}>
                   Zur Spielesammlung
                 </Button>
               )}
@@ -419,6 +511,11 @@ export default function ImportBGGPage() {
 
       <div className="grid md:grid-cols-2 gap-6">
         <div className="space-y-6">
+          {!isLoadingExistingGames && existingGamesError && (
+            <div className="p-3 text-sm text-destructive bg-destructive/10 rounded-md">
+              {existingGamesError}
+            </div>
+          )}
           <Card>
             <CardHeader>
               <CardTitle>Spiel suchen</CardTitle>
@@ -489,6 +586,11 @@ export default function ImportBGGPage() {
           {error && (
             <div className="p-3 text-sm text-destructive bg-destructive/10 rounded-md mb-4">
               {error}
+            </div>
+          )}
+          {!isLoadingExistingGames && selectedGame && existingBggIds.has(selectedGame.bggId) && (
+            <div className="p-3 text-sm bg-yellow-50 border border-yellow-200 text-yellow-800 rounded-md mb-4">
+              Dieses Spiel befindet sich bereits in deiner Sammlung.
             </div>
           )}
 

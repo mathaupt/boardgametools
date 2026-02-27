@@ -66,6 +66,15 @@ BGG_AUTH_TOKEN="dein-bgg-token-hier"
 | `npm run db:migrate` | Datenbank-Migration |
 | `npm run db:studio` | Prisma Studio öffnen |
 
+### Pre-Commit Checks
+
+Dieses Repo verwendet [Husky](https://typicode.github.io/husky) für einen verpflichtenden Pre-Commit-Hook. Vor jedem Commit werden automatisch
+
+1. `npm run test` – komplette Vitest-Suite
+2. `npm run security-check` – OWASP Top 10 Heuristiken inkl. `npm audit`
+
+ausgeführt. Schlägt einer der Schritte fehl, wird das Commit blockiert. Das Security-Script befindet sich unter `scripts/security-check.sh` und generiert bei jedem Lauf eine aktuelle `security-report.md`.
+
 ## Projektstruktur
 
 ```

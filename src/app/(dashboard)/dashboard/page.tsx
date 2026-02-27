@@ -186,10 +186,10 @@ export default async function DashboardPage() {
           </CardContent>
         </Card>
 
-        <Card className="lg:col-span-2 border border-primary/30 bg-primary/5">
+        <Card className="lg:col-span-2 border border-primary/30 bg-card">
           <CardHeader className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
             <div>
-              <CardTitle className="flex items-center gap-2 text-primary">
+              <CardTitle className="flex items-center gap-2 text-foreground">
                 <Vote className="h-5 w-5" />
                 Kommende Events
               </CardTitle>
@@ -222,7 +222,7 @@ export default async function DashboardPage() {
                             <p className="text-sm text-slate-600">{evt.location}</p>
                           )}
                         </div>
-                        <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
+                        <span className="inline-flex items-center rounded-full bg-primary px-3 py-1 text-xs font-medium text-primary-foreground">
                           {new Date(evt.eventDate).toLocaleDateString("de-DE", {
                             weekday: "short",
                             day: "2-digit",

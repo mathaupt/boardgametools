@@ -26,14 +26,20 @@ export async function GET(
           include: {
             game: true,
             proposedBy: true,
-            _count: { select: { votes: true } },
+            _count: { select: { votes: true, guestVotes: true } },
             votes: {
               where: { userId: session.user.id },
               select: { id: true },
             },
           }
         },
-        selectedGame: true
+        selectedGame: true,
+        guestParticipants: {
+          include: {
+            _count: { select: { votes: true } }
+          },
+          orderBy: { createdAt: "asc" }
+        }
       }
     });
 
@@ -53,7 +59,12 @@ export async function GET(
       ...event,
       proposals: event.proposals.map(proposal => ({
         ...proposal,
+        totalVotes: proposal._count.votes + proposal._count.guestVotes,
         userHasVoted: proposal.votes.length > 0,
+        votes: undefined,
+      })),
+      guestParticipants: event.guestParticipants.map((guest) => ({
+        ...guest,
         votes: undefined,
       })),
       currentUserId: session.user.id,

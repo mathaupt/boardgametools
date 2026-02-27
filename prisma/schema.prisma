@@ -34,6 +34,8 @@ model User {
   eventInvites    EventInvite[]
   gameProposals   GameProposal[]
   votes           Vote[]
+  dateVotes       DateVote[]
+  passwordResetTokens PasswordResetToken[]
 }
 
 // ============================================
@@ -141,6 +143,8 @@ model Event {
   createdById     String
   groupId         String?
   selectedGameId  String?
+  isPublic        Boolean   @default(false)
+  shareToken      String?   @unique
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
@@ -148,23 +152,28 @@ model Event {
   createdBy       User            @relation(fields: [createdById], references: [id], onDelete: Cascade)
   group           Group?          @relation(fields: [groupId], references: [id], onDelete: SetNull)
   selectedGame    Game?           @relation("SelectedGame", fields: [selectedGameId], references: [id], onDelete: SetNull)
+  selectedDate    DateTime?
   invites         EventInvite[]
   proposals       GameProposal[]
+  guestParticipants GuestParticipant[]
+  dateProposals   DateProposal[]
 }
 
 model EventInvite {
   id          String    @id @default(cuid())
   eventId     String
-  userId      String
+  userId      String?
+  email       String?
   status      String    @default("pending") // pending, accepted, declined
   invitedAt   DateTime  @default(now())
   respondedAt DateTime?
 
   // Relations
   event       Event     @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user        User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([eventId, userId])
+  @@unique([eventId, email])
 }
 
 model GameProposal {
@@ -179,6 +188,7 @@ model GameProposal {
   game        Game      @relation(fields: [gameId], references: [id], onDelete: Cascade)
   proposedBy  User      @relation(fields: [proposedById], references: [id], onDelete: Cascade)
   votes       Vote[]
+  guestVotes  GuestVote[]
 
   @@unique([eventId, gameId])
 }
@@ -194,4 +204,85 @@ model Vote {
   user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([proposalId, userId])
+}
+
+model GuestParticipant {
+  id        String   @id @default(cuid())
+  eventId   String
+  nickname  String
+  createdAt DateTime @default(now())
+
+  event     Event       @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  votes     GuestVote[]
+  dateVotes GuestDateVote[]
+
+  @@unique([eventId, nickname])
+}
+
+model GuestVote {
+  id          String   @id @default(cuid())
+  guestId     String
+  proposalId  String
+  createdAt   DateTime @default(now())
+
+  guest       GuestParticipant @relation(fields: [guestId], references: [id], onDelete: Cascade)
+  proposal    GameProposal     @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+
+  @@unique([guestId, proposalId])
+}
+
+// ============================================
+// DATE POLLING
+// ============================================
+
+model DateProposal {
+  id          String    @id @default(cuid())
+  eventId     String
+  date        DateTime  // the proposed date (date only, time 00:00)
+  createdAt   DateTime  @default(now())
+
+  event       Event          @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  votes       DateVote[]
+  guestVotes  GuestDateVote[]
+
+  @@unique([eventId, date])
+}
+
+model DateVote {
+  id            String    @id @default(cuid())
+  dateProposalId String
+  userId        String
+  availability  String    @default("yes") // yes, maybe, no
+  createdAt     DateTime  @default(now())
+
+  dateProposal  DateProposal @relation(fields: [dateProposalId], references: [id], onDelete: Cascade)
+  user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([dateProposalId, userId])
+}
+
+model GuestDateVote {
+  id            String    @id @default(cuid())
+  dateProposalId String
+  guestId       String
+  availability  String    @default("yes") // yes, maybe, no
+  createdAt     DateTime  @default(now())
+
+  dateProposal  DateProposal     @relation(fields: [dateProposalId], references: [id], onDelete: Cascade)
+  guest         GuestParticipant @relation(fields: [guestId], references: [id], onDelete: Cascade)
+
+  @@unique([dateProposalId, guestId])
+}
+
+model PasswordResetToken {
+  id         String   @id @default(cuid())
+  userId     String
+  tokenHash  String   @unique
+  expiresAt  DateTime
+  usedAt     DateTime?
+  createdAt  DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }

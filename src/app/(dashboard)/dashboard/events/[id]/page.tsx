@@ -3,9 +3,27 @@ import prisma from "@/lib/db";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Calendar, MapPin, Users, Vote, Mail, Plus, Trophy, Share2, Download, ThumbsUp, ThumbsDown, Gamepad } from "lucide-react";
+import { PublicShareCard } from "./public-share-card";
+import { getPublicBaseUrl } from "@/lib/public-link";
+import {
+  ArrowLeft,
+  Calendar,
+  MapPin,
+  Users,
+  Vote,
+  Mail,
+  Plus,
+  Trophy,
+  Share2,
+  Download,
+  ThumbsUp,
+  ThumbsDown,
+  Gamepad,
+  UserCircle,
+} from "lucide-react";
 import Link from "next/link";
 import VotingClient from "./voting-client";
+import DatePollClient from "./date-poll-client";
 
 export default async function EventDetailPage({
   params,
@@ -27,10 +45,27 @@ export default async function EventDetailPage({
         include: {
           game: true,
           proposedBy: true,
-          _count: { select: { votes: true } }
+          _count: { select: { votes: true, guestVotes: true } }
         }
       },
-      selectedGame: true
+      selectedGame: true,
+      guestParticipants: {
+        include: {
+          _count: { select: { votes: true } }
+        },
+        orderBy: { createdAt: "asc" }
+      },
+      dateProposals: {
+        include: {
+          votes: {
+            include: { user: { select: { id: true, name: true, email: true } } },
+          },
+          guestVotes: {
+            include: { guest: { select: { id: true, nickname: true } } },
+          },
+        },
+        orderBy: { date: "asc" },
+      }
     }
   });
 
@@ -55,6 +90,8 @@ export default async function EventDetailPage({
   const isCreator = event.createdById === userId;
   const eventDate = new Date(event.eventDate);
   const isPast = eventDate < new Date();
+  const publicUrl = event.shareToken ? `${getPublicBaseUrl()}/public/event/${event.shareToken}` : null;
+  const guestVoteCount = event.guestParticipants.reduce((sum, guest) => sum + (guest._count?.votes ?? 0), 0);
 
   // Get user votes for each proposal
   const userVotes = userId ? await prisma.vote.findMany({
@@ -177,9 +214,9 @@ export default async function EventDetailPage({
                     <div key={invite.id} className="flex items-center justify-between p-2 border rounded">
                       <div className="flex items-center gap-2">
                         <div className="w-6 h-6 bg-gray-200 rounded-full flex items-center justify-center text-xs">
-                          {invite.user.name[0]}
+                          {invite.user?.name?.[0] ?? "?"}
                         </div>
-                        <span>{invite.user.name}</span>
+                        <span>{invite.user?.name ?? invite.email ?? "Unbekannt"}</span>
                       </div>
                       <Badge variant={
                         invite.status === "accepted" ? "default" :
@@ -233,6 +270,71 @@ export default async function EventDetailPage({
           </div>
         </CardContent>
       </Card>
+
+      {/* Public link + guest overview */}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <PublicShareCard
+          eventId={event.id}
+          initialIsPublic={event.isPublic}
+          initialShareToken={event.shareToken}
+          initialPublicUrl={publicUrl}
+          canManage={isCreator}
+        />
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Users className="h-5 w-5" />
+              Öffentliche Gäste ({event.guestParticipants.length})
+            </CardTitle>
+            <CardDescription>
+              {guestVoteCount} Gast-Stimmen bisher gesammelt
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {event.guestParticipants.length === 0 ? (
+              <p className="text-sm text-muted-foreground">
+                Noch keine Gäste über den öffentlichen Link registriert.
+              </p>
+            ) : (
+              event.guestParticipants.map((guest) => (
+                <div
+                  key={guest.id}
+                  className="flex items-center justify-between rounded-lg border border-border/60 bg-muted/20 px-3 py-2"
+                >
+                  <div className="flex items-center gap-2">
+                    <div className="rounded-full bg-muted px-2 py-1 text-muted-foreground">
+                      <UserCircle className="h-4 w-4" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium">{guest.nickname}</p>
+                      <p className="text-xs text-muted-foreground">
+                        Seit {new Date(guest.createdAt).toLocaleDateString("de-DE")}
+                      </p>
+                    </div>
+                  </div>
+                  <Badge variant="secondary" className="text-xs">
+                    {guest._count?.votes ?? 0} Votes
+                  </Badge>
+                </div>
+              ))
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Terminabstimmung */}
+      <DatePollClient
+        eventId={event.id}
+        userId={userId || null}
+        isCreator={isCreator}
+        isPast={isPast}
+        initialProposals={event.dateProposals.map((p: any) => ({
+          ...p,
+          date: p.date.toISOString(),
+        }))}
+        selectedDate={event.selectedDate?.toISOString() ?? null}
+      />
 
       {/* Spielvorschläge mit Voting */}
       <Card>

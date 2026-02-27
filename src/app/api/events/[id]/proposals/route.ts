@@ -24,12 +24,24 @@ export async function POST(
     }
 
     // Prüfe ob Event existiert und User Berechtigung hat
-    const event = await prisma.event.findFirst({
-      where: { id, createdById: session.user.id }
+    const event = await prisma.event.findUnique({
+      where: { id },
+      include: {
+        invites: {
+          select: { userId: true }
+        }
+      }
     });
 
     if (!event) {
       return NextResponse.json({ error: "Event not found" }, { status: 404 });
+    }
+
+    const isInvited = event.invites.some((invite) => invite.userId === session.user.id);
+    const hasAccess = event.createdById === session.user.id || isInvited || event.isPublic;
+
+    if (!hasAccess) {
+      return NextResponse.json({ error: "Access denied" }, { status: 403 });
     }
 
     // Prüfe ob Spiel dem User gehört
@@ -62,11 +74,14 @@ export async function POST(
       include: {
         game: true,
         proposedBy: true,
-        _count: { select: { votes: true } }
+        _count: { select: { votes: true, guestVotes: true } }
       }
     });
 
-    return NextResponse.json(proposal, { status: 201 });
+    return NextResponse.json({
+      ...proposal,
+      totalVotes: proposal._count.votes + proposal._count.guestVotes,
+    }, { status: 201 });
   } catch (error) {
     console.error("Error creating proposal:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
