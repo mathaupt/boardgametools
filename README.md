@@ -59,7 +59,7 @@ BGG_AUTH_TOKEN="dein-bgg-token-hier"
 | Script | Beschreibung |
 |--------|-------------|
 | `npm run dev` | Entwicklungsserver starten |
-| `npm run build` | Produktions-Build erstellen |
+| `npm run build` | Führt `prisma migrate deploy` aus und erstellt anschließend den Produktions-Build |
 | `npm run test` | Unit Tests ausführen |
 | `npm run test:watch` | Unit Tests im Watch-Modus |
 | `npm run test:e2e` | E2E Tests ausführen |
@@ -148,6 +148,16 @@ docker-compose up -d --build
 # 4. Datenbank initialisieren
 docker-compose exec app npx prisma migrate deploy
 ```
+
+### ▲ Vercel Deployment
+
+Vercel führt bei jedem Build automatisch die Prisma-Migrationen aus, bevor `next build` läuft. Voraussetzung:
+
+1. `DATABASE_URL` (und ggf. `SHADOW_DATABASE_URL`) im Vercel-Projekt setzen.
+2. Keine individuellen Build-Befehle notwendig – dank `package.json` wird beim standardmäßigen `npm run build` zuerst `npm run prisma:migrate:deploy` ausgeführt.
+3. Bei Redeploy werden ausstehende Migrationen auf die Produktions-Datenbank angewandt, danach folgt automatisch das Next.js-Build.
+
+Damit bleiben Prisma-Schema und Produktions-Datenbank immer synchron.
 
 ## Lizenz
 
