@@ -177,7 +177,7 @@ export default function EventInvitePage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
       </div>
     );
   }
@@ -187,10 +187,10 @@ export default function EventInvitePage() {
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
           <div className="text-red-600 text-6xl mb-4">📅</div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Event nicht gefunden</h1>
+          <h1 className="text-2xl font-bold text-foreground mb-2">Event nicht gefunden</h1>
           <button
             onClick={() => router.push("/dashboard/events")}
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+            className="bg-primary text-primary-foreground px-4 py-2 rounded hover:bg-primary/90"
           >
             Zurück zu Events
           </button>
@@ -205,8 +205,7 @@ export default function EventInvitePage() {
       <div className="flex items-center gap-4">
         <button
           onClick={() => router.push(`/dashboard/events/${eventId}`)}
-          className="text-gray-600 hover:text-gray-900 flex items-center gap-2"
-        >
+          className="text-muted-foreground hover:text-foreground flex items-center gap-2">
           <ArrowLeft className="h-4 w-4" />
           Zurück zum Event
         </button>
@@ -281,7 +280,7 @@ export default function EventInvitePage() {
               </div>
             </div>
             
-            <div className="text-sm text-gray-500">
+            <div className="text-sm text-muted-foreground">
               <p>• Die Person erhält eine E-Mail mit Einladung zum Event</p>
               <p>• Sie kann zusagen oder ablehnen</p>
               <p>• Bestehende User werden direkt verknüpft</p>
@@ -299,7 +298,7 @@ export default function EventInvitePage() {
           </CardHeader>
           <CardContent>
             {invites.length === 0 ? (
-              <p className="text-gray-500 text-center py-4">
+              <p className="text-muted-foreground text-center py-4">
                 Noch keine Einladungen vorhanden
               </p>
             ) : (
@@ -307,7 +306,7 @@ export default function EventInvitePage() {
                 {invites.map((invite) => (
                   <div key={invite.id} className="flex items-center justify-between p-3 border rounded-lg">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center text-sm">
+                      <div className="w-8 h-8 bg-muted rounded-full flex items-center justify-center text-sm">
                         {invite.user ? invite.user.name[0].toUpperCase() : "?"}
                       </div>
                       <div>
@@ -315,7 +314,7 @@ export default function EventInvitePage() {
                           {invite.user?.name || invite.email}
                         </div>
                         {invite.user && (
-                          <div className="text-sm text-gray-500">
+                          <div className="text-sm text-muted-foreground">
                             {invite.user.email}
                           </div>
                         )}
@@ -374,19 +373,19 @@ export default function EventInvitePage() {
               <div className="text-2xl font-bold text-green-600">
                 {invites.filter(i => i.status === "accepted").length}
               </div>
-              <div className="text-sm text-gray-600">Zugesagt</div>
+              <div className="text-sm text-muted-foreground">Zugesagt</div>
             </div>
             <div className="text-center p-4 border rounded-lg">
               <div className="text-2xl font-bold text-yellow-600">
                 {invites.filter(i => i.status === "pending").length}
               </div>
-              <div className="text-sm text-gray-600">Ausstehend</div>
+              <div className="text-sm text-muted-foreground">Ausstehend</div>
             </div>
             <div className="text-center p-4 border rounded-lg">
-              <div className="text-2xl font-bold text-red-600">
+              <div className="text-2xl font-bold text-destructive">
                 {invites.filter(i => i.status === "declined").length}
               </div>
-              <div className="text-sm text-gray-600">Abgelehnt</div>
+              <div className="text-sm text-muted-foreground">Abgelehnt</div>
             </div>
           </div>
         </CardContent>

@@ -61,7 +61,7 @@ export default async function SessionsPage() {
                 <div className="flex items-start justify-between">
                   <div>
                     <CardTitle className="flex items-center gap-2">
-                      <div className="w-8 h-8 bg-blue-100 rounded flex items-center justify-center">
+                      <div className="w-8 h-8 bg-primary/10 rounded flex items-center justify-center">
                         🎲
                       </div>
                       {session.game.name}
@@ -100,7 +100,7 @@ export default async function SessionsPage() {
               
               {session.notes && (
                 <CardContent>
-                  <p className="text-sm text-gray-600">{session.notes}</p>
+                  <p className="text-sm text-muted-foreground">{session.notes}</p>
                 </CardContent>
               )}
 

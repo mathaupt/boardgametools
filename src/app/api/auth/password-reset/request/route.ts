@@ -2,8 +2,9 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/db";
 import { createPasswordResetToken } from "@/lib/password-reset";
 import { sendPasswordResetEmail } from "@/lib/mailer";
+import { getPublicBaseUrl } from "@/lib/public-link";
 
-const appUrl = process.env.NEXTAUTH_URL || process.env.VERCEL_URL || "http://localhost:3000";
+const appUrl = getPublicBaseUrl();
 
 export async function POST(request: Request) {
   try {

@@ -21,7 +21,7 @@
 
   /* Muted - Light Gray */
   --muted: oklch(0.97 0 0); /* Light gray-blue */
-  --muted-foreground: oklch(0.556 0 0); /* Medium gray text */
+  --muted-foreground: oklch(0.45 0 0); /* Medium gray text – WCAG AA 4.5:1 on white */
 
   /* Accent - Warm Amber */
   --accent: oklch(0.97 0 0); /* Warm amber accent */

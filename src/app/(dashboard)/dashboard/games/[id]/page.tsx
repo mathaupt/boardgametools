@@ -74,8 +74,8 @@ export default function GameDetailPage() {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
-          <p className="mt-4 text-gray-600">Spiel wird geladen...</p>
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
+          <p className="mt-4 text-muted-foreground">Spiel wird geladen...</p>
         </div>
       </div>
     );
@@ -85,23 +85,23 @@ export default function GameDetailPage() {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
-          <div className="text-red-600 text-6xl mb-4">🎲</div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">
+          <div className="text-destructive text-6xl mb-4">🎲</div>
+          <h1 className="text-2xl font-bold text-foreground mb-2">
             {error || "Spiel nicht gefunden"}
           </h1>
-          <p className="text-gray-600 mb-4">
+          <p className="text-muted-foreground mb-4">
             Das gesuchte Spiel existiert nicht oder wurde gelöscht.
           </p>
           <div className="flex gap-2 justify-center">
             <button
               onClick={() => router.push("/dashboard")}
-              className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700"
+              className="bg-secondary text-secondary-foreground px-4 py-2 rounded hover:bg-secondary/80"
             >
               🏠 Dashboard
             </button>
             <button
               onClick={() => router.push("/dashboard/games")}
-              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+              className="bg-primary text-primary-foreground px-4 py-2 rounded hover:bg-primary/90"
             >
               🎲 Zurück zur Spielsammlung
             </button>
@@ -116,33 +116,33 @@ export default function GameDetailPage() {
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-2 text-gray-600 hover:text-gray-900">
+          <div className="flex items-center gap-2 text-muted-foreground hover:text-foreground">
             <button
               onClick={() => router.push("/dashboard")}
-              className="flex items-center gap-2 hover:text-blue-600"
+              className="flex items-center gap-2 hover:text-primary"
             >
               🏠 Dashboard
             </button>
             <span>/</span>
             <button
               onClick={() => router.push("/dashboard/games")}
-              className="hover:text-blue-600"
+              className="hover:text-primary"
             >
               🎲 Spiele
             </button>
             <span>/</span>
-            <span className="text-gray-900">{game?.name || 'Spiel'}</span>
+            <span className="text-foreground">{game?.name || 'Spiel'}</span>
           </div>
           <div className="flex gap-2">
             <button 
               onClick={handleEdit}
-              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+              className="bg-primary text-primary-foreground px-4 py-2 rounded hover:bg-primary/90"
             >
               Bearbeiten
             </button>
             <button 
               onClick={() => setShowDeleteModal(true)}
-              className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+              className="bg-destructive text-destructive-foreground px-4 py-2 rounded hover:bg-destructive/90"
             >
               Löschen
             </button>
@@ -161,40 +161,40 @@ export default function GameDetailPage() {
                   className="w-full h-64 object-cover rounded-lg"
                 />
               ) : (
-                <div className="w-full h-64 bg-gray-200 rounded-lg flex items-center justify-center">
-                  <div className="text-gray-400 text-6xl">🎲</div>
+                <div className="w-full h-64 bg-muted rounded-lg flex items-center justify-center">
+                  <div className="text-muted-foreground text-6xl">🎲</div>
                 </div>
               )}
             </div>
 
             {/* Game Info */}
             <div className="md:col-span-2">
-              <h1 className="text-3xl font-bold text-gray-900 mb-4">
+              <h1 className="text-3xl font-bold text-foreground mb-4">
                 {game.name}
               </h1>
               
               {game.description && (
-                <p className="text-gray-600 mb-4">{game.description}</p>
+                <p className="text-muted-foreground mb-4">{game.description}</p>
               )}
 
               <div className="grid grid-cols-2 gap-4 mb-4">
-                <div className="bg-gray-50 p-3 rounded">
-                  <div className="text-sm text-gray-500">Spieleranzahl</div>
+                <div className="bg-muted/50 p-3 rounded">
+                  <div className="text-sm text-muted-foreground">Spieleranzahl</div>
                   <div className="font-semibold">
                     {game.minPlayers} - {game.maxPlayers}
                   </div>
                 </div>
                 
                 {game.playTimeMinutes && (
-                  <div className="bg-gray-50 p-3 rounded">
-                    <div className="text-sm text-gray-500">Spieldauer</div>
+                  <div className="bg-muted/50 p-3 rounded">
+                    <div className="text-sm text-muted-foreground">Spieldauer</div>
                     <div className="font-semibold">{game.playTimeMinutes} Min.</div>
                   </div>
                 )}
                 
                 {game.complexity && (
-                  <div className="bg-gray-50 p-3 rounded">
-                    <div className="text-sm text-gray-500">Komplexität</div>
+                  <div className="bg-muted/50 p-3 rounded">
+                    <div className="text-sm text-muted-foreground">Komplexität</div>
                     <div className="font-semibold">
                       {"★".repeat(game.complexity)}{"☆".repeat(5 - game.complexity)}
                     </div>
@@ -202,8 +202,8 @@ export default function GameDetailPage() {
                 )}
                 
                 {game.bggId && (
-                  <div className="bg-gray-50 p-3 rounded">
-                    <div className="text-sm text-gray-500">BGG ID</div>
+                  <div className="bg-muted/50 p-3 rounded">
+                    <div className="text-sm text-muted-foreground">BGG ID</div>
                     <div className="font-semibold">{game.bggId}</div>
                   </div>
                 )}
@@ -224,8 +224,8 @@ export default function GameDetailPage() {
 
         {/* Sessions History */}
         <div className="mt-8 bg-white rounded-lg shadow-lg p-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Gespielte Sessions</h2>
-          <div className="text-gray-500 text-center py-8">
+          <h2 className="text-xl font-bold text-foreground mb-4">Gespielte Sessions</h2>
+          <div className="text-muted-foreground text-center py-8">
             Noch keine Sessions für dieses Spiel gespielt.
           </div>
         </div>
@@ -235,15 +235,15 @@ export default function GameDetailPage() {
       {showDeleteModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Spiel löschen?</h2>
-            <p className="text-gray-600 mb-6">
+            <h2 className="text-xl font-bold text-foreground mb-4">Spiel löschen?</h2>
+            <p className="text-muted-foreground mb-6">
               Bist du sicher, dass du das Spiel "{game?.name}" löschen möchtest? 
               Diese Aktion kann nicht rückgängig gemacht werden.
             </p>
             <div className="flex gap-3 justify-end">
               <button
                 onClick={() => setShowDeleteModal(false)}
-                className="px-4 py-2 text-gray-600 border border-gray-300 rounded hover:bg-gray-50"
+                className="px-4 py-2 text-muted-foreground border border-border rounded hover:bg-muted/50"
                 disabled={isDeleting}
               >
                 Abbrechen

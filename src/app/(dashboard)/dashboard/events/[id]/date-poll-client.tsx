@@ -78,7 +78,7 @@ function getAvailabilityColor(availability: string) {
     case "no":
       return "bg-red-100 text-red-800 border-red-300";
     default:
-      return "bg-gray-100 text-gray-600 border-gray-300";
+      return "bg-muted text-muted-foreground border-border";
   }
 }
 
@@ -609,7 +609,7 @@ export default function DatePollClient({
                                   className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition-colors ${
                                     myVote === "yes"
                                       ? "border-green-500 bg-green-100"
-                                      : "border-gray-300 hover:border-green-400"
+                                      : "border-border hover:border-green-400"
                                   }`}
                                   title="Ja, passt"
                                   aria-label="Ja, passt"
@@ -623,7 +623,7 @@ export default function DatePollClient({
                                   className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition-colors ${
                                     myVote === "maybe"
                                       ? "border-yellow-500 bg-yellow-100"
-                                      : "border-gray-300 hover:border-yellow-400"
+                                      : "border-border hover:border-yellow-400"
                                   }`}
                                   title="Vielleicht"
                                   aria-label="Vielleicht"
@@ -637,7 +637,7 @@ export default function DatePollClient({
                                   className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition-colors ${
                                     myVote === "no"
                                       ? "border-red-500 bg-red-100"
-                                      : "border-gray-300 hover:border-red-400"
+                                      : "border-border hover:border-red-400"
                                   }`}
                                   title="Nein, geht nicht"
                                   aria-label="Nein, geht nicht"

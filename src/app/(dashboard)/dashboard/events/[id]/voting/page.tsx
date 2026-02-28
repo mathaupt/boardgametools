@@ -307,7 +307,7 @@ export default function EventVotingPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
       </div>
     );
   }
@@ -316,11 +316,11 @@ export default function EventVotingPage() {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
-          <div className="text-red-600 text-6xl mb-4">📅</div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Event nicht gefunden</h1>
+          <div className="text-destructive text-6xl mb-4">📅</div>
+          <h1 className="text-2xl font-bold text-foreground mb-2">Event nicht gefunden</h1>
           <button
             onClick={() => router.push("/dashboard/events")}
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+            className="bg-primary text-primary-foreground px-4 py-2 rounded hover:bg-primary/90"
           >
             Zurück zu Events
           </button>
@@ -344,7 +344,7 @@ export default function EventVotingPage() {
       <div className="flex items-center gap-4">
         <button
           onClick={() => router.push(`/dashboard/events/${eventId}`)}
-          className="text-gray-600 hover:text-gray-900 flex items-center gap-2"
+          className="text-muted-foreground hover:text-foreground flex items-center gap-2"
         >
           <ArrowLeft className="h-4 w-4" />
           Zurück zum Event
@@ -385,7 +385,7 @@ export default function EventVotingPage() {
               <CardContent className="text-center py-8">
                 <div className="text-4xl mb-4">🗳️</div>
                 <h3 className="font-semibold mb-2">Noch keine Vorschläge</h3>
-                <p className="text-gray-600 mb-4">
+                <p className="text-muted-foreground mb-4">
                   Füge Spiele hinzu, damit abgestimmt werden kann.
                 </p>
               </CardContent>
@@ -416,8 +416,8 @@ export default function EventVotingPage() {
                         </div>
                         <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-white ${
                           index === 0 ? 'bg-yellow-500' : 
-                          index === 1 ? 'bg-gray-400' : 
-                          index === 2 ? 'bg-orange-600' : 'bg-gray-300'
+                          index === 1 ? 'bg-muted-foreground' : 
+                          index === 2 ? 'bg-orange-600' : 'bg-muted'
                         }`}>
                           {index + 1}
                         </div>
@@ -453,7 +453,7 @@ export default function EventVotingPage() {
                     <div className="flex items-center gap-2">
                       <div className="text-center">
                         <div className="text-2xl font-bold">{proposal._count.votes}</div>
-                        <div className="text-sm text-gray-500">Votes</div>
+                        <div className="text-sm text-muted-foreground">Votes</div>
                       </div>
                       {(event?.isCreator || proposal.proposedById === event?.currentUserId) && (
                         <Button
@@ -478,7 +478,7 @@ export default function EventVotingPage() {
                 <CardContent>
                   <div className="flex items-center justify-between">
                     {proposal.game.description && (
-                      <p className="text-sm text-gray-600 flex-1 mr-4">
+                      <p className="text-sm text-muted-foreground flex-1 mr-4">
                         {proposal.game.description}
                       </p>
                     )}
@@ -548,7 +548,7 @@ export default function EventVotingPage() {
                 // Eigene Sammlung
                 <>
                   {availableGames.length === 0 ? (
-                    <p className="text-gray-500 text-center py-4">
+                    <p className="text-muted-foreground text-center py-4">
                       Alle Spiele wurden bereits vorgeschlagen
                     </p>
                   ) : (
@@ -561,7 +561,7 @@ export default function EventVotingPage() {
                         />
                       </div>
                       {filteredCollection.length === 0 ? (
-                        <p className="text-gray-500 text-center py-4">
+                        <p className="text-muted-foreground text-center py-4">
                           {collectionSearch ? `Keine Treffer für "${collectionSearch}"` : "Keine Spiele verfügbar"}
                         </p>
                       ) : (
@@ -587,7 +587,7 @@ export default function EventVotingPage() {
                               </div>
                               <div>
                                 <div className="font-medium">{game.name}</div>
-                                <div className="text-sm text-gray-500">
+                                <div className="text-sm text-muted-foreground">
                                   {game.minPlayers}-{game.maxPlayers} Spieler
                                   {game.complexity && ` • ${game.complexity}/5 Komplexität`}
                                 </div>
@@ -625,7 +625,7 @@ export default function EventVotingPage() {
 
                   {bggResults.length > 0 && (
                     <div className="space-y-2 max-h-96 overflow-y-auto">
-                      <p className="text-sm text-gray-600 mb-2">
+                      <p className="text-sm text-muted-foreground mb-2">
                         {bggResults.length} Spiele gefunden
                       </p>
                       {bggResults.map((game) => (
@@ -651,7 +651,7 @@ export default function EventVotingPage() {
                             <div className="flex-1">
                               <div className="font-medium">{game.name}</div>
                               {game.yearPublished && (
-                                <div className="text-sm text-gray-500">{game.yearPublished}</div>
+                                <div className="text-sm text-muted-foreground">{game.yearPublished}</div>
                               )}
                             </div>
                           </div>
@@ -669,7 +669,7 @@ export default function EventVotingPage() {
                               href={`https://boardgamegeek.com/boardgame/${game.bggId}`}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-blue-600 hover:text-blue-800"
+                              className="text-primary hover:text-primary/80"
                             >
                               <ExternalLink className="h-4 w-4" />
                             </a>
@@ -680,7 +680,7 @@ export default function EventVotingPage() {
                   )}
 
                   {searchQuery && bggResults.length === 0 && !bggLoading && (
-                    <p className="text-gray-500 text-center py-4">
+                    <p className="text-muted-foreground text-center py-4">
                       Keine Spiele gefunden für "{searchQuery}"
                     </p>
                   )}

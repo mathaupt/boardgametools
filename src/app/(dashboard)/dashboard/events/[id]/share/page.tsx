@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ArrowLeft, Share2, Users, Search, Check, X } from "lucide-react";
 import { PublicShareCard } from "../public-share-card";
-import { getPublicBaseUrl } from "@/lib/public-link";
+import { getClientBaseUrl } from "@/lib/public-link";
 
 interface User {
   id: string;
@@ -36,7 +36,7 @@ export default function EventSharePage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
   const [sharing, setSharing] = useState(false);
-  const publicBaseUrl = getPublicBaseUrl();
+  const publicBaseUrl = getClientBaseUrl();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -127,7 +127,7 @@ export default function EventSharePage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
       </div>
     );
   }
@@ -136,11 +136,11 @@ export default function EventSharePage() {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
-          <div className="text-red-600 text-6xl mb-4">📅</div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Event nicht gefunden</h1>
+          <div className="text-destructive text-6xl mb-4">📅</div>
+          <h1 className="text-2xl font-bold text-foreground mb-2">Event nicht gefunden</h1>
           <button
             onClick={() => router.push("/dashboard/events")}
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+            className="bg-primary text-primary-foreground px-4 py-2 rounded hover:bg-primary/90"
           >
             Zurück zu Events
           </button>
@@ -157,7 +157,7 @@ export default function EventSharePage() {
       <div className="flex items-center gap-4">
         <button
           onClick={() => router.push(`/dashboard/events/${eventId}`)}
-          className="text-gray-600 hover:text-gray-900 flex items-center gap-2"
+          className="text-muted-foreground hover:text-foreground flex items-center gap-2"
         >
           <ArrowLeft className="h-4 w-4" />
           Zurück zum Event
@@ -204,7 +204,7 @@ export default function EventSharePage() {
             <div>
               <Label htmlFor="search">User suchen</Label>
               <div className="relative">
-                <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                 <Input
                   id="search"
                   placeholder="Name oder E-Mail..."
@@ -218,12 +218,12 @@ export default function EventSharePage() {
             {/* User List */}
             <div className="space-y-2 max-h-96 overflow-y-auto">
               {availableUsers.length === 0 ? (
-                <p className="text-gray-500 text-center py-4">
+                <p className="text-muted-foreground text-center py-4">
                   {searchQuery ? "Keine User gefunden" : "Alle User bereits eingeladen"}
                 </p>
               ) : (
                 availableUsers.map((user) => (
-                  <div key={user.id} className="flex items-center space-x-3 p-3 border rounded-lg hover:bg-gray-50">
+                  <div key={user.id} className="flex items-center space-x-3 p-3 border rounded-lg hover:bg-muted/50">
                     <Checkbox
                       id={user.id}
                       checked={selectedUsers.includes(user.id)}
@@ -233,7 +233,7 @@ export default function EventSharePage() {
                       <Label htmlFor={user.id} className="font-medium cursor-pointer">
                         {user.name}
                       </Label>
-                      <div className="text-sm text-gray-500">{user.email}</div>
+                      <div className="text-sm text-muted-foreground">{user.email}</div>
                     </div>
                   </div>
                 ))
@@ -265,7 +265,7 @@ export default function EventSharePage() {
           </CardHeader>
           <CardContent>
             {existingInvites.length === 0 ? (
-              <p className="text-gray-500 text-center py-4">
+              <p className="text-muted-foreground text-center py-4">
                 Noch keine Einladungen vorhanden
               </p>
             ) : (
@@ -273,12 +273,12 @@ export default function EventSharePage() {
                 {existingInvites.map((invite) => (
                   <div key={invite.id} className="flex items-center justify-between p-3 border rounded-lg">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center text-sm">
+                      <div className="w-8 h-8 bg-muted rounded-full flex items-center justify-center text-sm">
                         {invite.user?.name?.[0]?.toUpperCase() ?? "?"}
                       </div>
                       <div>
                         <div className="font-medium">{invite.user?.name ?? "Unbekannt"}</div>
-                        <div className="text-sm text-gray-500">{invite.user?.email ?? ""}</div>
+                        <div className="text-sm text-muted-foreground">{invite.user?.email ?? ""}</div>
                       </div>
                     </div>
                     
@@ -310,22 +310,22 @@ export default function EventSharePage() {
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="text-center p-4 border rounded-lg">
-              <div className="text-2xl font-bold text-blue-600">
+              <div className="text-2xl font-bold text-primary">
                 {existingInvites.filter(i => i.status === "pending").length}
               </div>
-              <div className="text-sm text-gray-600">Ausstehend</div>
+              <div className="text-sm text-muted-foreground">Ausstehend</div>
             </div>
             <div className="text-center p-4 border rounded-lg">
-              <div className="text-2xl font-bold text-green-600">
+              <div className="text-2xl font-bold text-green-700">
                 {existingInvites.filter(i => i.status === "accepted").length}
               </div>
-              <div className="text-sm text-gray-600">Zugesagt</div>
+              <div className="text-sm text-muted-foreground">Zugesagt</div>
             </div>
             <div className="text-center p-4 border rounded-lg">
-              <div className="text-2xl font-bold text-red-600">
+              <div className="text-2xl font-bold text-destructive">
                 {existingInvites.filter(i => i.status === "declined").length}
               </div>
-              <div className="text-sm text-gray-600">Abgelehnt</div>
+              <div className="text-sm text-muted-foreground">Abgelehnt</div>
             </div>
           </div>
         </CardContent>

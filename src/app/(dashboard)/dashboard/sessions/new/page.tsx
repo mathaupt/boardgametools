@@ -138,7 +138,7 @@ export default function NewSessionPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
       </div>
     );
   }
@@ -167,7 +167,7 @@ export default function NewSessionPage() {
                   value={formData.gameId}
                   onChange={(e) => setFormData(prev => ({ ...prev, gameId: e.target.value }))}
                   required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
                 >
                   <option value="">Spiel auswählen</option>
                   {games.map((game) => (
@@ -233,7 +233,7 @@ export default function NewSessionPage() {
                       value={player.userId}
                       onChange={(e) => updatePlayer(index, 'userId', e.target.value)}
                       required
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
                     >
                       <option value="">Spieler auswählen</option>
                       {users.map((user) => (

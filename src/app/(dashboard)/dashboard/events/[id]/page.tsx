@@ -73,9 +73,9 @@ export default async function EventDetailPage({
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
-          <div className="text-red-600 text-6xl mb-4">📅</div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Event nicht gefunden</h1>
-          <p className="text-gray-600 mb-4">Das gesuchte Event existiert nicht.</p>
+          <div className="text-destructive text-6xl mb-4">📅</div>
+          <h1 className="text-2xl font-bold text-foreground mb-2">Event nicht gefunden</h1>
+          <p className="text-muted-foreground mb-4">Das gesuchte Event existiert nicht.</p>
           <Link href="/dashboard/events">
             <Button>
               <ArrowLeft className="h-4 w-4 mr-2" />
@@ -113,7 +113,7 @@ export default async function EventDetailPage({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <Link href="/dashboard/events" className="text-gray-600 hover:text-gray-900 flex items-center gap-2">
+          <Link href="/dashboard/events" className="text-muted-foreground hover:text-foreground flex items-center gap-2">
             <ArrowLeft className="h-4 w-4" />
             Zurück zu Events
           </Link>
@@ -208,12 +208,12 @@ export default async function EventDetailPage({
               </h3>
               <div className="space-y-2">
                 {event.invites.length === 0 ? (
-                  <p className="text-gray-500 text-sm">Noch keine Einladungen</p>
+                  <p className="text-muted-foreground text-sm">Noch keine Einladungen</p>
                 ) : (
                   event.invites.map((invite) => (
                     <div key={invite.id} className="flex items-center justify-between p-2 border rounded">
                       <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 bg-gray-200 rounded-full flex items-center justify-center text-xs">
+                        <div className="w-6 h-6 bg-muted rounded-full flex items-center justify-center text-xs">
                           {invite.user?.name?.[0] ?? "?"}
                         </div>
                         <span>{invite.user?.name ?? invite.email ?? "Unbekannt"}</span>
@@ -364,7 +364,7 @@ export default async function EventDetailPage({
             <div className="text-center py-8">
               <div className="text-4xl mb-4">🎲</div>
               <h3 className="font-semibold mb-2">Noch keine Vorschläge</h3>
-              <p className="text-gray-600 mb-4">
+              <p className="text-muted-foreground mb-4">
                 Es wurden noch keine Spiele für dieses Event vorgeschlagen.
               </p>
               {isCreator && !isPast && (

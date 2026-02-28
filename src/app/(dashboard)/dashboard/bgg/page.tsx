@@ -167,13 +167,13 @@ export default function BGGImportPage() {
             {searchResults.map((game) => (
               <div
                 key={game.bggId}
-                className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50 cursor-pointer"
+                className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50 cursor-pointer"
                 onClick={() => handleSelectGame(game.bggId)}
               >
                 <div>
                   <div className="font-medium">{game.name}</div>
                   {game.yearPublished && (
-                    <div className="text-sm text-gray-500">{game.yearPublished}</div>
+                    <div className="text-sm text-muted-foreground">{game.yearPublished}</div>
                   )}
                 </div>
                 <Button variant="outline" size="sm">
@@ -222,8 +222,8 @@ export default function BGGImportPage() {
                     className="w-full rounded-lg"
                   />
                 ) : (
-                  <div className="w-full h-64 bg-gray-200 rounded-lg flex items-center justify-center">
-                    <div className="text-gray-400 text-6xl">🎲</div>
+                  <div className="w-full h-64 bg-muted rounded-lg flex items-center justify-center">
+                    <div className="text-muted-foreground text-6xl">🎲</div>
                   </div>
                 )}
                 
@@ -233,7 +233,7 @@ export default function BGGImportPage() {
                       href={`https://boardgamegeek.com/boardgame/${selectedGame.bggId}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-blue-600 hover:text-blue-800 text-sm flex items-center justify-center gap-1"
+                      className="text-primary hover:text-primary/80 text-sm flex items-center justify-center gap-1"
                     >
                       <ExternalLink className="h-3 w-3" />
                       Auf BoardGameGeek ansehen
@@ -248,20 +248,20 @@ export default function BGGImportPage() {
                   <h3 className="font-semibold mb-2">Spiel-Details</h3>
                   <div className="space-y-2">
                     <div className="flex items-center gap-2">
-                      <Users className="h-4 w-4 text-gray-500" />
+                      <Users className="h-4 w-4 text-muted-foreground" />
                       <span>{selectedGame.minPlayers}-{selectedGame.maxPlayers} Spieler</span>
                     </div>
                     
                     {selectedGame.playTimeMinutes && (
                       <div className="flex items-center gap-2">
-                        <Clock className="h-4 w-4 text-gray-500" />
+                        <Clock className="h-4 w-4 text-muted-foreground" />
                         <span>{selectedGame.playTimeMinutes} Minuten</span>
                       </div>
                     )}
                     
                     {selectedGame.complexity && (
                       <div className="flex items-center gap-2">
-                        <Star className="h-4 w-4 text-gray-500" />
+                        <Star className="h-4 w-4 text-muted-foreground" />
                         <span>Komplexität: {getComplexityStars(selectedGame.complexity)}</span>
                       </div>
                     )}
@@ -285,7 +285,7 @@ export default function BGGImportPage() {
                 {selectedGame.description && (
                   <div>
                     <h3 className="font-semibold mb-2">Beschreibung</h3>
-                    <p className="text-sm text-gray-600 line-clamp-6">
+                    <p className="text-sm text-muted-foreground line-clamp-6">
                       {selectedGame.description}
                     </p>
                   </div>

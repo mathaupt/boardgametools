@@ -71,7 +71,7 @@ export default function NewEventPage() {
       <div className="flex items-center gap-4">
         <button
           onClick={() => router.push("/dashboard/events")}
-          className="text-gray-600 hover:text-gray-900 flex items-center gap-2"
+          className="text-muted-foreground hover:text-foreground flex items-center gap-2"
         >
           <ArrowLeft className="h-4 w-4" />
           Zurück zu Events
@@ -162,7 +162,7 @@ export default function NewEventPage() {
                 placeholder="max@example.com, anna@example.com, tom@example.com"
                 rows={3}
               />
-              <p className="text-sm text-gray-500 mt-1">
+              <p className="text-sm text-muted-foreground mt-1">
                 Kommagetrennte Liste von E-Mail Adressen. Eingeladene User erhalten eine Benachrichtigung.
               </p>
             </div>

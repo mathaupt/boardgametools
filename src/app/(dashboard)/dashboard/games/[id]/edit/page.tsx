@@ -46,8 +46,8 @@ export default function EditGamePage() {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
-          <p className="mt-4 text-gray-600">Spiel wird geladen...</p>
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
+          <p className="mt-4 text-muted-foreground">Spiel wird geladen...</p>
         </div>
       </div>
     );
@@ -58,22 +58,22 @@ export default function EditGamePage() {
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
           <div className="text-red-600 text-6xl mb-4">🎲</div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">
+          <h1 className="text-2xl font-bold text-foreground mb-2">
             {error || "Spiel nicht gefunden"}
           </h1>
-          <p className="text-gray-600 mb-4">
+          <p className="text-muted-foreground mb-4">
             Das gesuchte Spiel existiert nicht oder wurde gelöscht.
           </p>
           <div className="flex gap-2 justify-center">
             <button
               onClick={() => router.push("/dashboard")}
-              className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700"
+              className="bg-secondary text-secondary-foreground px-4 py-2 rounded hover:bg-secondary/80"
             >
               🏠 Dashboard
             </button>
             <button
               onClick={() => router.push("/dashboard/games")}
-              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+              className="bg-primary text-primary-foreground px-4 py-2 rounded hover:bg-primary/90"
             >
               🎲 Zurück zur Spielsammlung
             </button>
@@ -87,29 +87,26 @@ export default function EditGamePage() {
     <div>
       {/* Breadcrumb Navigation */}
       <div className="container mx-auto px-4 py-4">
-        <div className="flex items-center gap-2 text-gray-600 text-sm">
+        <div className="flex items-center gap-2 text-muted-foreground text-sm">
           <button
             onClick={() => router.push("/dashboard")}
-            className="hover:text-blue-600"
-          >
+            className="hover:text-primary">
             🏠 Dashboard
           </button>
           <span>/</span>
           <button
             onClick={() => router.push("/dashboard/games")}
-            className="hover:text-blue-600"
-          >
+            className="hover:text-primary">
             🎲 Spiele
           </button>
           <span>/</span>
           <button
             onClick={() => router.push(`/dashboard/games/${gameId}`)}
-            className="hover:text-blue-600"
-          >
+            className="hover:text-primary">
             {game.name}
           </button>
           <span>/</span>
-          <span className="text-gray-900">Bearbeiten</span>
+          <span className="text-foreground">Bearbeiten</span>
         </div>
       </div>
 
