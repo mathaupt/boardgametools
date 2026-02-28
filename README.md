@@ -154,8 +154,8 @@ docker-compose exec app npx prisma migrate deploy
 Vercel führt bei jedem Build automatisch die Prisma-Migrationen aus, bevor `next build` läuft. Voraussetzung:
 
 1. `DATABASE_URL` (und ggf. `SHADOW_DATABASE_URL`) im Vercel-Projekt setzen.
-2. Keine individuellen Build-Befehle notwendig – dank `package.json` wird beim standardmäßigen `npm run build` zuerst `npm run prisma:migrate:deploy` ausgeführt.
-3. Bei Redeploy werden ausstehende Migrationen auf die Produktions-Datenbank angewandt, danach folgt automatisch das Next.js-Build.
+2. Keine individuellen Build-Befehle notwendig – dank `package.json` ruft `npm run build` zuerst das Helper-Script `npm run prisma:deploy` auf. Dieses versucht `prisma migrate deploy` und fällt, falls P3005 (nicht-leere DB) auftritt, automatisch auf `prisma db push` zurück.
+3. Bei Redeploy werden so ausstehende Migrationen auf die Produktions-Datenbank angewandt bzw. das Schema synchronisiert, danach folgt automatisch das Next.js-Build.
 
 Damit bleiben Prisma-Schema und Produktions-Datenbank immer synchron.
 
