@@ -507,9 +507,9 @@ export function BarcodeScanner({
 
               {/* Local game found */}
               {result.source === "local" && result.localGame && (
-                <Card className="border-green-200 dark:border-green-800 bg-green-50/50 dark:bg-green-950/20">
+                <Card className="border-success/30 bg-success/5">
                   <CardContent className="p-4 flex items-center gap-3">
-                    <CheckCircle2 className="h-5 w-5 text-green-600 shrink-0" />
+                    <CheckCircle2 className="h-5 w-5 text-success shrink-0" />
                     <div className="flex-1 min-w-0">
                       <p className="font-medium">{result.localGame.name}</p>
                       <p className="text-sm text-muted-foreground">Bereits in deiner Sammlung</p>

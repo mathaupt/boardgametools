@@ -404,7 +404,7 @@ export default function ImportBGGPage() {
               )}
 
               {bulkImportResult && (
-                <div className="p-3 text-sm bg-green-50 border border-green-200 rounded-md text-green-800">
+                <div className="p-3 text-sm bg-success/10 border border-success/20 rounded-md text-success">
                   ✓ {bulkImportResult.imported} Spiel{bulkImportResult.imported !== 1 ? "e" : ""} importiert
                   {bulkImportResult.skipped > 0 && `, ${bulkImportResult.skipped} bereits vorhanden / übersprungen`}
                 </div>
@@ -607,7 +607,7 @@ export default function ImportBGGPage() {
             </div>
           )}
           {!isLoadingExistingGames && selectedGame && existingBggIds.has(selectedGame.bggId) && (
-            <div className="p-3 text-sm bg-yellow-50 border border-yellow-200 text-yellow-800 rounded-md mb-4">
+            <div className="p-3 text-sm bg-warning/10 border border-warning/20 text-warning rounded-md mb-4">
               Dieses Spiel befindet sich bereits in deiner Sammlung.
             </div>
           )}

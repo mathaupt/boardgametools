@@ -99,9 +99,9 @@ const SORT_OPTIONS: { value: EntrySortOption; label: string }[] = [
 const DIFFICULTY_ORDER: Record<string, number> = { einsteiger: 1, fortgeschritten: 2, profi: 3 };
 
 const DIFFICULTY_CONFIG: Record<string, { label: string; className: string }> = {
-  einsteiger: { label: "Einsteiger", className: "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300 border-green-200 dark:border-green-800" },
-  fortgeschritten: { label: "Fortgeschritten", className: "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-300 border-yellow-200 dark:border-yellow-800" },
-  profi: { label: "Profi", className: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300 border-red-200 dark:border-red-800" },
+  einsteiger: { label: "Einsteiger", className: "bg-success/10 text-success border-success" },
+  fortgeschritten: { label: "Fortgeschritten", className: "bg-warning/10 text-warning border-warning" },
+  profi: { label: "Profi", className: "bg-destructive/10 text-destructive border-destructive" },
 };
 
 function StarRating({
@@ -135,7 +135,7 @@ function StarRating({
           <Star
             className={`h-5 w-5 transition-colors ${
               (hover !== null ? star <= hover : star <= (value ?? 0))
-                ? "fill-yellow-400 text-yellow-400"
+                ? "fill-warning text-warning"
                 : "text-muted-foreground/30"
             }`}
           />
@@ -449,12 +449,12 @@ export default function SeriesDetailPage() {
       </div>
 
       {/* Progress Card */}
-      <Card className={isComplete ? "border-green-200 dark:border-green-800 bg-green-50/50 dark:bg-green-950/20" : ""}>
+      <Card className={isComplete ? "border-success bg-success/10" : ""}>
         <CardContent className="pt-6 pb-5">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
               {isComplete ? (
-                <CheckCircle2 className="h-5 w-5 text-green-600" />
+                <CheckCircle2 className="h-5 w-5 text-success" />
               ) : (
                 <Library className="h-5 w-5 text-muted-foreground" />
               )}
@@ -467,7 +467,7 @@ export default function SeriesDetailPage() {
           <div className="w-full bg-muted rounded-full h-3 overflow-hidden">
             <div
               className={`rounded-full h-3 transition-all duration-500 ${
-                isComplete ? "bg-green-600" : "bg-primary"
+                isComplete ? "bg-success" : "bg-primary"
               }`}
               style={{ width: `${progress}%` }}
             />
@@ -654,7 +654,7 @@ export default function SeriesDetailPage() {
                     onClick={() => handleTogglePlayed(entry)}
                     className={`h-7 w-7 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${
                       entry.played
-                        ? "bg-green-600 border-green-600 text-white scale-100"
+                        ? "bg-success border-success text-primary-foreground scale-100"
                         : "border-muted-foreground/30 hover:border-primary hover:scale-105"
                     }`}
                     aria-label={entry.played ? "Als nicht gespielt markieren" : "Als gespielt markieren"}

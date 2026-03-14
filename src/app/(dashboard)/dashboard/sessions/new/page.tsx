@@ -275,7 +275,7 @@ export default function NewSessionPage() {
                         className="rounded"
                       />
                       <Label htmlFor={`winner-${index}`} className="flex items-center gap-1">
-                        <Trophy className="h-4 w-4 text-yellow-500" />
+                        <Trophy className="h-4 w-4 text-warning" />
                         Gewinner
                       </Label>
                     </div>

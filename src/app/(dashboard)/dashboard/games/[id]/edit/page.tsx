@@ -57,7 +57,7 @@ export default function EditGamePage() {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
-          <div className="text-red-600 text-6xl mb-4">🎲</div>
+          <div className="text-destructive text-6xl mb-4">🎲</div>
           <h1 className="text-2xl font-bold text-foreground mb-2">
             {error || "Spiel nicht gefunden"}
           </h1>

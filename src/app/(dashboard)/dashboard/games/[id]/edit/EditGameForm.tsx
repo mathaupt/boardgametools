@@ -67,7 +67,7 @@ export default function EditGameForm({ game, onSave, onCancel }: EditGameFormPro
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-2xl mx-auto">
-        <div className="bg-white rounded-lg shadow-lg p-6">
+        <div className="bg-card rounded-lg shadow-lg p-6">
           <h1 className="text-2xl font-bold text-foreground mb-6">Spiel bearbeiten</h1>
           
           <form onSubmit={handleSubmit} className="space-y-4">

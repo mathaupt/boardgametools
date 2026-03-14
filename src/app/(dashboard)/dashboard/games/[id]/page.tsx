@@ -150,7 +150,7 @@ export default function GameDetailPage() {
         </div>
 
         {/* Game Details */}
-        <div className="bg-white rounded-lg shadow-lg p-6">
+        <div className="bg-card rounded-lg shadow-lg p-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Game Image */}
             <div className="md:col-span-1">
@@ -211,10 +211,10 @@ export default function GameDetailPage() {
 
               {/* Actions */}
               <div className="flex gap-2">
-                <button className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+                <button className="bg-success text-success-foreground px-4 py-2 rounded hover:bg-success/90">
                   Session starten
                 </button>
-                <button className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700">
+                <button className="bg-secondary text-secondary-foreground px-4 py-2 rounded hover:bg-secondary/80">
                   Statistiken
                 </button>
               </div>
@@ -223,7 +223,7 @@ export default function GameDetailPage() {
         </div>
 
         {/* Sessions History */}
-        <div className="mt-8 bg-white rounded-lg shadow-lg p-6">
+        <div className="mt-8 bg-card rounded-lg shadow-lg p-6">
           <h2 className="text-xl font-bold text-foreground mb-4">Gespielte Sessions</h2>
           <div className="text-muted-foreground text-center py-8">
             Noch keine Sessions für dieses Spiel gespielt.
@@ -233,8 +233,8 @@ export default function GameDetailPage() {
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+        <div className="fixed inset-0 bg-foreground/20 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-card rounded-lg p-6 max-w-md w-full mx-4">
             <h2 className="text-xl font-bold text-foreground mb-4">Spiel löschen?</h2>
             <p className="text-muted-foreground mb-6">
               Bist du sicher, dass du das Spiel "{game?.name}" löschen möchtest? 
@@ -250,7 +250,7 @@ export default function GameDetailPage() {
               </button>
               <button
                 onClick={handleDelete}
-                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 disabled:opacity-50"
+                className="px-4 py-2 bg-destructive text-destructive-foreground rounded hover:bg-destructive/90 disabled:opacity-50"
                 disabled={isDeleting}
               >
                 {isDeleting ? 'Wird gelöscht...' : 'Löschen'}

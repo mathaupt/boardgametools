@@ -268,14 +268,14 @@ export default function BGGImportPage() {
                     
                     {selectedGame.rating && (
                       <div className="flex items-center gap-2">
-                        <span className="text-yellow-500">⭐</span>
+                        <span className="text-warning">⭐</span>
                         <span>Bewertung: {parseFloat(selectedGame.rating).toFixed(2)}/10</span>
                       </div>
                     )}
                     
                     {selectedGame.rank && (
                       <div className="flex items-center gap-2">
-                        <span className="text-blue-500">🏆</span>
+                        <span className="text-primary">🏆</span>
                         <span>Rang: #{selectedGame.rank}</span>
                       </div>
                     )}

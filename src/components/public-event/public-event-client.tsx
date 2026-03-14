@@ -388,9 +388,9 @@ export function PublicEventClient({ token, event }: PublicEventClientProps) {
           </CardHeader>
           <CardContent className="space-y-4">
             {activeGuest ? (
-              <div className="rounded-lg border border-emerald-500/40 bg-emerald-500/10 p-4 text-sm">
-                <p className="font-semibold text-emerald-200">Willkommen zurück, {activeGuest.nickname}!</p>
-                <p className="text-emerald-100/80">
+              <div className="rounded-lg border border-success bg-success/10 p-4 text-sm">
+                <p className="font-semibold text-success">Willkommen zurück, {activeGuest.nickname}!</p>
+                <p className="text-muted-foreground">
                   Du kannst jetzt als Gast abstimmen. Deine Stimme wird unter deinem Nickname gezählt.
                 </p>
               </div>
@@ -441,7 +441,7 @@ export function PublicEventClient({ token, event }: PublicEventClientProps) {
                   key={guest.id}
                   className={cn(
                     "flex items-center justify-between rounded-lg border border-border/60 bg-background/60 px-3 py-2",
-                    activeGuest?.id === guest.id && "border-emerald-400/60 bg-emerald-500/10"
+                    activeGuest?.id === guest.id && "border-success bg-success/10"
                   )}
                 >
                   <div className="flex items-center gap-2">
@@ -468,13 +468,13 @@ export function PublicEventClient({ token, event }: PublicEventClientProps) {
       <section>
         <div className="flex items-center justify-between gap-4">
           <div>
-            <h2 className="text-xl font-semibold text-white">Spielvorschläge</h2>
+            <h2 className="text-xl font-semibold text-foreground">Spielvorschläge</h2>
             <p className="text-sm text-muted-foreground">
               Stimme für deine Favoriten oder bring eigene Vorschläge ein.
             </p>
           </div>
           {isPast && (
-            <Badge variant="secondary" className="bg-yellow-500/20 text-yellow-200">
+            <Badge variant="secondary" className="bg-warning/20 text-warning">
               Event abgeschlossen
             </Badge>
           )}
@@ -512,10 +512,10 @@ export function PublicEventClient({ token, event }: PublicEventClientProps) {
                           )}
                         </div>
                         <div>
-                          <CardTitle className="text-lg text-white">
+                          <CardTitle className="text-lg text-foreground">
                             {index < 3 && (
                               <Trophy
-                                className={cn("mr-2 inline h-4 w-4", index === 0 && "text-yellow-400", index === 1 && "text-slate-300", index === 2 && "text-amber-600")}
+                                className={cn("mr-2 inline h-4 w-4", index === 0 && "text-warning", index === 1 && "text-muted-foreground", index === 2 && "text-warning")}
                               />
                             )}
                             {proposal.game.name}
@@ -533,7 +533,7 @@ export function PublicEventClient({ token, event }: PublicEventClientProps) {
                       </div>
                       <div className="flex items-center gap-3">
                         <div className="text-center">
-                          <p className="text-2xl font-bold text-white">{proposal.totalVotes}</p>
+                          <p className="text-2xl font-bold text-foreground">{proposal.totalVotes}</p>
                           <p className="text-xs text-muted-foreground">Gesamt</p>
                         </div>
                         <div className="text-xs text-muted-foreground">
@@ -552,7 +552,7 @@ export function PublicEventClient({ token, event }: PublicEventClientProps) {
                             disabled={!!userVoting || isPast}
                             onClick={() => handleUserVote(proposal.id, !userHasVoted)}
                             variant={userHasVoted ? "outline" : "default"}
-                            className={cn("gap-2", userHasVoted && "border-emerald-500 text-emerald-300")}
+                            className={cn("gap-2", userHasVoted && "border-success text-success")}
                           >
                             {userVoting === proposal.id ? (
                               <Loader2 className="h-4 w-4 animate-spin" />
@@ -571,7 +571,7 @@ export function PublicEventClient({ token, event }: PublicEventClientProps) {
                           variant={guestHasVoted ? "secondary" : "outline"}
                           className={cn(
                             "gap-2",
-                            guestHasVoted && "border-indigo-400 text-indigo-100",
+                            guestHasVoted && "border-primary text-primary",
                             !activeGuest && "opacity-50"
                           )}
                         >
@@ -602,14 +602,14 @@ export function PublicEventClient({ token, event }: PublicEventClientProps) {
         <section>
           <Card className="border-border/60 bg-background/60">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-lg text-white">
+              <CardTitle className="flex items-center gap-2 text-lg text-foreground">
                 <Calendar className="h-5 w-5" />
                 Terminabstimmung
               </CardTitle>
               <CardDescription>
                 Stimme ab, welche Termine für dich passen.
                 {event.selectedDate && (
-                  <span className="ml-2 text-green-400 font-medium">
+                  <span className="ml-2 text-success font-medium">
                     Gewählter Termin: {new Date(event.selectedDate).toLocaleDateString("de-DE", {
                       weekday: "long",
                       day: "numeric",
@@ -624,11 +624,11 @@ export function PublicEventClient({ token, event }: PublicEventClientProps) {
               <div className="overflow-x-auto">
                 <table className="w-full text-sm border-collapse">
                   <thead>
-                    <tr className="border-b border-white/10">
-                      <th className="text-left p-2 min-w-[140px] text-slate-300">Datum</th>
-                      <th className="text-center p-2 min-w-[60px] text-slate-300">Zusagen</th>
+                    <tr className="border-b border-border">
+                      <th className="text-left p-2 min-w-[140px] text-muted-foreground">Datum</th>
+                      <th className="text-center p-2 min-w-[60px] text-muted-foreground">Zusagen</th>
                       {(activeGuest || event.currentUserId) && !isPast && (
-                        <th className="text-center p-2 min-w-[180px] text-slate-300">Deine Stimme</th>
+                        <th className="text-center p-2 min-w-[180px] text-muted-foreground">Deine Stimme</th>
                       )}
                     </tr>
                   </thead>
@@ -659,22 +659,22 @@ export function PublicEventClient({ token, event }: PublicEventClientProps) {
                         <tr
                           key={dp.id}
                           className={cn(
-                            "border-b border-white/5 hover:bg-white/5",
-                            isSelected && "bg-green-900/20"
+                            "border-b border-border/50 hover:bg-muted",
+                            isSelected && "bg-success/20"
                           )}
                         >
                           <td className="p-2">
                             <div className="flex items-center gap-2">
-                              {isSelected && <Crown className="h-4 w-4 text-green-400" />}
+                              {isSelected && <Crown className="h-4 w-4 text-success" />}
                               <div>
-                                <div className="font-medium text-white">
+                                <div className="font-medium text-foreground">
                                   {d.toLocaleDateString("de-DE", {
                                     weekday: "short",
                                     day: "numeric",
                                     month: "short",
                                   })}
                                 </div>
-                                <div className="text-xs text-slate-400">
+                                <div className="text-xs text-muted-foreground">
                                   {d.toLocaleDateString("de-DE", { year: "numeric" })}
                                 </div>
                               </div>
@@ -682,11 +682,11 @@ export function PublicEventClient({ token, event }: PublicEventClientProps) {
                           </td>
                           <td className="text-center p-2">
                             <div className="flex items-center justify-center gap-1">
-                              <Badge variant="secondary" className="text-xs bg-green-900/40 text-green-300">
+                              <Badge variant="secondary" className="text-xs bg-success/40 text-success">
                                 {yesCount}
                               </Badge>
                               {maybeCount > 0 && (
-                                <Badge variant="secondary" className="text-xs bg-yellow-900/40 text-yellow-300">
+                                <Badge variant="secondary" className="text-xs bg-warning/40 text-warning">
                                   {maybeCount}
                                 </Badge>
                               )}
@@ -700,13 +700,13 @@ export function PublicEventClient({ token, event }: PublicEventClientProps) {
                                 <div className="flex items-center justify-center gap-1">
                                   {(["yes", "maybe", "no"] as const).map((avail) => {
                                     const icon =
-                                      avail === "yes" ? <Check className="h-4 w-4 text-green-400" /> :
-                                      avail === "maybe" ? <HelpCircle className="h-4 w-4 text-yellow-400" /> :
-                                      <X className="h-4 w-4 text-red-400" />;
+                                      avail === "yes" ? <Check className="h-4 w-4 text-success" /> :
+                                      avail === "maybe" ? <HelpCircle className="h-4 w-4 text-warning" /> :
+                                      <X className="h-4 w-4 text-destructive" />;
                                     const colors =
-                                      avail === "yes" ? "border-green-500 bg-green-900/40" :
-                                      avail === "maybe" ? "border-yellow-500 bg-yellow-900/40" :
-                                      "border-red-500 bg-red-900/40";
+                                      avail === "yes" ? "border-success bg-success/40" :
+                                      avail === "maybe" ? "border-warning bg-warning/40" :
+                                      "border-destructive bg-destructive/40";
                                     const isActive = myAvailability === avail;
                                     return (
                                       <button
@@ -714,7 +714,7 @@ export function PublicEventClient({ token, event }: PublicEventClientProps) {
                                         onClick={() => handleDateVote(dp.id, avail)}
                                         className={cn(
                                           "w-8 h-8 rounded-full border-2 flex items-center justify-center transition-colors",
-                                          isActive ? colors : "border-white/20 hover:border-white/40"
+                                          isActive ? colors : "border-border hover:border-border/80"
                                         )}
                                         title={
                                           avail === "yes" ? "Ja, passt" :
@@ -795,7 +795,7 @@ export function PublicEventClient({ token, event }: PublicEventClientProps) {
                       className="flex items-center justify-between rounded-lg border border-border/60 bg-background/80 px-3 py-2"
                     >
                       <div>
-                        <p className="font-medium text-sm text-white">{game.name}</p>
+                        <p className="font-medium text-sm text-foreground">{game.name}</p>
                         <p className="text-xs text-muted-foreground">
                           {game.minPlayers ?? "?"}-{game.maxPlayers ?? "?"} Spieler
                         </p>

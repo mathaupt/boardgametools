@@ -114,7 +114,7 @@ export default async function SessionsPage() {
                         .map((player) => (
                           <div key={player.id} className="flex items-center justify-between text-sm">
                             <div className="flex items-center gap-2">
-                              {player.isWinner && <Trophy className="h-4 w-4 text-yellow-500" />}
+                              {player.isWinner && <Trophy className="h-4 w-4 text-warning" />}
                               {player.placement && (
                                 <span className="font-medium">#{player.placement}</span>
                               )}

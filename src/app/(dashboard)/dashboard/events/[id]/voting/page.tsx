@@ -355,7 +355,7 @@ export default function EventVotingPage() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-purple-100 rounded flex items-center justify-center">
+            <div className="w-8 h-8 bg-primary/10 rounded flex items-center justify-center">
               📅
             </div>
             {event.title}
@@ -376,7 +376,7 @@ export default function EventVotingPage() {
         {/* Rangliste */}
         <div className="lg:col-span-2 space-y-4">
           <h2 className="text-xl font-bold flex items-center gap-2">
-            <Trophy className="h-5 w-5 text-yellow-500" />
+            <Trophy className="h-5 w-5 text-warning" />
             Voting-Rangliste
           </h2>
           
@@ -414,10 +414,10 @@ export default function EventVotingPage() {
                             </div>
                           )}
                         </div>
-                        <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-white ${
-                          index === 0 ? 'bg-yellow-500' : 
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-primary-foreground ${
+                          index === 0 ? 'bg-warning' : 
                           index === 1 ? 'bg-muted-foreground' : 
-                          index === 2 ? 'bg-orange-600' : 'bg-muted'
+                          index === 2 ? 'bg-accent' : 'bg-muted'
                         }`}>
                           {index + 1}
                         </div>

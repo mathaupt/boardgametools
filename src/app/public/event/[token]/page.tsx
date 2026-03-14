@@ -31,23 +31,23 @@ export default async function PublicEventPage({
   const isPast = eventDate < new Date();
 
   return (
-    <div className="min-h-screen bg-slate-950 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 py-12 text-white">
+    <div className="min-h-screen bg-background bg-gradient-to-b from-background via-muted to-background py-12 text-foreground">
       <div className="mx-auto w-full max-w-5xl px-4 sm:px-6 lg:px-8">
-        <div className="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-2xl shadow-emerald-500/10">
+        <div className="rounded-3xl border border-border bg-card p-6 shadow-2xl">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             <div>
-              <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-emerald-100">
+              <div className="inline-flex items-center gap-2 rounded-full border border-border bg-muted px-3 py-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                 <Share2 className="h-4 w-4" /> Öffentliches Voting
               </div>
-              <h1 className="mt-4 text-3xl font-bold tracking-tight text-white sm:text-4xl">
+              <h1 className="mt-4 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
                 {serialized.title}
               </h1>
               {serialized.description && (
-                <p className="mt-3 text-base text-slate-200/90">{serialized.description}</p>
+                <p className="mt-3 text-base text-muted-foreground">{serialized.description}</p>
               )}
             </div>
-            <div className="flex flex-wrap gap-4 text-sm text-slate-200/90">
-              <div className="flex items-center gap-2 rounded-2xl border border-white/10 bg-white/10 px-3 py-2">
+            <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
+              <div className="flex items-center gap-2 rounded-2xl border border-border bg-muted px-3 py-2">
                 <Calendar className="h-4 w-4" />
                 <span>
                   {eventDate.toLocaleDateString("de-DE", {
@@ -57,7 +57,7 @@ export default async function PublicEventPage({
                     year: "numeric",
                   })}
                   {serialized.status !== "planning" && (
-                    <span className="block text-xs text-slate-300/70">
+                    <span className="block text-xs text-muted-foreground">
                       {eventDate.toLocaleTimeString("de-DE", {
                         hour: "2-digit",
                         minute: "2-digit",
@@ -67,7 +67,7 @@ export default async function PublicEventPage({
                 </span>
               </div>
               {serialized.location && (
-                <div className="flex items-center gap-2 rounded-2xl border border-white/10 bg-white/10 px-3 py-2">
+                <div className="flex items-center gap-2 rounded-2xl border border-border bg-muted px-3 py-2">
                   <MapPin className="h-4 w-4" />
                   <span>{serialized.location}</span>
                 </div>
@@ -80,41 +80,41 @@ export default async function PublicEventPage({
         </div>
 
         <div className="mt-8 grid gap-6 lg:grid-cols-[2fr,1fr]">
-          <Card className="border-white/10 bg-white/5 text-slate-100">
+          <Card className="border-border bg-card text-foreground">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-lg text-white">
+              <CardTitle className="flex items-center gap-2 text-lg text-foreground">
                 <Vote className="h-5 w-5" />
                 Öffentlicher Event-Link
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4 text-sm text-slate-200">
+            <CardContent className="space-y-4 text-sm text-muted-foreground">
               <p>
                 Teile diese Seite mit deinen Freunden. Sie können ohne Login als Gast teilnehmen,
                 einen Spitznamen festlegen und direkt für Spielvorschläge abstimmen.
               </p>
-              <div className="rounded-2xl border border-white/10 bg-black/30 p-4 text-xs text-slate-300">
+              <div className="rounded-2xl border border-border bg-muted p-4 text-xs text-muted-foreground">
                 <div className="flex flex-col gap-2">
-                  <span className="font-semibold text-white/90">Event-ID</span>
-                  <span className="break-all font-mono text-emerald-200/90">{serialized.id}</span>
-                  <span className="font-semibold text-white/90">Freigabe-Token</span>
-                  <span className="break-all font-mono text-emerald-200/90">{token}</span>
+                  <span className="font-semibold text-foreground">Event-ID</span>
+                  <span className="break-all font-mono text-success">{serialized.id}</span>
+                  <span className="font-semibold text-foreground">Freigabe-Token</span>
+                  <span className="break-all font-mono text-success">{token}</span>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="border-white/10 bg-white/5 text-slate-100">
+          <Card className="border-border bg-card text-foreground">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-lg text-white">
+              <CardTitle className="flex items-center gap-2 text-lg text-foreground">
                 <Users className="h-5 w-5" />
                 Öffentliche Teilnahme
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3 text-sm text-slate-200">
+            <CardContent className="space-y-3 text-sm text-muted-foreground">
               <p>
                 Gäste registrieren sich nur mit einem Nickname und können sofort mit abstimmen.
               </p>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-muted-foreground">
                 Bereits registrierte Gäste: {serialized.guestParticipants.length}
               </p>
             </CardContent>

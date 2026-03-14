@@ -86,7 +86,7 @@ export default async function EventsPage() {
                 <div className="flex items-start justify-between">
                   <div>
                     <CardTitle className="flex items-center gap-2">
-                      <div className="w-8 h-8 bg-purple-100 rounded flex items-center justify-center">
+                      <div className="w-8 h-8 bg-primary/10 rounded flex items-center justify-center">
                         📅
                       </div>
                       {event.title}

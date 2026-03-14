@@ -41,105 +41,36 @@ export function Navbar() {
   const isAdmin = session?.user?.role === "ADMIN";
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container mx-auto px-4">
-        <div className="flex h-16 items-center justify-between">
+    <header className="sticky top-0 z-50 w-full border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80 lg:hidden">
+      <div className="px-4">
+        <div className="flex h-14 items-center justify-between">
           {/* Logo */}
-          <div className="flex items-center gap-2">
-            <Link href="/dashboard" className="flex items-center gap-2">
-              <Dice6 className="h-8 w-8 text-primary" />
-              <span className="font-bold text-xl text-foreground mobile-hidden">BoardGameTools</span>
-              <span className="font-bold text-xl text-foreground md:hidden">BGT</span>
-            </Link>
-          </div>
+          <Link href="/dashboard" className="flex items-center gap-2">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
+              <Dice6 className="h-4.5 w-4.5 text-primary" />
+            </div>
+            <span className="font-bold text-lg text-foreground">BGT</span>
+          </Link>
 
-          {/* Desktop Navigation - Hidden */}
-          <nav className="hidden lg:flex items-center space-x-1">
-            {navigation.map((item) => {
-              const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
-              return (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  className={cn(
-                    "flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors focus-visible:focus-ring",
-                    isActive
-                      ? "bg-primary text-primary-foreground"
-                      : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-                  )}
-                  aria-label={`Navigate to ${item.name}`}
-                >
-                  <item.icon className="h-4 w-4" />
-                  <span>{item.name}</span>
-                </Link>
-              );
-            })}
-            
-            {/* Admin Navigation */}
-            {isAdmin && (
-              <>
-                <div className="w-px h-6 bg-border mx-2" />
-                {adminNavigation.map((item) => {
-                  const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
-                  return (
-                    <Link
-                      key={item.name}
-                      href={item.href}
-                      className={cn(
-                        "flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors focus-visible:focus-ring",
-                        isActive
-                          ? "bg-primary text-primary-foreground"
-                          : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-                      )}
-                      aria-label={`Navigate to ${item.name}`}
-                    >
-                      <item.icon className="h-4 w-4" />
-                      <span>{item.name}</span>
-                    </Link>
-                  );
-                })}
-              </>
+          {/* Mobile Menu Toggle */}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="h-9 w-9 p-0"
+            aria-label="Navigation umschalten"
+          >
+            {mobileMenuOpen ? (
+              <X className="h-5 w-5" />
+            ) : (
+              <Menu className="h-5 w-5" />
             )}
-          </nav>
-
-          {/* Mobile Menu Button - Always Visible */}
-          <div className="flex lg:hidden">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="h-8 w-8 p-0"
-              aria-label="Toggle mobile menu"
-            >
-              {mobileMenuOpen ? (
-                <X className="h-4 w-4" />
-              ) : (
-                <Menu className="h-4 w-4" />
-              )}
-            </Button>
-          </div>
-
-          {/* Desktop Menu Button - Always Visible */}
-          <div className="hidden lg:flex">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="h-8 w-8 p-0"
-              aria-label="Toggle menu"
-            >
-              {mobileMenuOpen ? (
-                <X className="h-4 w-4" />
-              ) : (
-                <Menu className="h-4 w-4" />
-              )}
-            </Button>
-          </div>
+          </Button>
         </div>
 
-        {/* Mobile Navigation - Always Visible */}
+        {/* Mobile Navigation Dropdown */}
         {mobileMenuOpen && (
-          <nav className="py-4 border-t mobile-stack">
+          <nav className="pb-4 pt-2 border-t space-y-0.5">
             {navigation.map((item) => {
               const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
               return (
@@ -147,27 +78,26 @@ export function Navbar() {
                   key={item.name}
                   href={item.href}
                   className={cn(
-                    "flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors focus-visible:focus-ring",
+                    "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
                     isActive
                       ? "bg-primary text-primary-foreground"
-                      : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                      : "text-muted-foreground hover:bg-accent/40 hover:text-foreground"
                   )}
                   onClick={() => setMobileMenuOpen(false)}
                   aria-label={`Navigate to ${item.name}`}
                 >
-                  <item.icon className="h-5 w-5" />
+                  <item.icon className="h-[18px] w-[18px]" />
                   <span>{item.name}</span>
                 </Link>
               );
             })}
-            
-            {/* Admin Mobile Navigation */}
+
             {isAdmin && (
               <>
-                <div className="border-t border-border mt-2 pt-2">
-                  <div className="px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+                <div className="border-t border-border mt-2 pt-3">
+                  <p className="px-3 mb-2 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
                     Administration
-                  </div>
+                  </p>
                 </div>
                 {adminNavigation.map((item) => {
                   const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
@@ -176,15 +106,15 @@ export function Navbar() {
                       key={item.name}
                       href={item.href}
                       className={cn(
-                        "flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors focus-visible:focus-ring",
+                        "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
                         isActive
                           ? "bg-primary text-primary-foreground"
-                          : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                          : "text-muted-foreground hover:bg-accent/40 hover:text-foreground"
                       )}
                       onClick={() => setMobileMenuOpen(false)}
                       aria-label={`Navigate to ${item.name}`}
                     >
-                      <item.icon className="h-5 w-5" />
+                      <item.icon className="h-[18px] w-[18px]" />
                       <span>{item.name}</span>
                     </Link>
                   );

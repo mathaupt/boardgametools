@@ -45,19 +45,21 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <div className="flex justify-center mb-4">
-            <Dice6 className="h-12 w-12 text-primary" />
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-secondary/40 to-primary/5 p-4">
+      <Card className="w-full max-w-md shadow-lg">
+        <CardHeader className="text-center pb-2">
+          <div className="flex justify-center mb-3">
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary shadow-md">
+              <Dice6 className="h-7 w-7 text-primary-foreground" />
+            </div>
           </div>
-          <CardTitle className="text-2xl">BoardGameTools</CardTitle>
+          <CardTitle className="text-2xl tracking-tight">BoardGameTools</CardTitle>
           <CardDescription>Melde dich an, um fortzufahren</CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit}>
           <CardContent className="space-y-4">
             {error && (
-              <div className="p-3 text-sm text-destructive bg-destructive/10 rounded-md">
+              <div className="p-3 text-sm text-destructive bg-destructive/10 rounded-lg">
                 {error}
               </div>
             )}
@@ -89,7 +91,7 @@ export default function LoginPage() {
             </Button>
             <p className="text-sm text-muted-foreground text-center">
               Noch kein Konto?{" "}
-              <Link href="/register" className="text-primary hover:underline">
+              <Link href="/register" className="text-primary font-medium hover:underline">
                 Registrieren
               </Link>
             </p>

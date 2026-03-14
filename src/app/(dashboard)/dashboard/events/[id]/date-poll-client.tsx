@@ -59,11 +59,11 @@ const WEEKDAY_LABELS = [
 function getAvailabilityIcon(availability: string) {
   switch (availability) {
     case "yes":
-      return <Check className="h-4 w-4 text-green-600" />;
+      return <Check className="h-4 w-4 text-success" />;
     case "maybe":
-      return <HelpCircle className="h-4 w-4 text-yellow-600" />;
+      return <HelpCircle className="h-4 w-4 text-warning" />;
     case "no":
-      return <X className="h-4 w-4 text-red-600" />;
+      return <X className="h-4 w-4 text-destructive" />;
     default:
       return null;
   }
@@ -72,11 +72,11 @@ function getAvailabilityIcon(availability: string) {
 function getAvailabilityColor(availability: string) {
   switch (availability) {
     case "yes":
-      return "bg-green-100 text-green-800 border-green-300";
+      return "bg-success/10 text-success border-success/50";
     case "maybe":
-      return "bg-yellow-100 text-yellow-800 border-yellow-300";
+      return "bg-warning/10 text-warning border-warning/50";
     case "no":
-      return "bg-red-100 text-red-800 border-red-300";
+      return "bg-destructive/10 text-destructive border-destructive/50";
     default:
       return "bg-muted text-muted-foreground border-border";
   }
@@ -323,7 +323,7 @@ export default function DatePollClient({
                 ? "Noch keine Terminvorschläge erstellt"
                 : `${proposals.length} Terminvorschläge`}
               {finalDate && (
-                <span className="ml-2 text-green-700 font-medium">
+                <span className="ml-2 text-success font-medium">
                   — Termin gewählt: {new Date(finalDate).toLocaleDateString("de-DE", {
                     weekday: "long",
                     day: "numeric",
@@ -362,14 +362,14 @@ export default function DatePollClient({
 
       <CardContent className="space-y-6">
         {error && (
-          <div className="p-3 bg-red-50 text-red-700 rounded-md text-sm border border-red-200">
+          <div className="p-3 bg-destructive/10 text-destructive rounded-md text-sm border border-destructive/50">
             {error}
           </div>
         )}
 
         {pollClosed && finalDate && (
           <div className="space-y-4">
-            <div className="rounded-lg border border-green-200 bg-green-50 p-4 text-sm text-green-900">
+            <div className="rounded-lg border border-success/50 bg-success/10 p-4 text-sm text-success">
               Die Terminabstimmung ist abgeschlossen. Der ausgewählte Termin ist
               <span className="font-semibold">
                 {" "}
@@ -505,13 +505,13 @@ export default function DatePollClient({
                     <tr
                       key={proposal.id}
                       className={`border-b hover:bg-muted/30 ${
-                        isSelected ? "bg-green-50" : ""
+                        isSelected ? "bg-success/10" : ""
                       }`}
                     >
                       <td className="p-2">
                         <div className="flex items-center gap-2">
                           {isSelected && (
-                            <Crown className="h-4 w-4 text-green-600" />
+                            <Crown className="h-4 w-4 text-success" />
                           )}
                           <div>
                             <div className="font-medium">
@@ -579,14 +579,14 @@ export default function DatePollClient({
                         <div className="flex items-center justify-center gap-1">
                           <Badge
                             variant="secondary"
-                            className="text-xs bg-green-100 text-green-800"
+                            className="text-xs bg-success/10 text-success"
                           >
                             {counts.yes}
                           </Badge>
                           {counts.maybe > 0 && (
                             <Badge
                               variant="secondary"
-                              className="text-xs bg-yellow-100 text-yellow-800"
+                              className="text-xs bg-warning/10 text-warning"
                             >
                               {counts.maybe}
                             </Badge>
@@ -608,13 +608,13 @@ export default function DatePollClient({
                                   }
                                   className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition-colors ${
                                     myVote === "yes"
-                                      ? "border-green-500 bg-green-100"
-                                      : "border-border hover:border-green-400"
+                                      ? "border-success bg-success/10"
+                                      : "border-border hover:border-success/50"
                                   }`}
                                   title="Ja, passt"
                                   aria-label="Ja, passt"
                                 >
-                                  <Check className="h-4 w-4 text-green-600" />
+                                  <Check className="h-4 w-4 text-success" />
                                 </button>
                                 <button
                                   onClick={() =>
@@ -622,13 +622,13 @@ export default function DatePollClient({
                                   }
                                   className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition-colors ${
                                     myVote === "maybe"
-                                      ? "border-yellow-500 bg-yellow-100"
-                                      : "border-border hover:border-yellow-400"
+                                      ? "border-warning bg-warning/10"
+                                      : "border-border hover:border-warning/50"
                                   }`}
                                   title="Vielleicht"
                                   aria-label="Vielleicht"
                                 >
-                                  <HelpCircle className="h-4 w-4 text-yellow-600" />
+                                  <HelpCircle className="h-4 w-4 text-warning" />
                                 </button>
                                 <button
                                   onClick={() =>
@@ -636,13 +636,13 @@ export default function DatePollClient({
                                   }
                                   className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition-colors ${
                                     myVote === "no"
-                                      ? "border-red-500 bg-red-100"
-                                      : "border-border hover:border-red-400"
+                                      ? "border-destructive bg-destructive/10"
+                                      : "border-border hover:border-destructive/50"
                                   }`}
                                   title="Nein, geht nicht"
                                   aria-label="Nein, geht nicht"
                                 >
-                                  <X className="h-4 w-4 text-red-600" />
+                                  <X className="h-4 w-4 text-destructive" />
                                 </button>
                               </>
                             )}
@@ -654,7 +654,7 @@ export default function DatePollClient({
                       {isCreator && !isPast && (
                         <td className="text-center p-2">
                           {isSelected ? (
-                            <Badge className="bg-green-600">Gewählt</Badge>
+                            <Badge className="bg-success">Gewählt</Badge>
                           ) : (
                             <Button
                               variant="outline"

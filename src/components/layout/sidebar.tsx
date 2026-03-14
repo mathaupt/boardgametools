@@ -36,14 +36,21 @@ export function Sidebar() {
   const isAdmin = session?.user?.role === "ADMIN";
 
   return (
-    <aside className="w-64 border-r bg-card hidden lg:flex flex-col">
-      <div className="p-6 border-b">
-        <Link href="/dashboard" className="flex items-center gap-2">
-          <Dice6 className="h-8 w-8 text-primary" />
-          <span className="font-bold text-xl">BoardGameTools</span>
+    <aside className="w-64 hidden lg:flex flex-col bg-sidebar text-sidebar-foreground">
+      {/* Logo */}
+      <div className="p-5 pb-6">
+        <Link href="/dashboard" className="flex items-center gap-2.5">
+          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-sidebar-primary/20">
+            <Dice6 className="h-5 w-5 text-sidebar-primary" />
+          </div>
+          <span className="font-bold text-lg tracking-tight text-sidebar-foreground">
+            BoardGameTools
+          </span>
         </Link>
       </div>
-      <nav className="flex-1 p-4 space-y-1">
+
+      {/* Navigation */}
+      <nav className="flex-1 px-3 space-y-0.5">
         {navigation.map((item) => {
           const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
           return (
@@ -51,25 +58,25 @@ export function Sidebar() {
               key={item.name}
               href={item.href}
               className={cn(
-                "flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors focus-visible:focus-ring",
+                "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
                 isActive
-                  ? "bg-primary text-primary-foreground"
-                  : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                  ? "bg-sidebar-primary text-sidebar-primary-foreground shadow-sm"
+                  : "text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
               )}
               aria-label={`Navigate to ${item.name}`}
             >
-              <item.icon className="h-5 w-5" />
+              <item.icon className="h-[18px] w-[18px] shrink-0" />
               {item.name}
             </Link>
           );
         })}
-        
+
         {isAdmin && (
           <>
-            <div className="pt-4 mt-4 border-t border-border">
-              <h3 className="px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+            <div className="pt-5 mt-3 border-t border-sidebar-border">
+              <p className="px-3 mb-2 text-[11px] font-semibold uppercase tracking-widest text-sidebar-foreground/40">
                 Administration
-              </h3>
+              </p>
             </div>
             {adminNavigation.map((item) => {
               const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
@@ -78,14 +85,14 @@ export function Sidebar() {
                   key={item.name}
                   href={item.href}
                   className={cn(
-                    "flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors focus-visible:focus-ring",
+                    "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
                     isActive
-                      ? "bg-primary text-primary-foreground"
-                      : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                      ? "bg-sidebar-primary text-sidebar-primary-foreground shadow-sm"
+                      : "text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                   )}
                   aria-label={`Navigate to ${item.name}`}
                 >
-                  <item.icon className="h-5 w-5" />
+                  <item.icon className="h-[18px] w-[18px] shrink-0" />
                   {item.name}
                 </Link>
               );
@@ -93,6 +100,13 @@ export function Sidebar() {
           </>
         )}
       </nav>
+
+      {/* Bottom section */}
+      <div className="p-4 mt-auto border-t border-sidebar-border">
+        <p className="text-xs text-sidebar-foreground/40 text-center">
+          BoardGameTools
+        </p>
+      </div>
     </aside>
   );
 }

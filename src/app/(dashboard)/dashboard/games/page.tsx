@@ -236,14 +236,14 @@ export default function GamesPage() {
           <AlertDialogFooter>
             <AlertDialogCancel
               disabled={deleting}
-              className="bg-white text-slate-900 hover:bg-slate-100 border border-slate-200 dark:bg-slate-800 dark:text-white dark:hover:bg-slate-700 dark:border-slate-600"
+              className="bg-card text-card-foreground hover:bg-muted border border-border"
             >
               Abbrechen
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={() => deleteTarget && handleDelete(deleteTarget)}
               disabled={deleting}
-              className="bg-red-600 text-white hover:bg-red-500 dark:bg-red-500 dark:hover:bg-red-400"
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
               {deleting ? "Wird entfernt…" : "Entfernen"}
             </AlertDialogAction>
@@ -264,14 +264,14 @@ export default function GamesPage() {
           <AlertDialogFooter>
             <AlertDialogCancel
               disabled={deleting}
-              className="bg-white text-slate-900 hover:bg-slate-100 border border-slate-200 dark:bg-slate-800 dark:text-white dark:hover:bg-slate-700 dark:border-slate-600"
+              className="bg-card text-card-foreground hover:bg-muted border border-border"
             >
               Abbrechen
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDeleteAll}
               disabled={deleting}
-              className="bg-red-600 text-white hover:bg-red-500 dark:bg-red-500 dark:hover:bg-red-400"
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
               {deleting ? "Wird entfernt…" : `Alle ${games.length} entfernen`}
             </AlertDialogAction>

@@ -323,7 +323,7 @@ export default function SeriesPage() {
                     {/* Completion Badge */}
                     {isComplete && (
                       <div className="absolute top-2 right-2">
-                        <Badge className="bg-green-600 text-white hover:bg-green-600 shadow-sm">
+                        <Badge className="bg-success text-white hover:bg-success shadow-sm">
                           <CheckCircle2 className="h-3 w-3 mr-1" />
                           Komplett
                         </Badge>
@@ -356,7 +356,7 @@ export default function SeriesPage() {
                       <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
                         <div
                           className={`rounded-full h-2 transition-all duration-500 ${
-                            isComplete ? "bg-green-600" : "bg-primary"
+                            isComplete ? "bg-success" : "bg-primary"
                           }`}
                           style={{ width: `${progress}%` }}
                         />

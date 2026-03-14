@@ -186,7 +186,7 @@ export default function EventInvitePage() {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
-          <div className="text-red-600 text-6xl mb-4">📅</div>
+          <div className="text-destructive text-6xl mb-4">📅</div>
           <h1 className="text-2xl font-bold text-foreground mb-2">Event nicht gefunden</h1>
           <button
             onClick={() => router.push("/dashboard/events")}
@@ -370,13 +370,13 @@ export default function EventInvitePage() {
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="text-center p-4 border rounded-lg">
-              <div className="text-2xl font-bold text-green-600">
+              <div className="text-2xl font-bold text-success">
                 {invites.filter(i => i.status === "accepted").length}
               </div>
               <div className="text-sm text-muted-foreground">Zugesagt</div>
             </div>
             <div className="text-center p-4 border rounded-lg">
-              <div className="text-2xl font-bold text-yellow-600">
+              <div className="text-2xl font-bold text-warning">
                 {invites.filter(i => i.status === "pending").length}
               </div>
               <div className="text-sm text-muted-foreground">Ausstehend</div>
