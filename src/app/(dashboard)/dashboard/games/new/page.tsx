@@ -6,13 +6,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ScanBarcode } from "lucide-react";
 import Link from "next/link";
+import { BarcodeScanner } from "@/components/barcode-scanner";
 
 export default function NewGamePage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [barcodeScannerOpen, setBarcodeScannerOpen] = useState(false);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -51,18 +53,51 @@ export default function NewGamePage() {
     }
   }
 
+  async function handleBarcodeGameSelected(bggId: string, ean: string) {
+    setBarcodeScannerOpen(false);
+    try {
+      const res = await fetch("/api/games/import-bgg", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ bggId, ean }),
+      });
+      if (res.ok) {
+        router.push("/dashboard/games");
+        router.refresh();
+      } else if (res.status === 409) {
+        setError("Dieses Spiel ist bereits in deiner Sammlung");
+      } else {
+        setError("Barcode-Import fehlgeschlagen");
+      }
+    } catch {
+      setError("Verbindungsfehler");
+    }
+  }
+
+  function handleLocalGameFound(gameId: string) {
+    setBarcodeScannerOpen(false);
+    router.push(`/dashboard/games/${gameId}`);
+  }
+
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-4">
-        <Link href="/dashboard/games">
-          <Button variant="ghost" size="icon">
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-        </Link>
-        <div>
-          <h1 className="text-3xl font-bold">Neues Spiel</h1>
-          <p className="text-muted-foreground">Füge ein Spiel zu deiner Sammlung hinzu</p>
+      <div className="flex items-center justify-between gap-4">
+        <div className="flex items-center gap-4">
+          <Link href="/dashboard/games">
+            <Button variant="ghost" size="icon">
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+          </Link>
+          <div>
+            <h1 className="text-3xl font-bold">Neues Spiel</h1>
+            <p className="text-muted-foreground">Füge ein Spiel zu deiner Sammlung hinzu</p>
+          </div>
         </div>
+        <Button variant="outline" onClick={() => setBarcodeScannerOpen(true)}>
+          <ScanBarcode className="h-4 w-4 mr-2" />
+          <span className="hidden sm:inline">Barcode scannen</span>
+          <span className="sm:hidden">Barcode</span>
+        </Button>
       </div>
 
       <Card className="max-w-2xl">
@@ -134,6 +169,13 @@ export default function NewGamePage() {
           </form>
         </CardContent>
       </Card>
+
+      <BarcodeScanner
+        open={barcodeScannerOpen}
+        onOpenChange={setBarcodeScannerOpen}
+        onGameSelected={handleBarcodeGameSelected}
+        onLocalGameFound={handleLocalGameFound}
+      />
     </div>
   );
 }

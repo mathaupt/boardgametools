@@ -14,7 +14,9 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Plus, Users, Clock, Star, Download, ImageIcon, Trash2, Trash } from "lucide-react";
+import { Plus, Users, Clock, Star, Download, ImageIcon, Trash2, Trash, ScanBarcode } from "lucide-react";
+import { BarcodeScanner } from "@/components/barcode-scanner";
+import { useRouter } from "next/navigation";
 
 interface Game {
   id: string;
@@ -30,11 +32,13 @@ interface Game {
 }
 
 export default function GamesPage() {
+  const router = useRouter();
   const [games, setGames] = useState<Game[]>([]);
   const [loading, setLoading] = useState(true);
   const [deleteTarget, setDeleteTarget] = useState<Game | null>(null);
   const [deleteAllOpen, setDeleteAllOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [barcodeScannerOpen, setBarcodeScannerOpen] = useState(false);
 
   const loadGames = useCallback(async () => {
     const res = await fetch("/api/games?include=sessions");
@@ -72,6 +76,27 @@ export default function GamesPage() {
     setDeleting(false);
   }
 
+  async function handleBarcodeGameSelected(bggId: string, ean: string) {
+    setBarcodeScannerOpen(false);
+    try {
+      const res = await fetch("/api/games/import-bgg", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ bggId, ean }),
+      });
+      if (res.ok) {
+        await loadGames();
+      }
+    } catch {
+      // ignore
+    }
+  }
+
+  function handleLocalGameFound(gameId: string) {
+    setBarcodeScannerOpen(false);
+    router.push(`/dashboard/games/${gameId}`);
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -97,6 +122,10 @@ export default function GamesPage() {
               Von BGG importieren
             </Button>
           </Link>
+          <Button variant="outline" onClick={() => setBarcodeScannerOpen(true)}>
+            <ScanBarcode className="h-4 w-4 mr-2" />
+            <span className="hidden sm:inline">Barcode</span>
+          </Button>
           <Link href="/dashboard/games/new">
             <Button>
               <Plus className="h-4 w-4 mr-2" />
@@ -249,6 +278,13 @@ export default function GamesPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <BarcodeScanner
+        open={barcodeScannerOpen}
+        onOpenChange={setBarcodeScannerOpen}
+        onGameSelected={handleBarcodeGameSelected}
+        onLocalGameFound={handleLocalGameFound}
+      />
     </div>
   );
 }
