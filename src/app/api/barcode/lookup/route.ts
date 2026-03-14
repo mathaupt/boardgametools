@@ -15,24 +15,66 @@ interface UPCItemDBResponse {
   }>;
 }
 
+// Known board game publishers/brands to strip from product names
+const KNOWN_PUBLISHERS = [
+  "Kosmos", "Ravensburger", "Schmidt Spiele", "Schmidt", "Hans im Glück",
+  "Hasbro", "Mattel", "Asmodee", "Fantasy Flight", "Days of Wonder",
+  "Queen Games", "Pegasus Spiele", "Pegasus", "Amigo", "AMIGO Spiel",
+  "AMIGO", "Zoch", "HABA", "Lookout Spiele", "Lookout", "Feuerland",
+  "Feuerland Spiele", "Czech Games Edition", "CGE", "Repos Production",
+  "Space Cowboys", "CMON", "Stonemaier Games", "Stonemaier",
+  "Rio Grande Games", "Rio Grande", "Z-Man Games", "Z-Man",
+  "Gamewright", "Thames & Kosmos", "Thames and Kosmos",
+  "Matagot", "Libellud", "Iello", "Blue Orange", "Huch!",
+  "Huch", "Heidelberger", "Heidelberger Spieleverlag",
+  "alea", "Franckh-Kosmos", "FranckH-Kosmos",
+];
+
 function cleanProductName(title: string, brand: string): string {
   let name = title;
 
-  // Remove common product code patterns like "Kosmos 692865 - "
+  // Remove common product code patterns like "Kosmos 692865 - " or "FKS6888120 "
+  name = name.replace(/^[A-Z]{2,5}\d{5,}\s+/i, "");
   name = name.replace(/^[\w\s]+ \d{4,} [-–] /i, "");
 
-  // Remove brand prefix if it appears at the start
-  if (brand && name.toLowerCase().startsWith(brand.toLowerCase())) {
-    name = name.slice(brand.length).replace(/^[\s\-–:]+/, "");
+  // Remove brand/publisher prefix if it appears at the start (case-insensitive)
+  const allBrands = brand ? [brand, ...KNOWN_PUBLISHERS] : KNOWN_PUBLISHERS;
+  for (const pub of allBrands) {
+    const regex = new RegExp(`^${pub.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}[\\s\\-–:,]+`, "i");
+    name = name.replace(regex, "");
   }
 
-  // Remove trailing noise like ", Nip" or ", Partyspiel Toys/spielzeu"
-  name = name.replace(/,\s*(Nip|New|Neu|OVP|Sealed)$/i, "");
+  // Remove publisher/brand anywhere in the string surrounded by separators
+  for (const pub of KNOWN_PUBLISHERS) {
+    const escaped = pub.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    // Remove " - Kosmos" or ", Kosmos" at the end
+    name = name.replace(new RegExp(`[\\s,\\-–]+${escaped}\\s*$`, "i"), "");
+    // Remove "Kosmos - " at the start (already handled above, but just in case)
+    name = name.replace(new RegExp(`^${escaped}[\\s\\-–:]+`, "i"), "");
+  }
+
+  // Remove article numbers / SKU patterns like "(692865)" or "[FKS123]"
+  name = name.replace(/\s*[\(\[]\w{2,5}\d{4,}[\)\]]/g, "");
+  name = name.replace(/\s+\d{5,}\b/g, "");
+
+  // Remove trailing noise like ", Nip" or ", New" or ", OVP"
+  name = name.replace(/,\s*(Nip|New|Neu|OVP|Sealed|Toys\/\w+)$/i, "");
   name = name.replace(/\s+(Toys\/\w+|Partyspiel\s+\w+)$/i, "");
 
   // Remove edition/language markers
   name = name.replace(/\s*\[german\]\.?$/i, "");
-  name = name.replace(/\s*\(german\s*(edition|version)?\)$/i, "");
+  name = name.replace(/\s*\((german|deutsch)\s*(edition|version|ausgabe)?\)$/i, "");
+  name = name.replace(/\s*[-–]\s*(german|deutsch)\s*(edition|version|ausgabe)?$/i, "");
+  name = name.replace(/\s*\((EN|DE|FR|IT|ES|NL)\)$/i, "");
+
+  // Remove "Brettspiel" / "Kartenspiel" / "Gesellschaftsspiel" suffix
+  name = name.replace(/\s*[-–]?\s*(Brett|Karten|Gesellschafts|Würfel|Party)spiel\s*$/i, "");
+
+  // Remove parenthetical qualifiers like (Kinderspiel), (Spiel des Jahres), (Familienspiel)
+  name = name.replace(/\s*\([^)]*(?:spiel|edition|version|ausgabe|jubiläum|jahr)[^)]*\)/gi, "");
+
+  // Final cleanup: collapse multiple spaces, trim dashes at edges
+  name = name.replace(/\s{2,}/g, " ").replace(/^[\s\-–:]+|[\s\-–:]+$/g, "");
 
   return name.trim();
 }
@@ -98,6 +140,7 @@ export async function GET(request: NextRequest) {
 
     // Step 3: Clean product name and search BGG
     const cleanedName = cleanProductName(productName, productBrand);
+    console.log(`Barcode ${ean}: raw="${productName}" brand="${productBrand}" cleaned="${cleanedName}"`);
 
     const bggResults = await searchBGGGames(cleanedName);
 
