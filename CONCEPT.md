@@ -41,6 +41,15 @@ BoardGameTools ist eine Next.js Webanwendung zur Verwaltung von Brettspielen, Sp
 - **Voting**: Spieler stimmen für vorgeschlagene Spiele ab
 - **Ergebnis**: Spiel mit meisten Stimmen wird ausgewählt
 
+### 7. Spielereihen (Game Series)
+- **Reihe erstellen**: Name, Beschreibung, Cover-Bild (z.B. "EXIT - Das Spiel", "Adventure Games")
+- **Spiele hinzufügen**: Aus der Sammlung oder per BGG-Import (wird automatisch zur Sammlung hinzugefügt)
+- **Fortschritt tracken**: Spiele als "gespielt" markieren mit Fortschrittsbalken
+- **Bewertung**: 1-5 Sterne-Bewertung nach dem Spielen
+- **Schwierigkeitsgrade**: Einsteiger, Fortgeschritten, Profi als Tags
+- **Reihenfolge**: Spiele in der Reihe sortierbar
+- **Eigenständiger Status**: Gespielt-Status ist unabhängig vom Session-Tracking (keine Punkte/Gewinner nötig)
+
 ---
 
 ## Technologie-Stack
@@ -149,6 +158,27 @@ Vote
 ├── proposalId (FK GameProposal)
 ├── userId (FK User)
 ├── createdAt
+
+GameSeries
+├── id (UUID)
+├── name
+├── description
+├── imageUrl
+├── ownerId (FK User)
+├── createdAt
+└── updatedAt
+
+GameSeriesEntry
+├── id (UUID)
+├── seriesId (FK GameSeries)
+├── gameId (FK Game)
+├── sortOrder
+├── played
+├── playedAt
+├── rating (1-5)
+├── difficulty (einsteiger/fortgeschritten/profi)
+├── createdAt
+└── updatedAt
 ```
 
 ---
@@ -252,6 +282,17 @@ boardgametools/
 - `GET /api/statistics/games` - Spiel-Statistiken
 - `GET /api/statistics/players` - Spieler-Statistiken
 
+### Series (Spielereihen)
+- `GET /api/series` - Alle Reihen
+- `POST /api/series` - Reihe erstellen
+- `GET /api/series/[id]` - Reihe Details
+- `PUT /api/series/[id]` - Reihe aktualisieren
+- `DELETE /api/series/[id]` - Reihe löschen
+- `POST /api/series/[id]/entries` - Spiel zur Reihe hinzufügen
+- `PUT /api/series/[id]/entries/[entryId]` - Entry aktualisieren
+- `DELETE /api/series/[id]/entries/[entryId]` - Entry entfernen
+- `PUT /api/series/[id]/entries/reorder` - Reihenfolge ändern
+
 ---
 
 ## Agent Skills
@@ -265,7 +306,10 @@ Anleitung zum Erfassen und Auswerten von Spielsessions.
 ### 3. event-voting
 Workflow für Event-Erstellung, Einladungen und Voting.
 
-### 4. statistics
+### 4. game-series
+Spielereihen verwalten, Fortschritt tracken und bewerten.
+
+### 5. statistics
 Erklärt verfügbare Statistiken und deren Interpretation.
 
 ---

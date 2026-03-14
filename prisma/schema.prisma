@@ -36,6 +36,7 @@ model User {
   votes           Vote[]
   dateVotes       DateVote[]
   passwordResetTokens PasswordResetToken[]
+  gameSeries      GameSeries[]
 }
 
 // ============================================
@@ -51,6 +52,7 @@ model Game {
   playTimeMinutes Int?
   complexity      Int?      // 1-5 scale
   bggId           String?   // BoardGameGeek ID
+  ean             String?   // EAN/UPC barcode
   imageUrl        String?
   ownerId         String
   createdAt       DateTime  @default(now())
@@ -61,6 +63,7 @@ model Game {
   sessions        GameSession[]
   proposals       GameProposal[]
   selectedEvents  Event[]         @relation("SelectedGame")
+  seriesEntries   GameSeriesEntry[]
 }
 
 // ============================================
@@ -272,6 +275,43 @@ model GuestDateVote {
   guest         GuestParticipant @relation(fields: [guestId], references: [id], onDelete: Cascade)
 
   @@unique([dateProposalId, guestId])
+}
+
+// ============================================
+// GAME SERIES (Spielereihen)
+// ============================================
+
+model GameSeries {
+  id          String    @id @default(cuid())
+  name        String
+  description String?
+  imageUrl    String?
+  ownerId     String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relations
+  owner       User              @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  entries     GameSeriesEntry[]
+}
+
+model GameSeriesEntry {
+  id          String    @id @default(cuid())
+  seriesId    String
+  gameId      String
+  sortOrder   Int       @default(0)
+  played      Boolean   @default(false)
+  playedAt    DateTime?
+  rating      Int?      // 1-5 stars
+  difficulty  String?   // "einsteiger", "fortgeschritten", "profi"
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relations
+  series      GameSeries @relation(fields: [seriesId], references: [id], onDelete: Cascade)
+  game        Game       @relation(fields: [gameId], references: [id], onDelete: Cascade)
+
+  @@unique([seriesId, gameId])
 }
 
 model PasswordResetToken {

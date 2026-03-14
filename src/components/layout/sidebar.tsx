@@ -12,6 +12,7 @@ import {
   BarChart3,
   Vote,
   Shield,
+  Library,
 } from "lucide-react";
 import { useSession } from "next-auth/react";
 
@@ -19,6 +20,7 @@ const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { name: "Spiele", href: "/dashboard/games", icon: Gamepad2 },
   { name: "Sessions", href: "/dashboard/sessions", icon: CalendarDays },
+  { name: "Reihen", href: "/dashboard/series", icon: Library },
   { name: "Events", href: "/dashboard/events", icon: Vote },
   { name: "Gruppen", href: "/dashboard/groups", icon: Users },
   { name: "Statistiken", href: "/dashboard/statistics", icon: BarChart3 },

@@ -17,7 +17,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { ArrowLeft, Search, Loader2, Users, Clock, Star, ExternalLink, Library, CheckSquare } from "lucide-react";
+import { ArrowLeft, Search, Loader2, Users, Clock, Star, ExternalLink, Library, CheckSquare, ScanBarcode } from "lucide-react";
+import { BarcodeScanner } from "@/components/barcode-scanner";
 
 interface BGGSearchResult {
   bggId: string;
@@ -77,6 +78,8 @@ export default function ImportBGGPage() {
   const [collectionError, setCollectionError] = useState<string | null>(null);
   const [isBulkImporting, setIsBulkImporting] = useState(false);
   const [bulkImportResult, setBulkImportResult] = useState<{ imported: number; skipped: number } | null>(null);
+  const [barcodeScannerOpen, setBarcodeScannerOpen] = useState(false);
+  const [barcodeEan, setBarcodeEan] = useState<string | null>(null);
   const handleImageError = (event: React.SyntheticEvent<HTMLImageElement>) => {
     event.currentTarget.onerror = null;
     event.currentTarget.src = "/window.svg";
@@ -179,10 +182,11 @@ export default function ImportBGGPage() {
       const response = await fetch("/api/games/import-bgg", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ bggId: selectedGame.bggId }),
+        body: JSON.stringify({ bggId: selectedGame.bggId, ean: barcodeEan || undefined }),
       });
 
       if (response.ok) {
+        setBarcodeEan(null);
         router.push("/dashboard/games");
         router.refresh();
         setExistingBggIds((prev) => {
@@ -205,6 +209,12 @@ export default function ImportBGGPage() {
     } finally {
       setIsImporting(false);
     }
+  }
+
+  async function handleBarcodeGameSelected(bggId: string, ean: string) {
+    setBarcodeEan(ean);
+    setBarcodeScannerOpen(false);
+    await loadGameDetails(bggId);
   }
 
   async function handleLoadCollection(e: React.FormEvent) {
@@ -334,8 +344,15 @@ export default function ImportBGGPage() {
           </div>
         </div>
 
-        {/* Collection Import Dialog */}
-        <Dialog open={collectionDialogOpen} onOpenChange={(open) => {
+        {/* Action buttons */}
+        <div className="flex gap-2">
+          <Button variant="outline" className="flex items-center gap-2" onClick={() => setBarcodeScannerOpen(true)}>
+            <ScanBarcode className="h-4 w-4" />
+            <span className="hidden sm:inline">Barcode</span>
+          </Button>
+
+          {/* Collection Import Dialog */}
+          <Dialog open={collectionDialogOpen} onOpenChange={(open) => {
           setCollectionDialogOpen(open);
           if (!open) {
             setBulkImportResult(null);
@@ -507,6 +524,7 @@ export default function ImportBGGPage() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+        </div>
       </div>
 
       <div className="grid md:grid-cols-2 gap-6">
@@ -726,6 +744,13 @@ export default function ImportBGGPage() {
           )}
         </div>
       </div>
+
+      {/* Barcode Scanner Dialog */}
+      <BarcodeScanner
+        open={barcodeScannerOpen}
+        onOpenChange={setBarcodeScannerOpen}
+        onGameSelected={handleBarcodeGameSelected}
+      />
     </div>
   );
 }

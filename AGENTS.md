@@ -46,6 +46,7 @@ Die Skills im `skills/` Verzeichnis beschreiben detailliert wie Features funktio
 | `game-management` | Spielesammlung verwalten (CRUD, BGG-Import) |
 | `session-tracking` | Spielsessions erfassen und auswerten |
 | `event-voting` | Events mit Voting-System organisieren |
+| `game-series` | Spielereihen (EXIT, Adventure Games, etc.) tracken |
 | `statistics` | Statistiken und Auswertungen |
 | `accessibility` | Verbindliche Regeln für Farbkontrast, Schriftgrößen und Fokuszustände |
 

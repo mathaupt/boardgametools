@@ -10,7 +10,7 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const { bggId } = await request.json();
+    const { bggId, ean } = await request.json();
 
     if (!bggId) {
       return NextResponse.json({ error: "BGG ID is required" }, { status: 400 });
@@ -44,6 +44,7 @@ export async function POST(request: NextRequest) {
         bggId: bggData.bggId,
         imageUrl: bggData.imageUrl,
         ownerId: session.user.id,
+        ...(ean ? { ean: ean.toString() } : {}),
       },
     });
 
