@@ -17,6 +17,7 @@ import {
   User,
 } from "lucide-react";
 import { useSession, signOut } from "next-auth/react";
+import { currentVersion } from "@/lib/changelog";
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -86,6 +87,25 @@ export function Navbar() {
               style={{ height: "18px", width: "18px", color: "var(--primary)" }}
             />
           </div>
+        </Link>
+
+        {/* Version badge */}
+        <Link
+          href="/dashboard/changelog"
+          title="Versionshistorie"
+          style={{
+            fontSize: "10px",
+            fontWeight: 600,
+            color: "var(--muted-foreground)",
+            backgroundColor: "var(--muted)",
+            padding: "2px 6px",
+            borderRadius: "4px",
+            textDecoration: "none",
+            flexShrink: 0,
+            lineHeight: "16px",
+          }}
+        >
+          v{currentVersion}
         </Link>
 
         {/* Navigation links - always visible, horizontal scroll on small screens */}
