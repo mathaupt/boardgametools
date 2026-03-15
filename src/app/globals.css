@@ -218,6 +218,33 @@ body {
 }
 
 /* ============================================================
+   Navbar responsive labels — plain CSS, no Tailwind breakpoints
+   ============================================================ */
+.nav-label {
+  display: none;
+}
+@media (min-width: 1024px) {
+  .nav-label {
+    display: inline;
+  }
+}
+
+/* Hide scrollbar on nav */
+nav::-webkit-scrollbar {
+  display: none;
+}
+
+/* Navbar link hover */
+.navbar-link:hover {
+  background-color: var(--accent) !important;
+  color: var(--accent-foreground) !important;
+}
+.navbar-link-active:hover {
+  background-color: var(--primary) !important;
+  color: var(--primary-foreground) !important;
+}
+
+/* ============================================================
    Custom scrollbar
    ============================================================ */
 ::-webkit-scrollbar {

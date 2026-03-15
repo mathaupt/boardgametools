@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
 import {
   Dice6,
   LayoutDashboard,
@@ -12,13 +11,12 @@ import {
   Users,
   BarChart3,
   Vote,
-  Menu,
-  X,
   Shield,
   Library,
+  LogOut,
+  User,
 } from "lucide-react";
-import { useState } from "react";
-import { useSession } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -36,151 +34,233 @@ const adminNavigation = [
 
 export function Navbar() {
   const pathname = usePathname();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { data: session } = useSession();
   const isAdmin = session?.user?.role === "ADMIN";
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80">
-      <div className="container mx-auto px-4">
-        <div className="flex h-14 items-center gap-4">
-          {/* Logo */}
-          <Link href="/dashboard" className="flex items-center gap-2 shrink-0">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
-              <Dice6 className="h-4.5 w-4.5 text-primary" />
-            </div>
-            <span className="font-bold text-lg text-foreground hidden lg:inline">BoardGameTools</span>
-            <span className="font-bold text-lg text-foreground lg:hidden">BGT</span>
-          </Link>
-
-          {/* Desktop Navigation - static horizontal, visible on md+ */}
-          <nav className="hidden md:flex items-center gap-1 flex-1 min-w-0">
-            {navigation.map((item) => {
-              const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
-              return (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  className={cn(
-                    "flex items-center gap-1.5 px-2.5 py-2 rounded-md text-sm font-medium transition-colors shrink-0",
-                    isActive
-                      ? "bg-primary text-primary-foreground"
-                      : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-                  )}
-                  title={item.name}
-                  aria-label={`Navigate to ${item.name}`}
-                >
-                  <item.icon className="h-4 w-4" />
-                  <span className="hidden lg:inline">{item.name}</span>
-                </Link>
-              );
-            })}
-
-            {/* Admin Navigation */}
-            {isAdmin && (
-              <>
-                <div className="w-px h-6 bg-border mx-1" />
-                {adminNavigation.map((item) => {
-                  const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
-                  return (
-                    <Link
-                      key={item.name}
-                      href={item.href}
-                      className={cn(
-                        "flex items-center gap-1.5 px-2.5 py-2 rounded-md text-sm font-medium transition-colors shrink-0",
-                        isActive
-                          ? "bg-primary text-primary-foreground"
-                          : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-                      )}
-                      title={item.name}
-                      aria-label={`Navigate to ${item.name}`}
-                    >
-                      <item.icon className="h-4 w-4" />
-                      <span className="hidden lg:inline">{item.name}</span>
-                    </Link>
-                  );
-                })}
-              </>
-            )}
-          </nav>
-
-          {/* Mobile Menu Toggle */}
-          <div className="ml-auto md:hidden">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="h-9 w-9 p-0"
-              aria-label="Navigation umschalten"
-              aria-expanded={mobileMenuOpen}
-            >
-              {mobileMenuOpen ? (
-                <X className="h-5 w-5" />
-              ) : (
-                <Menu className="h-5 w-5" />
-              )}
-            </Button>
+    <header
+      style={{
+        position: "sticky",
+        top: 0,
+        zIndex: 50,
+        width: "100%",
+        borderBottom: "1px solid var(--border)",
+        backgroundColor: "var(--card)",
+      }}
+    >
+      <div
+        style={{
+          maxWidth: "1280px",
+          margin: "0 auto",
+          padding: "0 12px",
+          display: "flex",
+          height: "56px",
+          alignItems: "center",
+          gap: "8px",
+        }}
+      >
+        {/* Logo */}
+        <Link
+          href="/dashboard"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+            flexShrink: 0,
+            textDecoration: "none",
+            marginRight: "4px",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              height: "32px",
+              width: "32px",
+              alignItems: "center",
+              justifyContent: "center",
+              borderRadius: "8px",
+              backgroundColor: "oklch(0.48 0.2 265 / 0.1)",
+            }}
+          >
+            <Dice6
+              style={{ height: "18px", width: "18px", color: "var(--primary)" }}
+            />
           </div>
+        </Link>
+
+        {/* Navigation links - always visible, horizontal scroll on small screens */}
+        <nav
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "2px",
+            flex: "1 1 0%",
+            minWidth: 0,
+            overflowX: "auto",
+            WebkitOverflowScrolling: "touch",
+            scrollbarWidth: "none",
+          }}
+        >
+          {navigation.map((item) => {
+            const isActive =
+              pathname === item.href ||
+              pathname.startsWith(item.href + "/");
+            return (
+              <Link
+                key={item.name}
+                href={item.href}
+                title={item.name}
+                aria-label={item.name}
+                className={cn(
+                  "navbar-link",
+                  isActive && "navbar-link-active"
+                )}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  padding: "7px 10px",
+                  borderRadius: "6px",
+                  fontSize: "13px",
+                  fontWeight: 500,
+                  flexShrink: 0,
+                  textDecoration: "none",
+                  whiteSpace: "nowrap",
+                  color: isActive
+                    ? "var(--primary-foreground)"
+                    : "var(--muted-foreground)",
+                  backgroundColor: isActive
+                    ? "var(--primary)"
+                    : "transparent",
+                  transition: "background-color 0.15s, color 0.15s",
+                }}
+              >
+                <item.icon style={{ height: "16px", width: "16px", flexShrink: 0 }} />
+                <span className="nav-label">{item.name}</span>
+              </Link>
+            );
+          })}
+
+          {/* Admin section */}
+          {isAdmin && (
+            <>
+              <div
+                style={{
+                  width: "1px",
+                  height: "24px",
+                  backgroundColor: "var(--border)",
+                  margin: "0 4px",
+                  flexShrink: 0,
+                }}
+              />
+              {adminNavigation.map((item) => {
+                const isActive =
+                  pathname === item.href ||
+                  pathname.startsWith(item.href + "/");
+                return (
+                  <Link
+                    key={item.name}
+                    href={item.href}
+                    title={item.name}
+                    aria-label={item.name}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "6px",
+                      padding: "7px 10px",
+                      borderRadius: "6px",
+                      fontSize: "13px",
+                      fontWeight: 500,
+                      flexShrink: 0,
+                      textDecoration: "none",
+                      whiteSpace: "nowrap",
+                      color: isActive
+                        ? "var(--primary-foreground)"
+                        : "var(--muted-foreground)",
+                      backgroundColor: isActive
+                        ? "var(--primary)"
+                        : "transparent",
+                      transition: "background-color 0.15s, color 0.15s",
+                    }}
+                  >
+                    <item.icon style={{ height: "16px", width: "16px", flexShrink: 0 }} />
+                    <span className="nav-label">{item.name}</span>
+                  </Link>
+                );
+              })}
+            </>
+          )}
+        </nav>
+
+        {/* User section */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+            flexShrink: 0,
+            marginLeft: "auto",
+          }}
+        >
+          {session?.user && (
+            <>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  fontSize: "13px",
+                  color: "var(--foreground)",
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    height: "28px",
+                    width: "28px",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    borderRadius: "50%",
+                    backgroundColor: "oklch(0.48 0.2 265 / 0.1)",
+                  }}
+                >
+                  <User
+                    style={{
+                      height: "14px",
+                      width: "14px",
+                      color: "var(--primary)",
+                    }}
+                  />
+                </div>
+                <span className="nav-label" style={{ fontWeight: 500 }}>
+                  {session.user.name || session.user.email}
+                </span>
+              </div>
+              <button
+                onClick={() => signOut({ callbackUrl: "/login" })}
+                title="Abmelden"
+                aria-label="Abmelden"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  padding: "7px 10px",
+                  borderRadius: "6px",
+                  fontSize: "13px",
+                  fontWeight: 500,
+                  color: "var(--muted-foreground)",
+                  backgroundColor: "transparent",
+                  border: "none",
+                  cursor: "pointer",
+                  transition: "background-color 0.15s, color 0.15s",
+                }}
+              >
+                <LogOut style={{ height: "16px", width: "16px" }} />
+              </button>
+            </>
+          )}
         </div>
       </div>
-
-      {/* Mobile Navigation Dropdown */}
-      {mobileMenuOpen && (
-        <div className="md:hidden border-t bg-card">
-          <nav className="container mx-auto px-4 pb-4 pt-2 space-y-0.5">
-            {navigation.map((item) => {
-              const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
-              return (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  className={cn(
-                    "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
-                    isActive
-                      ? "bg-primary text-primary-foreground"
-                      : "text-muted-foreground hover:bg-accent/40 hover:text-foreground"
-                  )}
-                  onClick={() => setMobileMenuOpen(false)}
-                  aria-label={`Navigate to ${item.name}`}
-                >
-                  <item.icon className="h-[18px] w-[18px]" />
-                  <span>{item.name}</span>
-                </Link>
-              );
-            })}
-
-            {isAdmin && (
-              <>
-                <div className="border-t border-border mt-2 pt-3">
-                  <p className="px-3 mb-2 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
-                    Administration
-                  </p>
-                </div>
-                {adminNavigation.map((item) => {
-                  const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
-                  return (
-                    <Link
-                      key={item.name}
-                      href={item.href}
-                      className={cn(
-                        "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
-                        isActive
-                          ? "bg-primary text-primary-foreground"
-                          : "text-muted-foreground hover:bg-accent/40 hover:text-foreground"
-                      )}
-                      onClick={() => setMobileMenuOpen(false)}
-                      aria-label={`Navigate to ${item.name}`}
-                    >
-                      <item.icon className="h-[18px] w-[18px]" />
-                      <span>{item.name}</span>
-                    </Link>
-                  );
-                })}
-              </>
-            )}
-          </nav>
-        </div>
-      )}
     </header>
   );
 }
