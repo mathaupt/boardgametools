@@ -220,8 +220,67 @@ export default async function DashboardPage() {
         })}
       </div>
 
+      {/* Upcoming Events – prominent full-width section */}
+      {upcomingEvents.length > 0 && (
+        <Card className="border-primary/20 bg-primary/[0.02]">
+          <CardHeader className="flex flex-row items-center justify-between">
+            <div>
+              <CardTitle className="flex items-center gap-2 text-base">
+                <Vote className="h-4 w-4 text-primary" />
+                Kommende Events
+              </CardTitle>
+              <CardDescription>Deine nächsten Spieleabende</CardDescription>
+            </div>
+            <Link href="/dashboard/events/new">
+              <Button size="sm" variant="outline">
+                Neues Event planen
+              </Button>
+            </Link>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {upcomingEvents.map((evt: UpcomingEvent) => (
+                <Link
+                  key={evt.id}
+                  href={`/dashboard/events/${evt.id}`}
+                  className="group block rounded-lg border bg-card p-4 transition-all hover:border-primary/40 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="shrink-0 flex flex-col items-center justify-center rounded-lg bg-primary/10 px-2.5 py-1.5 text-center leading-tight">
+                      <span className="text-xl font-bold text-primary">
+                        {new Date(evt.eventDate).getDate()}
+                      </span>
+                      <span className="text-[10px] uppercase font-semibold text-primary/70">
+                        {new Date(evt.eventDate).toLocaleDateString("de-DE", { month: "short" })}
+                      </span>
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="font-semibold text-sm group-hover:text-primary transition-colors">{evt.title}</p>
+                      {evt.location && (
+                        <p className="text-xs text-muted-foreground mt-0.5">{evt.location}</p>
+                      )}
+                      <div className="mt-2">
+                        {evt.selectedGame ? (
+                          <span className="inline-flex items-center rounded-md bg-success/10 px-2 py-0.5 text-xs text-success font-medium">
+                            {evt.selectedGame.name}
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center rounded-md bg-warning/10 px-2 py-0.5 text-xs text-warning-foreground font-medium">
+                            Voting · {evt.proposals.length} Vorschläge
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Bottom section */}
-      <div className="grid gap-6 lg:grid-cols-3">
+      <div className="grid gap-6 lg:grid-cols-2">
         {/* Recent Sessions */}
         <Card>
           <CardHeader>
@@ -246,58 +305,14 @@ export default async function DashboardPage() {
           </CardContent>
         </Card>
 
-        {/* Upcoming Events – compact list */}
-        <Card className="lg:col-span-2">
-          <CardHeader className="flex flex-row items-center justify-between pb-3">
-            <CardTitle className="text-base">Kommende Events</CardTitle>
-            <Link href="/dashboard/events/new">
-              <Button size="sm" variant="ghost" className="h-7 text-xs gap-1">
-                <Vote className="h-3.5 w-3.5" />
-                Neues Event
-              </Button>
-            </Link>
+        {/* Placeholder for future content */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Letzte Aktivität</CardTitle>
+            <CardDescription>Neueste Änderungen in deinen Gruppen</CardDescription>
           </CardHeader>
           <CardContent>
-            {upcomingEvents.length === 0 ? (
-              <p className="text-sm text-muted-foreground">
-                Keine anstehenden Events.
-              </p>
-            ) : (
-              <ul className="divide-y divide-border">
-                {upcomingEvents.map((evt: UpcomingEvent) => (
-                  <li key={evt.id}>
-                    <Link
-                      href={`/dashboard/events/${evt.id}`}
-                      className="flex items-center gap-3 py-2.5 -mx-1 px-1 rounded-md transition-colors hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                    >
-                      <span className="shrink-0 text-center leading-tight w-10">
-                        <span className="block text-lg font-bold">
-                          {new Date(evt.eventDate).getDate()}
-                        </span>
-                        <span className="block text-[10px] uppercase text-muted-foreground font-medium">
-                          {new Date(evt.eventDate).toLocaleDateString("de-DE", { month: "short" })}
-                        </span>
-                      </span>
-                      <div className="min-w-0 flex-1">
-                        <p className="text-sm font-medium truncate">{evt.title}</p>
-                        <p className="text-xs text-muted-foreground truncate">
-                          {evt.location && `${evt.location} · `}
-                          {evt.selectedGame
-                            ? evt.selectedGame.name
-                            : `${evt.proposals.length} Vorschläge`}
-                        </p>
-                      </div>
-                      {evt.selectedGame ? (
-                        <span className="shrink-0 h-2 w-2 rounded-full bg-success" title="Spiel ausgewählt" />
-                      ) : (
-                        <span className="shrink-0 h-2 w-2 rounded-full bg-warning" title="Voting läuft" />
-                      )}
-                      <ArrowRight className="shrink-0 h-3.5 w-3.5 text-muted-foreground/50" />
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            )}
+            <p className="text-sm text-muted-foreground">Noch keine Gruppenaktivität.</p>
           </CardContent>
         </Card>
       </div>
