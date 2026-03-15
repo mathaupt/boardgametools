@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
+import { sendEventInviteEmail } from "@/lib/mailer";
+import { getPublicBaseUrl } from "@/lib/public-link";
 
 export async function GET(request: NextRequest) {
   const session = await auth();
@@ -129,6 +131,28 @@ export async function POST(request: NextRequest) {
         }
       }
     });
+
+    // Sende Einladungs-Mails an alle eingeladenen User (nicht an Organisator)
+    const eventUrl = `${getPublicBaseUrl()}/dashboard/events/${newEvent.id}`;
+    const inviterName = session.user.name || session.user.email || "Jemand";
+
+    for (const invite of newEvent.invites) {
+      if (invite.userId === session.user.id) continue; // Organisator nicht mailen
+      const email = invite.user?.email;
+      if (!email) continue;
+      try {
+        await sendEventInviteEmail({
+          to: email,
+          eventTitle: title,
+          eventDate: new Date(eventDate),
+          location: location || null,
+          inviterName,
+          eventUrl,
+        });
+      } catch (mailErr) {
+        console.error(`Failed to send invite email to ${email}:`, mailErr);
+      }
+    }
 
     return NextResponse.json(newEvent, { status: 201 });
   } catch (error) {

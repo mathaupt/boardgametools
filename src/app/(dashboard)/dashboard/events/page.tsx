@@ -7,6 +7,7 @@ import { Plus, Calendar, MapPin, Users, Vote, Trophy } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { GameTooltip } from "@/components/ui/game-tooltip";
+import { PendingInvites } from "@/components/pending-invites";
 
 export default async function EventsPage() {
   const session = await auth();
@@ -46,6 +47,23 @@ export default async function EventsPage() {
     take: 20
   });
 
+  // Offene Einladungen laden
+  const pendingInvites = await prisma.eventInvite.findMany({
+    where: {
+      userId,
+      status: "pending",
+      event: { eventDate: { gte: new Date() } },
+    },
+    include: {
+      event: {
+        include: {
+          createdBy: { select: { name: true } },
+        },
+      },
+    },
+    orderBy: { event: { eventDate: "asc" } },
+  });
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -60,6 +78,22 @@ export default async function EventsPage() {
           </Button>
         </Link>
       </div>
+
+      {/* Offene Einladungen */}
+      <PendingInvites
+        invites={pendingInvites.map((inv) => ({
+          id: inv.id,
+          eventId: inv.eventId,
+          status: inv.status,
+          event: {
+            id: inv.event.id,
+            title: inv.event.title,
+            eventDate: inv.event.eventDate.toISOString(),
+            location: inv.event.location,
+            createdBy: inv.event.createdBy,
+          },
+        }))}
+      />
 
       {events.length === 0 ? (
         <Card>

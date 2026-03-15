@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Gamepad2, CalendarDays, Users, Vote, ArrowRight } from "lucide-react";
+import { PendingInvites } from "@/components/pending-invites";
 import type { GameSession, Event, Game, GameProposal } from "@prisma/client";
 
 type UpcomingEvent = Event & {
@@ -56,6 +57,23 @@ export default async function DashboardPage() {
     },
     orderBy: { eventDate: "asc" },
     take: 5,
+  });
+
+  // Offene Einladungen laden
+  const pendingInvites = await prisma.eventInvite.findMany({
+    where: {
+      userId,
+      status: "pending",
+      event: { eventDate: { gte: new Date() } },
+    },
+    include: {
+      event: {
+        include: {
+          createdBy: { select: { name: true } },
+        },
+      },
+    },
+    orderBy: { event: { eventDate: "asc" } },
   });
 
   const statCards = [
@@ -138,6 +156,22 @@ export default async function DashboardPage() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Offene Einladungen */}
+      <PendingInvites
+        invites={pendingInvites.map((inv) => ({
+          id: inv.id,
+          eventId: inv.eventId,
+          status: inv.status,
+          event: {
+            id: inv.event.id,
+            title: inv.event.title,
+            eventDate: inv.event.eventDate.toISOString(),
+            location: inv.event.location,
+            createdBy: inv.event.createdBy,
+          },
+        }))}
+      />
 
       {/* Stat Cards */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

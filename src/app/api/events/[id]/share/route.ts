@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
+import { sendEventInviteEmail } from "@/lib/mailer";
+import { getPublicBaseUrl } from "@/lib/public-link";
 
 export async function POST(
   request: NextRequest,
@@ -32,6 +34,9 @@ export async function POST(
       return NextResponse.json({ error: "Event not found" }, { status: 404 });
     }
 
+    const eventUrl = `${getPublicBaseUrl()}/dashboard/events/${id}`;
+    const inviterName = session.user.name || session.user.email || "Jemand";
+
     // Erstelle Einladungen für alle User
     const invites = await Promise.all(
       userIds.map(async (userId: string) => {
@@ -57,7 +62,7 @@ export async function POST(
         }
 
         // Erstelle neue Einladung
-        return await prisma.eventInvite.create({
+        const invite = await prisma.eventInvite.create({
           data: {
             eventId: id,
             userId: userId,
@@ -67,11 +72,24 @@ export async function POST(
             user: true
           }
         });
+
+        // Sende Einladungs-Mail
+        try {
+          await sendEventInviteEmail({
+            to: user.email,
+            eventTitle: event.title,
+            eventDate: event.eventDate,
+            location: event.location,
+            inviterName,
+            eventUrl,
+          });
+        } catch (mailErr) {
+          console.error(`Failed to send invite email to ${user.email}:`, mailErr);
+        }
+
+        return invite;
       })
     );
-
-    // TODO: Sende Benachrichtigungen an die User
-    console.log(`Event ${event.title} shared with ${invites.length} users`);
 
     return NextResponse.json({
       message: `Event shared with ${invites.length} users`,
