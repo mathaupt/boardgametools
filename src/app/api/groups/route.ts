@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
+import { withApiLogging } from "@/lib/api-logger";
 
-export async function GET() {
+export const GET = withApiLogging(async function GET() {
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -28,9 +29,9 @@ export async function GET() {
     console.error("Error fetching groups:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
-}
+});
 
-export async function POST(request: NextRequest) {
+export const POST = withApiLogging(async function POST(request: NextRequest) {
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -68,4 +69,4 @@ export async function POST(request: NextRequest) {
     console.error("Error creating group:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
-}
+});

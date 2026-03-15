@@ -1,10 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
+import { withApiLogging } from "@/lib/api-logger";
 
-export async function GET(
+type RouteContext = { params: Promise<{ id: string }> };
+
+export const GET = withApiLogging(async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: RouteContext
 ) {
   const session = await auth();
   if (!session?.user?.id) {
@@ -43,11 +46,11 @@ export async function GET(
     console.error("Error fetching session:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
-}
+});
 
-export async function POST(
+export const POST = withApiLogging(async function POST(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: RouteContext
 ) {
   const session = await auth();
   if (!session?.user?.id) {
@@ -102,4 +105,4 @@ export async function POST(
     console.error("Error creating vote:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
-}
+});

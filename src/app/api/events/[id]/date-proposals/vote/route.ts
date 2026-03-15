@@ -1,12 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
+import { withApiLogging } from "@/lib/api-logger";
+
+type RouteContext = { params: Promise<{ id: string }> };
 
 // POST: Auf Terminvorschlag abstimmen (eingeloggter User)
 // Body: { dateProposalId: string, availability: "yes" | "maybe" | "no" }
-export async function POST(
+export const POST = withApiLogging(async function POST(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: RouteContext
 ) {
   const session = await auth();
   if (!session?.user?.id) {
@@ -86,13 +89,13 @@ export async function POST(
     console.error("Error voting on date proposal:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
-}
+});
 
 // PUT: Bulk-Vote – mehrere Terminvorschläge auf einmal abstimmen
 // Body: { votes: [{ dateProposalId: string, availability: "yes"|"maybe"|"no" }] }
-export async function PUT(
+export const PUT = withApiLogging(async function PUT(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: RouteContext
 ) {
   const session = await auth();
   if (!session?.user?.id) {
@@ -154,4 +157,4 @@ export async function PUT(
     console.error("Error bulk voting on date proposals:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
-}
+});

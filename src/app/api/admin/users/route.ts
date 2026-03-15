@@ -1,9 +1,10 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { hash } from "bcryptjs";
 import prisma from "@/lib/db";
+import { withApiLogging } from "@/lib/api-logger";
 
-export async function POST(request: Request) {
+export const POST = withApiLogging(async function POST(request: Request) {
   try {
     const session = await auth();
     
@@ -57,4 +58,4 @@ export async function POST(request: Request) {
     console.error("Error creating user:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
-}
+});

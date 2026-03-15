@@ -11,6 +11,21 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.12.0",
+    date: "2026-03-15",
+    title: "API Monitoring & Anomalie-Erkennung",
+    description: "Neuer Admin-Bereich für API-Monitoring mit Live-Statistiken, Log-Analyse und automatischer Anomalie-Erkennung.",
+    changes: [
+      { type: "feature", text: "API Monitoring Dashboard mit Echtzeit-Übersicht (Requests, Fehlerrate, Antwortzeiten)" },
+      { type: "feature", text: "Interaktive Charts für Request-Verlauf, Top-Endpoints und HTTP-Methoden-Verteilung" },
+      { type: "feature", text: "Durchsuchbare und filterbare Log-Tabelle mit Paginierung" },
+      { type: "feature", text: "Automatische Anomalie-Erkennung: Fehler-Spikes, langsame Endpoints, Auth-Probleme" },
+      { type: "feature", text: "Health Score (0–100) mit Ampel-Bewertung des API-Zustands" },
+      { type: "feature", text: "Auto-Refresh und Log-Bereinigung für alte Einträge" },
+      { type: "internal", text: "API-Logging-Middleware für automatische Request-Erfassung in allen wichtigen Routes" },
+    ],
+  },
+  {
     version: "0.11.0",
     date: "2026-03-15",
     title: "FAQ & Anleitung",

@@ -1,7 +1,8 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/db";
+import { withApiLogging } from "@/lib/api-logger";
 
-export async function POST() {
+export const POST = withApiLogging(async function POST() {
   try {
     // Prüfe ob SQL_DATABASE_URL gesetzt ist
     if (!process.env.SQL_DATABASE_URL) {
@@ -61,4 +62,4 @@ export async function POST() {
       { status: 500 }
     );
   }
-}
+});

@@ -1,7 +1,8 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/db";
+import { withApiLogging } from "@/lib/api-logger";
 
-export async function GET() {
+export const GET = withApiLogging(async function GET() {
   try {
     // Teste Datenbank-Verbindung
     await prisma.$queryRaw`SELECT 1`;
@@ -42,4 +43,4 @@ export async function GET() {
       { status: 500 }
     );
   }
-}
+});

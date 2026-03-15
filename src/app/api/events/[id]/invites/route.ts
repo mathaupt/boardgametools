@@ -4,6 +4,9 @@ import prisma from "@/lib/db";
 import { sendEventInviteEmail, sendInviteResponseEmail } from "@/lib/mailer";
 import { getPublicBaseUrl } from "@/lib/public-link";
 import { encryptId } from "@/lib/crypto";
+import { withApiLogging } from "@/lib/api-logger";
+
+type RouteContext = { params: Promise<{ id: string }> };
 
 function buildInviteUrl(invite: { id: string; userId: string | null }, eventId: string) {
   const base = getPublicBaseUrl();
@@ -15,9 +18,9 @@ function buildInviteUrl(invite: { id: string; userId: string | null }, eventId: 
   return `${base}/public/invite/${token}`;
 }
 
-export async function POST(
+export const POST = withApiLogging(async function POST(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: RouteContext
 ) {
   const session = await auth();
   if (!session?.user?.id) {
@@ -103,12 +106,12 @@ export async function POST(
     console.error("Error creating invite:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
-}
+});
 
 // Einladung annehmen oder ablehnen (für eingeloggte User)
-export async function PUT(
+export const PUT = withApiLogging(async function PUT(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: RouteContext
 ) {
   const session = await auth();
   if (!session?.user?.id) {
@@ -172,11 +175,11 @@ export async function PUT(
     console.error("Error updating invite:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
-}
+});
 
-export async function DELETE(
+export const DELETE = withApiLogging(async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: RouteContext
 ) {
   const session = await auth();
   if (!session?.user?.id) {
@@ -213,4 +216,4 @@ export async function DELETE(
     console.error("Error deleting invite:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
-}
+});

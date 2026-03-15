@@ -1,10 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
+import { withApiLogging } from "@/lib/api-logger";
 
-export async function GET(
+type RouteContext = { params: Promise<{ id: string }> };
+
+export const GET = withApiLogging(async function GET(
   _request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: RouteContext
 ) {
   const session = await auth();
   if (!session?.user?.id) {
@@ -42,11 +45,11 @@ export async function GET(
   }
 
   return NextResponse.json(series);
-}
+});
 
-export async function PUT(
+export const PUT = withApiLogging(async function PUT(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: RouteContext
 ) {
   const session = await auth();
   if (!session?.user?.id) {
@@ -81,11 +84,11 @@ export async function PUT(
     console.error("Error updating game series:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
-}
+});
 
-export async function DELETE(
+export const DELETE = withApiLogging(async function DELETE(
   _request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: RouteContext
 ) {
   const session = await auth();
   if (!session?.user?.id) {
@@ -105,4 +108,4 @@ export async function DELETE(
   await prisma.gameSeries.delete({ where: { id } });
 
   return NextResponse.json({ message: "Series deleted" });
-}
+});

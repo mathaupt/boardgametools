@@ -1,10 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
+import { withApiLogging } from "@/lib/api-logger";
 
-export async function PUT(
+type RouteContext = { params: Promise<{ id: string; entryId: string }> };
+
+export const PUT = withApiLogging(async function PUT(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string; entryId: string }> }
+  { params }: RouteContext
 ) {
   const session = await auth();
   if (!session?.user?.id) {
@@ -84,11 +87,11 @@ export async function PUT(
     console.error("Error updating series entry:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
-}
+});
 
-export async function DELETE(
+export const DELETE = withApiLogging(async function DELETE(
   _request: NextRequest,
-  { params }: { params: Promise<{ id: string; entryId: string }> }
+  { params }: RouteContext
 ) {
   const session = await auth();
   if (!session?.user?.id) {
@@ -112,4 +115,4 @@ export async function DELETE(
   await prisma.gameSeriesEntry.delete({ where: { id: entryId } });
 
   return NextResponse.json({ message: "Entry removed from series" });
-}
+});

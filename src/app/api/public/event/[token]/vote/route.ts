@@ -1,10 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/db";
 import { resolveEventIdFromToken } from "@/lib/event-share";
+import { withApiLogging } from "@/lib/api-logger";
 
-export async function POST(
+type RouteContext = { params: Promise<{ token: string }> };
+
+export const POST = withApiLogging(async function POST(
   request: NextRequest,
-  { params }: { params: Promise<{ token: string }> }
+  { params }: RouteContext
 ) {
   const { token } = await params;
   const eventId = await resolveEventIdFromToken(token);
@@ -70,11 +73,11 @@ export async function POST(
     console.error("Error creating guest vote:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
-}
+});
 
-export async function DELETE(
+export const DELETE = withApiLogging(async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ token: string }> }
+  { params }: RouteContext
 ) {
   const { token } = await params;
   const eventId = await resolveEventIdFromToken(token);
@@ -133,4 +136,4 @@ export async function DELETE(
     console.error("Error removing guest vote:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
-}
+});

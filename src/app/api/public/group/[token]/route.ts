@@ -1,9 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { findPublicGroupByToken } from "@/lib/group-share";
+import { withApiLogging } from "@/lib/api-logger";
 
-export async function GET(
+type RouteContext = { params: Promise<{ token: string }> };
+
+export const GET = withApiLogging(async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ token: string }> }
+  { params }: RouteContext
 ) {
   const { token } = await params;
 
@@ -65,4 +68,4 @@ export async function GET(
     console.error("Error fetching public group:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
-}
+});

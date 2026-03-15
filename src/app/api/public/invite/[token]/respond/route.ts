@@ -3,10 +3,13 @@ import prisma from "@/lib/db";
 import { decryptId } from "@/lib/crypto";
 import { sendInviteResponseEmail } from "@/lib/mailer";
 import { getPublicBaseUrl } from "@/lib/public-link";
+import { withApiLogging } from "@/lib/api-logger";
 
-export async function POST(
+type RouteContext = { params: Promise<{ token: string }> };
+
+export const POST = withApiLogging(async function POST(
   request: NextRequest,
-  { params }: { params: Promise<{ token: string }> }
+  { params }: RouteContext
 ) {
   const { token } = await params;
 
@@ -82,12 +85,12 @@ export async function POST(
     console.error("Error responding to invite:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
-}
+});
 
 // GET - Invite-Details laden (ohne Auth)
-export async function GET(
+export const GET = withApiLogging(async function GET(
   _request: NextRequest,
-  { params }: { params: Promise<{ token: string }> }
+  { params }: RouteContext
 ) {
   const { token } = await params;
 
@@ -144,4 +147,4 @@ export async function GET(
       })),
     },
   });
-}
+});

@@ -1,12 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/db";
 import { findPublicEventByToken } from "@/lib/event-share";
+import { withApiLogging } from "@/lib/api-logger";
+
+type RouteContext = { params: Promise<{ token: string }> };
 
 // POST: Gast stimmt über Terminvorschläge ab
 // Body: { guestId: string, votes: [{ dateProposalId: string, availability: "yes"|"maybe"|"no" }] }
-export async function POST(
+export const POST = withApiLogging(async function POST(
   request: NextRequest,
-  { params }: { params: Promise<{ token: string }> }
+  { params }: RouteContext
 ) {
   const { token } = await params;
 
@@ -64,4 +67,4 @@ export async function POST(
     console.error("Error guest date voting:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
-}
+});

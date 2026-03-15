@@ -16,6 +16,7 @@ import {
   LogOut,
   User,
   HelpCircle,
+  Activity,
 } from "lucide-react";
 import { useSession, signOut } from "next-auth/react";
 import { currentVersion } from "@/lib/changelog";
@@ -33,6 +34,7 @@ const navigation = [
 
 const adminNavigation = [
   { name: "Nutzerverwaltung", href: "/dashboard/admin/users", icon: Shield },
+  { name: "Monitoring", href: "/dashboard/admin/monitoring", icon: Activity },
 ];
 
 export function Navbar() {

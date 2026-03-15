@@ -4,8 +4,9 @@ import prisma from "@/lib/db";
 import { sendEventInviteEmail } from "@/lib/mailer";
 import { getPublicBaseUrl } from "@/lib/public-link";
 import { encryptId } from "@/lib/crypto";
+import { withApiLogging } from "@/lib/api-logger";
 
-export async function GET(request: NextRequest) {
+export const GET = withApiLogging(async function GET(request: NextRequest) {
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -62,9 +63,9 @@ export async function GET(request: NextRequest) {
     console.error("Error fetching events:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
-}
+});
 
-export async function POST(request: NextRequest) {
+export const POST = withApiLogging(async function POST(request: NextRequest) {
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -166,4 +167,4 @@ export async function POST(request: NextRequest) {
     console.error("Error creating event:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
-}
+});

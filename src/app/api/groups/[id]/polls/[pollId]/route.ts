@@ -1,10 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
+import { withApiLogging } from "@/lib/api-logger";
 
-export async function GET(
+type RouteContext = { params: Promise<{ id: string; pollId: string }> };
+
+export const GET = withApiLogging(async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string; pollId: string }> }
+  { params }: RouteContext
 ) {
   const session = await auth();
   if (!session?.user?.id) {
@@ -48,11 +51,11 @@ export async function GET(
     console.error("Error fetching poll:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
-}
+});
 
-export async function PUT(
+export const PUT = withApiLogging(async function PUT(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string; pollId: string }> }
+  { params }: RouteContext
 ) {
   const session = await auth();
   if (!session?.user?.id) {
@@ -99,11 +102,11 @@ export async function PUT(
     console.error("Error updating poll:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
-}
+});
 
-export async function DELETE(
+export const DELETE = withApiLogging(async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string; pollId: string }> }
+  { params }: RouteContext
 ) {
   const session = await auth();
   if (!session?.user?.id) {
@@ -132,4 +135,4 @@ export async function DELETE(
     console.error("Error deleting poll:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
-}
+});

@@ -4,6 +4,9 @@ import prisma from "@/lib/db";
 import { sendCustomEventMessage, sendEventUpcomingReminder } from "@/lib/mailer";
 import { getPublicBaseUrl } from "@/lib/public-link";
 import { encryptId } from "@/lib/crypto";
+import { withApiLogging } from "@/lib/api-logger";
+
+type RouteContext = { params: Promise<{ id: string }> };
 
 function buildEventUrl(invite: { id: string; userId: string | null }, eventId: string) {
   const base = getPublicBaseUrl();
@@ -13,9 +16,9 @@ function buildEventUrl(invite: { id: string; userId: string | null }, eventId: s
   return `${base}/public/invite/${encryptId(invite.id)}`;
 }
 
-export async function POST(
+export const POST = withApiLogging(async function POST(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: RouteContext
 ) {
   const session = await auth();
   if (!session?.user?.id) {
@@ -112,4 +115,4 @@ export async function POST(
     console.error("Error sending event mail:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
-}
+});

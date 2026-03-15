@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
+import { withApiLogging } from "@/lib/api-logger";
 
-export async function POST(request: NextRequest) {
+export const POST = withApiLogging(async function POST(request: NextRequest) {
   try {
     const session = await auth();
     
@@ -27,4 +28,4 @@ export async function POST(request: NextRequest) {
     console.error("Error toggling user status:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
-}
+});

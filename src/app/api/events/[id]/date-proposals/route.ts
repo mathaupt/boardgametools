@@ -1,11 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
+import { withApiLogging } from "@/lib/api-logger";
+
+type RouteContext = { params: Promise<{ id: string }> };
 
 // GET: Alle Terminvorschläge für ein Event laden
-export async function GET(
+export const GET = withApiLogging(async function GET(
   _request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: RouteContext
 ) {
   const session = await auth();
   if (!session?.user?.id) {
@@ -51,14 +54,14 @@ export async function GET(
     console.error("Error fetching date proposals:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
-}
+});
 
 // POST: Terminvorschläge erstellen (nur Event-Ersteller)
 // Body: { dates: string[] } – Array von ISO date strings
 // Oder: { startDate: string, endDate: string, weekdays?: number[] }
-export async function POST(
+export const POST = withApiLogging(async function POST(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: RouteContext
 ) {
   const session = await auth();
   if (!session?.user?.id) {
@@ -179,12 +182,12 @@ export async function POST(
     console.error("Error creating date proposals:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
-}
+});
 
 // DELETE: Alle Terminvorschläge eines Events löschen (nur Event-Ersteller)
-export async function DELETE(
+export const DELETE = withApiLogging(async function DELETE(
   _request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: RouteContext
 ) {
   const session = await auth();
   if (!session?.user?.id) {
@@ -214,4 +217,4 @@ export async function DELETE(
     console.error("Error deleting date proposals:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
-}
+});

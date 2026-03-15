@@ -1,10 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { fetchBGGGame } from "@/lib/bgg";
+import { withApiLogging } from "@/lib/api-logger";
 
-export async function GET(
+type RouteContext = { params: Promise<{ id: string }> };
+
+export const GET = withApiLogging(async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: RouteContext
 ) {
   console.log("BGG Game API called");
   
@@ -65,4 +68,4 @@ export async function GET(
     console.error("Error fetching BGG game:", error);
     return NextResponse.json({ error: "Failed to fetch game" }, { status: 500 });
   }
-}
+});

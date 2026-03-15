@@ -3,10 +3,13 @@ import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
 import { encryptId } from "@/lib/crypto";
 import { getPublicBaseUrl } from "@/lib/public-link";
+import { withApiLogging } from "@/lib/api-logger";
 
-export async function POST(
+type RouteContext = { params: Promise<{ id: string }> };
+
+export const POST = withApiLogging(async function POST(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: RouteContext
 ) {
   const session = await auth();
   if (!session?.user?.id) {
@@ -40,4 +43,4 @@ export async function POST(
     console.error("Error publishing group:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
-}
+});

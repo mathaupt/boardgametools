@@ -1,10 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { findPublicGroupByToken } from "@/lib/group-share";
 import prisma from "@/lib/db";
+import { withApiLogging } from "@/lib/api-logger";
 
-export async function POST(
+type RouteContext = { params: Promise<{ token: string }> };
+
+export const POST = withApiLogging(async function POST(
   request: NextRequest,
-  { params }: { params: Promise<{ token: string }> }
+  { params }: RouteContext
 ) {
   const { token } = await params;
 
@@ -43,4 +46,4 @@ export async function POST(
     console.error("Error creating comment:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
-}
+});

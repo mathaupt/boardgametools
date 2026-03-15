@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
+import { withApiLogging } from "@/lib/api-logger";
 
-export async function DELETE(request: NextRequest) {
+export const DELETE = withApiLogging(async function DELETE(request: NextRequest) {
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -25,4 +26,4 @@ export async function DELETE(request: NextRequest) {
     console.error("Error bulk deleting games:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
-}
+});

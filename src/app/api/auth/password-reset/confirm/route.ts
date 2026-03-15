@@ -1,9 +1,10 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { hash } from "bcryptjs";
 import prisma from "@/lib/db";
 import { verifyResetToken, markResetTokenUsed } from "@/lib/password-reset";
+import { withApiLogging } from "@/lib/api-logger";
 
-export async function POST(request: Request) {
+export const POST = withApiLogging(async function POST(request: Request) {
   try {
     const { token, password } = await request.json();
 
@@ -46,4 +47,4 @@ export async function POST(request: Request) {
     console.error("Password reset confirm failed:", error);
     return NextResponse.json({ error: "Passwort konnte nicht zurückgesetzt werden" }, { status: 500 });
   }
-}
+});

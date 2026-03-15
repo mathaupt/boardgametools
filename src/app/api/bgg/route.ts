@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
+import { withApiLogging } from "@/lib/api-logger";
 
-export async function GET(request: NextRequest) {
+export const GET = withApiLogging(async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const bggId = searchParams.get("bggId");
   const query = searchParams.get("query");
@@ -153,4 +154,4 @@ export async function GET(request: NextRequest) {
       details: error instanceof Error ? error.message : "Unknown error" 
     }, { status: 500 });
   }
-}
+});

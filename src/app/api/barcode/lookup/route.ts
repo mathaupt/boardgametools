@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
 import { searchBGGGames, fetchBGGGame } from "@/lib/bgg";
+import { withApiLogging } from "@/lib/api-logger";
 
 interface UPCItemDBResponse {
   code: string;
@@ -79,7 +80,7 @@ function cleanProductName(title: string, brand: string): string {
   return name.trim();
 }
 
-export async function GET(request: NextRequest) {
+export const GET = withApiLogging(async function GET(request: NextRequest) {
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -157,4 +158,4 @@ export async function GET(request: NextRequest) {
     console.error("Barcode lookup error:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
-}
+});

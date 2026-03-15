@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { hash } from "bcryptjs";
 import prisma from "@/lib/db";
+import { withApiLogging } from "@/lib/api-logger";
 
-export async function POST(request: NextRequest) {
+export const POST = withApiLogging(async function POST(request: NextRequest) {
   try {
     const { email, password, name } = await request.json();
 
@@ -45,4 +46,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});

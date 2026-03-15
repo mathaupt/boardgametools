@@ -2,10 +2,13 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { findPublicEventByToken } from "@/lib/event-share";
 import { buildPublicEventInclude, serializePublicEvent } from "@/lib/public-event";
+import { withApiLogging } from "@/lib/api-logger";
 
-export async function GET(
+type RouteContext = { params: Promise<{ token: string }> };
+
+export const GET = withApiLogging(async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ token: string }> }
+  { params }: RouteContext
 ) {
   const session = await auth();
   const { token } = await params;
@@ -22,4 +25,4 @@ export async function GET(
   const serialized = serializePublicEvent(event, session?.user?.id ?? null);
 
   return NextResponse.json(serialized);
-}
+});
