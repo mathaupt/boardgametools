@@ -98,8 +98,8 @@ export default async function DashboardPage() {
       count: groupsCount,
       sub: "Mitgliedschaften",
       icon: Users,
-      href: null,
-      color: "text-muted-foreground bg-muted",
+      href: "/dashboard/groups",
+      color: "text-info bg-info/10",
     },
     {
       label: "Events",
@@ -145,6 +145,12 @@ export default async function DashboardPage() {
               <Button variant="outline" className="w-full justify-start h-10">
                 <CalendarDays className="h-4 w-4 mr-2" />
                 Session erstellen
+              </Button>
+            </Link>
+            <Link href="/dashboard/groups/new">
+              <Button variant="outline" className="w-full justify-start h-10">
+                <Users className="h-4 w-4 mr-2" />
+                Gruppe erstellen
               </Button>
             </Link>
             <Link href="/dashboard/events/new">
