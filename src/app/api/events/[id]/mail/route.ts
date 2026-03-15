@@ -26,7 +26,7 @@ export async function POST(
 
   try {
     const body = await request.json();
-    const { type, message } = body;
+    const { type, message, subject } = body;
 
     if (!type || !["custom", "reminder"].includes(type)) {
       return NextResponse.json({
@@ -71,6 +71,7 @@ export async function POST(
         if (type === "custom") {
           await sendCustomEventMessage({
             to: recipientEmail,
+            subject: subject?.trim() || undefined,
             eventTitle: event.title,
             eventDate: event.eventDate,
             location: event.location,

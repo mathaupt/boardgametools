@@ -125,6 +125,7 @@ export default async function EventDetailPage({
             <>
               <EventMailDialog
                 eventId={event.id}
+                eventTitle={event.title}
                 totalInvites={event.invites.length}
                 acceptedCount={acceptedCount}
               />

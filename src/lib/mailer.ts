@@ -237,6 +237,7 @@ BoardGameTools`,
 
 interface CustomEventMessageOptions {
   to: string;
+  subject?: string;
   eventTitle: string;
   eventDate: Date | string;
   location?: string | null;
@@ -247,13 +248,14 @@ interface CustomEventMessageOptions {
 
 export async function sendCustomEventMessage(opts: CustomEventMessageOptions) {
   const t = ensureTransporter();
-  const { to, eventTitle, eventDate, location, senderName, message, eventUrl } = opts;
+  const { to, subject, eventTitle, eventDate, location, senderName, message, eventUrl } = opts;
   const dateStr = formatDate(eventDate);
+  const mailSubject = subject || `${eventTitle} – Nachricht von ${senderName}`;
 
   await t.sendMail({
     from: defaultSender,
     to,
-    subject: `${eventTitle} – Nachricht von ${senderName}`,
+    subject: mailSubject,
     text: `Hallo,
 
 ${senderName} hat eine Nachricht zum Spieleabend "${eventTitle}" geschickt:

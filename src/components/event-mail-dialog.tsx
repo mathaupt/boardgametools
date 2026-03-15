@@ -12,17 +12,20 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Mail, Send, Bell, Loader2, CheckCircle, AlertCircle, Users } from "lucide-react";
 
 interface EventMailDialogProps {
   eventId: string;
+  eventTitle: string;
   totalInvites: number;
   acceptedCount: number;
 }
 
-export function EventMailDialog({ eventId, totalInvites, acceptedCount }: EventMailDialogProps) {
+export function EventMailDialog({ eventId, eventTitle, totalInvites, acceptedCount }: EventMailDialogProps) {
   const [open, setOpen] = useState(false);
+  const [subject, setSubject] = useState(`${eventTitle} – Nachricht vom Organisator`);
   const [message, setMessage] = useState("");
   const [sending, setSending] = useState(false);
   const [result, setResult] = useState<{ success: boolean; text: string } | null>(null);
@@ -37,7 +40,7 @@ export function EventMailDialog({ eventId, totalInvites, acceptedCount }: EventM
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           type,
-          ...(type === "custom" ? { message } : {}),
+          ...(type === "custom" ? { subject: subject.trim(), message } : {}),
         }),
       });
 
@@ -106,13 +109,26 @@ export function EventMailDialog({ eventId, totalInvites, acceptedCount }: EventM
                 Personen gesendet (alle ausser dir)
               </span>
             </div>
-            <Textarea
-              placeholder="Deine Nachricht an alle Teilnehmer..."
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              rows={5}
-              className="resize-none"
-            />
+            <div className="space-y-1.5">
+              <Label htmlFor="mail-subject">Betreff</Label>
+              <Input
+                id="mail-subject"
+                value={subject}
+                onChange={(e) => setSubject(e.target.value)}
+                placeholder="Betreff der E-Mail"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="mail-message">Nachricht</Label>
+              <Textarea
+                id="mail-message"
+                placeholder="Deine Nachricht an alle Teilnehmer..."
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                rows={5}
+                className="resize-none"
+              />
+            </div>
             <Button
               onClick={() => handleSend("custom")}
               disabled={sending || !message.trim()}
