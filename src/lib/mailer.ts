@@ -230,3 +230,104 @@ BoardGameTools`,
     `),
   });
 }
+
+// ────────────────────────────────────────────
+// Event: Custom-Nachricht an Teilnehmer
+// ────────────────────────────────────────────
+
+interface CustomEventMessageOptions {
+  to: string;
+  eventTitle: string;
+  eventDate: Date | string;
+  location?: string | null;
+  senderName: string;
+  message: string;
+  eventUrl: string;
+}
+
+export async function sendCustomEventMessage(opts: CustomEventMessageOptions) {
+  const t = ensureTransporter();
+  const { to, eventTitle, eventDate, location, senderName, message, eventUrl } = opts;
+  const dateStr = formatDate(eventDate);
+
+  await t.sendMail({
+    from: defaultSender,
+    to,
+    subject: `${eventTitle} – Nachricht von ${senderName}`,
+    text: `Hallo,
+
+${senderName} hat eine Nachricht zum Spieleabend "${eventTitle}" geschickt:
+
+"${message}"
+
+📅 Datum: ${dateStr}
+${location ? `📍 Ort: ${location}` : ""}
+
+Zum Event:
+${eventUrl}
+
+Viele Grüße
+BoardGameTools`,
+    html: htmlLayout(`
+      <h2 style="color:#1a1a2e;margin:0 0 8px;">Nachricht zum Spieleabend ✉️</h2>
+      <p><strong>${senderName}</strong> schreibt zum Event:</p>
+      <div style="background:#f8f8fc;border-radius:8px;padding:16px;margin:16px 0;">
+        <p style="margin:0 0 4px;font-size:18px;font-weight:700;color:#4338ca;">${eventTitle}</p>
+        <p style="margin:0;color:#555;">📅 ${dateStr}</p>
+        ${location ? `<p style="margin:4px 0 0;color:#555;">📍 ${location}</p>` : ""}
+      </div>
+      <div style="background:#fffbeb;border-left:4px solid #f59e0b;border-radius:4px;padding:16px;margin:16px 0;font-size:15px;color:#1a1a2e;">
+        ${message.replace(/\n/g, "<br>")}
+      </div>
+      <p>${buttonHtml(eventUrl, "Event ansehen")}</p>
+    `),
+  });
+}
+
+// ────────────────────────────────────────────
+// Event: Erinnerung an bevorstehenden Spieleabend
+// ────────────────────────────────────────────
+
+interface EventUpcomingReminderOptions {
+  to: string;
+  eventTitle: string;
+  eventDate: Date | string;
+  location?: string | null;
+  organizerName: string;
+  eventUrl: string;
+}
+
+export async function sendEventUpcomingReminder(opts: EventUpcomingReminderOptions) {
+  const t = ensureTransporter();
+  const { to, eventTitle, eventDate, location, organizerName, eventUrl } = opts;
+  const dateStr = formatDate(eventDate);
+
+  await t.sendMail({
+    from: defaultSender,
+    to,
+    subject: `Nicht vergessen: ${eventTitle} steht an!`,
+    text: `Hallo,
+
+nur eine kurze Erinnerung: Der Spieleabend "${eventTitle}" von ${organizerName} steht bald an!
+
+📅 Datum: ${dateStr}
+${location ? `📍 Ort: ${location}` : ""}
+
+Wir freuen uns auf dich!
+${eventUrl}
+
+Viele Grüße
+BoardGameTools`,
+    html: htmlLayout(`
+      <h2 style="color:#1a1a2e;margin:0 0 8px;">Spieleabend steht an! 🎲</h2>
+      <p>Nur eine kurze Erinnerung an den bevorstehenden Spieleabend von <strong>${organizerName}</strong>:</p>
+      <div style="background:#f0fdf4;border-radius:8px;padding:16px;margin:16px 0;border:1px solid #bbf7d0;">
+        <p style="margin:0 0 4px;font-size:18px;font-weight:700;color:#4338ca;">${eventTitle}</p>
+        <p style="margin:0;color:#555;">📅 ${dateStr}</p>
+        ${location ? `<p style="margin:4px 0 0;color:#555;">📍 ${location}</p>` : ""}
+      </div>
+      <p>Wir freuen uns auf dich!</p>
+      <p>${buttonHtml(eventUrl, "Event ansehen")}</p>
+    `),
+  });
+}

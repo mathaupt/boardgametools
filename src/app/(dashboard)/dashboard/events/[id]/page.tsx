@@ -24,6 +24,7 @@ import {
 import Link from "next/link";
 import VotingClient from "./voting-client";
 import DatePollClient from "./date-poll-client";
+import { EventMailDialog } from "@/components/event-mail-dialog";
 
 export default async function EventDetailPage({
   params,
@@ -92,6 +93,7 @@ export default async function EventDetailPage({
   const isPast = eventDate < new Date();
   const publicUrl = event.shareToken ? `${getPublicBaseUrl()}/public/event/${event.shareToken}` : null;
   const guestVoteCount = event.guestParticipants.reduce((sum, guest) => sum + (guest._count?.votes ?? 0), 0);
+  const acceptedCount = event.invites.filter((inv) => inv.status === "accepted").length;
 
   // Get user votes for each proposal
   const userVotes = userId ? await prisma.vote.findMany({
@@ -121,6 +123,11 @@ export default async function EventDetailPage({
         <div className="flex gap-2">
           {isCreator && !isPast && (
             <>
+              <EventMailDialog
+                eventId={event.id}
+                totalInvites={event.invites.length}
+                acceptedCount={acceptedCount}
+              />
               <Link href={`/dashboard/events/${event.id}/invite`}>
                 <Button variant="outline">
                   <Mail className="h-4 w-4 mr-2" />
