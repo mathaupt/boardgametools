@@ -9,7 +9,7 @@ export default async function ProfilePage() {
 
   const userId = session.user.id;
 
-  const [user, invites, events, groups] = await Promise.all([
+  const [user, invites, events, groups, comments, sessionsWithNotes] = await Promise.all([
     prisma.user.findUnique({
       where: { id: userId },
       select: {
@@ -67,6 +67,27 @@ export default async function ProfilePage() {
       },
       orderBy: { joinedAt: "desc" },
     }),
+
+    // Meine Kommentare in Gruppen/Polls
+    prisma.groupComment.findMany({
+      where: { userId },
+      include: {
+        group: { select: { id: true, name: true } },
+        poll: { select: { id: true, title: true } },
+      },
+      orderBy: { createdAt: "desc" },
+      take: 50,
+    }),
+
+    // Meine Sessions mit Notizen
+    prisma.gameSession.findMany({
+      where: { createdById: userId, notes: { not: null } },
+      include: {
+        game: { select: { id: true, name: true } },
+      },
+      orderBy: { playedAt: "desc" },
+      take: 20,
+    }),
   ]);
 
   if (!user) redirect("/login");
@@ -102,6 +123,24 @@ export default async function ProfilePage() {
         pollCount: gm.group._count.polls,
         joinedAt: gm.joinedAt.toISOString(),
       }))}
+      comments={comments.map((c) => ({
+        id: c.id,
+        content: c.content,
+        createdAt: c.createdAt.toISOString(),
+        groupId: c.group.id,
+        groupName: c.group.name,
+        pollId: c.pollId,
+        pollTitle: c.poll?.title ?? null,
+      }))}
+      sessionNotes={sessionsWithNotes
+        .filter((s) => s.notes)
+        .map((s) => ({
+          id: s.id,
+          notes: s.notes!,
+          playedAt: s.playedAt.toISOString(),
+          gameId: s.game.id,
+          gameName: s.game.name,
+        }))}
     />
   );
 }
