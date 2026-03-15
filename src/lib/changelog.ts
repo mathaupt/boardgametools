@@ -11,6 +11,23 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.13.0",
+    date: "2026-03-15",
+    title: "Benutzerprofil & Passwort zurücksetzen",
+    description: "Neues Benutzerprofil mit Kommunikationsübersicht und vollständiger Passwort-Zurücksetzen-Funktion per E-Mail.",
+    changes: [
+      { type: "feature", text: "Benutzerprofilseite mit bearbeitbarem Namen und E-Mail" },
+      { type: "feature", text: "Passwort ändern direkt im Profil (mit Verifizierung des aktuellen Passworts)" },
+      { type: "feature", text: "Kommunikationsübersicht: eigene Gruppen-Kommentare und Session-Notizen auf einen Blick" },
+      { type: "feature", text: "Ausklappbare \"Meine Nachrichten\"-Sektion mit Verlinkung zu Gruppen und Sessions" },
+      { type: "feature", text: "\"Passwort vergessen?\"-Funktion auf der Login-Seite" },
+      { type: "feature", text: "Passwort-Reset per E-Mail mit zeitlich begrenztem Token (60 Min.)" },
+      { type: "feature", text: "Neue Seite zum Zurücksetzen des Passworts mit Validierung" },
+      { type: "improvement", text: "Benutzername in der Navbar ist jetzt klickbar und führt zum Profil" },
+      { type: "improvement", text: "Übersicht über Events, Einladungen und Gruppen-Mitgliedschaften im Profil" },
+    ],
+  },
+  {
     version: "0.12.0",
     date: "2026-03-15",
     title: "API Monitoring & Anomalie-Erkennung",
