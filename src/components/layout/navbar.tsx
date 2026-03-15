@@ -41,23 +41,73 @@ export function Navbar() {
   const isAdmin = session?.user?.role === "ADMIN";
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80 lg:hidden">
-      <div className="px-4">
+    <header className="sticky top-0 z-50 w-full border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80">
+      <div className="container mx-auto px-4">
         <div className="flex h-14 items-center justify-between">
           {/* Logo */}
           <Link href="/dashboard" className="flex items-center gap-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
               <Dice6 className="h-4.5 w-4.5 text-primary" />
             </div>
-            <span className="font-bold text-lg text-foreground">BGT</span>
+            <span className="font-bold text-lg text-foreground hidden md:inline">BoardGameTools</span>
+            <span className="font-bold text-lg text-foreground md:hidden">BGT</span>
           </Link>
+
+          {/* Desktop Navigation */}
+          <nav className="hidden lg:flex items-center space-x-1">
+            {navigation.map((item) => {
+              const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
+              return (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  className={cn(
+                    "flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors",
+                    isActive
+                      ? "bg-primary text-primary-foreground"
+                      : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                  )}
+                  aria-label={`Navigate to ${item.name}`}
+                >
+                  <item.icon className="h-4 w-4" />
+                  <span>{item.name}</span>
+                </Link>
+              );
+            })}
+
+            {/* Admin Navigation */}
+            {isAdmin && (
+              <>
+                <div className="w-px h-6 bg-border mx-2" />
+                {adminNavigation.map((item) => {
+                  const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
+                  return (
+                    <Link
+                      key={item.name}
+                      href={item.href}
+                      className={cn(
+                        "flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors",
+                        isActive
+                          ? "bg-primary text-primary-foreground"
+                          : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                      )}
+                      aria-label={`Navigate to ${item.name}`}
+                    >
+                      <item.icon className="h-4 w-4" />
+                      <span>{item.name}</span>
+                    </Link>
+                  );
+                })}
+              </>
+            )}
+          </nav>
 
           {/* Mobile Menu Toggle */}
           <Button
             variant="ghost"
             size="sm"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="h-9 w-9 p-0"
+            className="h-9 w-9 p-0 lg:hidden"
             aria-label="Navigation umschalten"
           >
             {mobileMenuOpen ? (
@@ -70,7 +120,7 @@ export function Navbar() {
 
         {/* Mobile Navigation Dropdown */}
         {mobileMenuOpen && (
-          <nav className="pb-4 pt-2 border-t space-y-0.5">
+          <nav className="pb-4 pt-2 border-t space-y-0.5 lg:hidden">
             {navigation.map((item) => {
               const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
               return (
