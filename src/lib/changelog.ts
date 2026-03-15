@@ -22,6 +22,7 @@ export const changelog: ChangelogEntry[] = [
       { type: "feature", text: "Öffentlicher Link zum Teilen – Abstimmen und Kommentieren ohne Login" },
       { type: "feature", text: "Optionaler Passwortschutz für öffentliche Gruppenseiten" },
       { type: "feature", text: "Echtzeit-Balkendiagramme mit Stimmverteilung und Teilnehmernamen" },
+      { type: "feature", text: "Spiele als Umfrageoptionen: aus eigener Sammlung wählen oder per BGG-Suche importieren" },
     ],
   },
   {
