@@ -4,6 +4,15 @@ export const buildPublicEventInclude = (userId?: string | null): Prisma.EventInc
   createdBy: {
     select: { id: true, name: true },
   },
+  invites: {
+    select: {
+      id: true,
+      status: true,
+      email: true,
+      user: { select: { name: true } },
+    },
+    orderBy: { invitedAt: "asc" },
+  },
   selectedGame: {
     select: {
       id: true,
@@ -70,6 +79,10 @@ export interface SerializedPublicEvent {
   shareToken: string | null;
   isPublic: boolean;
   createdBy: { id: string; name: string | null };
+  invites: Array<{
+    name: string;
+    status: string;
+  }>;
   selectedGame: {
     id: string;
     name: string;
@@ -132,6 +145,10 @@ export function serializePublicEvent(
     shareToken: event.shareToken,
     isPublic: event.isPublic,
     createdBy: event.createdBy,
+    invites: (event.invites ?? []).map((invite: any) => ({
+      name: invite.user?.name || (invite.email ? invite.email.replace(/(.{2}).*(@.*)/, "$1***$2") : "Gast"),
+      status: invite.status,
+    })),
     selectedGame: event.selectedGame,
     proposals: event.proposals.map((proposal: any) => {
       const registeredVotes = proposal._count.votes;
