@@ -228,13 +228,21 @@ export function Navbar() {
         >
           {session?.user && (
             <>
-              <div
+              <Link
+                href="/dashboard/profile"
+                title="Mein Profil"
                 style={{
                   display: "flex",
                   alignItems: "center",
                   gap: "6px",
                   fontSize: "13px",
-                  color: "var(--foreground)",
+                  color: pathname.startsWith("/dashboard/profile")
+                    ? "var(--primary)"
+                    : "var(--foreground)",
+                  textDecoration: "none",
+                  borderRadius: "6px",
+                  padding: "4px 8px",
+                  transition: "background-color 0.15s, color 0.15s",
                 }}
               >
                 <div
@@ -245,7 +253,9 @@ export function Navbar() {
                     alignItems: "center",
                     justifyContent: "center",
                     borderRadius: "50%",
-                    backgroundColor: "oklch(0.48 0.2 265 / 0.1)",
+                    backgroundColor: pathname.startsWith("/dashboard/profile")
+                      ? "oklch(0.48 0.2 265 / 0.15)"
+                      : "oklch(0.48 0.2 265 / 0.1)",
                   }}
                 >
                   <User
@@ -259,7 +269,7 @@ export function Navbar() {
                 <span className="nav-label" style={{ fontWeight: 500 }}>
                   {session.user.name || session.user.email}
                 </span>
-              </div>
+              </Link>
               <button
                 onClick={() => signOut({ callbackUrl: "/login" })}
                 title="Abmelden"
