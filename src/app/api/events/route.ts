@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
 import { sendEventInviteEmail } from "@/lib/mailer";
 import { getPublicBaseUrl } from "@/lib/public-link";
+import { encryptId } from "@/lib/crypto";
 
 export async function GET(request: NextRequest) {
   const session = await auth();
@@ -133,16 +134,22 @@ export async function POST(request: NextRequest) {
     });
 
     // Sende Einladungs-Mails an alle eingeladenen User (nicht an Organisator)
-    const eventUrl = `${getPublicBaseUrl()}/dashboard/events/${newEvent.id}`;
+    const base = getPublicBaseUrl();
     const inviterName = session.user.name || session.user.email || "Jemand";
 
     for (const invite of newEvent.invites) {
       if (invite.userId === session.user.id) continue; // Organisator nicht mailen
-      const email = invite.user?.email;
-      if (!email) continue;
+      const recipientEmail = invite.user?.email || invite.email;
+      if (!recipientEmail) continue;
+
+      // Registrierte User → Dashboard, externe → öffentliche Invite-Seite
+      const eventUrl = invite.userId
+        ? `${base}/dashboard/events/${newEvent.id}`
+        : `${base}/public/invite/${encryptId(invite.id)}`;
+
       try {
         await sendEventInviteEmail({
-          to: email,
+          to: recipientEmail,
           eventTitle: title,
           eventDate: new Date(eventDate),
           location: location || null,
@@ -150,7 +157,7 @@ export async function POST(request: NextRequest) {
           eventUrl,
         });
       } catch (mailErr) {
-        console.error(`Failed to send invite email to ${email}:`, mailErr);
+        console.error(`Failed to send invite email to ${recipientEmail}:`, mailErr);
       }
     }
 

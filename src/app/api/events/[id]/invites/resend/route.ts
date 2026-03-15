@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
 import { sendEventReminderEmail } from "@/lib/mailer";
 import { getPublicBaseUrl } from "@/lib/public-link";
+import { encryptId } from "@/lib/crypto";
 
 export async function POST(
   request: NextRequest,
@@ -53,7 +54,11 @@ export async function POST(
       return NextResponse.json({ error: "No email address for invite" }, { status: 400 });
     }
 
-    const eventUrl = `${getPublicBaseUrl()}/dashboard/events/${id}`;
+    // Registrierte User → Dashboard, externe → öffentliche Invite-Seite
+    const base = getPublicBaseUrl();
+    const eventUrl = invite.userId
+      ? `${base}/dashboard/events/${id}`
+      : `${base}/public/invite/${encryptId(invite.id)}`;
 
     await sendEventReminderEmail({
       to: recipientEmail,

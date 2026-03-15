@@ -3,6 +3,17 @@ import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
 import { sendEventInviteEmail, sendInviteResponseEmail } from "@/lib/mailer";
 import { getPublicBaseUrl } from "@/lib/public-link";
+import { encryptId } from "@/lib/crypto";
+
+function buildInviteUrl(invite: { id: string; userId: string | null }, eventId: string) {
+  const base = getPublicBaseUrl();
+  // Registrierte User → Dashboard, externe → öffentliche Invite-Seite
+  if (invite.userId) {
+    return `${base}/dashboard/events/${eventId}`;
+  }
+  const token = encryptId(invite.id);
+  return `${base}/public/invite/${token}`;
+}
 
 export async function POST(
   request: NextRequest,
@@ -34,57 +45,57 @@ export async function POST(
       return NextResponse.json({ error: "Event not found" }, { status: 404 });
     }
 
-    // Ziel-User ermitteln (entweder über userId oder E-Mail)
+    // Ziel-User ermitteln (falls vorhanden)
     const targetUser = userId
       ? await prisma.user.findUnique({ where: { id: userId } })
-      : await prisma.user.findUnique({ where: { email } });
+      : email
+        ? await prisma.user.findUnique({ where: { email } })
+        : null;
 
-    if (!targetUser) {
-      return NextResponse.json({ 
-        error: "User not found - only existing users can be invited" 
-      }, { status: 404 });
-    }
-
-    // Prüfe ob User bereits eingeladen ist
-    const existingInvite = await prisma.eventInvite.findFirst({
-      where: { 
-        eventId: id,
-        userId: targetUser.id,
+    // Prüfe ob bereits eingeladen
+    if (targetUser) {
+      const existing = await prisma.eventInvite.findFirst({
+        where: { eventId: id, userId: targetUser.id },
+      });
+      if (existing) {
+        return NextResponse.json({ error: "User already invited" }, { status: 400 });
       }
-    });
-
-    if (existingInvite) {
-      return NextResponse.json({ 
-        error: "User already invited" 
-      }, { status: 400 });
+    } else if (email) {
+      const existing = await prisma.eventInvite.findFirst({
+        where: { eventId: id, email },
+      });
+      if (existing) {
+        return NextResponse.json({ error: "Email already invited" }, { status: 400 });
+      }
     }
 
-    // Erstelle Einladung
+    // Erstelle Einladung (mit User-Verknüpfung oder nur E-Mail)
     const invite = await prisma.eventInvite.create({
       data: {
         eventId: id,
-        userId: targetUser.id,
-        status: "pending"
+        userId: targetUser?.id || null,
+        email: targetUser ? null : email,
+        status: "pending",
       },
-      include: {
-        user: true
-      }
+      include: { user: true },
     });
 
     // Sende Einladungs-Mail
-    const eventUrl = `${getPublicBaseUrl()}/dashboard/events/${id}`;
-    try {
-      await sendEventInviteEmail({
-        to: targetUser.email,
-        eventTitle: event.title,
-        eventDate: event.eventDate,
-        location: event.location,
-        inviterName: session.user.name || session.user.email || "Jemand",
-        eventUrl,
-      });
-    } catch (mailErr) {
-      console.error("Failed to send invite email:", mailErr);
-      // Einladung wurde erstellt, Mail-Fehler nicht kritisch
+    const recipientEmail = targetUser?.email || email;
+    if (recipientEmail) {
+      const eventUrl = buildInviteUrl(invite, id);
+      try {
+        await sendEventInviteEmail({
+          to: recipientEmail,
+          eventTitle: event.title,
+          eventDate: event.eventDate,
+          location: event.location,
+          inviterName: session.user.name || session.user.email || "Jemand",
+          eventUrl,
+        });
+      } catch (mailErr) {
+        console.error("Failed to send invite email:", mailErr);
+      }
     }
 
     return NextResponse.json(invite, { status: 201 });
@@ -94,7 +105,7 @@ export async function POST(
   }
 }
 
-// Einladung annehmen oder ablehnen
+// Einladung annehmen oder ablehnen (für eingeloggte User)
 export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
