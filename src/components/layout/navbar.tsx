@@ -15,6 +15,7 @@ import {
   Library,
   LogOut,
   User,
+  HelpCircle,
 } from "lucide-react";
 import { useSession, signOut } from "next-auth/react";
 import { currentVersion } from "@/lib/changelog";
@@ -27,6 +28,7 @@ const navigation = [
   { name: "Events", href: "/dashboard/events", icon: Vote },
   { name: "Gruppen", href: "/dashboard/groups", icon: Users },
   { name: "Statistiken", href: "/dashboard/statistics", icon: BarChart3 },
+  { name: "FAQ", href: "/dashboard/faq", icon: HelpCircle },
 ];
 
 const adminNavigation = [

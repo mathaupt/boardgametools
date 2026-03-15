@@ -11,6 +11,18 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.11.0",
+    date: "2026-03-15",
+    title: "FAQ & Anleitung",
+    description: "Eine neue FAQ-Seite erklärt alle Features und beantwortet häufige Fragen direkt in der App.",
+    changes: [
+      { type: "feature", text: "FAQ-Seite mit Anleitungen zu allen Features (Spiele, Events, Gruppen, Sessions)" },
+      { type: "feature", text: "Aufklappbare Fragen & Antworten mit Accordion-Komponente" },
+      { type: "feature", text: "Schnellnavigation zu den einzelnen Themenbereichen" },
+      { type: "feature", text: "FAQ-Link in der Hauptnavigation" },
+    ],
+  },
+  {
     version: "0.10.0",
     date: "2026-03-15",
     title: "Spielergruppen mit Abstimmungen",
