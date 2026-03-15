@@ -28,7 +28,7 @@ export function EventMailDialog({ eventId, eventTitle, totalInvites, acceptedCou
   const [subject, setSubject] = useState(`${eventTitle} – Nachricht vom Organisator`);
   const [message, setMessage] = useState("");
   const [sending, setSending] = useState(false);
-  const [result, setResult] = useState<{ success: boolean; text: string } | null>(null);
+  const [result, setResult] = useState<{ success: boolean; text: string; details?: string[] } | null>(null);
 
   async function handleSend(type: "custom" | "reminder") {
     setSending(true);
@@ -51,8 +51,13 @@ export function EventMailDialog({ eventId, eventTitle, totalInvites, acceptedCou
         return;
       }
 
-      setResult({ success: true, text: data.message });
-      if (type === "custom") setMessage("");
+      const isSuccess = data.failedCount === 0;
+      setResult({
+        success: isSuccess,
+        text: data.message,
+        details: data.errors,
+      });
+      if (type === "custom" && isSuccess) setMessage("");
     } catch {
       setResult({ success: false, text: "Netzwerkfehler beim Senden" });
     } finally {
@@ -184,18 +189,27 @@ export function EventMailDialog({ eventId, eventTitle, totalInvites, acceptedCou
 
         {result && (
           <div
-            className={`flex items-center gap-2 rounded-lg border p-3 text-sm ${
+            className={`rounded-lg border p-3 text-sm ${
               result.success
                 ? "border-green-200 bg-green-50 text-green-800 dark:border-green-800 dark:bg-green-950 dark:text-green-200"
                 : "border-red-200 bg-red-50 text-red-800 dark:border-red-800 dark:bg-red-950 dark:text-red-200"
             }`}
           >
-            {result.success ? (
-              <CheckCircle className="h-4 w-4 shrink-0" />
-            ) : (
-              <AlertCircle className="h-4 w-4 shrink-0" />
+            <div className="flex items-center gap-2">
+              {result.success ? (
+                <CheckCircle className="h-4 w-4 shrink-0" />
+              ) : (
+                <AlertCircle className="h-4 w-4 shrink-0" />
+              )}
+              {result.text}
+            </div>
+            {result.details && result.details.length > 0 && (
+              <ul className="mt-2 ml-6 list-disc space-y-1 text-xs opacity-80">
+                {result.details.map((d, i) => (
+                  <li key={i}>{d}</li>
+                ))}
+              </ul>
             )}
-            {result.text}
           </div>
         )}
       </DialogContent>

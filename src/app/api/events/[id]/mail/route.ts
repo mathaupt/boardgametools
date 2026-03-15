@@ -55,6 +55,7 @@ export async function POST(
     const senderName = session.user.name || session.user.email || "Der Organisator";
     let sentCount = 0;
     let failedCount = 0;
+    const errors: string[] = [];
 
     // Empfänger bestimmen
     const recipients = type === "reminder"
@@ -91,7 +92,9 @@ export async function POST(
         }
         sentCount++;
       } catch (mailErr) {
-        console.error(`Failed to send mail to ${recipientEmail}:`, mailErr);
+        const errMsg = mailErr instanceof Error ? mailErr.message : String(mailErr);
+        console.error(`Failed to send mail to ${recipientEmail}:`, errMsg);
+        errors.push(`${recipientEmail}: ${errMsg}`);
         failedCount++;
       }
     }
@@ -103,6 +106,7 @@ export async function POST(
       sentCount,
       failedCount,
       totalRecipients: recipients.length,
+      ...(errors.length > 0 ? { errors } : {}),
     });
   } catch (error) {
     console.error("Error sending event mail:", error);
