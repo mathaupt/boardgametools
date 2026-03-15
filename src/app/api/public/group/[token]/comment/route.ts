@@ -1,0 +1,46 @@
+import { NextRequest, NextResponse } from "next/server";
+import { findPublicGroupByToken } from "@/lib/group-share";
+import prisma from "@/lib/db";
+
+export async function POST(
+  request: NextRequest,
+  { params }: { params: Promise<{ token: string }> }
+) {
+  const { token } = await params;
+
+  try {
+    const group = await findPublicGroupByToken(token, {});
+
+    if (!group) {
+      return NextResponse.json({ error: "Group not found" }, { status: 404 });
+    }
+
+    const body = await request.json();
+    const { content, pollId, authorName, password } = body;
+
+    // Check password if set
+    if (group.password && group.password !== password) {
+      return NextResponse.json({ error: "Invalid password" }, { status: 403 });
+    }
+
+    if (!content || !content.trim() || !authorName || !authorName.trim()) {
+      return NextResponse.json({ 
+        error: "content and authorName are required" 
+      }, { status: 400 });
+    }
+
+    const comment = await prisma.groupComment.create({
+      data: {
+        groupId: group.id,
+        pollId: pollId || null,
+        authorName: authorName.trim(),
+        content: content.trim(),
+      },
+    });
+
+    return NextResponse.json(comment, { status: 201 });
+  } catch (error) {
+    console.error("Error creating comment:", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  }
+}

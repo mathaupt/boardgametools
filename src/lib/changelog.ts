@@ -11,6 +11,20 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.10.0",
+    date: "2026-03-15",
+    title: "Spielergruppen mit Abstimmungen",
+    description: "Gruppen können jetzt Umfragen und Abstimmungen durchführen. Über einen öffentlichen Link können auch Nicht-Mitglieder abstimmen und kommentieren.",
+    changes: [
+      { type: "feature", text: "Spielergruppen erstellen und verwalten mit Mitgliederverwaltung" },
+      { type: "feature", text: "Umfragen mit Einzel- oder Mehrfachwahl innerhalb von Gruppen" },
+      { type: "feature", text: "Kommentare zu Abstimmungen und auf Gruppenebene" },
+      { type: "feature", text: "Öffentlicher Link zum Teilen – Abstimmen und Kommentieren ohne Login" },
+      { type: "feature", text: "Optionaler Passwortschutz für öffentliche Gruppenseiten" },
+      { type: "feature", text: "Echtzeit-Balkendiagramme mit Stimmverteilung und Teilnehmernamen" },
+    ],
+  },
+  {
     version: "0.9.0",
     date: "2026-03-15",
     title: "Versionshistorie",
