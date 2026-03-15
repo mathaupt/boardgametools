@@ -43,18 +43,18 @@ export function Navbar() {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80">
       <div className="container mx-auto px-4">
-        <div className="flex h-14 items-center justify-between">
+        <div className="flex h-14 items-center gap-4">
           {/* Logo */}
-          <Link href="/dashboard" className="flex items-center gap-2">
+          <Link href="/dashboard" className="flex items-center gap-2 shrink-0">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
               <Dice6 className="h-4.5 w-4.5 text-primary" />
             </div>
-            <span className="font-bold text-lg text-foreground hidden md:inline">BoardGameTools</span>
-            <span className="font-bold text-lg text-foreground md:hidden">BGT</span>
+            <span className="font-bold text-lg text-foreground hidden lg:inline">BoardGameTools</span>
+            <span className="font-bold text-lg text-foreground lg:hidden">BGT</span>
           </Link>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center space-x-1">
+          {/* Desktop Navigation - static horizontal, visible on md+ */}
+          <nav className="hidden md:flex items-center gap-1 flex-1 min-w-0">
             {navigation.map((item) => {
               const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
               return (
@@ -62,15 +62,16 @@ export function Navbar() {
                   key={item.name}
                   href={item.href}
                   className={cn(
-                    "flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors",
+                    "flex items-center gap-1.5 px-2.5 py-2 rounded-md text-sm font-medium transition-colors shrink-0",
                     isActive
                       ? "bg-primary text-primary-foreground"
                       : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
                   )}
+                  title={item.name}
                   aria-label={`Navigate to ${item.name}`}
                 >
                   <item.icon className="h-4 w-4" />
-                  <span>{item.name}</span>
+                  <span className="hidden lg:inline">{item.name}</span>
                 </Link>
               );
             })}
@@ -78,7 +79,7 @@ export function Navbar() {
             {/* Admin Navigation */}
             {isAdmin && (
               <>
-                <div className="w-px h-6 bg-border mx-2" />
+                <div className="w-px h-6 bg-border mx-1" />
                 {adminNavigation.map((item) => {
                   const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
                   return (
@@ -86,15 +87,16 @@ export function Navbar() {
                       key={item.name}
                       href={item.href}
                       className={cn(
-                        "flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors",
+                        "flex items-center gap-1.5 px-2.5 py-2 rounded-md text-sm font-medium transition-colors shrink-0",
                         isActive
                           ? "bg-primary text-primary-foreground"
                           : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
                       )}
+                      title={item.name}
                       aria-label={`Navigate to ${item.name}`}
                     >
                       <item.icon className="h-4 w-4" />
-                      <span>{item.name}</span>
+                      <span className="hidden lg:inline">{item.name}</span>
                     </Link>
                   );
                 })}
@@ -103,24 +105,29 @@ export function Navbar() {
           </nav>
 
           {/* Mobile Menu Toggle */}
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="h-9 w-9 p-0 lg:hidden"
-            aria-label="Navigation umschalten"
-          >
-            {mobileMenuOpen ? (
-              <X className="h-5 w-5" />
-            ) : (
-              <Menu className="h-5 w-5" />
-            )}
-          </Button>
+          <div className="ml-auto md:hidden">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="h-9 w-9 p-0"
+              aria-label="Navigation umschalten"
+              aria-expanded={mobileMenuOpen}
+            >
+              {mobileMenuOpen ? (
+                <X className="h-5 w-5" />
+              ) : (
+                <Menu className="h-5 w-5" />
+              )}
+            </Button>
+          </div>
         </div>
+      </div>
 
-        {/* Mobile Navigation Dropdown */}
-        {mobileMenuOpen && (
-          <nav className="pb-4 pt-2 border-t space-y-0.5 lg:hidden">
+      {/* Mobile Navigation Dropdown */}
+      {mobileMenuOpen && (
+        <div className="md:hidden border-t bg-card">
+          <nav className="container mx-auto px-4 pb-4 pt-2 space-y-0.5">
             {navigation.map((item) => {
               const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
               return (
@@ -172,8 +179,8 @@ export function Navbar() {
               </>
             )}
           </nav>
-        )}
-      </div>
+        </div>
+      )}
     </header>
   );
 }
