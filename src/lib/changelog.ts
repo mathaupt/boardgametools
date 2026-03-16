@@ -11,6 +11,19 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.13.1",
+    date: "2026-03-16",
+    title: "Bugfixes & Stabilität",
+    description: "Behebung von Darstellungsproblemen bei Formularfeldern mit Icons und Verbesserung der Ladezustände im Dashboard.",
+    changes: [
+      { type: "fix", text: "Icon-Überlagerung in Eingabefeldern behoben – Platzhaltertext wird nicht mehr von Icons verdeckt" },
+      { type: "fix", text: "CSS-Konflikt in der Input-Komponente behoben (tailwind-merge löst pl-Overrides jetzt korrekt auf)" },
+      { type: "improvement", text: "Skeleton-Ladeanimation für das Dashboard hinzugefügt – kein weißer Bildschirm mehr beim Laden" },
+      { type: "improvement", text: "Fehlerseite (Error Boundary) für den Dashboard-Bereich ergänzt mit \"Erneut versuchen\"-Button" },
+      { type: "fix", text: "Datenbank-Verbindungstimeout ergänzt, um endloses Laden bei DB-Problemen zu verhindern" },
+    ],
+  },
+  {
     version: "0.13.0",
     date: "2026-03-15",
     title: "Benutzerprofil & Passwort zurücksetzen",
