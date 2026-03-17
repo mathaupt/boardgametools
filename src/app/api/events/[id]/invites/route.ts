@@ -8,8 +8,8 @@ import { withApiLogging } from "@/lib/api-logger";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
-function buildInviteUrl(invite: { id: string; userId: string | null }, eventId: string) {
-  const base = getPublicBaseUrl();
+async function buildInviteUrl(invite: { id: string; userId: string | null }, eventId: string) {
+  const base = await getPublicBaseUrl();
   // Registrierte User → Dashboard, externe → öffentliche Invite-Seite
   if (invite.userId) {
     return `${base}/dashboard/events/${eventId}`;
@@ -86,7 +86,7 @@ export const POST = withApiLogging(async function POST(
     // Sende Einladungs-Mail
     const recipientEmail = targetUser?.email || email;
     if (recipientEmail) {
-      const eventUrl = buildInviteUrl(invite, id);
+      const eventUrl = await buildInviteUrl(invite, id);
       try {
         await sendEventInviteEmail({
           to: recipientEmail,
@@ -156,7 +156,7 @@ export const PUT = withApiLogging(async function PUT(
     });
 
     if (event && event.createdById !== session.user.id) {
-      const eventUrl = `${getPublicBaseUrl()}/dashboard/events/${id}`;
+      const eventUrl = `${await getPublicBaseUrl()}/dashboard/events/${id}`;
       try {
         await sendInviteResponseEmail({
           to: event.createdBy.email,

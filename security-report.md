@@ -2,9 +2,9 @@
 
 - Status: BESTANDEN
 - Fehler: 0
-- Warnungen: 3
-- Datum: 2026-03-15 17:38:44
+- Warnungen: 8
+- Datum: 2026-03-17 11:20:08
 - Branch: main
-- Commit: 271d44e
+- Commit: 58a7cf4
 
-Die folgenden OWASP-Kategorien wurden geprüft: A01, A02, A03, A05, A06, A07, A10.
+Geprüfte Kategorien: A01, A02, A03, A04, A05, A06, A07, A08, A09, A10, PII (Datenschutz).

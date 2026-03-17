@@ -36,7 +36,7 @@ export const POST = withApiLogging(async function POST(
       select: { id: true, shareToken: true },
     });
 
-    const publicUrl = `${getPublicBaseUrl()}/public/group/${updated.shareToken}`;
+    const publicUrl = `${await getPublicBaseUrl()}/public/group/${updated.shareToken}`;
 
     return NextResponse.json({ shareToken: updated.shareToken, publicUrl });
   } catch (error) {

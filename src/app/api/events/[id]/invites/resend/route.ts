@@ -58,7 +58,7 @@ export const POST = withApiLogging(async function POST(
     }
 
     // Registrierte User → Dashboard, externe → öffentliche Invite-Seite
-    const base = getPublicBaseUrl();
+    const base = await getPublicBaseUrl();
     const eventUrl = invite.userId
       ? `${base}/dashboard/events/${id}`
       : `${base}/public/invite/${encryptId(invite.id)}`;

@@ -63,7 +63,7 @@ export const POST = withApiLogging(async function POST(
     // Benachrichtige Organisator
     const event = invite.event;
     const responderName = name || invite.email || "Ein externer Gast";
-    const eventUrl = `${getPublicBaseUrl()}/dashboard/events/${event.id}`;
+    const eventUrl = `${await getPublicBaseUrl()}/dashboard/events/${event.id}`;
 
     try {
       await sendInviteResponseEmail({

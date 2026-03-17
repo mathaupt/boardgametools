@@ -48,7 +48,7 @@ export const POST = withApiLogging(async function POST(
       },
     });
 
-    const publicUrl = `${getPublicBaseUrl()}/public/event/${updatedEvent.shareToken}`;
+    const publicUrl = `${await getPublicBaseUrl()}/public/event/${updatedEvent.shareToken}`;
 
     return NextResponse.json({
       shareToken: updatedEvent.shareToken,

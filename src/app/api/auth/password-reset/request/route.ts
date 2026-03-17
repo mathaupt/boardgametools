@@ -5,10 +5,9 @@ import { sendPasswordResetEmail } from "@/lib/mailer";
 import { getPublicBaseUrl } from "@/lib/public-link";
 import { withApiLogging } from "@/lib/api-logger";
 
-const appUrl = getPublicBaseUrl();
-
 export const POST = withApiLogging(async function POST(request: Request) {
   try {
+    const appUrl = await getPublicBaseUrl();
     const { email } = await request.json();
 
     if (!email || typeof email !== "string") {

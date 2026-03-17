@@ -8,8 +8,8 @@ import { withApiLogging } from "@/lib/api-logger";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
-function buildEventUrl(invite: { id: string; userId: string | null }, eventId: string) {
-  const base = getPublicBaseUrl();
+async function buildEventUrl(invite: { id: string; userId: string | null }, eventId: string) {
+  const base = await getPublicBaseUrl();
   if (invite.userId) {
     return `${base}/dashboard/events/${eventId}`;
   }
@@ -69,7 +69,7 @@ export const POST = withApiLogging(async function POST(
       const recipientEmail = invite.user?.email || invite.email;
       if (!recipientEmail) continue;
 
-      const eventUrl = buildEventUrl(invite, id);
+      const eventUrl = await buildEventUrl(invite, id);
 
       try {
         if (type === "custom") {

@@ -135,7 +135,7 @@ export const POST = withApiLogging(async function POST(request: NextRequest) {
     });
 
     // Sende Einladungs-Mails an alle eingeladenen User (nicht an Organisator)
-    const base = getPublicBaseUrl();
+    const base = await getPublicBaseUrl();
     const inviterName = session.user.name || session.user.email || "Jemand";
 
     for (const invite of newEvent.invites) {

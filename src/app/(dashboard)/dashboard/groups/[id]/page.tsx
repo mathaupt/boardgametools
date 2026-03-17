@@ -70,7 +70,7 @@ export default async function GroupDetailPage({
   }
 
   const isOwner = group.ownerId === userId;
-  const publicUrl = group.shareToken ? `${getPublicBaseUrl()}/public/group/${group.shareToken}` : null;
+  const publicUrl = group.shareToken ? `${await getPublicBaseUrl()}/public/group/${group.shareToken}` : null;
 
   // Serialize dates for client component
   const serializedGroup = {

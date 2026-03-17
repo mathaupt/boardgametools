@@ -92,7 +92,7 @@ export default async function EventDetailPage({
   const isCreator = event.createdById === userId;
   const eventDate = new Date(event.eventDate);
   const isPast = eventDate < new Date();
-  const publicUrl = event.shareToken ? `${getPublicBaseUrl()}/public/event/${event.shareToken}` : null;
+  const publicUrl = event.shareToken ? `${await getPublicBaseUrl()}/public/event/${event.shareToken}` : null;
   const guestVoteCount = event.guestParticipants.reduce((sum, guest) => sum + (guest._count?.votes ?? 0), 0);
   const acceptedCount = event.invites.filter((inv) => inv.status === "accepted").length;
 

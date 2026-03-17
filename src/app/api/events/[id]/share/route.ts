@@ -37,7 +37,7 @@ export const POST = withApiLogging(async function POST(
       return NextResponse.json({ error: "Event not found" }, { status: 404 });
     }
 
-    const eventUrl = `${getPublicBaseUrl()}/dashboard/events/${id}`;
+    const eventUrl = `${await getPublicBaseUrl()}/dashboard/events/${id}`;
     const inviterName = session.user.name || session.user.email || "Jemand";
 
     // Erstelle Einladungen für alle User
