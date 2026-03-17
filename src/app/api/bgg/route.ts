@@ -118,6 +118,46 @@ export const GET = withApiLogging(async function GET(request: NextRequest) {
       };
 
       const games = parseSearchXML(xmlText);
+
+      // Batch-fetch thumbnails for top results (single API call)
+      if (games.length > 0) {
+        const ids = games.slice(0, 20).map((g: any) => g.bggId).join(",");
+        try {
+          const thumbRes = await fetch(
+            `https://boardgamegeek.com/xmlapi2/thing?id=${ids}`,
+            {
+              headers: {
+                'Authorization': `Bearer ${process.env.BGG_AUTH_TOKEN}`,
+                'User-Agent': 'BoardGameTools/1.0 (https://boardgametools.example.com)',
+                'Accept': 'application/xml',
+              },
+            }
+          );
+          if (thumbRes.ok) {
+            const thumbXml = await thumbRes.text();
+            // Parse thumbnail URLs per item
+            const itemRegex = /<item[^>]*id="(\d+)"[^>]*>[\s\S]*?<\/item>/g;
+            let match;
+            const thumbMap: Record<string, string> = {};
+            while ((match = itemRegex.exec(thumbXml)) !== null) {
+              const itemId = match[1];
+              const thumbMatch = match[0].match(/<thumbnail[^>]*>([^<]*)<\/thumbnail>/);
+              const imgMatch = match[0].match(/<image[^>]*>([^<]*)<\/image>/);
+              const url = thumbMatch?.[1] || imgMatch?.[1];
+              if (url) thumbMap[itemId] = url;
+            }
+            for (const game of games) {
+              if (thumbMap[game.bggId]) {
+                game.imageUrl = thumbMap[game.bggId];
+              }
+            }
+          }
+        } catch (thumbErr) {
+          // Thumbnails are optional – don't fail the search
+          console.warn("Failed to fetch BGG thumbnails:", thumbErr);
+        }
+      }
+
       return NextResponse.json(games);
     } else {
       return NextResponse.json({ error: "Missing query parameter" }, { status: 400 });

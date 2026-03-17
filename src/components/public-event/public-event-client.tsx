@@ -53,6 +53,7 @@ interface BggSearchResult {
   name: string;
   yearPublished?: string;
   type?: string;
+  imageUrl?: string;
 }
 
 interface BggGameDetail {
@@ -615,19 +616,19 @@ export function PublicEventClient({ token, event }: PublicEventClientProps) {
                   <CardHeader>
                     <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                       <div className="flex items-start gap-4">
-                        <div className="hidden md:block">
+                        <div className="flex-shrink-0">
                           {proposal.game.imageUrl ? (
                             <img
                               src={proposal.game.imageUrl}
                               alt={proposal.game.name}
-                              className="h-14 w-14 rounded-lg object-cover"
+                              className="h-10 w-10 rounded-lg object-cover md:h-14 md:w-14"
                               onError={(event) => {
                                 event.currentTarget.src = "/placeholder-game.png";
                               }}
                             />
                           ) : (
-                            <div className="flex h-14 w-14 items-center justify-center rounded-lg bg-muted/40">
-                              <Gamepad2 className="h-6 w-6 text-muted-foreground" />
+                            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted/40 md:h-14 md:w-14">
+                              <Gamepad2 className="h-5 w-5 text-muted-foreground md:h-6 md:w-6" />
                             </div>
                           )}
                         </div>
@@ -1066,8 +1067,24 @@ export function PublicEventClient({ token, event }: PublicEventClientProps) {
                   {bggResults.map((result) => (
                     <div
                       key={result.bggId}
-                      className="flex items-center justify-between rounded-lg border border-border/60 bg-background/80 px-3 py-2"
+                      className="flex items-center gap-3 rounded-lg border border-border/60 bg-background/80 px-3 py-2"
                     >
+                      <div className="flex-shrink-0">
+                        {result.imageUrl ? (
+                          <img
+                            src={result.imageUrl}
+                            alt={result.name}
+                            className="h-10 w-10 rounded object-cover"
+                            onError={(e) => {
+                              e.currentTarget.style.display = "none";
+                            }}
+                          />
+                        ) : (
+                          <div className="flex h-10 w-10 items-center justify-center rounded bg-muted/40">
+                            <Gamepad2 className="h-5 w-5 text-muted-foreground" />
+                          </div>
+                        )}
+                      </div>
                       <div className="min-w-0 flex-1">
                         <p className="font-medium text-sm text-foreground truncate">
                           {result.name}
