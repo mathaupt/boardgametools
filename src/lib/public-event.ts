@@ -38,6 +38,9 @@ export const buildPublicEventInclude = (userId?: string | null): Prisma.EventInc
       proposedBy: {
         select: { id: true, name: true },
       },
+      guest: {
+        select: { id: true, nickname: true },
+      },
       votes: userId
         ? {
             where: { userId },
@@ -155,10 +158,25 @@ export function serializePublicEvent(
       const guestVotes = proposal._count.guestVotes;
       const userHasVoted = currentUserId ? (proposal.votes?.length ?? 0) > 0 : false;
 
+      // Merge game data: prefer DB game, fallback to inline BGG fields
+      const gameData = proposal.game ?? {
+        id: `bgg-${proposal.bggId}`,
+        name: proposal.bggName ?? "Unbekanntes Spiel",
+        imageUrl: proposal.bggImageUrl ?? null,
+        minPlayers: proposal.bggMinPlayers ?? null,
+        maxPlayers: proposal.bggMaxPlayers ?? null,
+        playTimeMinutes: proposal.bggPlayTimeMinutes ?? null,
+      };
+
+      // Merge proposedBy: prefer DB user, fallback to guest
+      const proposedByData = proposal.proposedBy ?? (proposal.guest
+        ? { id: proposal.guest.id, name: proposal.guest.nickname }
+        : null);
+
       return {
         id: proposal.id,
-        game: proposal.game,
-        proposedBy: proposal.proposedBy,
+        game: gameData,
+        proposedBy: proposedByData,
         totalVotes: registeredVotes + guestVotes,
         voteCounts: {
           registered: registeredVotes,

@@ -182,13 +182,16 @@ export default async function EventsPage() {
                   <div className="space-y-2">
                     <h4 className="font-medium text-sm text-foreground">Spielvorschläge</h4>
                     <div className="flex flex-wrap gap-2">
-                      {event.proposals.slice(0, 3).map((proposal) => (
+                      {event.proposals.slice(0, 3).map((proposal) => {
+                        const gameName = proposal.game?.name ?? proposal.bggName ?? "Unbekannt";
+                        const gameImage = proposal.game?.imageUrl ?? proposal.bggImageUrl ?? null;
+                        return (
                         <div key={proposal.id} className="flex items-center gap-2 bg-card px-2 py-1 rounded text-sm border border-border">
-                          {proposal.game.imageUrl ? (
+                          {gameImage ? (
                             <div className="relative w-6 h-6 flex-shrink-0">
                               <Image
-                                src={proposal.game.imageUrl}
-                                alt={proposal.game.name}
+                                src={gameImage}
+                                alt={gameName}
                                 width={24}
                                 height={24}
                                 className="object-cover rounded"
@@ -200,13 +203,14 @@ export default async function EventsPage() {
                             </div>
                           )}
                           <div>
-                            <div className="font-medium text-xs truncate max-w-[100px]">{proposal.game.name}</div>
+                            <div className="font-medium text-xs truncate max-w-[100px]">{gameName}</div>
                             <div className="text-xs text-muted-foreground">
                               {proposal._count.votes} Votes
                             </div>
                           </div>
                         </div>
-                      ))}
+                        );
+                      })}
                       {event.proposals.length > 3 && (
                         <span className="text-muted-foreground text-sm">
                           +{event.proposals.length - 3} weitere

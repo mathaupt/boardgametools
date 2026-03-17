@@ -12,7 +12,7 @@ import { useToast } from "@/components/ui/use-toast";
 
 interface ProposalWithDetails extends GameProposal {
   game: Game;
-  proposedBy: User;
+  proposedBy: User | { id: string; name: string };
   _count: { votes: number };
   userVoted?: boolean;
   userHasVoted?: boolean;

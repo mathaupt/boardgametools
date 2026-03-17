@@ -9,7 +9,7 @@ import type { GameSession, Event, Game, GameProposal } from "@prisma/client";
 
 type UpcomingEvent = Event & {
   selectedGame: Game | null;
-  proposals: (GameProposal & { game: Game })[];
+  proposals: (GameProposal & { game: Game | null })[];
 };
 
 export default async function DashboardPage() {

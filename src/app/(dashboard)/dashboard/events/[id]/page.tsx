@@ -46,6 +46,7 @@ export default async function EventDetailPage({
         include: {
           game: true,
           proposedBy: true,
+          guest: { select: { id: true, nickname: true } },
           _count: { select: { votes: true, guestVotes: true } }
         }
       },
@@ -109,6 +110,23 @@ export default async function EventDetailPage({
   }) : [];
 
   const userVoteIds = new Set(userVotes.map(vote => vote.proposalId));
+
+  // Normalize proposals: merge BGG inline data for proposals without a Game record
+  const normalizedProposals = event.proposals.map((proposal) => {
+    const game = proposal.game ?? {
+      id: `bgg-${proposal.bggId}`,
+      name: proposal.bggName ?? "Unbekanntes Spiel",
+      imageUrl: proposal.bggImageUrl ?? null,
+      minPlayers: proposal.bggMinPlayers ?? 1,
+      maxPlayers: proposal.bggMaxPlayers ?? 4,
+      playTimeMinutes: proposal.bggPlayTimeMinutes ?? null,
+      complexity: null,
+    };
+    const proposedBy = proposal.proposedBy ?? (proposal.guest
+      ? { name: proposal.guest.nickname }
+      : { name: "Gast" });
+    return { ...proposal, game, proposedBy };
+  });
 
   return (
     <div className="space-y-6">
@@ -386,7 +404,7 @@ export default async function EventDetailPage({
             </div>
           ) : (
             <VotingClient 
-              proposals={event.proposals} 
+              proposals={normalizedProposals} 
               eventId={event.id} 
               userId={userId || null}
               userVoteIds={userVoteIds}

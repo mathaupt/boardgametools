@@ -253,14 +253,24 @@ model EventInvite {
 model GameProposal {
   id          String    @id @default(cuid())
   eventId     String
-  gameId      String
-  proposedById String
+  gameId      String?   // null for BGG-only proposals (not in any user's collection)
+  proposedById String?  // null for guest proposals
+  guestId     String?   // set when a guest proposed the game
   createdAt   DateTime  @default(now())
 
+  // Inline BGG data (used when gameId is null – game not saved to collection)
+  bggId              String?
+  bggName            String?
+  bggImageUrl        String?
+  bggMinPlayers      Int?
+  bggMaxPlayers      Int?
+  bggPlayTimeMinutes Int?
+
   // Relations
-  event       Event     @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  game        Game      @relation(fields: [gameId], references: [id], onDelete: Cascade)
-  proposedBy  User      @relation(fields: [proposedById], references: [id], onDelete: Cascade)
+  event       Event             @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  game        Game?             @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  proposedBy  User?             @relation(fields: [proposedById], references: [id], onDelete: Cascade)
+  guest       GuestParticipant? @relation(fields: [guestId], references: [id], onDelete: Cascade)
   votes       Vote[]
   guestVotes  GuestVote[]
 
@@ -288,6 +298,7 @@ model GuestParticipant {
 
   event     Event       @relation(fields: [eventId], references: [id], onDelete: Cascade)
   votes     GuestVote[]
+  proposals GameProposal[]
   dateVotes GuestDateVote[]
 
   @@unique([eventId, nickname])

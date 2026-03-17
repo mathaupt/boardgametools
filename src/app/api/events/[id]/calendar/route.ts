@@ -53,7 +53,7 @@ export const GET = withApiLogging(async function GET(
     if (event.proposals.length > 0) {
       description += "\n\n🎲 Spielvorschläge:\n";
       event.proposals.forEach((proposal, index) => {
-        description += `${index + 1}. ${proposal.game.name}\n`;
+        description += `${index + 1}. ${proposal.game?.name ?? proposal.bggName ?? "Unbekannt"}\n`;
       });
     }
 

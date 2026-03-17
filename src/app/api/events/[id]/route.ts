@@ -29,6 +29,7 @@ export const GET = withApiLogging(async function GET(
           include: {
             game: true,
             proposedBy: true,
+            guest: { select: { id: true, nickname: true } },
             _count: { select: { votes: true, guestVotes: true } },
             votes: {
               where: { userId: session.user.id },
@@ -60,12 +61,38 @@ export const GET = withApiLogging(async function GET(
 
     const eventResponse = {
       ...event,
-      proposals: event.proposals.map(proposal => ({
-        ...proposal,
-        totalVotes: proposal._count.votes + proposal._count.guestVotes,
-        userHasVoted: proposal.votes.length > 0,
-        votes: undefined,
-      })),
+      proposals: event.proposals.map(proposal => {
+        // Merge game data: prefer DB game, fallback to inline BGG fields
+        const gameData = proposal.game ?? {
+          id: `bgg-${proposal.bggId}`,
+          name: proposal.bggName ?? "Unbekanntes Spiel",
+          imageUrl: proposal.bggImageUrl ?? null,
+          minPlayers: proposal.bggMinPlayers ?? null,
+          maxPlayers: proposal.bggMaxPlayers ?? null,
+          playTimeMinutes: proposal.bggPlayTimeMinutes ?? null,
+          description: null,
+          complexity: null,
+          bggId: proposal.bggId,
+          ean: null,
+          ownerId: null,
+          createdAt: proposal.createdAt,
+          updatedAt: proposal.createdAt,
+        };
+
+        // Merge proposedBy: prefer DB user, fallback to guest
+        const proposedByData = proposal.proposedBy ?? (proposal.guest
+          ? { id: proposal.guest.id, name: proposal.guest.nickname, email: "", passwordHash: "", role: "GUEST", isActive: true, createdAt: proposal.createdAt, updatedAt: proposal.createdAt }
+          : null);
+
+        return {
+          ...proposal,
+          game: gameData,
+          proposedBy: proposedByData,
+          totalVotes: proposal._count.votes + proposal._count.guestVotes,
+          userHasVoted: proposal.votes.length > 0,
+          votes: undefined,
+        };
+      }),
       guestParticipants: event.guestParticipants.map((guest) => ({
         ...guest,
         votes: undefined,
