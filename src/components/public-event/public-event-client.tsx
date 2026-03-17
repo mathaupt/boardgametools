@@ -921,13 +921,16 @@ export function PublicEventClient({ token, event }: PublicEventClientProps) {
                         </p>
                       </div>
                       <Button
-                        size="sm"
+                        size="icon"
                         variant="secondary"
                         disabled={gamesLoading}
                         onClick={() => handleProposeGame(game.id)}
                         data-testid={`propose-${game.id}`}
+                        title="Spiel vorschlagen"
+                        className="h-8 w-8 sm:h-8 sm:w-auto sm:px-3"
                       >
-                        Vorschlagen
+                        <Plus className="h-4 w-4 sm:mr-1 sm:h-3 sm:w-3" />
+                        <span className="hidden sm:inline text-xs">Vorschlagen</span>
                       </Button>
                     </div>
                   ))
@@ -1073,32 +1076,36 @@ export function PublicEventClient({ token, event }: PublicEventClientProps) {
                           {result.yearPublished ? `(${result.yearPublished})` : ""} BGG #{result.bggId}
                         </p>
                       </div>
-                      <div className="flex gap-2 flex-shrink-0 ml-2">
+                      <div className="flex gap-1.5 flex-shrink-0 ml-2">
                         <Button
-                          size="sm"
+                          size="icon"
                           variant="outline"
                           onClick={() => handleBggDetail(result.bggId)}
                           disabled={bggDetailLoading === result.bggId}
+                          title="Details anzeigen"
+                          className="h-8 w-8 sm:h-8 sm:w-auto sm:px-3"
                         >
                           {bggDetailLoading === result.bggId ? (
-                            <Loader2 className="mr-1 h-3 w-3 animate-spin" />
+                            <Loader2 className="h-4 w-4 animate-spin sm:mr-1 sm:h-3 sm:w-3" />
                           ) : (
-                            <Search className="mr-1 h-3 w-3" />
+                            <Search className="h-4 w-4 sm:mr-1 sm:h-3 sm:w-3" />
                           )}
-                          Details
+                          <span className="hidden sm:inline text-xs">Details</span>
                         </Button>
                         <Button
-                          size="sm"
+                          size="icon"
                           variant="secondary"
                           onClick={() => handleBggPropose(result.bggId)}
                           disabled={bggProposing || (!activeGuest && !event.currentUserId)}
+                          title="Spiel vorschlagen"
+                          className="h-8 w-8 sm:h-8 sm:w-auto sm:px-3"
                         >
                           {bggProposing ? (
-                            <Loader2 className="mr-1 h-3 w-3 animate-spin" />
+                            <Loader2 className="h-4 w-4 animate-spin sm:mr-1 sm:h-3 sm:w-3" />
                           ) : (
-                            <Plus className="mr-1 h-3 w-3" />
+                            <Plus className="h-4 w-4 sm:mr-1 sm:h-3 sm:w-3" />
                           )}
-                          Vorschlagen
+                          <span className="hidden sm:inline text-xs">Vorschlagen</span>
                         </Button>
                       </div>
                     </div>
