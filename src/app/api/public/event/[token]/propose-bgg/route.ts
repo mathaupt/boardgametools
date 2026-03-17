@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
 import { resolveEventIdFromToken } from "@/lib/event-share";
 import { withApiLogging } from "@/lib/api-logger";
+import { fetchBGGGame } from "@/lib/bgg";
 
 type RouteContext = { params: Promise<{ token: string }> };
 
@@ -92,50 +93,15 @@ export const POST = withApiLogging(async function POST(
       );
     }
 
-    // Fetch game data from BGG
-    const bggResponse = await fetch(
-      `https://boardgamegeek.com/xmlapi2/thing?id=${encodeURIComponent(bggId)}&stats=1`,
-      {
-        headers: {
-          "User-Agent":
-            "BoardGameTools/1.0 (https://boardgametools.example.com)",
-          Accept: "application/xml",
-        },
-      }
-    );
+    // Fetch game data from BGG using the robust library function (handles 202, retries, auth token)
+    const bggGame = await fetchBGGGame(String(bggId));
 
-    if (!bggResponse.ok) {
+    if (!bggGame) {
       return NextResponse.json(
-        { error: "Konnte BGG-Daten nicht laden" },
-        { status: 502 }
+        { error: "Spiel konnte auf BGG nicht gefunden werden. Bitte versuche es erneut." },
+        { status: 404 }
       );
     }
-
-    const xmlText = await bggResponse.text();
-
-    const nameMatch = xmlText.match(/<name[^>]*type="primary"[^>]*value="([^"]*)"/);
-    const minPlayersMatch = xmlText.match(
-      /<minplayers[^>]*value="([^"]*)"/
-    );
-    const maxPlayersMatch = xmlText.match(
-      /<maxplayers[^>]*value="([^"]*)"/
-    );
-    const playTimeMatch = xmlText.match(
-      /<playingtime[^>]*value="([^"]*)"/
-    );
-    const imageMatch = xmlText.match(/<image[^>]*>([^<]*)<\/image>/);
-
-    const bggName = nameMatch?.[1] || `BGG #${bggId}`;
-    const bggImageUrl = imageMatch?.[1] || null;
-    const bggMinPlayers = minPlayersMatch?.[1]
-      ? parseInt(minPlayersMatch[1], 10)
-      : null;
-    const bggMaxPlayers = maxPlayersMatch?.[1]
-      ? parseInt(maxPlayersMatch[1], 10)
-      : null;
-    const bggPlayTimeMinutes = playTimeMatch?.[1]
-      ? parseInt(playTimeMatch[1], 10)
-      : null;
 
     const proposal = await prisma.gameProposal.create({
       data: {
@@ -143,11 +109,11 @@ export const POST = withApiLogging(async function POST(
         proposedById: session?.user?.id ?? null,
         guestId: guestId ?? null,
         bggId: String(bggId),
-        bggName,
-        bggImageUrl,
-        bggMinPlayers,
-        bggMaxPlayers,
-        bggPlayTimeMinutes,
+        bggName: bggGame.name,
+        bggImageUrl: bggGame.imageUrl,
+        bggMinPlayers: bggGame.minPlayers,
+        bggMaxPlayers: bggGame.maxPlayers,
+        bggPlayTimeMinutes: bggGame.playTimeMinutes,
       },
       include: {
         game: true,
