@@ -160,24 +160,38 @@ metadata:
 
 **Konzept-Gaps (Stand März 2026):**
 
-| Feature | Konzept | Status | Anmerkung |
+| Feature | Konzept | Status | Umsetzung |
 |---------|---------|--------|-----------|
-| Spielesammlung CRUD | Ja | Implementiert | Vollständig |
-| Tags/Kategorien | Ja | FEHLT | Kein Tag-System im Schema/UI |
-| Bilder/Cover hochladen | Ja | TEILWEISE | Nur URL-basiert, kein Upload |
-| Spielsessions | Ja | Implementiert | Vollständig |
-| Gruppen | Ja | Implementiert | Inkl. public groups |
-| Statistiken | Ja | Implementiert | Basis-Stats vorhanden |
-| Gruppen-Statistiken | Ja | FEHLT | Nur globale Stats |
-| BGG Integration | Ja | Implementiert | Import + BGG-Suche |
-| Event-Voting | Ja | Implementiert | Inkl. Public Events, Gäste |
-| Spielereihen | Ja | Implementiert | Vollständig |
+| Spielesammlung CRUD | Ja | 90% | Kern vorhanden; **Tags/Kategorien fehlen**, Bild nur per URL |
+| Bilder/Cover hochladen | Ja | TEILWEISE | Nur URL-basiert, kein Upload-Endpoint |
+| Tags/Kategorien | Ja | FEHLT | Kein Tag/Category-Modell im Schema |
+| Spielsessions | Ja | 70% | Erstellen/Listen OK; **Detailseite fehlt**, kein Edit/Delete |
+| Gruppen | Ja | 100%+ | Inkl. Polls, Comments, Public Sharing |
+| Statistiken | Ja | FEHLT | **Komplett unimplementiert** – Sidebar-Link vorhanden, aber keine Seite, keine API |
+| Gruppen-Statistiken | Ja | FEHLT | Teil des fehlenden Statistik-Systems |
+| BGG Integration | Ja | 100%+ | Import, Suche, Collection-Import, Thumbnails |
+| Event-Voting | Ja | 85% | **Close-Voting Endpoint fehlt** (`POST /events/[id]/close`), kein Status-Wechsel |
+| Spielereihen | Ja | 100% | Vollständig inkl. Sort/Filter |
 | Public Events + Gäste | Nein | Implementiert | Erweiterung über Konzept hinaus |
-| Date Polling | Nein | Implementiert | Erweiterung über Konzept hinaus |
-| Admin Monitoring | Nein | Implementiert | Erweiterung über Konzept hinaus |
-| EAN-Scanner | Nein | Implementiert | Erweiterung über Konzept hinaus |
-| Passwort-Reset | Nein | Implementiert | Erweiterung über Konzept hinaus |
-| Profil-Seite | Nein | Implementiert | Erweiterung über Konzept hinaus |
+| Date Polling | Nein | Implementiert | Doodle-ähnliche Terminabstimmung |
+| Admin Monitoring | Nein | Implementiert | API-Logging + Dashboard |
+| EAN-Scanner | Nein | Implementiert | Barcode-Scanner + OCR |
+| Passwort-Reset | Nein | Implementiert | E-Mail-basierter Flow |
+| Profil-Seite | Nein | Implementiert | Nutzerdaten + Kommunikationshistorie |
+| Email-Benachrichtigungen | Nein | Implementiert | nodemailer für Einladungen |
+| Kalender-Export | Nein | Implementiert | iCal-Export für Events |
+
+**Gesamtbewertung: ~78% des Konzepts implementiert, ~150% Gesamtumfang**
+
+### Tech-Stack-Abweichungen
+
+| Konzept | Tatsächlich | Bewertung |
+|---------|-------------|-----------|
+| Next.js 14 | Next.js **16.1.6** | Major-Version-Sprung, Konzept aktualisieren |
+| SQLite + Prisma | **PostgreSQL** + Prisma | DB gewechselt, Konzept aktualisieren |
+| Projektstruktur `(dashboard)/games/` | `(dashboard)/dashboard/games/` | Extra `dashboard`-Nesting |
+| `src/components/features/` | Kein features-Unterordner | Komponenten direkt in components/ |
+| `src/types/index.ts` | Existiert nicht | Kein zentrales Type-File |
 
 ## Review-Workflow
 
@@ -241,28 +255,47 @@ Erstelle einen Report mit folgendem Format:
 ## Aktuelle Top-Findings (Stand: 2026-03-17)
 
 ### P0 – Kritisch
-1. **Debug-Routes in Produktion**: `/api/debug/env` und `/api/debug/session` exponieren sensible Daten. Müssen hinter `NODE_ENV === 'development'` Guard.
-2. **DB-Init ohne Auth**: `/api/db/init` kann ohne Admin-Berechtigung aufgerufen werden und erstellt User mit Passwort `password123`.
+1. **Debug-Routes in Produktion**: `/api/debug/env` und `/api/debug/session` exponieren sensible Daten ohne Auth. Müssen hinter `NODE_ENV === 'development'` Guard.
+2. **DB-Init ohne Auth**: `/api/db/init` kann ohne Berechtigung aufgerufen werden und erstellt User mit Passwort `password123`. Außerdem nutzt es SQLite-Queries auf PostgreSQL.
+3. **Hardcoded Admin-Credentials**: `src/lib/admin-create.ts` enthält Admin-E-Mail und Passwort (`Admin123!`) im Klartext im Quellcode – committed in Git.
+4. **Gruppen-Passwörter im Klartext**: Gruppen-Passwörter in DB gespeichert und mit `===` verglichen (timing-attack-anfällig). Werden auch als URL-Query-Parameter übertragen.
+5. **Kein Rate Limiting + keine middleware.ts**: Keine zentrale Auth-Middleware. Jede Route prüft manuell. Vergessene Checks = offene Route. `/api/bgg/route.ts` ist komplett unauthentifiziert und nutzbar als Proxy.
+6. **passwordHash in API-Responses**: `events/route.ts` und `events/[id]/route.ts` inkludieren `createdBy: true` ohne `select` – passwordHash wird an Client gesendet.
 
 ### P1 – Wichtig
-3. **Kein Rate Limiting auf Auth**: Login, Register, Passwort-Reset sind ohne Schutz gegen Brute-Force.
-4. **PII in Logs**: `console.log` mit User-E-Mails in BGG-Routes.
-5. **Passwort als URL-Parameter**: Gruppen-Passwort wird als Query-Param gesendet (sichtbar in Logs, Browser-History).
-6. **Fehlende Input-Validierung**: API Routes prüfen nicht auf max. String-Längen.
-7. **Keine Pagination**: Listen-Endpoints geben alle Datensätze zurück.
+7. **PII in Logs**: `console.log` mit User-E-Mails in BGG-Routes + `admin-create.ts`. 175 console.log-Statements insgesamt in Production-Code.
+8. **Fehlende Input-Validierung**: API Routes prüfen nicht auf max. String-Längen. Nur `join/route.ts` truncated auf 80 Zeichen.
+9. **Keine Pagination**: Listen-Endpoints (`/api/games`, `/api/sessions`, `/api/events`) geben alle Datensätze zurück.
+10. **Statistiken komplett fehlend**: Im Konzept vorgesehen, Sidebar-Link vorhanden, aber weder Seite noch API existiert.
+11. **Session-Detailseite fehlt**: Links zu `/sessions/[id]` und `/sessions/[id]/edit` führen ins Leere. Kein Edit/Delete für Sessions.
+12. **Close-Voting fehlt**: Kein `POST /events/[id]/close` Endpoint. Event-Status kann nicht von `voting` auf `closed` gewechselt werden.
+13. **Registrierung: Keine E-Mail-Validierung**: Kein Format-Check, kein Lowercase-Normalisierung. `Test@Example.com` und `test@example.com` könnten getrennte Accounts sein.
+14. **P95 Duration Query lädt alle Zeilen**: `admin/monitoring/stats/route.ts` fetcht ALLE ApiLog-Durations in Speicher für P95-Berechnung. OOM-Risiko bei vielen Logs.
+15. **Admin kann sich selbst deaktivieren**: Keine Self-Protection in `/api/admin/users/deactivate` und `/api/admin/users/change-password`.
+16. **Admin-Endpoints: 401 statt 403**: Authentifizierte Non-Admin-User bekommen 401 statt 403.
 
 ### P2 – Verbesserung
-8. **Mega-Komponente aufteilen**: `public-event-client.tsx` (1130+ Zeilen) in Subkomponenten aufteilen.
-9. **XML-Parsing mit `any`**: BGG-Route nutzt unsafe types.
-10. **`next/image` nutzen**: Externe Bilder werden nicht optimiert.
-11. **Fehlende Unit Tests**: auth.ts, public-event.ts, api-logger.ts haben keine Tests.
-12. **Konsistente Error-Responses**: `{ error }` vs `{ message }` vereinheitlichen.
+17. **Mega-Komponenten aufteilen**: `public-event-client.tsx` (1130 Zeilen), `group-detail-client.tsx` (987 Zeilen), `monitoring-dashboard.tsx` (906 Zeilen).
+18. **38× `any` Type**: Besonders in `public-event.ts` (7×), `group-detail-client.tsx` (9×), BGG XML-Parsing.
+19. **Duplikat: Prisma-Client-Dateien**: `db.ts` und `db-postgres.ts` existieren parallel, letztere wird nie importiert.
+20. **Duplikat: BGG-Logik**: `bgg/route.ts` dupliziert XML-Parsing aus `lib/bgg.ts` mit weniger robuster Implementierung + Hardcoded Mock-Daten.
+21. **`next/image` statt `<img>`**: Externe Bilder werden nicht optimiert. `next.config.ts` nutzt deprecated `images.domains`.
+22. **Fehlende Unit Tests**: Nur 3 Test-Dateien (bgg, utils, security-check). Keine Tests für: Auth, API-Routes, Komponenten, Voting, Guest-Flow.
+23. **Inkonsistente Error-Responses**: `{ error }` vs `{ message }` vs `{ success }`. Sprachen gemischt (Deutsch/Englisch).
+24. **CONCEPT.md aktualisieren**: Tech-Stack (Next.js 16, PostgreSQL), neue Features, geänderte Projektstruktur nachziehen.
+25. **Pendende Invites dupliziert**: Gleicher Query-Code in `dashboard/page.tsx` und `events/page.tsx`.
+26. **Navbar nutzt Inline-Styles**: Einzige Komponente mit `style={{}}` statt Tailwind-Klassen.
+27. **Prisma Transactions fehlen**: Event-Share erstellt mehrere Invites ohne Transaction – bei Fehler bleiben Teil-Invites.
 
 ### P3 – Nice-to-have
-13. **Tags/Kategorien**: Im Konzept vorgesehen, aber nicht implementiert.
-14. **Bild-Upload**: Nur URL-basiert, kein echter Upload.
-15. **Gruppen-Statistiken**: Im Konzept vorgesehen, fehlt noch.
-16. **accessibility Skill**: In AGENTS.md referenziert, aber `skills/accessibility/SKILL.md` existiert nicht.
+28. **Tags/Kategorien**: Im Konzept vorgesehen, aber nicht implementiert.
+29. **Bild-Upload**: Nur URL-basiert, kein echter File-Upload.
+30. **Gruppen-Statistiken**: Im Konzept vorgesehen, fehlt noch.
+31. **accessibility Skill**: In AGENTS.md referenziert, aber Datei existiert nicht.
+32. **DB-Dumps in Git**: `.sql`, `.bak`, `.db` Dateien committed – könnten Nutzerdaten enthalten.
+33. **Links zu /terms und /privacy**: Registrierungsseite verlinkt auf nicht existierende Seiten.
+34. **ENV-Variablen inkonsistent**: `.env.example` sagt `DATABASE_URL`, Schema nutzt `SQL_DATABASE_URL`.
+35. **Fehlende DB-Indices**: `Game.ownerId`, `GameSession.createdById`, `Event.createdById`, `Event.eventDate`, `GroupMember.userId` ohne Index.
 
 ## Codebeispiele für Fixes
 
@@ -322,4 +355,56 @@ src/components/public-event/
 ├── date-polling.tsx               # Terminabstimmung
 ├── bgg-search.tsx                 # BGG-Suche + Vorschlag
 └── collection-propose.tsx         # Spiel aus Sammlung vorschlagen
+```
+
+### User-Include absichern (P0)
+```typescript
+// FALSCH – schickt passwordHash an Client:
+include: { createdBy: true }
+
+// RICHTIG:
+include: { createdBy: { select: { id: true, name: true, email: true } } }
+```
+
+### middleware.ts erstellen (P0)
+```typescript
+// src/middleware.ts
+import { auth } from "@/lib/auth";
+import { NextResponse } from "next/server";
+
+const PUBLIC_PATHS = [
+  "/api/auth",
+  "/api/public",
+  "/api/health",
+  "/api/bgg",       // ggf. einschränken
+  "/login",
+  "/register",
+  "/passwort-vergessen",
+  "/reset-password",
+  "/public",
+];
+
+export default auth((req) => {
+  const { pathname } = req.nextUrl;
+  const isPublic = PUBLIC_PATHS.some((p) => pathname.startsWith(p));
+  if (!isPublic && !req.auth) {
+    return NextResponse.redirect(new URL("/login", req.url));
+  }
+});
+
+export const config = {
+  matcher: ["/((?!_next|favicon.ico|.*\\..*).*)"],
+};
+```
+
+### Gruppen-Passwort hashen (P0)
+```typescript
+// Speichern:
+import { hash } from "bcryptjs";
+const hashed = await hash(password, 12);
+await prisma.group.update({ where: { id }, data: { password: hashed } });
+
+// Prüfen:
+import { compare } from "bcryptjs";
+const isValid = await compare(inputPassword, group.password);
 ```
