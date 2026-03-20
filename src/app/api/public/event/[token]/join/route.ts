@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/db";
 import { resolveEventIdFromToken } from "@/lib/event-share";
 import { withApiLogging } from "@/lib/api-logger";
+import { validateString } from "@/lib/validation";
 
 type RouteContext = { params: Promise<{ token: string }> };
 
@@ -20,22 +21,21 @@ export const POST = withApiLogging(async function POST(
     const body = await request.json();
     const nickname = (body?.nickname as string | undefined)?.trim();
 
-    if (!nickname) {
-      return NextResponse.json({ error: "Nickname is required" }, { status: 400 });
+    const validationError = validateString(nickname, "nickname", { min: 1, max: 80 });
+    if (validationError) {
+      return NextResponse.json({ error: validationError }, { status: 400 });
     }
-
-    const safeNickname = nickname.slice(0, 80);
 
     const participant = await prisma.guestParticipant.upsert({
       where: {
         eventId_nickname: {
           eventId,
-          nickname: safeNickname,
+          nickname: nickname!,
         },
       },
       create: {
         eventId,
-        nickname: safeNickname,
+        nickname: nickname!,
       },
       update: {},
     });

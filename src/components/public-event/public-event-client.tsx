@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
 import { SerializedPublicEvent } from "@/lib/public-event";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -618,13 +619,12 @@ export function PublicEventClient({ token, event }: PublicEventClientProps) {
                       <div className="flex items-start gap-4">
                         <div className="flex-shrink-0">
                           {proposal.game.imageUrl ? (
-                            <img
+                            <Image
                               src={proposal.game.imageUrl}
                               alt={proposal.game.name}
-                              className="h-10 w-10 rounded-lg object-cover md:h-14 md:w-14"
-                              onError={(event) => {
-                                event.currentTarget.src = "/placeholder-game.png";
-                              }}
+                              width={56}
+                              height={56}
+                              className="rounded-lg object-cover"
                             />
                           ) : (
                             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted/40 md:h-14 md:w-14">
@@ -989,13 +989,12 @@ export function PublicEventClient({ token, event }: PublicEventClientProps) {
                 <div className="rounded-lg border border-primary/30 bg-primary/5 p-4 space-y-3">
                   <div className="flex gap-4">
                     {bggDetail.imageUrl && (
-                      <img
+                      <Image
                         src={bggDetail.imageUrl}
                         alt={bggDetail.name}
-                        className="h-20 w-20 rounded-lg object-cover flex-shrink-0"
-                        onError={(e) => {
-                          e.currentTarget.style.display = "none";
-                        }}
+                        width={80}
+                        height={80}
+                        className="rounded-lg object-cover flex-shrink-0"
                       />
                     )}
                     <div className="flex-1 min-w-0">
@@ -1071,13 +1070,12 @@ export function PublicEventClient({ token, event }: PublicEventClientProps) {
                     >
                       <div className="flex-shrink-0">
                         {result.imageUrl ? (
-                          <img
+                          <Image
                             src={result.imageUrl}
                             alt={result.name}
-                            className="h-10 w-10 rounded object-cover"
-                            onError={(e) => {
-                              e.currentTarget.style.display = "none";
-                            }}
+                            width={40}
+                            height={40}
+                            className="rounded object-cover"
                           />
                         ) : (
                           <div className="flex h-10 w-10 items-center justify-center rounded bg-muted/40">

@@ -2,6 +2,14 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
 import { withApiLogging } from "@/lib/api-logger";
+import { validateString } from "@/lib/validation";
+
+interface SessionPlayerInput {
+  userId: string;
+  score?: number | null;
+  isWinner?: boolean;
+  placement?: number | null;
+}
 
 export const GET = withApiLogging(async function GET(request: NextRequest) {
   const session = await auth();
@@ -55,6 +63,11 @@ export const POST = withApiLogging(async function POST(request: NextRequest) {
       }, { status: 400 });
     }
 
+    const validationError = validateString(notes, "Notizen", { required: false, max: 2000 });
+    if (validationError) {
+      return NextResponse.json({ error: validationError }, { status: 400 });
+    }
+
     // Prüfe ob Spiel dem User gehört
     const game = await prisma.game.findFirst({
       where: { id: gameId, ownerId: session.user.id }
@@ -73,7 +86,7 @@ export const POST = withApiLogging(async function POST(request: NextRequest) {
         notes,
         createdById: session.user.id,
         players: {
-          create: players.map((player: any) => ({
+          create: players.map((player: SessionPlayerInput) => ({
             userId: player.userId,
             score: player.score || null,
             isWinner: player.isWinner || false,

@@ -60,18 +60,18 @@ export async function GET(request: NextRequest) {
     const avgDurationMs = Math.round(durationAgg._avg.durationMs ?? 0);
     const uniqueUsers = uniqueUsersResult.length;
 
-    // --- P95 duration (approximate via sorted durations) ---
-    const allDurations = await prisma.apiLog.findMany({
-      where: whereClause,
-      select: { durationMs: true },
-      orderBy: { durationMs: "asc" },
-    });
-
+    // --- P95 duration (approximate via OFFSET/LIMIT – avoids loading all rows) ---
     let p95DurationMs = 0;
-    if (allDurations.length > 0) {
-      const p95Index = Math.floor(allDurations.length * 0.95);
-      const clampedIndex = Math.min(p95Index, allDurations.length - 1);
-      p95DurationMs = allDurations[clampedIndex].durationMs;
+    if (totalRequests > 0) {
+      const p95Index = Math.floor(totalRequests * 0.95);
+      const p95Result = await prisma.apiLog.findMany({
+        where: whereClause,
+        orderBy: { durationMs: "asc" },
+        skip: Math.min(p95Index, totalRequests - 1),
+        take: 1,
+        select: { durationMs: true },
+      });
+      p95DurationMs = p95Result[0]?.durationMs ?? 0;
     }
 
     // --- Requests by hour (PostgreSQL date_trunc) ---

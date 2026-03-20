@@ -37,6 +37,11 @@ yarn-error.log*
 # security report (generated)
 security-report.md
 
+# SQLite
+*.db
+*.db-journal
+*.db-wal
+
 # vercel
 .vercel
 

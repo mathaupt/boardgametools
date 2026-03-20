@@ -1,6 +1,28 @@
 import { NextRequest, NextResponse } from "next/server";
 import { withApiLogging } from "@/lib/api-logger";
 
+interface BGGGameDetail {
+  name: string;
+  description: string;
+  yearPublished: string;
+  minPlayers: string;
+  maxPlayers: string;
+  playTimeMinutes: string;
+  complexity: string;
+  imageUrl: string;
+  rating: string;
+  rank: string;
+  bggId?: string;
+}
+
+interface BGGSearchResult {
+  bggId: string;
+  name: string;
+  yearPublished: string;
+  type: string;
+  imageUrl?: string;
+}
+
 export const GET = withApiLogging(async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const bggId = searchParams.get("bggId");
@@ -26,7 +48,7 @@ export const GET = withApiLogging(async function GET(request: NextRequest) {
       
       // Einfache XML Parsing ohne externe Libraries
       const parseXML = (xml: string) => {
-        const result: any = {};
+        const result: Partial<BGGGameDetail> = {};
         
         // Simple regex parsing für BGG XML
         const nameMatch = xml.match(/<name[^>]*value="([^"]*)"/);
@@ -81,7 +103,7 @@ export const GET = withApiLogging(async function GET(request: NextRequest) {
       
       // Einfache XML Parsing für Search Results
       const parseSearchXML = (xml: string) => {
-        const games: any[] = [];
+        const games: BGGSearchResult[] = [];
         
         // Remove all newlines and extra spaces to make parsing easier
         const cleanXml = xml.replace(/\s+/g, ' ').trim();
@@ -121,7 +143,7 @@ export const GET = withApiLogging(async function GET(request: NextRequest) {
 
       // Batch-fetch thumbnails for top results (single API call)
       if (games.length > 0) {
-        const ids = games.slice(0, 20).map((g: any) => g.bggId).join(",");
+        const ids = games.slice(0, 20).map((g: BGGSearchResult) => g.bggId).join(",");
         try {
           const thumbRes = await fetch(
             `https://boardgamegeek.com/xmlapi2/thing?id=${ids}`,

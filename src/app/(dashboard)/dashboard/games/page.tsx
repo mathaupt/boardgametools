@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -164,13 +165,13 @@ export default function GamesPage() {
             <div key={game.id} className="relative group">
               <Link href={`/dashboard/games/${game.id}`}>
                 <Card className="hover:shadow-md transition-shadow cursor-pointer h-full overflow-hidden">
-                  <div className="w-full h-48 bg-muted">
+                  <div className="relative w-full h-48 bg-muted">
                     {game.imageUrl ? (
-                      <img
+                      <Image
                         src={game.imageUrl}
                         alt={game.name}
-                        className="h-full w-full object-cover"
-                        loading="lazy"
+                        fill
+                        className="object-cover"
                       />
                     ) : (
                       <div className="h-full w-full flex flex-col items-center justify-center text-muted-foreground gap-2">

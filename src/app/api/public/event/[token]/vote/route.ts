@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/db";
 import { resolveEventIdFromToken } from "@/lib/event-share";
 import { withApiLogging } from "@/lib/api-logger";
+import { validateString, firstError } from "@/lib/validation";
 
 type RouteContext = { params: Promise<{ token: string }> };
 
@@ -20,6 +21,14 @@ export const POST = withApiLogging(async function POST(
     const body = await request.json();
     const guestId = body?.guestId as string | undefined;
     const proposalId = body?.proposalId as string | undefined;
+
+    const validationError = firstError(
+      validateString(guestId, "guestId", { max: 100 }),
+      validateString(proposalId, "proposalId", { max: 100 })
+    );
+    if (validationError) {
+      return NextResponse.json({ error: validationError }, { status: 400 });
+    }
 
     if (!guestId || !proposalId) {
       return NextResponse.json({ error: "guestId and proposalId are required" }, { status: 400 });
@@ -90,6 +99,14 @@ export const DELETE = withApiLogging(async function DELETE(
     const { searchParams } = new URL(request.url);
     const guestId = searchParams.get("guestId");
     const proposalId = searchParams.get("proposalId");
+
+    const deleteValidationError = firstError(
+      validateString(guestId, "guestId", { max: 100 }),
+      validateString(proposalId, "proposalId", { max: 100 })
+    );
+    if (deleteValidationError) {
+      return NextResponse.json({ error: deleteValidationError }, { status: 400 });
+    }
 
     if (!guestId || !proposalId) {
       return NextResponse.json({ error: "guestId and proposalId are required" }, { status: 400 });

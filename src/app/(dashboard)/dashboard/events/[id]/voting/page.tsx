@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
+import Image from "next/image";
 import { Game, Event, GameProposal, User } from "@prisma/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -400,13 +401,12 @@ export default function EventVotingPage() {
                         {/* Game Image */}
                         <div className="flex-shrink-0">
                           {proposal.game.imageUrl ? (
-                            <img 
+                            <Image 
                               src={proposal.game.imageUrl} 
                               alt={proposal.game.name}
-                              className="w-12 h-12 rounded-lg object-cover border border-border"
-                              onError={(e) => {
-                                e.currentTarget.src = '/placeholder-game.png';
-                              }}
+                              width={48}
+                              height={48}
+                              className="rounded-lg object-cover border border-border"
                             />
                           ) : (
                             <div className="w-12 h-12 rounded-lg bg-muted border border-border flex items-center justify-center">
@@ -571,13 +571,12 @@ export default function EventVotingPage() {
                               {/* Game Image */}
                               <div className="flex-shrink-0">
                                 {game.imageUrl ? (
-                                  <img 
+                                  <Image 
                                     src={game.imageUrl} 
                                     alt={game.name}
-                                    className="w-10 h-10 rounded-lg object-cover border border-border"
-                                    onError={(e) => {
-                                      e.currentTarget.src = '/placeholder-game.png';
-                                    }}
+                                    width={40}
+                                    height={40}
+                                    className="rounded-lg object-cover border border-border"
                                   />
                                 ) : (
                                   <div className="w-10 h-10 rounded-lg bg-muted border border-border flex items-center justify-center">
@@ -634,13 +633,12 @@ export default function EventVotingPage() {
                             {/* Game Image */}
                             <div className="flex-shrink-0">
                               {game.imageUrl ? (
-                                <img 
+                                <Image 
                                   src={game.imageUrl} 
                                   alt={game.name}
-                                  className="w-10 h-10 rounded-lg object-cover border border-border"
-                                  onError={(e) => {
-                                    e.currentTarget.src = '/placeholder-game.png';
-                                  }}
+                                  width={40}
+                                  height={40}
+                                  className="rounded-lg object-cover border border-border"
                                 />
                               ) : (
                                 <div className="w-10 h-10 rounded-lg bg-muted border border-border flex items-center justify-center">

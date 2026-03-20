@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
+import Image from "next/image";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -180,7 +181,7 @@ export default function PublicInvitePage() {
                   <div key={i} className="flex items-center justify-between rounded-lg border border-border bg-muted p-3">
                     <div className="flex items-center gap-3">
                       {p.imageUrl && (
-                        <img src={p.imageUrl} alt={p.gameName} className="h-10 w-10 rounded object-cover" />
+                        <Image src={p.imageUrl} alt={p.gameName} width={40} height={40} className="rounded object-cover" />
                       )}
                       <div>
                         <p className="font-medium text-foreground">{p.gameName}</p>

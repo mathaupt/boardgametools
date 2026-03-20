@@ -4,6 +4,7 @@ import { decryptId } from "@/lib/crypto";
 import { sendInviteResponseEmail } from "@/lib/mailer";
 import { getPublicBaseUrl } from "@/lib/public-link";
 import { withApiLogging } from "@/lib/api-logger";
+import { validateString } from "@/lib/validation";
 
 type RouteContext = { params: Promise<{ token: string }> };
 
@@ -23,6 +24,9 @@ export const POST = withApiLogging(async function POST(
   try {
     const body = await request.json();
     const { status, name } = body;
+
+    const nameError = validateString(name, "name", { required: false, max: 100 });
+    if (nameError) return NextResponse.json({ error: nameError }, { status: 400 });
 
     if (!status || !["accepted", "declined"].includes(status)) {
       return NextResponse.json({

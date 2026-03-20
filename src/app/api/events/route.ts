@@ -5,6 +5,7 @@ import { sendEventInviteEmail } from "@/lib/mailer";
 import { getPublicBaseUrl } from "@/lib/public-link";
 import { encryptId } from "@/lib/crypto";
 import { withApiLogging } from "@/lib/api-logger";
+import { validateString, firstError } from "@/lib/validation";
 
 export const GET = withApiLogging(async function GET(request: NextRequest) {
   const session = await auth();
@@ -87,6 +88,15 @@ export const POST = withApiLogging(async function POST(request: NextRequest) {
       return NextResponse.json({ 
         error: "Missing required fields: title, eventDate" 
       }, { status: 400 });
+    }
+
+    const validationError = firstError(
+      validateString(title, "Titel", { max: 200 }),
+      validateString(description, "Beschreibung", { required: false, max: 2000 }),
+      validateString(location, "Ort", { required: false, max: 500 }),
+    );
+    if (validationError) {
+      return NextResponse.json({ error: validationError }, { status: 400 });
     }
 
     // Erstelle Event

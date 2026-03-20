@@ -21,10 +21,12 @@ import {
   Gamepad,
   UserCircle,
 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import VotingClient from "./voting-client";
 import DatePollClient from "./date-poll-client";
 import { EventMailDialog } from "@/components/event-mail-dialog";
+import CloseVotingButton from "./close-voting-button";
 
 export default async function EventDetailPage({
   params,
@@ -165,6 +167,9 @@ export default async function EventDetailPage({
                   Voting
                 </Button>
               </Link>
+              {event.status !== "closed" && (
+                <CloseVotingButton eventId={event.id} />
+              )}
             </>
           )}
           <Link href={`/api/events/${event.id}/calendar`} target="_blank">
@@ -274,13 +279,12 @@ export default async function EventDetailPage({
                     <span className="text-sm text-muted-foreground">Ausgewähltes Spiel:</span>
                     <div className="flex items-center gap-2">
                       {event.selectedGame.imageUrl ? (
-                        <img 
+                        <Image 
                           src={event.selectedGame.imageUrl} 
                           alt={event.selectedGame.name}
-                          className="w-8 h-8 rounded object-cover border border-border"
-                          onError={(e) => {
-                            e.currentTarget.src = '/placeholder-game.png';
-                          }}
+                          width={32}
+                          height={32}
+                          className="rounded object-cover border border-border"
                         />
                       ) : (
                         <div className="w-8 h-8 rounded bg-muted border border-border flex items-center justify-center">
@@ -355,7 +359,7 @@ export default async function EventDetailPage({
         userId={userId || null}
         isCreator={isCreator}
         isPast={isPast}
-        initialProposals={event.dateProposals.map((p: any) => ({
+        initialProposals={event.dateProposals.map((p) => ({
           ...p,
           date: p.date.toISOString(),
         }))}

@@ -68,6 +68,8 @@ model Game {
   proposals       GameProposal[]
   selectedEvents  Event[]         @relation("SelectedGame")
   seriesEntries   GameSeriesEntry[]
+
+  @@index([ownerId])
 }
 
 // ============================================
@@ -87,6 +89,8 @@ model GameSession {
   game            Game            @relation(fields: [gameId], references: [id], onDelete: Cascade)
   createdBy       User            @relation(fields: [createdById], references: [id], onDelete: Cascade)
   players         SessionPlayer[]
+
+  @@index([createdById])
 }
 
 model SessionPlayer {
@@ -139,6 +143,7 @@ model GroupMember {
   user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([groupId, userId])
+  @@index([userId])
 }
 
 // ============================================
@@ -231,6 +236,9 @@ model Event {
   proposals       GameProposal[]
   guestParticipants GuestParticipant[]
   dateProposals   DateProposal[]
+
+  @@index([createdById])
+  @@index([eventDate])
 }
 
 model EventInvite {
@@ -314,6 +322,7 @@ model GuestVote {
   proposal    GameProposal     @relation(fields: [proposalId], references: [id], onDelete: Cascade)
 
   @@unique([guestId, proposalId])
+  @@index([proposalId])
 }
 
 // ============================================
@@ -357,6 +366,7 @@ model GuestDateVote {
   guest         GuestParticipant @relation(fields: [guestId], references: [id], onDelete: Cascade)
 
   @@unique([dateProposalId, guestId])
+  @@index([guestId])
 }
 
 // ============================================
@@ -426,6 +436,7 @@ model ApiLog {
   user User? @relation("apiLogs", fields: [userId], references: [id], onDelete: SetNull)
 
   @@index([createdAt])
+  @@index([createdAt, durationMs])
   @@index([path])
   @@index([userId])
   @@index([statusCode])

@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -665,14 +666,14 @@ export default function SeriesDetailPage() {
                   {/* Game image */}
                   <Link
                     href={`/dashboard/games/${entry.game.id}`}
-                    className="w-12 h-12 sm:w-14 sm:h-14 rounded-lg overflow-hidden bg-muted shrink-0 hover:ring-2 hover:ring-primary/50 transition-all"
+                    className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-lg overflow-hidden bg-muted shrink-0 hover:ring-2 hover:ring-primary/50 transition-all"
                   >
                     {entry.game.imageUrl ? (
-                      <img
+                      <Image
                         src={entry.game.imageUrl}
                         alt={entry.game.name}
-                        className="h-full w-full object-cover"
-                        loading="lazy"
+                        className="object-cover"
+                        fill
                       />
                     ) : (
                       <div className="h-full w-full flex items-center justify-center text-muted-foreground">

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
 import { withApiLogging } from "@/lib/api-logger";
+import { validateString } from "@/lib/validation";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -77,6 +78,11 @@ export const POST = withApiLogging(async function POST(
       return NextResponse.json({ 
         error: "Title and at least 2 options are required" 
       }, { status: 400 });
+    }
+
+    const validationError = validateString(title, "Titel", { max: 200 });
+    if (validationError) {
+      return NextResponse.json({ error: validationError }, { status: 400 });
     }
 
     const poll = await prisma.groupPoll.create({

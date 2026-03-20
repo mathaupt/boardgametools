@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
 import { resolveEventIdFromToken } from "@/lib/event-share";
 import { withApiLogging } from "@/lib/api-logger";
+import { validateString } from "@/lib/validation";
 
 type RouteContext = { params: Promise<{ token: string }> };
 
@@ -26,9 +27,8 @@ export const POST = withApiLogging(async function POST(
     const body = await request.json();
     const { gameId } = body ?? {};
 
-    if (!gameId) {
-      return NextResponse.json({ error: "Missing required field: gameId" }, { status: 400 });
-    }
+    const validationError = validateString(gameId, "gameId", { min: 1, max: 100 });
+    if (validationError) return NextResponse.json({ error: validationError }, { status: 400 });
 
     const event = await prisma.event.findUnique({
       where: { id: eventId },

@@ -5,6 +5,7 @@ import { sendEventInviteEmail, sendInviteResponseEmail } from "@/lib/mailer";
 import { getPublicBaseUrl } from "@/lib/public-link";
 import { encryptId } from "@/lib/crypto";
 import { withApiLogging } from "@/lib/api-logger";
+import { validateString, firstError } from "@/lib/validation";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -32,6 +33,12 @@ export const POST = withApiLogging(async function POST(
   try {
     const body = await request.json();
     const { email, userId } = body;
+
+    const validationError = firstError(
+      validateString(email, "email", { required: false, max: 254 }),
+      validateString(userId, "userId", { required: false, max: 100 })
+    );
+    if (validationError) return NextResponse.json({ error: validationError }, { status: 400 });
 
     if (!email && !userId) {
       return NextResponse.json({ 

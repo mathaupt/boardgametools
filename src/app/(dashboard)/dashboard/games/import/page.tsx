@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -441,11 +442,12 @@ export default function ImportBGGPage() {
                           disabled={!game.bggId || existingBggIds.has(game.bggId)}
                         />
                         {game.thumbnailUrl ? (
-                          <img
+                          <Image
                             src={game.thumbnailUrl}
                             alt={game.name}
-                            className="w-10 h-10 object-cover rounded flex-shrink-0"
-                            onError={handleImageError}
+                            width={40}
+                            height={40}
+                            className="object-cover rounded flex-shrink-0"
                           />
                         ) : (
                           <div className="w-10 h-10 rounded flex-shrink-0 bg-muted flex items-center justify-center text-xs text-muted-foreground">
@@ -626,11 +628,12 @@ export default function ImportBGGPage() {
               <CardHeader>
                 <div className="flex flex-col sm:flex-row gap-4">
                   {selectedGame.imageUrl ? (
-                    <img
+                    <Image
                       src={selectedGame.imageUrl}
                       alt={selectedGame.name}
+                      width={128}
+                      height={128}
                       className="w-full sm:w-32 sm:h-32 object-cover rounded-lg flex-shrink-0"
-                      onError={handleImageError}
                     />
                   ) : (
                     <div className="w-24 h-24 rounded flex-shrink-0 bg-muted flex items-center justify-center text-xs text-muted-foreground">

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
 import { withApiLogging } from "@/lib/api-logger";
+import { validateString } from "@/lib/validation";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -66,8 +67,9 @@ export const POST = withApiLogging(async function POST(
     const body = await request.json();
     const { content, pollId } = body;
 
-    if (!content || !content.trim()) {
-      return NextResponse.json({ error: "Content is required" }, { status: 400 });
+    const validationError = validateString(content, "Inhalt", { max: 2000 });
+    if (validationError) {
+      return NextResponse.json({ error: validationError }, { status: 400 });
     }
 
     const user = await prisma.user.findUnique({

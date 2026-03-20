@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useMemo } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -285,22 +286,23 @@ export default function SeriesPage() {
                   {/* Cover Image / Collage */}
                   <div className="w-full h-40 bg-muted relative">
                     {series.imageUrl ? (
-                      <img
+                      <Image
                         src={series.imageUrl}
                         alt={series.name}
-                        className="h-full w-full object-cover group-hover:scale-[1.02] transition-transform duration-300"
-                        loading="lazy"
+                        className="object-cover group-hover:scale-[1.02] transition-transform duration-300"
+                        fill
+                        unoptimized
                       />
                     ) : series.entries.length > 0 ? (
                       <div className="h-full w-full grid grid-cols-2 grid-rows-2 gap-px bg-border">
                         {series.entries.slice(0, 4).map((entry, idx) => (
-                          <div key={entry.id || idx} className="bg-muted overflow-hidden">
+                          <div key={entry.id || idx} className="relative bg-muted overflow-hidden">
                             {entry.game.imageUrl ? (
-                              <img
+                              <Image
                                 src={entry.game.imageUrl}
                                 alt=""
-                                className="h-full w-full object-cover"
-                                loading="lazy"
+                                className="object-cover"
+                                fill
                               />
                             ) : (
                               <div className="h-full w-full flex items-center justify-center text-muted-foreground">

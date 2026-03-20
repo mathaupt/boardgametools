@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
 import { withApiLogging } from "@/lib/api-logger";
+import { validateString, firstError } from "@/lib/validation";
 
 export const GET = withApiLogging(async function GET() {
   const session = await auth();
@@ -41,8 +42,12 @@ export const POST = withApiLogging(async function POST(request: NextRequest) {
     const body = await request.json();
     const { name, description } = body;
 
-    if (!name) {
-      return NextResponse.json({ error: "Name is required" }, { status: 400 });
+    const validationError = firstError(
+      validateString(name, "Name", { max: 200 }),
+      validateString(description, "Beschreibung", { required: false, max: 2000 }),
+    );
+    if (validationError) {
+      return NextResponse.json({ error: validationError }, { status: 400 });
     }
 
     const group = await prisma.group.create({

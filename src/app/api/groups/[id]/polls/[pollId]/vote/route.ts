@@ -55,26 +55,29 @@ export const POST = withApiLogging(async function POST(
 
     const voterName = user?.name || "Unbekannt";
 
-    // Remove existing votes by this user for this poll
-    await prisma.groupPollVote.deleteMany({
-      where: {
-        option: { pollId },
-        userId: session.user.id,
-      },
-    });
+    // Atomically replace votes in a single transaction
+    const votes = await prisma.$transaction(async (tx) => {
+      await tx.groupPollVote.deleteMany({
+        where: {
+          option: { pollId },
+          userId: session.user.id,
+        },
+      });
 
-    // Create new votes
-    const votes = await Promise.all(
-      optionIds.map((optionId: string) =>
-        prisma.groupPollVote.create({
-          data: {
-            optionId,
-            voterName,
-            userId: session.user.id,
-          },
-        })
-      )
-    );
+      const created = await Promise.all(
+        optionIds.map((optionId: string) =>
+          tx.groupPollVote.create({
+            data: {
+              optionId,
+              voterName,
+              userId: session.user.id,
+            },
+          })
+        )
+      );
+
+      return created;
+    });
 
     return NextResponse.json(votes, { status: 201 });
   } catch (error) {

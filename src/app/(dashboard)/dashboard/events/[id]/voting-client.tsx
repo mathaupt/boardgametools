@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Trophy, ThumbsUp, ThumbsDown, Users, Star, Gamepad } from "lucide-react";
@@ -138,14 +139,12 @@ export default function VotingClient({
               {/* Game Image */}
               <div className="flex-shrink-0">
                 {proposal.game.imageUrl ? (
-                  <img 
+                  <Image 
                     src={proposal.game.imageUrl} 
                     alt={proposal.game.name}
-                    className="w-16 h-16 rounded-lg object-cover border border-border"
-                    onError={(e) => {
-                      // Fallback to placeholder if image fails to load
-                      e.currentTarget.src = '/placeholder-game.png';
-                    }}
+                    width={64}
+                    height={64}
+                    className="rounded-lg object-cover border border-border"
                   />
                 ) : (
                   <div className="w-16 h-16 rounded-lg bg-muted border border-border flex items-center justify-center">

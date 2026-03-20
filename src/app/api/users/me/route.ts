@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
 import { hash, compare } from "bcryptjs";
 import { withApiLogging } from "@/lib/api-logger";
+import { validateString, firstError } from "@/lib/validation";
 
 export const GET = withApiLogging(async function GET() {
   const session = await auth();
@@ -38,6 +39,13 @@ export const PUT = withApiLogging(async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
     const { name, email, currentPassword, newPassword } = body;
+
+    const validationError = firstError(
+      validateString(name, "name", { required: false, max: 100 }),
+      validateString(email, "email", { required: false, max: 254 }),
+      validateString(newPassword, "newPassword", { required: false, min: 6, max: 100 })
+    );
+    if (validationError) return NextResponse.json({ error: validationError }, { status: 400 });
 
     const user = await prisma.user.findUnique({
       where: { id: session.user.id },

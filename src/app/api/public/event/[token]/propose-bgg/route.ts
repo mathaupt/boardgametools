@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
 import { resolveEventIdFromToken } from "@/lib/event-share";
 import { withApiLogging } from "@/lib/api-logger";
+import { validateString, firstError } from "@/lib/validation";
 import { fetchBGGGame } from "@/lib/bgg";
 
 type RouteContext = { params: Promise<{ token: string }> };
@@ -23,11 +24,12 @@ export const POST = withApiLogging(async function POST(
     const body = await request.json();
     const { bggId, guestId } = body ?? {};
 
-    if (!bggId) {
-      return NextResponse.json(
-        { error: "Missing required field: bggId" },
-        { status: 400 }
-      );
+    const validationError = firstError(
+      validateString(String(bggId), "bggId", { min: 1, max: 20 }),
+      validateString(guestId, "guestId", { required: false, max: 100 })
+    );
+    if (validationError) {
+      return NextResponse.json({ error: validationError }, { status: 400 });
     }
 
     // Must be either a logged-in user or a registered guest

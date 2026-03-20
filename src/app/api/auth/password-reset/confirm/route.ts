@@ -3,9 +3,14 @@ import { hash } from "bcryptjs";
 import prisma from "@/lib/db";
 import { verifyResetToken, markResetTokenUsed } from "@/lib/password-reset";
 import { withApiLogging } from "@/lib/api-logger";
+import { checkRateLimit, rateLimitResponse } from "@/lib/rate-limit";
 
 export const POST = withApiLogging(async function POST(request: Request) {
   try {
+    const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+    const { allowed, retryAfterMs } = checkRateLimit(`pw-reset-confirm:${ip}`, 5, 60_000);
+    if (!allowed) return rateLimitResponse(retryAfterMs);
+
     const { token, password } = await request.json();
 
     if (!token || typeof token !== "string") {

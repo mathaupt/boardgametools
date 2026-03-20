@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
+import Image from "next/image";
 import { Game } from "@prisma/client";
 
 export default function GameDetailPage() {
@@ -155,9 +156,11 @@ export default function GameDetailPage() {
             {/* Game Image */}
             <div className="md:col-span-1">
               {game.imageUrl ? (
-                <img
+                <Image
                   src={game.imageUrl}
                   alt={game.name}
+                  width={800}
+                  height={256}
                   className="w-full h-64 object-cover rounded-lg"
                 />
               ) : (

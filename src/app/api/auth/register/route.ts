@@ -2,10 +2,23 @@ import { NextRequest, NextResponse } from "next/server";
 import { hash } from "bcryptjs";
 import prisma from "@/lib/db";
 import { withApiLogging } from "@/lib/api-logger";
+import { checkRateLimit, rateLimitResponse } from "@/lib/rate-limit";
+import { validateString, firstError } from "@/lib/validation";
 
 export const POST = withApiLogging(async function POST(request: NextRequest) {
   try {
+    const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+    const { allowed, retryAfterMs } = checkRateLimit(`register:${ip}`, 5, 60_000);
+    if (!allowed) return rateLimitResponse(retryAfterMs);
+
     const { email, password, name } = await request.json();
+
+    const lengthError = firstError(
+      validateString(name, "name", { min: 1, max: 100 }),
+      validateString(password, "password", { min: 8, max: 100 }),
+      validateString(email, "email", { max: 254 })
+    );
+    if (lengthError) return NextResponse.json({ error: lengthError }, { status: 400 });
 
     if (!email || !password || !name) {
       return NextResponse.json(

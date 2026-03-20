@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import Image from "next/image";
 import {
   Dialog,
   DialogContent,
@@ -224,9 +225,9 @@ export function AddGameDialog({
                       key={game.id}
                       className="flex items-center gap-3 p-2 rounded-lg hover:bg-accent transition-colors"
                     >
-                      <div className="w-10 h-10 rounded-lg bg-muted flex-shrink-0 overflow-hidden">
+                      <div className="relative w-10 h-10 rounded-lg bg-muted flex-shrink-0 overflow-hidden">
                         {game.imageUrl ? (
-                          <img src={game.imageUrl} alt="" className="h-full w-full object-cover" />
+                          <Image src={game.imageUrl} alt="" className="object-cover" fill />
                         ) : (
                           <div className="h-full w-full flex items-center justify-center text-muted-foreground">
                             <ImageIcon className="h-4 w-4" />

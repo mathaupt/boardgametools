@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
 import { withApiLogging } from "@/lib/api-logger";
+import { validateString, validateNumber, firstError } from "@/lib/validation";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -56,6 +57,18 @@ export const PUT = withApiLogging(async function PUT(
   try {
     const body = await request.json();
     const { name, description, minPlayers, maxPlayers, playTimeMinutes, complexity, bggId, imageUrl } = body;
+
+    const validationError = firstError(
+      validateString(name, "Name", { required: false, max: 200 }),
+      validateString(description, "Beschreibung", { required: false, max: 2000 }),
+      validateNumber(minPlayers, "Min. Spieler", { required: false, min: 1, max: 99 }),
+      validateNumber(maxPlayers, "Max. Spieler", { required: false, min: 1, max: 99 }),
+      validateNumber(playTimeMinutes, "Spieldauer", { required: false, min: 0, max: 9999 }),
+      validateNumber(complexity, "Komplexität", { required: false, min: 1, max: 5 }),
+    );
+    if (validationError) {
+      return NextResponse.json({ error: validationError }, { status: 400 });
+    }
 
     const game = await prisma.game.update({
       where: { id },

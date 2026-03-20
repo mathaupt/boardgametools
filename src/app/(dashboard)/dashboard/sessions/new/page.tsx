@@ -84,7 +84,7 @@ export default function NewSessionPage() {
     setPlayers(renumbered);
   };
 
-  const updatePlayer = (index: number, field: keyof Player, value: any) => {
+  const updatePlayer = <K extends keyof Player>(index: number, field: K, value: Player[K]) => {
     const newPlayers = [...players];
     newPlayers[index] = { ...newPlayers[index], [field]: value };
     

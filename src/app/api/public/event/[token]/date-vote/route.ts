@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/db";
 import { findPublicEventByToken } from "@/lib/event-share";
 import { withApiLogging } from "@/lib/api-logger";
+import { validateString } from "@/lib/validation";
 
 type RouteContext = { params: Promise<{ token: string }> };
 
@@ -23,11 +24,18 @@ export const POST = withApiLogging(async function POST(
     const body = await request.json();
     const { guestId, votes } = body;
 
+    const guestIdError = validateString(guestId, "guestId", { max: 100 });
+    if (guestIdError) return NextResponse.json({ error: guestIdError }, { status: 400 });
+
     if (!guestId || !votes || !Array.isArray(votes) || votes.length === 0) {
       return NextResponse.json(
         { error: "Missing required fields: guestId, votes" },
         { status: 400 }
       );
+    }
+
+    if (votes.length > 366) {
+      return NextResponse.json({ error: "Too many votes" }, { status: 400 });
     }
 
     // Prüfe ob Gast zum Event gehört

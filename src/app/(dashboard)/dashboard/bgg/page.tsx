@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -216,9 +217,11 @@ export default function BGGImportPage() {
               {/* Game Image */}
               <div>
                 {selectedGame.imageUrl ? (
-                  <img
+                  <Image
                     src={selectedGame.imageUrl}
                     alt={selectedGame.name}
+                    width={400}
+                    height={400}
                     className="w-full rounded-lg"
                   />
                 ) : (

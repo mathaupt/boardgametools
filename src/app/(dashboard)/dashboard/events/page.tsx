@@ -1,5 +1,6 @@
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
+import { getPendingInvites } from "@/lib/queries/pending-invites";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -48,21 +49,7 @@ export default async function EventsPage() {
   });
 
   // Offene Einladungen laden
-  const pendingInvites = await prisma.eventInvite.findMany({
-    where: {
-      userId,
-      status: "pending",
-      event: { eventDate: { gte: new Date() } },
-    },
-    include: {
-      event: {
-        include: {
-          createdBy: { select: { name: true } },
-        },
-      },
-    },
-    orderBy: { event: { eventDate: "asc" } },
-  });
+  const pendingInvites = await getPendingInvites(userId!);
 
   return (
     <div className="space-y-6">

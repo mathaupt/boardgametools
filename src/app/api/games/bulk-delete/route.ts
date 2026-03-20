@@ -13,8 +13,8 @@ export const DELETE = withApiLogging(async function DELETE(request: NextRequest)
     const body = await request.json();
     const { ids } = body as { ids?: string[] };
 
-    if (!ids || !Array.isArray(ids) || ids.length === 0) {
-      return NextResponse.json({ error: "No ids provided" }, { status: 400 });
+    if (!Array.isArray(ids) || ids.length === 0 || ids.length > 500) {
+      return NextResponse.json({ error: "1–500 IDs required" }, { status: 400 });
     }
 
     const result = await prisma.game.deleteMany({

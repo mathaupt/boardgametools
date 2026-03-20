@@ -30,6 +30,8 @@ import {
   ImageIcon,
   Clock,
 } from "lucide-react";
+import { SerializedGroup, SerializedGroupPoll, SerializedGroupPollOption, SerializedGroupPollVote, SerializedGroupComment, SerializedGroupMember } from "@/types/group";
+import Image from "next/image";
 import { getClientBaseUrl } from "@/lib/public-link";
 
 interface GameItem {
@@ -49,7 +51,7 @@ interface BGGResult {
 }
 
 interface GroupDetailClientProps {
-  group: any;
+  group: SerializedGroup;
   userId: string;
   isOwner: boolean;
   initialPublicUrl: string | null;
@@ -306,9 +308,9 @@ export function GroupDetailClient({ group, userId, isOwner, initialPublicUrl }: 
     }
   }
 
-  const userVotedOption = (poll: any) => {
+  const userVotedOption = (poll: SerializedGroupPoll) => {
     for (const option of poll.options) {
-      const vote = option.votes.find((v: any) => v.userId === userId);
+      const vote = option.votes.find((v: SerializedGroupPollVote) => v.userId === userId);
       if (vote) return option.id;
     }
     return null;
@@ -456,7 +458,7 @@ export function GroupDetailClient({ group, userId, isOwner, initialPublicUrl }: 
               </form>
             )}
             {memberError && <p className="text-sm text-destructive">{memberError}</p>}
-            {group.members.map((member: any) => (
+            {group.members.map((member: SerializedGroupMember) => (
               <div key={member.id} className="flex items-center justify-between p-2 border rounded">
                 <div className="flex items-center gap-2">
                   <div className="w-6 h-6 bg-muted rounded-full flex items-center justify-center text-xs">
@@ -652,9 +654,9 @@ export function GroupDetailClient({ group, userId, isOwner, initialPublicUrl }: 
                                     onClick={() => addGameAsOption(game.name)}
                                     className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-accent transition-colors text-left"
                                   >
-                                    <div className="w-8 h-8 rounded bg-muted flex-shrink-0 overflow-hidden">
+                                    <div className="relative w-8 h-8 rounded bg-muted flex-shrink-0 overflow-hidden">
                                       {game.imageUrl ? (
-                                        <img src={game.imageUrl} alt="" className="h-full w-full object-cover" />
+                                        <Image src={game.imageUrl} alt="" className="object-cover" fill />
                                       ) : (
                                         <div className="h-full w-full flex items-center justify-center text-muted-foreground">
                                           <ImageIcon className="h-3 w-3" />
@@ -796,9 +798,9 @@ export function GroupDetailClient({ group, userId, isOwner, initialPublicUrl }: 
               </p>
             </div>
           ) : (
-            group.polls.map((poll: any) => {
+            group.polls.map((poll: SerializedGroupPoll) => {
               const totalVotes = poll.options.reduce(
-                (sum: number, opt: any) => sum + opt._count.votes,
+                (sum: number, opt: SerializedGroupPollOption) => sum + opt._count.votes,
                 0
               );
               const myVote = userVotedOption(poll);
@@ -855,11 +857,11 @@ export function GroupDetailClient({ group, userId, isOwner, initialPublicUrl }: 
                   </CardHeader>
                   <CardContent className="space-y-2">
                     {/* Options with vote bars */}
-                    {poll.options.map((option: any) => {
+                    {poll.options.map((option: SerializedGroupPollOption) => {
                       const voteCount = option._count.votes;
                       const pct = totalVotes > 0 ? Math.round((voteCount / totalVotes) * 100) : 0;
                       const isMyVote = myVote === option.id;
-                      const voterNames = option.votes.map((v: any) => v.voterName).join(", ");
+                      const voterNames = option.votes.map((v: SerializedGroupPollVote) => v.voterName).join(", ");
 
                       return (
                         <button
@@ -962,7 +964,7 @@ export function GroupDetailClient({ group, userId, isOwner, initialPublicUrl }: 
             </p>
           ) : (
             <div className="space-y-2">
-              {group.comments.map((c: any) => (
+              {group.comments.map((c: SerializedGroupComment) => (
                 <div key={c.id} className="p-3 rounded-lg border bg-muted/20">
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-sm font-medium">{c.authorName}</span>

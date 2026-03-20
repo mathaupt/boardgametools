@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
 import { withApiLogging } from "@/lib/api-logger";
+import { validateString, validateNumber, firstError } from "@/lib/validation";
 
 type RouteContext = { params: Promise<{ id: string; entryId: string }> };
 
@@ -31,6 +32,13 @@ export const PUT = withApiLogging(async function PUT(
   try {
     const body = await request.json();
     const { played, playedAt, rating, difficulty, sortOrder } = body;
+
+    const validationError = firstError(
+      validateNumber(rating, "rating", { required: false, min: 1, max: 5 }),
+      validateString(difficulty, "difficulty", { required: false, max: 50 }),
+      validateNumber(sortOrder, "sortOrder", { required: false, min: 0, max: 9999 })
+    );
+    if (validationError) return NextResponse.json({ error: validationError }, { status: 400 });
 
     const data: Record<string, unknown> = {};
 

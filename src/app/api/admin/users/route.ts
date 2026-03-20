@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth";
 import { hash } from "bcryptjs";
 import prisma from "@/lib/db";
 import { withApiLogging } from "@/lib/api-logger";
+import { validateString, firstError } from "@/lib/validation";
 
 export const POST = withApiLogging(async function POST(request: Request) {
   try {
@@ -17,6 +18,16 @@ export const POST = withApiLogging(async function POST(request: Request) {
     }
 
     const { name, email, password, role } = await request.json();
+
+    const validationError = firstError(
+      validateString(name, "name", { min: 1, max: 100 }),
+      validateString(email, "email", { min: 1, max: 254 }),
+      validateString(password, "password", { min: 8, max: 100 })
+    );
+    if (validationError) return NextResponse.json({ error: validationError }, { status: 400 });
+    if (role && !["USER", "ADMIN"].includes(role)) {
+      return NextResponse.json({ error: "Ungültige Rolle" }, { status: 400 });
+    }
 
     // Validate input
     if (!name || !email || !password) {

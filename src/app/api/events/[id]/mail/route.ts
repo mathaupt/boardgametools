@@ -5,6 +5,7 @@ import { sendCustomEventMessage, sendEventUpcomingReminder } from "@/lib/mailer"
 import { getPublicBaseUrl } from "@/lib/public-link";
 import { encryptId } from "@/lib/crypto";
 import { withApiLogging } from "@/lib/api-logger";
+import { validateString, firstError } from "@/lib/validation";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -30,6 +31,12 @@ export const POST = withApiLogging(async function POST(
   try {
     const body = await request.json();
     const { type, message, subject } = body;
+
+    const validationError = firstError(
+      validateString(message, "message", { required: false, max: 5000 }),
+      validateString(subject, "subject", { required: false, max: 200 })
+    );
+    if (validationError) return NextResponse.json({ error: validationError }, { status: 400 });
 
     if (!type || !["custom", "reminder"].includes(type)) {
       return NextResponse.json({

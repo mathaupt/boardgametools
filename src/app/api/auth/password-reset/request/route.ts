@@ -4,9 +4,14 @@ import { createPasswordResetToken } from "@/lib/password-reset";
 import { sendPasswordResetEmail } from "@/lib/mailer";
 import { getPublicBaseUrl } from "@/lib/public-link";
 import { withApiLogging } from "@/lib/api-logger";
+import { checkRateLimit, rateLimitResponse } from "@/lib/rate-limit";
 
 export const POST = withApiLogging(async function POST(request: Request) {
   try {
+    const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+    const { allowed, retryAfterMs } = checkRateLimit(`pw-reset-request:${ip}`, 3, 60_000);
+    if (!allowed) return rateLimitResponse(retryAfterMs);
+
     const appUrl = await getPublicBaseUrl();
     const { email } = await request.json();
 

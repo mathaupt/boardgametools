@@ -37,8 +37,9 @@ export default function NewGroupPage() {
 
       const group = await res.json();
       router.push(`/dashboard/groups/${group.id}`);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      if (err instanceof Error) setError(err.message);
+      else setError("Ein Fehler ist aufgetreten");
     } finally {
       setLoading(false);
     }

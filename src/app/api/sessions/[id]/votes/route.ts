@@ -34,7 +34,7 @@ export const GET = withApiLogging(async function GET(
     }
 
     // Prüfe ob User Berechtigung hat (Teilnehmer oder Ersteller)
-    const isParticipant = sessionData.players.some((p: any) => p.userId === session.user.id);
+    const isParticipant = sessionData.players.some((p) => p.userId === session.user.id);
     const isCreator = sessionData.createdById === session.user.id;
 
     if (!isParticipant && !isCreator) {
@@ -82,7 +82,7 @@ export const POST = withApiLogging(async function POST(
     }
 
     // Prüfe ob User Teilnehmer oder Ersteller ist
-    const isParticipant = sessionData.players.some((p: any) => p.userId === session.user.id);
+    const isParticipant = sessionData.players.some((p) => p.userId === session.user.id);
     const isCreator = sessionData.createdById === session.user.id;
 
     if (!isParticipant && !isCreator) {

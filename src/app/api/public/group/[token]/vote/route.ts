@@ -3,6 +3,7 @@ import { compare } from "bcryptjs";
 import { findPublicGroupByToken } from "@/lib/group-share";
 import prisma from "@/lib/db";
 import { withApiLogging } from "@/lib/api-logger";
+import { validateString, firstError } from "@/lib/validation";
 
 type RouteContext = { params: Promise<{ token: string }> };
 
@@ -22,6 +23,15 @@ export const POST = withApiLogging(async function POST(
     const body = await request.json();
     const { pollId, optionIds, voterName, password } = body;
 
+    const validationError = firstError(
+      validateString(voterName, "voterName", { min: 1, max: 80 }),
+      validateString(pollId, "pollId", { min: 1, max: 100 }),
+      validateString(password, "password", { required: false, max: 100 })
+    );
+    if (validationError) {
+      return NextResponse.json({ error: validationError }, { status: 400 });
+    }
+
     // Check password if set
     if (group.password && (!password || !(await compare(password, group.password)))) {
       return NextResponse.json({ error: "Invalid password" }, { status: 403 });
@@ -31,6 +41,10 @@ export const POST = withApiLogging(async function POST(
       return NextResponse.json({ 
         error: "pollId, optionIds, and voterName are required" 
       }, { status: 400 });
+    }
+
+    if (optionIds.length > 50) {
+      return NextResponse.json({ error: "Too many options" }, { status: 400 });
     }
 
     // Check poll exists and is open
@@ -47,26 +61,31 @@ export const POST = withApiLogging(async function POST(
       return NextResponse.json({ error: "Single-choice poll: only one option allowed" }, { status: 400 });
     }
 
-    // Remove existing votes by this voter name for this poll
-    await prisma.groupPollVote.deleteMany({
-      where: {
-        option: { pollId },
-        voterName,
-        userId: null, // Only delete anonymous votes with this name
-      },
-    });
+    const trimmedVoterName = voterName.trim();
 
-    // Create new votes
-    const votes = await Promise.all(
-      optionIds.map((optionId: string) =>
-        prisma.groupPollVote.create({
-          data: {
-            optionId,
-            voterName: voterName.trim(),
-          },
-        })
-      )
-    );
+    // Atomically replace votes in a single transaction
+    const votes = await prisma.$transaction(async (tx) => {
+      await tx.groupPollVote.deleteMany({
+        where: {
+          option: { pollId },
+          voterName: trimmedVoterName,
+          userId: null,
+        },
+      });
+
+      const created = await Promise.all(
+        optionIds.map((optionId: string) =>
+          tx.groupPollVote.create({
+            data: {
+              optionId,
+              voterName: trimmedVoterName,
+            },
+          })
+        )
+      );
+
+      return created;
+    });
 
     return NextResponse.json(votes, { status: 201 });
   } catch (error) {

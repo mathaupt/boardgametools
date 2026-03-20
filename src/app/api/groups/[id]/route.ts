@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth";
 import { hash } from "bcryptjs";
 import prisma from "@/lib/db";
 import { withApiLogging } from "@/lib/api-logger";
+import { validateString, firstError } from "@/lib/validation";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -89,6 +90,13 @@ export const PUT = withApiLogging(async function PUT(
 
     const body = await request.json();
     const { name, description, password } = body;
+
+    const validationError = firstError(
+      validateString(name, "name", { required: false, min: 1, max: 100 }),
+      validateString(description, "description", { required: false, max: 1000 }),
+      validateString(password, "password", { required: false, max: 100 })
+    );
+    if (validationError) return NextResponse.json({ error: validationError }, { status: 400 });
 
     // Hash password if provided, null to remove
     const passwordData = password !== undefined
