@@ -46,7 +46,7 @@ export default function EditGamePage() {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
+          <div className="animate-spin rounded-full h-16 w-16 sm:h-32 sm:w-32 border-b-2 border-primary"></div>
           <p className="mt-4 text-muted-foreground">Spiel wird geladen...</p>
         </div>
       </div>
@@ -87,7 +87,7 @@ export default function EditGamePage() {
     <div>
       {/* Breadcrumb Navigation */}
       <div className="container mx-auto px-4 py-4">
-        <div className="flex items-center gap-2 text-muted-foreground text-sm">
+        <div className="flex flex-wrap items-center gap-2 text-muted-foreground text-sm">
           <button
             onClick={() => router.push("/dashboard")}
             className="hover:text-primary">

@@ -23,9 +23,9 @@ export default async function SessionsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold">Gespielte Sessions</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold">Gespielte Sessions</h1>
           <p className="text-muted-foreground">Verfolge deine Brettspiel-Sessions</p>
         </div>
         <Link href="/dashboard/sessions/new">
@@ -58,7 +58,7 @@ export default async function SessionsPage() {
           {sessions.map((session) => (
             <Card key={session.id} className="hover:shadow-md transition-shadow">
               <CardHeader>
-                <div className="flex items-start justify-between">
+                <div className="flex flex-col sm:flex-row items-start sm:justify-between gap-2">
                   <div>
                     <CardTitle className="flex items-center gap-2">
                       <div className="w-8 h-8 bg-primary/10 rounded flex items-center justify-center">
@@ -66,7 +66,7 @@ export default async function SessionsPage() {
                       </div>
                       {session.game.name}
                     </CardTitle>
-                    <CardDescription className="flex items-center gap-4 mt-2">
+                    <CardDescription className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2">
                       <div className="flex items-center gap-1">
                         <Calendar className="h-4 w-4" />
                         {new Date(session.playedAt).toLocaleDateString('de-DE')}

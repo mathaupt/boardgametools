@@ -476,7 +476,7 @@ export default function EventVotingPage() {
                 </CardHeader>
                 
                 <CardContent>
-                  <div className="flex items-center justify-between">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                     {proposal.game.description && (
                       <p className="text-sm text-muted-foreground flex-1 mr-4">
                         {proposal.game.description}
@@ -517,7 +517,7 @@ export default function EventVotingPage() {
           
           <Card>
             <CardHeader>
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
                 <CardTitle className="text-lg">Spiel auswählen</CardTitle>
                 <div className="flex gap-2">
                   <Button

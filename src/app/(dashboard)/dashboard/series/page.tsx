@@ -175,7 +175,7 @@ export default function SeriesPage() {
                 <select
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value as StatusFilter)}
-                  className="h-9 border rounded-md px-3 text-sm bg-background text-foreground min-w-[130px]"
+                  className="h-9 border rounded-md px-3 text-sm bg-background text-foreground w-full sm:min-w-[130px] sm:w-auto"
                   aria-label="Status filtern"
                 >
                   {STATUS_OPTIONS.map((opt) => (
@@ -190,7 +190,7 @@ export default function SeriesPage() {
                 <select
                   value={sortOption}
                   onChange={(e) => setSortOption(e.target.value as SortOption)}
-                  className="h-9 border rounded-md px-3 text-sm bg-background text-foreground min-w-[200px]"
+                  className="h-9 border rounded-md px-3 text-sm bg-background text-foreground w-full sm:min-w-[200px] sm:w-auto"
                   aria-label="Sortierung"
                 >
                   {SORT_OPTIONS.map((opt) => (

@@ -66,9 +66,9 @@ export default async function EventsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
         <div>
-          <h1 className="text-3xl font-bold">Events & Voting</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold">Events & Voting</h1>
           <p className="text-muted-foreground">Plane Spieleabende mit Abstimmung</p>
         </div>
         <Link href="/dashboard/events/new">
@@ -117,7 +117,7 @@ export default async function EventsPage() {
           {events.map((event) => (
             <Card key={event.id} className="hover:shadow-md transition-shadow">
               <CardHeader>
-                <div className="flex items-start justify-between">
+                <div className="flex flex-col sm:flex-row items-start sm:justify-between gap-3">
                   <div>
                     <CardTitle className="flex items-center gap-2">
                       <div className="w-8 h-8 bg-primary/10 rounded flex items-center justify-center">
@@ -125,7 +125,7 @@ export default async function EventsPage() {
                       </div>
                       {event.title}
                     </CardTitle>
-                    <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2 text-sm text-muted-foreground">
                       <div className="flex items-center gap-1">
                         <Calendar className="h-4 w-4" />
                         {new Date(event.eventDate).toLocaleDateString('de-DE')}

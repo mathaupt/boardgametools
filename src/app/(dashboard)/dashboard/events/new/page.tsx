@@ -79,7 +79,7 @@ export default function NewEventPage() {
       </div>
 
       <div>
-        <h1 className="text-3xl font-bold">Neues Event erstellen</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold">Neues Event erstellen</h1>
         <p className="text-muted-foreground">Plane einen neuen Spieleabend mit Voting-System</p>
       </div>
 

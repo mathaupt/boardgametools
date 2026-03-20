@@ -371,7 +371,7 @@ export function MonitoringDashboard() {
       {/* Toolbar */}
       <div className="flex flex-wrap items-center gap-3">
         <Select value={period} onValueChange={(v) => setPeriod(v as Period)}>
-          <SelectTrigger className="w-[160px]">
+          <SelectTrigger className="w-full sm:w-[160px]">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -646,7 +646,7 @@ export function MonitoringDashboard() {
             <CardContent className="pt-6">
               <div className="flex flex-wrap gap-3">
                 <Select value={logMethod} onValueChange={(v) => { setLogMethod(v); setLogPage(1); }}>
-                  <SelectTrigger className="w-[120px]">
+                  <SelectTrigger className="w-full sm:w-[120px]">
                     <SelectValue placeholder="Methode" />
                   </SelectTrigger>
                   <SelectContent>
@@ -662,11 +662,11 @@ export function MonitoringDashboard() {
                   placeholder="Pfad suchen..."
                   value={logPath}
                   onChange={(e) => { setLogPath(e.target.value); setLogPage(1); }}
-                  className="w-[200px]"
+                  className="w-full sm:w-[200px]"
                 />
 
                 <Select value={logStatus} onValueChange={(v) => { setLogStatus(v); setLogPage(1); }}>
-                  <SelectTrigger className="w-[120px]">
+                  <SelectTrigger className="w-full sm:w-[120px]">
                     <SelectValue placeholder="Status" />
                   </SelectTrigger>
                   <SelectContent>
@@ -765,7 +765,7 @@ export function MonitoringDashboard() {
                   <Separator className="my-4" />
 
                   {/* Pagination */}
-                  <div className="flex items-center justify-between">
+                  <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                     <p className="text-sm text-muted-foreground">
                       {logs.total} Einträge, Seite {logs.page} von {logs.totalPages}
                     </p>
@@ -811,7 +811,7 @@ export function MonitoringDashboard() {
               {/* Health Score */}
               <Card>
                 <CardContent className="pt-6">
-                  <div className="flex items-center gap-6">
+                  <div className="flex flex-col items-center gap-4 text-center sm:flex-row sm:items-center sm:gap-6 sm:text-left">
                     <div className={cn(
                       "flex items-center justify-center w-24 h-24 rounded-full border-4",
                       anomalies.healthScore >= 80

@@ -223,7 +223,7 @@ export default async function DashboardPage() {
       {/* Upcoming Events – prominent full-width section */}
       {upcomingEvents.length > 0 && (
         <Card className="border-primary/20 bg-primary/[0.02]">
-          <CardHeader className="flex flex-row items-center justify-between">
+          <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
             <div>
               <CardTitle className="flex items-center gap-2 text-base">
                 <Vote className="h-4 w-4 text-primary" />

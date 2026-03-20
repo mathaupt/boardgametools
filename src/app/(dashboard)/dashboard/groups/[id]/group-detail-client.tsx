@@ -319,7 +319,7 @@ export function GroupDetailClient({ group, userId, isOwner, initialPublicUrl }: 
       {/* Group Header */}
       <Card>
         <CardHeader>
-          <div className="flex items-start justify-between">
+          <div className="flex flex-col sm:flex-row items-start sm:justify-between gap-3">
             <div>
               <CardTitle className="flex items-center gap-2 text-2xl text-foreground">
                 <div className="w-10 h-10 bg-primary/10 rounded flex items-center justify-center">
@@ -486,7 +486,7 @@ export function GroupDetailClient({ group, userId, isOwner, initialPublicUrl }: 
       {/* Polls Section */}
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center sm:justify-between gap-3">
             <div>
               <CardTitle className="flex items-center gap-2">
                 <Vote className="h-5 w-5" />
@@ -809,9 +809,9 @@ export function GroupDetailClient({ group, userId, isOwner, initialPublicUrl }: 
               return (
                 <Card key={poll.id} className={!isOpen ? "opacity-75" : ""}>
                   <CardHeader className="pb-3">
-                    <div className="flex items-start justify-between">
+                    <div className="flex flex-col sm:flex-row items-start sm:justify-between gap-2">
                       <div>
-                        <CardTitle className="text-base flex items-center gap-2">
+                        <CardTitle className="text-base flex items-center flex-wrap gap-2">
                           {poll.title}
                           <Badge variant={isOpen ? "default" : "secondary"}>
                             {isOpen ? "Offen" : "Geschlossen"}

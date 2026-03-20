@@ -99,12 +99,12 @@ export default function GamesPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold">Meine Spiele</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold">Meine Spiele</h1>
           <p className="text-muted-foreground">Verwalte deine Brettspielsammlung</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           {games.length > 0 && (
             <Button
               variant="outline"
@@ -112,24 +112,24 @@ export default function GamesPage() {
               onClick={() => setDeleteAllOpen(true)}
               data-testid="games-delete-all"
             >
-              <Trash className="h-4 w-4 mr-2" />
-              Alle entfernen
+              <Trash className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">Alle entfernen</span>
             </Button>
           )}
           <Link href="/dashboard/games/import">
             <Button variant="outline">
-              <Download className="h-4 w-4 mr-2" />
-              Von BGG importieren
+              <Download className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">Von BGG importieren</span>
             </Button>
           </Link>
           <Button variant="outline" onClick={() => setBarcodeScannerOpen(true)}>
-            <ScanBarcode className="h-4 w-4 mr-2" />
+            <ScanBarcode className="h-4 w-4 sm:mr-2" />
             <span className="hidden sm:inline">Barcode</span>
           </Button>
           <Link href="/dashboard/games/new">
             <Button>
-              <Plus className="h-4 w-4 mr-2" />
-              Spiel hinzufügen
+              <Plus className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">Spiel hinzufügen</span>
             </Button>
           </Link>
         </div>

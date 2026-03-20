@@ -131,14 +131,14 @@ export default async function EventDetailPage({
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div className="flex items-center gap-4">
           <Link href="/dashboard/events" className="text-muted-foreground hover:text-foreground flex items-center gap-2">
             <ArrowLeft className="h-4 w-4" />
             Zurück zu Events
           </Link>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           {isCreator && !isPast && (
             <>
               <EventMailDialog
@@ -181,13 +181,13 @@ export default async function EventDetailPage({
         <CardHeader>
           <div className="flex items-start justify-between">
             <div>
-              <CardTitle className="flex items-center gap-2 text-2xl text-foreground">
+              <CardTitle className="flex items-center gap-2 text-xl sm:text-2xl text-foreground">
                 <div className="w-10 h-10 bg-primary/10 rounded flex items-center justify-center" aria-label="Event Icon">
                   📅
                 </div>
                 {event.title}
               </CardTitle>
-              <div className="flex items-center gap-4 mt-3 text-base text-muted-foreground">
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-3 text-sm sm:text-base text-muted-foreground">
                 <div className="flex items-center gap-1">
                   <Calendar className="h-4 w-4" />
                   {eventDate.toLocaleDateString('de-DE', { 

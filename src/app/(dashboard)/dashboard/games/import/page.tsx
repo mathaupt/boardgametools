@@ -331,7 +331,7 @@ export default function ImportBGGPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex items-center gap-4">
           <Link href="/dashboard/games">
             <Button variant="ghost" size="icon">
@@ -339,13 +339,13 @@ export default function ImportBGGPage() {
             </Button>
           </Link>
           <div>
-            <h1 className="text-3xl font-bold">Von BGG importieren</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold">Von BGG importieren</h1>
             <p className="text-muted-foreground">Importiere Spiele direkt von BoardGameGeek</p>
           </div>
         </div>
 
         {/* Action buttons */}
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <Button variant="outline" className="flex items-center gap-2" onClick={() => setBarcodeScannerOpen(true)}>
             <ScanBarcode className="h-4 w-4" />
             <span className="hidden sm:inline">Barcode</span>
@@ -361,8 +361,9 @@ export default function ImportBGGPage() {
         }}>
           <DialogTrigger asChild>
             <Button variant="outline" className="flex items-center gap-2">
-              <Library className="h-4 w-4" />
-              Gesamte Sammlung importieren
+              <Library className="h-4 w-4 sm:mr-0" />
+              <span className="hidden sm:inline">Gesamte Sammlung importieren</span>
+              <span className="sm:hidden">Sammlung</span>
             </Button>
           </DialogTrigger>
           <DialogContent className="max-w-2xl max-h-[85vh] flex flex-col">
@@ -623,12 +624,12 @@ export default function ImportBGGPage() {
           {selectedGame && !isLoading && (
             <Card>
               <CardHeader>
-                <div className="flex gap-4">
+                <div className="flex flex-col sm:flex-row gap-4">
                   {selectedGame.imageUrl ? (
                     <img
                       src={selectedGame.imageUrl}
                       alt={selectedGame.name}
-                      className="w-full rounded-lg"
+                      className="w-full sm:w-32 sm:h-32 object-cover rounded-lg flex-shrink-0"
                       onError={handleImageError}
                     />
                   ) : (
@@ -636,7 +637,7 @@ export default function ImportBGGPage() {
                       🎲
                     </div>
                   )}
-                  <div className="flex-1">
+                  <div className="flex-1 min-w-0">
                     <CardTitle>{selectedGame.name}</CardTitle>
                     {selectedGame.yearPublished && (
                       <CardDescription>Erschienen {selectedGame.yearPublished}</CardDescription>

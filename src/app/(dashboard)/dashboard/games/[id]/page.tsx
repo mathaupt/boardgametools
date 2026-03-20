@@ -74,7 +74,7 @@ export default function GameDetailPage() {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
+          <div className="animate-spin rounded-full h-16 w-16 sm:h-32 sm:w-32 border-b-2 border-primary"></div>
           <p className="mt-4 text-muted-foreground">Spiel wird geladen...</p>
         </div>
       </div>
@@ -115,8 +115,8 @@ export default function GameDetailPage() {
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-2 text-muted-foreground hover:text-foreground">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
+          <div className="flex flex-wrap items-center gap-2 text-muted-foreground hover:text-foreground min-w-0">
             <button
               onClick={() => router.push("/dashboard")}
               className="flex items-center gap-2 hover:text-primary"
@@ -131,7 +131,7 @@ export default function GameDetailPage() {
               🎲 Spiele
             </button>
             <span>/</span>
-            <span className="text-foreground">{game?.name || 'Spiel'}</span>
+            <span className="text-foreground truncate max-w-[200px]">{game?.name || 'Spiel'}</span>
           </div>
           <div className="flex gap-2">
             <button 
@@ -169,7 +169,7 @@ export default function GameDetailPage() {
 
             {/* Game Info */}
             <div className="md:col-span-2">
-              <h1 className="text-3xl font-bold text-foreground mb-4">
+              <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-4">
                 {game.name}
               </h1>
               
@@ -210,7 +210,7 @@ export default function GameDetailPage() {
               </div>
 
               {/* Actions */}
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
                 <button className="bg-success text-success-foreground px-4 py-2 rounded hover:bg-success/90">
                   Session starten
                 </button>

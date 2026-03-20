@@ -225,12 +225,12 @@ export default function PublicInvitePage() {
                 {error && (
                   <p className="mb-4 text-sm text-destructive">{error}</p>
                 )}
-                <div className="flex justify-center gap-4">
+                <div className="flex flex-col gap-3 sm:flex-row sm:justify-center sm:gap-4">
                   <Button
                     size="lg"
                     onClick={() => handleRespond("accepted")}
                     disabled={responding}
-                    className="min-w-[140px]"
+                    className="w-full sm:min-w-[140px] sm:w-auto"
                   >
                     {responding ? (
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -244,7 +244,7 @@ export default function PublicInvitePage() {
                     variant="outline"
                     onClick={() => handleRespond("declined")}
                     disabled={responding}
-                    className="min-w-[140px]"
+                    className="w-full sm:min-w-[140px] sm:w-auto"
                   >
                     {responding ? (
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />

@@ -245,7 +245,7 @@ export default function EventInvitePage() {
                   placeholder="max@example.com"
                   onKeyPress={(e) => e.key === 'Enter' && addInvite()}
                 />
-                <Button onClick={addInvite} disabled={saving || !newEmail.trim()}>
+                <Button onClick={addInvite} disabled={saving || !newEmail.trim()} className="shrink-0">
                   <Plus className="h-4 w-4 mr-2" />
                   {saving ? 'Wird hinzugefügt...' : 'Hinzufügen'}
                 </Button>
@@ -273,6 +273,7 @@ export default function EventInvitePage() {
                 <Button
                   onClick={addUserInvite}
                   disabled={userInviteSaving || !selectedUserId}
+                  className="shrink-0"
                 >
                   <Plus className="h-4 w-4 mr-2" />
                   {userInviteSaving ? 'Wird hinzugefügt...' : 'Einladen'}
@@ -304,7 +305,7 @@ export default function EventInvitePage() {
             ) : (
               <div className="space-y-3">
                 {invites.map((invite) => (
-                  <div key={invite.id} className="flex items-center justify-between p-3 border rounded-lg">
+                  <div key={invite.id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 border rounded-lg gap-2">
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 bg-muted rounded-full flex items-center justify-center text-sm">
                         {invite.user ? invite.user.name[0].toUpperCase() : "?"}

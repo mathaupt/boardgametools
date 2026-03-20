@@ -60,7 +60,7 @@ export function PendingInvites({ invites: initialInvites }: { invites: PendingIn
           {invites.map((inv) => (
             <li
               key={inv.id}
-              className="flex items-center justify-between rounded-lg border bg-card px-4 py-3"
+              className="flex flex-col sm:flex-row items-start sm:items-center justify-between rounded-lg border bg-card px-4 py-3 gap-2"
             >
               <div className="min-w-0 flex-1">
                 <Link
@@ -89,7 +89,7 @@ export function PendingInvites({ invites: initialInvites }: { invites: PendingIn
                   <span>von {inv.event.createdBy.name}</span>
                 </div>
               </div>
-              <div className="flex items-center gap-2 ml-3 shrink-0">
+              <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto justify-end">
                 <Button
                   size="sm"
                   variant="default"

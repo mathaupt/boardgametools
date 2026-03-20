@@ -515,7 +515,7 @@ export default function SeriesDetailPage() {
                 <select
                   value={playedFilter}
                   onChange={(e) => setPlayedFilter(e.target.value as PlayedFilter)}
-                  className="h-9 border rounded-md px-3 text-sm bg-background text-foreground min-w-[100px]"
+                  className="h-9 border rounded-md px-3 text-sm bg-background text-foreground w-full sm:min-w-[100px] sm:w-auto"
                   aria-label="Status filtern"
                 >
                   {PLAYED_OPTIONS.map((opt) => (
@@ -528,7 +528,7 @@ export default function SeriesDetailPage() {
               <select
                 value={difficultyFilter}
                 onChange={(e) => setDifficultyFilter(e.target.value as DifficultyFilter)}
-                className="h-9 border rounded-md px-3 text-sm bg-background text-foreground min-w-[130px]"
+                className="h-9 border rounded-md px-3 text-sm bg-background text-foreground w-full sm:min-w-[130px] sm:w-auto"
                 aria-label="Schwierigkeit filtern"
               >
                 <option value="alle">Schwierigkeit</option>
@@ -543,7 +543,7 @@ export default function SeriesDetailPage() {
                 <select
                   value={sortOption}
                   onChange={(e) => setSortOption(e.target.value as EntrySortOption)}
-                  className="h-9 border rounded-md px-3 text-sm bg-background text-foreground min-w-[160px]"
+                  className="h-9 border rounded-md px-3 text-sm bg-background text-foreground w-full sm:min-w-[160px] sm:w-auto"
                   aria-label="Sortierung"
                 >
                   {SORT_OPTIONS.map((opt) => (

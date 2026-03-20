@@ -38,9 +38,9 @@ export default async function AdminUsersPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Nutzerverwaltung</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Nutzerverwaltung</h1>
           <p className="text-muted-foreground">Verwalte alle Benutzerkonten</p>
         </div>
         <CreateUserModal />
@@ -58,14 +58,14 @@ export default async function AdminUsersPage() {
             {users.map((user) => (
               <div
                 key={user.id}
-                className="flex items-center justify-between p-4 border border-border rounded-lg hover:bg-accent/50 transition-colors"
+                className="flex flex-col gap-3 p-4 border border-border rounded-lg hover:bg-accent/50 transition-colors sm:flex-row sm:items-center sm:justify-between"
               >
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
                     <User className="h-5 w-5 text-primary" />
                   </div>
                   <div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
                       <span className="font-medium text-foreground">{user.name}</span>
                       <Badge variant={user.role === "ADMIN" ? "default" : "secondary"}>
                         {user.role}
@@ -74,7 +74,7 @@ export default async function AdminUsersPage() {
                         {user.isActive ? "Aktiv" : "Inaktiv"}
                       </Badge>
                     </div>
-                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted-foreground">
                       <div className="flex items-center gap-1">
                         <Mail className="h-3 w-3" />
                         {user.email}
