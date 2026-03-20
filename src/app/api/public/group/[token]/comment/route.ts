@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { compare } from "bcryptjs";
 import { findPublicGroupByToken } from "@/lib/group-share";
 import prisma from "@/lib/db";
 import { withApiLogging } from "@/lib/api-logger";
@@ -22,7 +23,7 @@ export const POST = withApiLogging(async function POST(
     const { content, pollId, authorName, password } = body;
 
     // Check password if set
-    if (group.password && group.password !== password) {
+    if (group.password && (!password || !(await compare(password, group.password)))) {
       return NextResponse.json({ error: "Invalid password" }, { status: 403 });
     }
 

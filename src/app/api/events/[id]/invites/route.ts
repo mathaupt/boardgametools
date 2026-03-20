@@ -152,7 +152,7 @@ export const PUT = withApiLogging(async function PUT(
     // Benachrichtige Organisator per Mail
     const event = await prisma.event.findUnique({
       where: { id },
-      include: { createdBy: true },
+      include: { createdBy: { select: { email: true, name: true } } },
     });
 
     if (event && event.createdById !== session.user.id) {

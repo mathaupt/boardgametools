@@ -158,7 +158,7 @@ export const POST = withApiLogging(async function POST(request: NextRequest) {
           eventUrl,
         });
       } catch (mailErr) {
-        console.error(`Failed to send invite email to ${recipientEmail}:`, mailErr);
+        console.error("Failed to send invite email:", mailErr);
       }
     }
 

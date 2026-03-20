@@ -7,7 +7,6 @@ const nextConfig: NextConfig = {
     },
   },
   images: {
-    domains: ['cf.geekdo-images.com'],
     remotePatterns: [
       {
         protocol: 'https',

@@ -76,7 +76,6 @@ export async function fetchBGGGame(bggId: string): Promise<BGGGameData | null> {
 
     if (BGG_AUTH_TOKEN) {
       headers["Authorization"] = `Bearer ${BGG_AUTH_TOKEN}`;
-      console.log("Using BGG Auth Token for game details");
     }
 
     const response = await fetch(
@@ -176,7 +175,6 @@ export async function searchBGGGames(query: string): Promise<Array<{ bggId: stri
     // Add BGG Auth Token if available
     if (BGG_AUTH_TOKEN) {
       headers["Authorization"] = `Bearer ${BGG_AUTH_TOKEN}`;
-      console.log("Using BGG Auth Token");
     }
 
     const response = await fetch(url, { headers });

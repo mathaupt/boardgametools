@@ -42,10 +42,8 @@ export default function PublicGroupPage({ params }: PublicGroupPageProps) {
   async function fetchGroup(t: string, pw: string) {
     setLoading("fetch");
     try {
-      const url = pw
-        ? `/api/public/group/${t}?password=${encodeURIComponent(pw)}`
-        : `/api/public/group/${t}`;
-      const res = await fetch(url);
+      const headers: HeadersInit = pw ? { "x-group-password": pw } : {};
+      const res = await fetch(`/api/public/group/${t}`, { headers });
       const data = await res.json();
 
       if (res.status === 403 && data.requiresPassword) {

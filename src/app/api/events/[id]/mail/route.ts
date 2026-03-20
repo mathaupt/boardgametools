@@ -96,7 +96,7 @@ export const POST = withApiLogging(async function POST(
         sentCount++;
       } catch (mailErr) {
         const errMsg = mailErr instanceof Error ? mailErr.message : String(mailErr);
-        console.error(`Failed to send mail to ${recipientEmail}:`, errMsg);
+        console.error("Failed to send mail:", errMsg);
         errors.push(`${recipientEmail}: ${errMsg}`);
         failedCount++;
       }

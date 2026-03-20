@@ -35,7 +35,7 @@ export const POST = withApiLogging(async function POST(
       where: { id: inviteId },
       include: {
         event: {
-          include: { createdBy: true },
+          include: { createdBy: { select: { email: true, name: true } } },
         },
       },
     });

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
+import { hash } from "bcryptjs";
 import prisma from "@/lib/db";
 import { withApiLogging } from "@/lib/api-logger";
 
@@ -57,7 +58,9 @@ export const GET = withApiLogging(async function GET(
       return NextResponse.json({ error: "Group not found" }, { status: 404 });
     }
 
-    return NextResponse.json(group);
+    // Strip password hash from response
+    const { password: _pw, ...safeGroup } = group;
+    return NextResponse.json({ ...safeGroup, hasPassword: !!_pw });
   } catch (error) {
     console.error("Error fetching group:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
@@ -87,12 +90,17 @@ export const PUT = withApiLogging(async function PUT(
     const body = await request.json();
     const { name, description, password } = body;
 
+    // Hash password if provided, null to remove
+    const passwordData = password !== undefined
+      ? { password: password ? await hash(password, 12) : null }
+      : {};
+
     const updated = await prisma.group.update({
       where: { id },
       data: {
         ...(name !== undefined && { name }),
         ...(description !== undefined && { description: description || null }),
-        ...(password !== undefined && { password: password || null }),
+        ...passwordData,
       },
       include: {
         owner: { select: { id: true, name: true, email: true } },

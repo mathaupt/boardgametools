@@ -43,53 +43,15 @@ export function Navbar() {
   const isAdmin = session?.user?.role === "ADMIN";
 
   return (
-    <header
-      style={{
-        position: "sticky",
-        top: 0,
-        zIndex: 50,
-        width: "100%",
-        borderBottom: "1px solid var(--border)",
-        backgroundColor: "var(--card)",
-      }}
-    >
-      <div
-        style={{
-          maxWidth: "1280px",
-          margin: "0 auto",
-          padding: "0 12px",
-          display: "flex",
-          height: "56px",
-          alignItems: "center",
-          gap: "8px",
-        }}
-      >
+    <header className="sticky top-0 z-50 w-full border-b border-border bg-card">
+      <div className="mx-auto flex h-14 max-w-[1280px] items-center gap-2 px-3">
         {/* Logo */}
         <Link
           href="/dashboard"
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "8px",
-            flexShrink: 0,
-            textDecoration: "none",
-            marginRight: "4px",
-          }}
+          className="mr-1 flex shrink-0 items-center gap-2 no-underline"
         >
-          <div
-            style={{
-              display: "flex",
-              height: "32px",
-              width: "32px",
-              alignItems: "center",
-              justifyContent: "center",
-              borderRadius: "8px",
-              backgroundColor: "oklch(0.48 0.2 265 / 0.1)",
-            }}
-          >
-            <Dice6
-              style={{ height: "18px", width: "18px", color: "var(--primary)" }}
-            />
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
+            <Dice6 className="h-[18px] w-[18px] text-primary" />
           </div>
         </Link>
 
@@ -97,34 +59,13 @@ export function Navbar() {
         <Link
           href="/dashboard/changelog"
           title="Versionshistorie"
-          style={{
-            fontSize: "10px",
-            fontWeight: 600,
-            color: "var(--muted-foreground)",
-            backgroundColor: "var(--muted)",
-            padding: "2px 6px",
-            borderRadius: "4px",
-            textDecoration: "none",
-            flexShrink: 0,
-            lineHeight: "16px",
-          }}
+          className="shrink-0 rounded bg-muted px-1.5 py-0.5 text-[10px] font-semibold leading-4 text-muted-foreground no-underline"
         >
           v{currentVersion}
         </Link>
 
         {/* Navigation links - always visible, horizontal scroll on small screens */}
-        <nav
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "2px",
-            flex: "1 1 0%",
-            minWidth: 0,
-            overflowX: "auto",
-            WebkitOverflowScrolling: "touch",
-            scrollbarWidth: "none",
-          }}
-        >
+        <nav className="flex min-w-0 flex-1 items-center gap-0.5 overflow-x-auto [-webkit-overflow-scrolling:touch] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {navigation.map((item) => {
             const isActive =
               pathname === item.href ||
@@ -136,30 +77,13 @@ export function Navbar() {
                 title={item.name}
                 aria-label={item.name}
                 className={cn(
-                  "navbar-link",
-                  isActive && "navbar-link-active"
+                  "navbar-link flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-md px-2.5 py-[7px] text-[13px] font-medium no-underline transition-colors",
+                  isActive
+                    ? "navbar-link-active bg-primary text-primary-foreground"
+                    : "bg-transparent text-muted-foreground"
                 )}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "6px",
-                  padding: "7px 10px",
-                  borderRadius: "6px",
-                  fontSize: "13px",
-                  fontWeight: 500,
-                  flexShrink: 0,
-                  textDecoration: "none",
-                  whiteSpace: "nowrap",
-                  color: isActive
-                    ? "var(--primary-foreground)"
-                    : "var(--muted-foreground)",
-                  backgroundColor: isActive
-                    ? "var(--primary)"
-                    : "transparent",
-                  transition: "background-color 0.15s, color 0.15s",
-                }}
               >
-                <item.icon style={{ height: "16px", width: "16px", flexShrink: 0 }} />
+                <item.icon className="h-4 w-4 shrink-0" />
                 <span className="nav-label">{item.name}</span>
               </Link>
             );
@@ -168,15 +92,7 @@ export function Navbar() {
           {/* Admin section */}
           {isAdmin && (
             <>
-              <div
-                style={{
-                  width: "1px",
-                  height: "24px",
-                  backgroundColor: "var(--border)",
-                  margin: "0 4px",
-                  flexShrink: 0,
-                }}
-              />
+              <div className="mx-1 h-6 w-px shrink-0 bg-border" />
               {adminNavigation.map((item) => {
                 const isActive =
                   pathname === item.href ||
@@ -187,27 +103,14 @@ export function Navbar() {
                     href={item.href}
                     title={item.name}
                     aria-label={item.name}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "6px",
-                      padding: "7px 10px",
-                      borderRadius: "6px",
-                      fontSize: "13px",
-                      fontWeight: 500,
-                      flexShrink: 0,
-                      textDecoration: "none",
-                      whiteSpace: "nowrap",
-                      color: isActive
-                        ? "var(--primary-foreground)"
-                        : "var(--muted-foreground)",
-                      backgroundColor: isActive
-                        ? "var(--primary)"
-                        : "transparent",
-                      transition: "background-color 0.15s, color 0.15s",
-                    }}
+                    className={cn(
+                      "flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-md px-2.5 py-[7px] text-[13px] font-medium no-underline transition-colors",
+                      isActive
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-transparent text-muted-foreground"
+                    )}
                   >
-                    <item.icon style={{ height: "16px", width: "16px", flexShrink: 0 }} />
+                    <item.icon className="h-4 w-4 shrink-0" />
                     <span className="nav-label">{item.name}</span>
                   </Link>
                 );
@@ -217,56 +120,30 @@ export function Navbar() {
         </nav>
 
         {/* User section */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "8px",
-            flexShrink: 0,
-            marginLeft: "auto",
-          }}
-        >
+        <div className="ml-auto flex shrink-0 items-center gap-2">
           {session?.user && (
             <>
               <Link
                 href="/dashboard/profile"
                 title="Mein Profil"
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "6px",
-                  fontSize: "13px",
-                  color: pathname.startsWith("/dashboard/profile")
-                    ? "var(--primary)"
-                    : "var(--foreground)",
-                  textDecoration: "none",
-                  borderRadius: "6px",
-                  padding: "4px 8px",
-                  transition: "background-color 0.15s, color 0.15s",
-                }}
+                className={cn(
+                  "flex items-center gap-1.5 rounded-md px-2 py-1 text-[13px] no-underline transition-colors",
+                  pathname.startsWith("/dashboard/profile")
+                    ? "text-primary"
+                    : "text-foreground"
+                )}
               >
                 <div
-                  style={{
-                    display: "flex",
-                    height: "28px",
-                    width: "28px",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderRadius: "50%",
-                    backgroundColor: pathname.startsWith("/dashboard/profile")
-                      ? "oklch(0.48 0.2 265 / 0.15)"
-                      : "oklch(0.48 0.2 265 / 0.1)",
-                  }}
+                  className={cn(
+                    "flex h-7 w-7 items-center justify-center rounded-full",
+                    pathname.startsWith("/dashboard/profile")
+                      ? "bg-primary/15"
+                      : "bg-primary/10"
+                  )}
                 >
-                  <User
-                    style={{
-                      height: "14px",
-                      width: "14px",
-                      color: "var(--primary)",
-                    }}
-                  />
+                  <User className="h-3.5 w-3.5 text-primary" />
                 </div>
-                <span className="nav-label" style={{ fontWeight: 500 }}>
+                <span className="nav-label font-medium">
                   {session.user.name || session.user.email}
                 </span>
               </Link>
@@ -274,22 +151,9 @@ export function Navbar() {
                 onClick={() => signOut({ callbackUrl: "/login" })}
                 title="Abmelden"
                 aria-label="Abmelden"
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "6px",
-                  padding: "7px 10px",
-                  borderRadius: "6px",
-                  fontSize: "13px",
-                  fontWeight: 500,
-                  color: "var(--muted-foreground)",
-                  backgroundColor: "transparent",
-                  border: "none",
-                  cursor: "pointer",
-                  transition: "background-color 0.15s, color 0.15s",
-                }}
+                className="flex cursor-pointer items-center gap-1.5 rounded-md border-none bg-transparent px-2.5 py-[7px] text-[13px] font-medium text-muted-foreground transition-colors"
               >
-                <LogOut style={{ height: "16px", width: "16px" }} />
+                <LogOut className="h-4 w-4" />
               </button>
             </>
           )}

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { compare } from "bcryptjs";
 import { findPublicGroupByToken } from "@/lib/group-share";
 import { withApiLogging } from "@/lib/api-logger";
 
@@ -45,11 +46,10 @@ export const GET = withApiLogging(async function GET(
       return NextResponse.json({ error: "Group not found" }, { status: 404 });
     }
 
-    // Check password if set
-    const { searchParams } = new URL(request.url);
-    const password = searchParams.get("password");
+    // Check password if set (accept from header or query param)
+    const password = request.headers.get("x-group-password") || new URL(request.url).searchParams.get("password");
 
-    if (group.password && group.password !== password) {
+    if (group.password && (!password || !(await compare(password, group.password)))) {
       // Return minimal info without details
       return NextResponse.json({
         id: group.id,
