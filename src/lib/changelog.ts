@@ -11,6 +11,24 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.13.2",
+    date: "2026-03-17",
+    title: "Mobile Responsiveness",
+    description: "Umfassendes Mobile-Audit mit Fixes auf allen Seiten – Buttons, Header, Formulare und Tabellen passen sich jetzt sauber an kleine Bildschirme an.",
+    changes: [
+      { type: "fix", text: "Spiele-Header: Buttons zeigen auf Mobile nur Icons, Text wird ab sm-Breakpoint eingeblendet" },
+      { type: "fix", text: "Event-Detailseite: 5-Button-Overflow behoben – Buttons wrappen jetzt sauber auf Mobile" },
+      { type: "fix", text: "Alle Seitenüberschriften von text-3xl auf text-2xl sm:text-3xl angepasst" },
+      { type: "fix", text: "Metadata-Zeilen (Datum, Spieler, Dauer) wrappen jetzt korrekt mit flex-wrap" },
+      { type: "fix", text: "Card-Header in Events, Sessions und Gruppen stacken vertikal auf Mobile" },
+      { type: "fix", text: "Import-Seite: Spielvorschau-Bild und Text stacken auf Mobile übereinander" },
+      { type: "fix", text: "Öffentliche Einladungsseite: Zusagen/Absagen-Buttons stacken auf Mobile" },
+      { type: "fix", text: "Admin-Monitoring: Filter-Selects und Pagination passen sich an schmale Bildschirme an" },
+      { type: "fix", text: "Formulare (Spiel anlegen/bearbeiten): Grid wechselt von 2 Spalten auf 1 Spalte auf Mobile" },
+      { type: "improvement", text: "23 Dateien überarbeitet für durchgängig responsive Darstellung auf allen Geräten" },
+    ],
+  },
+  {
     version: "0.13.1",
     date: "2026-03-16",
     title: "Bugfixes & Stabilität",
