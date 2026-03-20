@@ -49,6 +49,7 @@ Die Skills im `skills/` Verzeichnis beschreiben detailliert wie Features funktio
 | `game-series` | Spielereihen (EXIT, Adventure Games, etc.) tracken |
 | `statistics` | Statistiken und Auswertungen |
 | `accessibility` | Verbindliche Regeln für Farbkontrast, Schriftgrößen und Fokuszustände |
+| `code-review` | Senior Dev Code Reviewer – Prüft Code-Qualität, Architektur, Sicherheit und Konzept-Konformität |
 
 **Lies den relevanten Skill bevor du an einem Feature arbeitest!**
 
