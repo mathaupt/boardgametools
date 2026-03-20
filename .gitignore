@@ -37,6 +37,12 @@ yarn-error.log*
 # security report (generated)
 security-report.md
 
+# review evaluation (generated per commit)
+review-evaluation.json
+
+# database backups
+*.bak
+
 # SQLite
 *.db
 *.db-journal

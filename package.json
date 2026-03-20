@@ -26,7 +26,11 @@
     "security-check:strict": "bash scripts/security-check.sh --strict",
     "security-check:json": "bash scripts/security-check.sh --json",
     "security-check:fast": "bash scripts/security-check.sh --no-audit",
-    "security-check:list": "bash scripts/security-check.sh --list"
+    "security-check:list": "bash scripts/security-check.sh --list",
+    "review-evaluate": "node scripts/review-evaluate.mjs --apply",
+    "review-evaluate:json": "node scripts/review-evaluate.mjs --json",
+    "review-evaluate:strict": "node scripts/review-evaluate.mjs --apply --strict",
+    "review-evaluate:report": "node scripts/review-evaluate.mjs"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",

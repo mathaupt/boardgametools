@@ -408,3 +408,77 @@ await prisma.group.update({ where: { id }, data: { password: hashed } });
 import { compare } from "bcryptjs";
 const isValid = await compare(inputPassword, group.password);
 ```
+
+## Evaluator-Feedback (automatisch generiert)
+
+> Letzter Lauf: 2026-03-20 22:39:40
+> Gesamt-Score: **6.6/10**
+
+### Kategorie-Scores
+
+| Kategorie | Score | Treffsicherheit | Aktualität | Abdeckung | Umsetzung | Handlung |
+|-----------|-------|-----------------|------------|-----------|-----------|----------|
+| Sicherheit | **8.4/10** | 10 | 8 | 10 | 7.9 | 6 |
+| TypeScript | **3.5/10** | 10 | 0 | 10 | 0 | 0 |
+| Architektur | **5.7/10** | 10 | 8 | 0 | 7.8 | 2 |
+| Performance | **7.2/10** | 10 | 6.7 | 10 | 6.3 | 3.3 |
+| API Design | **9/10** | 10 | 10 | 10 | 10 | 3.3 |
+| Testing | **1.5/10** | 10 | 0 | 0 | 0 | 0 |
+| Datenbank | **9.3/10** | 10 | 10 | 10 | 10 | 5 |
+| Konzept-Konformität | **4.8/10** | 10 | 2.5 | 10 | 2.7 | 0 |
+
+### Erledigte Findings (21)
+
+- ✅ **P0-1** Debug-Routes in Produktion: NODE_ENV Guard vorhanden
+- ✅ **P0-2** DB-Init ohne Auth: Auth-Check vorhanden
+- ✅ **P0-3** Hardcoded Admin-Credentials: Credentials externalisiert
+- ✅ **P0-4** Gruppen-Passwörter im Klartext: bcrypt wird verwendet
+- ✅ **P0-5** Kein Rate Limiting + keine middleware.ts: Middleware + Rate Limiting vorhanden
+- ✅ **P1-7** PII in Logs: Keine PII in API-Logs
+- ✅ **P1-8** Fehlende Input-Validierung: validation.ts in 24 Routes importiert
+- ✅ **P1-12** Close-Voting fehlt: Close-Voting Endpoint vorhanden
+- ✅ **P1-13** Registrierung: Keine E-Mail-Validierung: E-Mail-Validierung vorhanden
+- ✅ **P1-14** P95 Duration Query lädt alle Zeilen: P95 Query nutzt OFFSET/LIMIT
+- ✅ **P1-16** Admin-Endpoints: 401 statt 403: Middleware gibt 403 für Non-Admins
+- ✅ **P2-19** Duplikat: Prisma-Client-Dateien: Duplikat entfernt
+- ✅ **P2-20** Duplikat: BGG-Logik: Kein dupliziertes XML-Parsing
+- ✅ **P2-21** next/image statt <img>: Keine <img> Tags
+- ✅ **P2-23** Inkonsistente Error-Responses: Konsistent: 366 error, 12 message
+- ✅ **P2-25** Pendende Invites dupliziert: Shared Query extrahiert
+- ✅ **P2-27** Prisma Transactions fehlen: $transaction wird verwendet
+- ✅ **P3-31** accessibility Skill fehlt: Accessibility Skill vorhanden
+- ✅ **P3-32** DB-Dumps in Git: Git-Check nicht möglich
+- ✅ **P3-33** Links zu /terms und /privacy fehlen: Beide Seiten vorhanden
+- ✅ **P3-35** Fehlende DB-Indices: 13 @@index Definitionen
+
+### Offene Findings (12)
+
+- ❌ **P0-6** passwordHash in API-Responses: Leak in: events/route.ts, events/[id]/route.ts
+- ❌ **P1-9** Keine Pagination: 0/3 Endpoints mit Pagination
+- ❌ **P1-10** Statistiken komplett fehlend: Weder Seite noch API vorhanden
+- ❌ **P1-11** Session-Detailseite fehlt: Keine Session-Detailseite
+- ❌ **P1-15** Admin kann sich selbst deaktivieren: Keine Self-Protection
+- ❌ **P2-17** Mega-Komponenten aufteilen: public-event-client.tsx: 1153 Zeilen, group-detail-client.tsx: 990 Zeilen
+- ❌ **P2-18** any-Types im Code: 20 any-Types gefunden
+- ❌ **P2-22** Fehlende Unit Tests: Nur 3 Test-Dateien
+- ❌ **P2-24** CONCEPT.md aktualisieren: Tech-Stack veraltet (Next.js 14, SQLite?)
+- ❌ **P3-28** Tags/Kategorien fehlen: Kein Tag/Category-Model im Schema
+- ❌ **P3-29** Bild-Upload fehlt: Kein Bild-Upload implementiert
+- ❌ **P3-30** Gruppen-Statistiken fehlen: Keine Gruppen-Statistiken
+
+### Empfohlene Reviewer-Anpassungen
+
+- ➕ NEU: "Große Dateien (>400 Zeilen)" – public-event-client.tsx (1152), group-detail-client.tsx (989), monitoring-dashboard.tsx (906), barcode-scanner.tsx (823), page.tsx (818), page.tsx (760), date-poll-client.tsx (731), page.tsx (693), profile-client.tsx (588), page.tsx (429), page.tsx (423) (Schwelle: 5)
+- ➕ NEU: "Test Coverage Lücken" – 1 von 18 lib-Dateien getestet (Schwelle: 5)
+- 📝 Handlungsfähigkeit in "TypeScript" niedrig (0/10) – konkretere Fix-Vorschläge ergänzen
+- ⬆️ Umsetzungsrate in "TypeScript" kritisch niedrig (0/10) – Prioritäten eskalieren
+- 📝 Abdeckung in "Architektur" niedrig (0/10) – weitere Prüfpunkte hinzufügen
+- 📝 Handlungsfähigkeit in "Architektur" niedrig (2/10) – konkretere Fix-Vorschläge ergänzen
+- 📝 Handlungsfähigkeit in "Performance" niedrig (3.3/10) – konkretere Fix-Vorschläge ergänzen
+- 📝 Handlungsfähigkeit in "API Design" niedrig (3.3/10) – konkretere Fix-Vorschläge ergänzen
+- 📝 Abdeckung in "Testing" niedrig (0/10) – weitere Prüfpunkte hinzufügen
+- 📝 Handlungsfähigkeit in "Testing" niedrig (0/10) – konkretere Fix-Vorschläge ergänzen
+- ⬆️ Umsetzungsrate in "Testing" kritisch niedrig (0/10) – Prioritäten eskalieren
+- 📝 Handlungsfähigkeit in "Konzept-Konformität" niedrig (0/10) – konkretere Fix-Vorschläge ergänzen
+- ⬆️ Umsetzungsrate in "Konzept-Konformität" kritisch niedrig (2.7/10) – Prioritäten eskalieren
+- 🚨 DRINGEND: P0-6 "passwordHash in API-Responses" ist noch offen!

@@ -86,6 +86,27 @@ npm run test:e2e
 HEADLESS=true npm run test:e2e
 ```
 
+### Review & Qualitätssicherung
+
+```bash
+# Review-Evaluator (bewertet Code-Review-Findings, aktualisiert SKILL.md)
+npm run review-evaluate
+
+# Nur Report (ohne SKILL.md Update)
+npm run review-evaluate:report
+
+# JSON-Output (für CI/CD)
+npm run review-evaluate:json
+
+# Strict-Modus (Exit 1 bei Score < 5/10)
+npm run review-evaluate:strict
+
+# OWASP Security Check
+npm run security-check
+```
+
+**Pre-Commit Hook** führt automatisch aus: Unit Tests → Security Check → Review Evaluator
+
 ## Code-Konventionen
 
 ### API Routes

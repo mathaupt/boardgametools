@@ -3,3 +3,6 @@ npm run test
 
 echo "🔐 Running OWASP security check..."
 npm run security-check
+
+echo "📊 Running review evaluator..."
+npm run review-evaluate
