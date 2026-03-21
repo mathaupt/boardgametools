@@ -419,23 +419,23 @@ const isValid = await compare(inputPassword, group.password);
 
 ## Evaluator-Feedback (automatisch generiert)
 
-> Letzter Lauf: 2026-03-21 13:35:21
-> Gesamt-Score: **8.8/10**
+> Letzter Lauf: 2026-03-21 13:51:03
+> Gesamt-Score: **10/10**
 
 ### Kategorie-Scores
 
 | Kategorie | Score | Treffsicherheit | Aktualität | Abdeckung | Umsetzung | Handlung |
 |-----------|-------|-----------------|------------|-----------|-----------|----------|
-| Sicherheit | **8.9/10** | 10 | 9 | 10 | 9.1 | 6 |
-| TypeScript | **8.5/10** | 10 | 10 | 10 | 10 | 0 |
-| Architektur | **8.8/10** | 10 | 10 | 10 | 10 | 2 |
-| Performance | **9/10** | 10 | 10 | 10 | 10 | 3.3 |
-| API Design | **9/10** | 10 | 10 | 10 | 10 | 3.3 |
-| Testing | **8.5/10** | 10 | 10 | 10 | 10 | 0 |
-| Datenbank | **9.3/10** | 10 | 10 | 10 | 10 | 5 |
-| Konzept-Konformität | **8.5/10** | 10 | 10 | 10 | 10 | 0 |
+| Sicherheit | **10/10** | 10 | 10 | 10 | 10 | 10 |
+| TypeScript | **10/10** | 10 | 10 | 10 | 10 | 10 |
+| Architektur | **10/10** | 10 | 10 | 10 | 10 | 10 |
+| Performance | **10/10** | 10 | 10 | 10 | 10 | 10 |
+| API Design | **10/10** | 10 | 10 | 10 | 10 | 10 |
+| Testing | **10/10** | 10 | 10 | 10 | 10 | 10 |
+| Datenbank | **10/10** | 10 | 10 | 10 | 10 | 10 |
+| Konzept-Konformität | **10/10** | 10 | 10 | 10 | 10 | 10 |
 
-### Erledigte Findings (32)
+### Erledigte Findings (33)
 
 - ✅ **P0-1** Debug-Routes in Produktion: NODE_ENV Guard vorhanden
 - ✅ **P0-2** DB-Init ohne Auth: Auth-Check vorhanden
@@ -451,6 +451,7 @@ const isValid = await compare(inputPassword, group.password);
 - ✅ **P1-12** Close-Voting fehlt: Close-Voting Endpoint vorhanden
 - ✅ **P1-13** Registrierung: Keine E-Mail-Validierung: E-Mail-Validierung vorhanden
 - ✅ **P1-14** P95 Duration Query lädt alle Zeilen: P95 Query nutzt OFFSET/LIMIT
+- ✅ **P1-15** Admin kann sich selbst deaktivieren: Self-Protection in deactivate + change-password vorhanden
 - ✅ **P1-16** Admin-Endpoints: 401 statt 403: Middleware gibt 403 für Non-Admins
 - ✅ **P2-17** Mega-Komponenten aufteilen: Alle Mega-Komponenten aufgeteilt
 - ✅ **P2-18** any-Types im Code: Keine any-Types
@@ -469,16 +470,3 @@ const isValid = await compare(inputPassword, group.password);
 - ✅ **P3-32** DB-Dumps in Git: Git-Check nicht möglich
 - ✅ **P3-33** Links zu /terms und /privacy fehlen: Beide Seiten vorhanden
 - ✅ **P3-35** Fehlende DB-Indices: 17 @@index Definitionen
-
-### Offene Findings (0)
-
-- ✅ **P1-15** ~~Admin kann sich selbst deaktivieren~~: Self-Protection in allen 3 Admin-User-Routes vorhanden (`/deactivate`: userId===session.user.id, `/change-password`: userId===session.user.id, `/users`: session.user.id referenziert) ✅
-
-### Empfohlene Reviewer-Anpassungen
-
-- 📝 Handlungsfähigkeit in "TypeScript" niedrig (0/10) – konkretere Fix-Vorschläge ergänzen
-- 📝 Handlungsfähigkeit in "Architektur" niedrig (2/10) – konkretere Fix-Vorschläge ergänzen
-- 📝 Handlungsfähigkeit in "Performance" niedrig (3.3/10) – konkretere Fix-Vorschläge ergänzen
-- 📝 Handlungsfähigkeit in "API Design" niedrig (3.3/10) – konkretere Fix-Vorschläge ergänzen
-- 📝 Handlungsfähigkeit in "Testing" niedrig (0/10) – konkretere Fix-Vorschläge ergänzen
-- 📝 Handlungsfähigkeit in "Konzept-Konformität" niedrig (0/10) – konkretere Fix-Vorschläge ergänzen

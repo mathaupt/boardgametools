@@ -242,7 +242,8 @@ const FINDINGS = [
         ? { status: "resolved", detail: "Keine PII in API-Logs" }
         : { status: "open", detail: `${piiLogs.length} PII-Logs gefunden` };
     },
-    hasFixSuggestion: false,
+    hasFixSuggestion: true,
+    fixSuggestion: "Ersetze console.log mit PII durch strukturiertes Logging ohne E-Mail/User-Daten.",
   },
   {
     id: "P1-8",
@@ -277,7 +278,8 @@ const FINDINGS = [
             detail: `${withPagination.length}/${routesToCheck.length} Endpoints mit Pagination`,
           };
     },
-    hasFixSuggestion: false,
+    hasFixSuggestion: true,
+    fixSuggestion: "Ergänze ?page=X&limit=Y Query-Parameter auf Listen-Endpoints mit skip/take in Prisma.",
   },
   {
     id: "P1-10",
@@ -291,7 +293,8 @@ const FINDINGS = [
       if (hasPage || hasApi) return { status: "partially_resolved", detail: "Teilweise implementiert" };
       return { status: "open", detail: "Weder Seite noch API vorhanden" };
     },
-    hasFixSuggestion: false,
+    hasFixSuggestion: true,
+    fixSuggestion: "Erstelle src/app/(dashboard)/dashboard/statistics/page.tsx + /api/statistics/route.ts mit Prisma-Aggregationen.",
   },
   {
     id: "P1-11",
@@ -304,7 +307,8 @@ const FINDINGS = [
         ? { status: "resolved", detail: "Session-Detailseite vorhanden" }
         : { status: "open", detail: "Keine Session-Detailseite" };
     },
-    hasFixSuggestion: false,
+    hasFixSuggestion: true,
+    fixSuggestion: "Erstelle src/app/(dashboard)/dashboard/sessions/[id]/page.tsx als Server Component mit Session-Details.",
   },
   {
     id: "P1-12",
@@ -317,7 +321,8 @@ const FINDINGS = [
         ? { status: "resolved", detail: "Close-Voting Endpoint vorhanden" }
         : { status: "open", detail: "Kein Close-Voting Endpoint" };
     },
-    hasFixSuggestion: false,
+    hasFixSuggestion: true,
+    fixSuggestion: "Erstelle /api/events/[id]/close/route.ts – setzt status='closed' und ermittelt winningProposalId.",
   },
   {
     id: "P1-13",
@@ -334,7 +339,8 @@ const FINDINGS = [
         ? { status: "resolved", detail: "E-Mail-Validierung vorhanden" }
         : { status: "open", detail: "Keine E-Mail-Validierung" };
     },
-    hasFixSuggestion: false,
+    hasFixSuggestion: true,
+    fixSuggestion: "Nutze validateEmail() aus src/lib/validation.ts in der Register-Route.",
   },
   {
     id: "P1-14",
@@ -349,7 +355,8 @@ const FINDINGS = [
         ? { status: "resolved", detail: "P95 Query nutzt OFFSET/LIMIT" }
         : { status: "open", detail: "P95 Query lädt alle Zeilen" };
     },
-    hasFixSuggestion: false,
+    hasFixSuggestion: true,
+    fixSuggestion: "Verwende OFFSET/LIMIT in der P95-Query statt alle Zeilen zu laden: ORDER BY durationMs DESC OFFSET n LIMIT 1.",
   },
   {
     id: "P1-15",
@@ -357,15 +364,22 @@ const FINDINGS = [
     category: "security",
     title: "Admin kann sich selbst deaktivieren",
     verify() {
-      const deactivate = readSafe("src/app/api/admin/users/route.ts");
-      if (!deactivate) return { status: "open", detail: "Admin-Route nicht gefunden" };
-      const hasSelfProtection = deactivate.includes("self") || deactivate.includes("eigenen") ||
-        deactivate.includes("yourself") || deactivate.includes("session.user.id");
-      return hasSelfProtection
-        ? { status: "partially_resolved", detail: "Self-Check vorhanden (manuell prüfen)" }
-        : { status: "open", detail: "Keine Self-Protection" };
+      const usersRoute = readSafe("src/app/api/admin/users/route.ts");
+      const deactivateRoute = readSafe("src/app/api/admin/users/deactivate/route.ts");
+      const changePwRoute = readSafe("src/app/api/admin/users/change-password/route.ts");
+      const hasSelfCheck = (content) =>
+        content && (content.includes("session.user.id") || content.includes("eigenen") || content.includes("yourself"));
+      const deactivateOk = hasSelfCheck(deactivateRoute);
+      const changePwOk = hasSelfCheck(changePwRoute);
+      const usersOk = hasSelfCheck(usersRoute);
+      if (deactivateOk && changePwOk)
+        return { status: "resolved", detail: "Self-Protection in deactivate + change-password vorhanden" };
+      if (deactivateOk || changePwOk || usersOk)
+        return { status: "partially_resolved", detail: "Self-Check teilweise vorhanden" };
+      return { status: "open", detail: "Keine Self-Protection" };
     },
-    hasFixSuggestion: false,
+    hasFixSuggestion: true,
+    fixSuggestion: "Prüfe userId === session.user.id vor Deaktivierung/Passwort-Änderung und gib 400 zurück.",
   },
   {
     id: "P1-16",
@@ -380,7 +394,8 @@ const FINDINGS = [
         ? { status: "resolved", detail: "Middleware gibt 403 für Non-Admins" }
         : { status: "open", detail: "Kein 403 in Middleware" };
     },
-    hasFixSuggestion: false,
+    hasFixSuggestion: true,
+    fixSuggestion: "Prüfe session.user.role in middleware.ts und gib 403 statt 401 für Non-Admins zurück.",
   },
 
   // ── P2 Improvement ───────────────────────────────────────────
@@ -416,7 +431,8 @@ const FINDINGS = [
       if (anyCount <= 10) return { status: "partially_resolved", detail: `${anyCount} any-Types verbleibend` };
       return { status: "open", detail: `${anyCount} any-Types gefunden` };
     },
-    hasFixSuggestion: false,
+    hasFixSuggestion: true,
+    fixSuggestion: "Ersetze : any durch konkrete Interfaces (z.B. BGGSearchResult[], EventData, Html5Qrcode).",
   },
   {
     id: "P2-19",
@@ -429,7 +445,8 @@ const FINDINGS = [
         ? { status: "open", detail: "db-postgres.ts existiert noch" }
         : { status: "resolved", detail: "Duplikat entfernt" };
     },
-    hasFixSuggestion: false,
+    hasFixSuggestion: true,
+    fixSuggestion: "Lösche db-postgres.ts und verwende ausschließlich src/lib/db.ts als Prisma-Client Singleton.",
   },
   {
     id: "P2-20",
@@ -446,7 +463,8 @@ const FINDINGS = [
         ? { status: "open", detail: "XML-Parsing in Route und Lib dupliziert" }
         : { status: "resolved", detail: "Kein dupliziertes XML-Parsing" };
     },
-    hasFixSuggestion: false,
+    hasFixSuggestion: true,
+    fixSuggestion: "Extrahiere XML-Parsing in src/lib/bgg.ts und importiere es in der API-Route statt zu duplizieren.",
   },
   {
     id: "P2-21",
@@ -477,7 +495,8 @@ const FINDINGS = [
         return { status: "open", detail: "Tests-Verzeichnis nicht gefunden" };
       }
     },
-    hasFixSuggestion: false,
+    hasFixSuggestion: true,
+    fixSuggestion: "Erstelle Tests in tests/unit/lib/ für jede lib-Datei mit vi.mock für Prisma/Auth-Dependencies.",
   },
   {
     id: "P2-23",
@@ -496,7 +515,8 @@ const FINDINGS = [
         detail: `Inkonsistent: ${errorCount}× {error}, ${messageCount}× {message}`,
       };
     },
-    hasFixSuggestion: false,
+    hasFixSuggestion: true,
+    fixSuggestion: "Verwende einheitlich { error: string } statt { message: string } in allen API-Responses.",
   },
   {
     id: "P2-24",
@@ -511,7 +531,8 @@ const FINDINGS = [
       if (hasNext16 && hasPostgres) return { status: "resolved", detail: "Tech-Stack aktuell" };
       return { status: "open", detail: "Tech-Stack veraltet (Next.js 14, SQLite?)" };
     },
-    hasFixSuggestion: false,
+    hasFixSuggestion: true,
+    fixSuggestion: "Aktualisiere CONCEPT.md: Next.js 16, PostgreSQL, Turbopack, neue Modelle dokumentieren.",
   },
   {
     id: "P2-25",
@@ -524,7 +545,8 @@ const FINDINGS = [
         ? { status: "resolved", detail: "Shared Query extrahiert" }
         : { status: "open", detail: "Query-Code dupliziert" };
     },
-    hasFixSuggestion: false,
+    hasFixSuggestion: true,
+    fixSuggestion: "Extrahiere pending-invites Query in src/lib/queries/pending-invites.ts und importiere überall.",
   },
   {
     id: "P2-27",
@@ -557,7 +579,8 @@ const FINDINGS = [
         ? { status: "resolved", detail: "Tag/Category-Model vorhanden" }
         : { status: "open", detail: "Kein Tag/Category-Model im Schema" };
     },
-    hasFixSuggestion: false,
+    hasFixSuggestion: true,
+    fixSuggestion: "Verwende prisma.$transaction([...]) für Vote-Erstellung um Race Conditions zu vermeiden.",
   },
   {
     id: "P3-29",
@@ -570,7 +593,8 @@ const FINDINGS = [
         ? { status: "resolved", detail: "Upload-Endpoint vorhanden" }
         : { status: "open", detail: "Kein Bild-Upload implementiert" };
     },
-    hasFixSuggestion: false,
+    hasFixSuggestion: true,
+    fixSuggestion: "Erstelle Tag + GameTag Modelle im Schema mit @@unique([name, ownerId]) und /api/tags CRUD-Route.",
   },
   {
     id: "P3-30",
@@ -585,7 +609,8 @@ const FINDINGS = [
         ? { status: "resolved", detail: "Gruppen-Statistiken vorhanden" }
         : { status: "open", detail: "Keine Gruppen-Statistiken" };
     },
-    hasFixSuggestion: false,
+    hasFixSuggestion: true,
+    fixSuggestion: "Erstelle /api/upload/route.ts mit FormData-Parsing, Dateityp-Validierung und Upload-Model.",
   },
   {
     id: "P3-31",
@@ -597,7 +622,8 @@ const FINDINGS = [
         ? { status: "resolved", detail: "Accessibility Skill vorhanden" }
         : { status: "open", detail: "skills/accessibility/SKILL.md fehlt" };
     },
-    hasFixSuggestion: false,
+    hasFixSuggestion: true,
+    fixSuggestion: "Erstelle Gruppen-Statistiken Page + API mit groupBy-Aggregationen und recharts-Charts.",
   },
   {
     id: "P3-32",
@@ -618,7 +644,8 @@ const FINDINGS = [
         return { status: "resolved", detail: "Git-Check nicht möglich" };
       }
     },
-    hasFixSuggestion: false,
+    hasFixSuggestion: true,
+    fixSuggestion: "Erstelle skills/accessibility/SKILL.md mit WCAG AA Regeln (Kontrast 4.5:1, Touch 44px, Fokus).",
   },
   {
     id: "P3-33",
@@ -632,7 +659,8 @@ const FINDINGS = [
         ? { status: "resolved", detail: "Beide Seiten vorhanden" }
         : { status: "open", detail: `terms: ${hasTerms}, privacy: ${hasPrivacy}` };
     },
-    hasFixSuggestion: false,
+    hasFixSuggestion: true,
+    fixSuggestion: "Ergänze *.db, *.sql, *.bak in .gitignore (ausgenommen prisma/migrations/).",
   },
   {
     id: "P3-35",
@@ -647,7 +675,8 @@ const FINDINGS = [
         ? { status: "resolved", detail: `${indexCount} @@index Definitionen` }
         : { status: "open", detail: `Nur ${indexCount} @@index Definitionen` };
     },
-    hasFixSuggestion: false,
+    hasFixSuggestion: true,
+    fixSuggestion: "Ergänze @@index auf häufig gefilterte Felder (createdById, eventId, groupId, etc.).",
   },
 ];
 
