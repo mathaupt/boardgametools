@@ -523,15 +523,15 @@ const isValid = await compare(inputPassword, group.password);
 
 ## Evaluator-Feedback (automatisch generiert)
 
-> Letzter Lauf: 2026-03-21 15:56:59
-> Gesamt-Score: **10/10**
+> Letzter Lauf: 2026-03-21 16:05:30
+> Gesamt-Score: **9.9/10**
 
 ### Kategorie-Scores
 
 | Kategorie | Score | Treffsicherheit | Aktualität | Abdeckung | Umsetzung | Handlung |
 |-----------|-------|-----------------|------------|-----------|-----------|----------|
 | Sicherheit | **10/10** | 10 | 10 | 10 | 10 | 10 |
-| TypeScript | **10/10** | 10 | 10 | 10 | 10 | 10 |
+| TypeScript | **8.3/10** | 10 | 10 | 10 | 5 | 10 |
 | Architektur | **10/10** | 10 | 10 | 10 | 10 | 10 |
 | Performance | **10/10** | 10 | 10 | 10 | 10 | 10 |
 | API Design | **10/10** | 10 | 10 | 10 | 10 | 10 |
@@ -541,7 +541,7 @@ const isValid = await compare(inputPassword, group.password);
 | Best Practices | **10/10** | 10 | 10 | 10 | 10 | 10 |
 | Skalierung | **10/10** | 10 | 10 | 10 | 10 | 10 |
 
-### Erledigte Findings (50)
+### Erledigte Findings (49)
 
 - ✅ **P0-1** Debug-Routes in Produktion: NODE_ENV Guard vorhanden
 - ✅ **P0-2** DB-Init ohne Auth: Auth-Check vorhanden
@@ -560,7 +560,6 @@ const isValid = await compare(inputPassword, group.password);
 - ✅ **P1-15** Admin kann sich selbst deaktivieren: Self-Protection in deactivate + change-password vorhanden
 - ✅ **P1-16** Admin-Endpoints: 401 statt 403: Middleware gibt 403 für Non-Admins
 - ✅ **P2-17** Mega-Komponenten aufteilen: Alle Mega-Komponenten aufgeteilt
-- ✅ **P2-18** any-Types im Code: Keine any-Types
 - ✅ **P2-19** Duplikat: Prisma-Client-Dateien: Duplikat entfernt
 - ✅ **P2-20** Duplikat: BGG-Logik: Kein dupliziertes XML-Parsing
 - ✅ **P2-21** next/image statt <img>: Keine <img> Tags
@@ -579,7 +578,7 @@ const isValid = await compare(inputPassword, group.password);
 - ✅ **SEC-44** Fehlende Security Headers: CSP, X-Frame-Options, X-Content-Type-Options vorhanden
 - ✅ **SEC-45** npm audit: Bekannte Vulnerabilities: Keine Prod-Vulnerabilities (4 high nur in devDeps, 0 moderate)
 - ✅ **SEC-46** XSS: dangerouslySetInnerHTML ohne Sanitization: Kein dangerouslySetInnerHTML verwendet
-- ✅ **PERF-47** Schwere Libraries ohne Dynamic Import: 4 dynamic() + 7 await import() Lazy-Loads
+- ✅ **PERF-47** Schwere Libraries ohne Dynamic Import: 2 dynamic() + 7 await import() Lazy-Loads
 - ✅ **PERF-48** Keine Bundle-Analyse konfiguriert: @next/bundle-analyzer konfiguriert
 - ✅ **PERF-49** Keine API Caching Headers: 3 Caching-Konfigurationen gefunden
 - ✅ **BP-50** ESLint Warnings/Errors: ESLint clean
@@ -593,3 +592,7 @@ const isValid = await compare(inputPassword, group.password);
 - ✅ **SCALE-58** Kein Caching-Layer: Redis Cache vorhanden
 - ✅ **SCALE-59** Kein strukturiertes Logging: Strukturiertes Logging-Framework vorhanden
 - ✅ **SCALE-60** DB Connection Pooling nicht konfiguriert: Connection Pool konfiguriert
+
+### Teilweise gelöst (1)
+
+- 🔶 **P2-18** any-Types im Code: 4 any-Types verbleibend
