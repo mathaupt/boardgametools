@@ -11,6 +11,15 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.17.5",
+    date: "2026-03-21",
+    title: "Unicode-Kodierung korrigiert",
+    description: "Alle Unicode-Escape-Sequenzen (\\u00FC etc.) durch echte UTF-8-Zeichen ersetzt.",
+    changes: [
+      { type: "fix", text: "Umlaute und Sonderzeichen (ö, ü, ä, ß, Ü, Ä, –, →, —) werden jetzt korrekt als UTF-8 gespeichert" },
+    ],
+  },
+  {
     version: "0.17.4",
     date: "2026-03-21",
     title: "Middleware zu Proxy migriert",

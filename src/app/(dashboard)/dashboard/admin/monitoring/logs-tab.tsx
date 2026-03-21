@@ -147,7 +147,7 @@ export function LogsTab({
       });
       if (res.ok) {
         const data = await res.json();
-        alert(`${data.deleted} Logs gel\u00F6scht.`);
+        alert(`${data.deleted} Logs gelöscht.`);
         setPurgeOpen(false);
         onRefreshAll();
         fetchLogs();
@@ -197,16 +197,16 @@ export function LogsTab({
                 <Dialog open={purgeOpen} onOpenChange={setPurgeOpen}>
                   <DialogTrigger asChild>
                     <Button variant="outline" size="sm" className="ml-auto">
-                      <Trash2 className="h-4 w-4 mr-2" /> Alte Logs l\u00F6schen
+                      <Trash2 className="h-4 w-4 mr-2" /> Alte Logs löschen
                     </Button>
                   </DialogTrigger>
                   <DialogContent>
                     <DialogHeader>
-                      <DialogTitle>Alte Logs l\u00F6schen</DialogTitle>
+                      <DialogTitle>Alte Logs löschen</DialogTitle>
                     </DialogHeader>
                     <div className="space-y-4 pt-4">
                       <div className="space-y-2">
-                        <Label>Logs \u00E4lter als (Tage)</Label>
+                        <Label>Logs älter als (Tage)</Label>
                         <Input
                           type="number"
                           min={7}
@@ -221,7 +221,7 @@ export function LogsTab({
                         variant="destructive"
                         className="w-full"
                       >
-                        {purging ? "Wird gel\u00F6scht..." : "Logs endg\u00FCltig l\u00F6schen"}
+                        {purging ? "Wird gelöscht..." : "Logs endgültig löschen"}
                       </Button>
                     </div>
                   </DialogContent>
@@ -284,7 +284,7 @@ export function LogsTab({
                   {/* Pagination */}
                   <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                     <p className="text-sm text-muted-foreground">
-                      {logs.total} Eintr\u00E4ge, Seite {logs.page} von {logs.totalPages}
+                      {logs.total} Einträge, Seite {logs.page} von {logs.totalPages}
                     </p>
                     <div className="flex gap-2">
                       <Button
@@ -293,7 +293,7 @@ export function LogsTab({
                         disabled={logs.page <= 1}
                         onClick={() => setLogPage((p) => p - 1)}
                       >
-                        Zur\u00FCck
+                        Zurück
                       </Button>
                       <Button
                         variant="outline"

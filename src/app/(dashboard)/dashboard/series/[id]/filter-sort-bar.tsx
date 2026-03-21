@@ -28,8 +28,8 @@ const DIFFICULTY_FILTER_OPTIONS: { value: DifficultyFilter; label: string }[] = 
 
 const SORT_OPTIONS: { value: EntrySortOption; label: string }[] = [
   { value: "sortOrder", label: "Reihenfolge" },
-  { value: "name_asc", label: "Name (A\u2013Z)" },
-  { value: "name_desc", label: "Name (Z\u2013A)" },
+  { value: "name_asc", label: "Name (A–Z)" },
+  { value: "name_desc", label: "Name (Z–A)" },
   { value: "rating_desc", label: "Beste Bewertung" },
   { value: "difficulty", label: "Schwierigkeit" },
 ];

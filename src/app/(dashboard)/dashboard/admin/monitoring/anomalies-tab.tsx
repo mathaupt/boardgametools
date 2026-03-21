@@ -97,10 +97,10 @@ export function AnomaliesTab({
                       </h3>
                       <p className="text-muted-foreground">
                         {anomalies.healthScore >= 80
-                          ? "Gesund \u2014 Keine kritischen Probleme erkannt."
+                          ? "Gesund — Keine kritischen Probleme erkannt."
                           : anomalies.healthScore >= 50
-                            ? "Auff\u00E4llig \u2014 Einige Probleme erfordern Aufmerksamkeit."
-                            : "Kritisch \u2014 Sofortige Ma\u00DFnahmen empfohlen."}
+                            ? "Auffällig — Einige Probleme erfordern Aufmerksamkeit."
+                            : "Kritisch — Sofortige Maßnahmen empfohlen."}
                       </p>
                       <Badge
                         className={cn(
@@ -115,7 +115,7 @@ export function AnomaliesTab({
                         {anomalies.healthScore >= 80
                           ? "Gesund"
                           : anomalies.healthScore >= 50
-                            ? "Auff\u00E4llig"
+                            ? "Auffällig"
                             : "Kritisch"}
                       </Badge>
                     </div>

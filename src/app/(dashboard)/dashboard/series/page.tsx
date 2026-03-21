@@ -37,13 +37,13 @@ const STATUS_OPTIONS: { value: StatusFilter; label: string }[] = [
 ];
 
 const SORT_OPTIONS: { value: SortOption; label: string }[] = [
-  { value: "name_asc", label: "Name (A\u2013Z)" },
-  { value: "name_desc", label: "Name (Z\u2013A)" },
-  { value: "progress_desc", label: "Fortschritt (hoch \u2192 niedrig)" },
-  { value: "progress_asc", label: "Fortschritt (niedrig \u2192 hoch)" },
+  { value: "name_asc", label: "Name (A–Z)" },
+  { value: "name_desc", label: "Name (Z–A)" },
+  { value: "progress_desc", label: "Fortschritt (hoch → niedrig)" },
+  { value: "progress_asc", label: "Fortschritt (niedrig → hoch)" },
   { value: "entries_desc", label: "Meiste Spiele" },
   { value: "newest", label: "Neueste zuerst" },
-  { value: "oldest", label: "\u00c4lteste zuerst" },
+  { value: "oldest", label: "Älteste zuerst" },
 ];
 
 function getProgress(series: GameSeries) {

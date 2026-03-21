@@ -157,7 +157,7 @@ export function OverviewTab({
                 alert={stats.summary.errorRate > 5}
               />
               <StatCard
-                title="\u00D8 Antwortzeit"
+                title="Ø Antwortzeit"
                 value={`${stats.summary.avgDurationMs}ms`}
                 icon={Clock}
                 alert={stats.summary.avgDurationMs > 2000}
@@ -169,7 +169,7 @@ export function OverviewTab({
               />
             </div>
           ) : (
-            <p className="text-muted-foreground">Keine Daten verf\u00FCgbar.</p>
+            <p className="text-muted-foreground">Keine Daten verfügbar.</p>
           )}
 
           {/* Charts */}

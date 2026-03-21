@@ -523,31 +523,30 @@ const isValid = await compare(inputPassword, group.password);
 
 ## Evaluator-Feedback (automatisch generiert)
 
-> Letzter Lauf: 2026-03-21 16:10:51
-> Gesamt-Score: **9.9/10**
+> Letzter Lauf: 2026-03-21 16:14:28
+> Gesamt-Score: **9.7/10**
 
 ### Kategorie-Scores
 
 | Kategorie | Score | Treffsicherheit | Aktualität | Abdeckung | Umsetzung | Handlung |
 |-----------|-------|-----------------|------------|-----------|-----------|----------|
-| Sicherheit | **10/10** | 10 | 10 | 10 | 10 | 10 |
+| Sicherheit | **9.5/10** | 10 | 9.2 | 10 | 9 | 10 |
 | TypeScript | **8.3/10** | 10 | 10 | 10 | 5 | 10 |
 | Architektur | **10/10** | 10 | 10 | 10 | 10 | 10 |
 | Performance | **10/10** | 10 | 10 | 10 | 10 | 10 |
-| API Design | **10/10** | 10 | 10 | 10 | 10 | 10 |
+| API Design | **8.2/10** | 10 | 6.7 | 10 | 6.3 | 10 |
 | Testing | **10/10** | 10 | 10 | 10 | 10 | 10 |
 | Datenbank | **10/10** | 10 | 10 | 10 | 10 | 10 |
 | Konzept-Konformität | **10/10** | 10 | 10 | 10 | 10 | 10 |
 | Best Practices | **10/10** | 10 | 10 | 10 | 10 | 10 |
 | Skalierung | **10/10** | 10 | 10 | 10 | 10 | 10 |
 
-### Erledigte Findings (49)
+### Erledigte Findings (47)
 
 - ✅ **P0-1** Debug-Routes in Produktion: NODE_ENV Guard vorhanden
 - ✅ **P0-2** DB-Init ohne Auth: Auth-Check vorhanden
 - ✅ **P0-3** Hardcoded Admin-Credentials: Credentials externalisiert
 - ✅ **P0-4** Gruppen-Passwörter im Klartext: bcrypt wird verwendet
-- ✅ **P0-5** Kein Rate Limiting + keine middleware.ts: Middleware + Rate Limiting vorhanden
 - ✅ **P0-6** passwordHash in API-Responses: passwordHash wird nicht exponiert
 - ✅ **P1-7** PII in Logs: Keine PII in API-Logs
 - ✅ **P1-8** Fehlende Input-Validierung: validation.ts in 26 Routes importiert
@@ -558,7 +557,6 @@ const isValid = await compare(inputPassword, group.password);
 - ✅ **P1-13** Registrierung: Keine E-Mail-Validierung: E-Mail-Validierung vorhanden
 - ✅ **P1-14** P95 Duration Query lädt alle Zeilen: P95 Query nutzt OFFSET/LIMIT
 - ✅ **P1-15** Admin kann sich selbst deaktivieren: Self-Protection in deactivate + change-password vorhanden
-- ✅ **P1-16** Admin-Endpoints: 401 statt 403: Middleware gibt 403 für Non-Admins
 - ✅ **P2-17** Mega-Komponenten aufteilen: Alle Mega-Komponenten aufgeteilt
 - ✅ **P2-19** Duplikat: Prisma-Client-Dateien: Duplikat entfernt
 - ✅ **P2-20** Duplikat: BGG-Logik: Kein dupliziertes XML-Parsing
@@ -593,6 +591,15 @@ const isValid = await compare(inputPassword, group.password);
 - ✅ **SCALE-59** Kein strukturiertes Logging: Strukturiertes Logging-Framework vorhanden
 - ✅ **SCALE-60** DB Connection Pooling nicht konfiguriert: Connection Pool konfiguriert
 
+### Offene Findings (2)
+
+- ❌ **P0-5** Kein Rate Limiting + keine middleware.ts: Weder Middleware noch Rate Limiting
+- ❌ **P1-16** Admin-Endpoints: 401 statt 403: Keine middleware.ts
+
 ### Teilweise gelöst (1)
 
 - 🔶 **P2-18** any-Types im Code: 4 any-Types verbleibend
+
+### Empfohlene Reviewer-Anpassungen
+
+- 🚨 DRINGEND: P0-5 "Kein Rate Limiting + keine middleware.ts" ist noch offen!

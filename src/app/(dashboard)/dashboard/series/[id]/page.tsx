@@ -156,7 +156,7 @@ export default function SeriesDetailPage() {
     });
 
     if (!res.ok) {
-      toast({ title: "Fehler", description: "\u00C4nderung konnte nicht gespeichert werden", variant: "destructive" });
+      toast({ title: "Fehler", description: "Änderung konnte nicht gespeichert werden", variant: "destructive" });
       loadSeries();
     }
   }
@@ -363,11 +363,11 @@ export default function SeriesDetailPage() {
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12">
             <Library className="h-12 w-12 text-muted-foreground mb-4" />
-            <p className="text-muted-foreground mb-4">Die gesuchte Reihe existiert nicht oder wurde gel\u00F6scht.</p>
+            <p className="text-muted-foreground mb-4">Die gesuchte Reihe existiert nicht oder wurde gelöscht.</p>
             <Link href="/dashboard/series">
               <Button variant="outline">
                 <ArrowLeft className="h-4 w-4 mr-2" />
-                Zur\u00FCck zur \u00DCbersicht
+                Zurück zur Übersicht
               </Button>
             </Link>
           </CardContent>
@@ -412,7 +412,7 @@ export default function SeriesDetailPage() {
             onClick={() => setDeleteSeriesOpen(true)}
           >
             <Trash2 className="h-4 w-4 mr-2" />
-            L\u00F6schen
+            Löschen
           </Button>
         </div>
       </div>
@@ -449,7 +449,7 @@ export default function SeriesDetailPage() {
         <h2 className="text-xl font-semibold">Spiele</h2>
         <Button onClick={() => setAddDialogOpen(true)}>
           <Plus className="h-4 w-4 mr-2" />
-          Spiel hinzuf\u00FCgen
+          Spiel hinzufügen
         </Button>
       </div>
 
@@ -481,11 +481,11 @@ export default function SeriesDetailPage() {
             </div>
             <h3 className="text-lg font-semibold mb-2">Noch keine Spiele</h3>
             <p className="text-muted-foreground mb-6 text-center max-w-sm">
-              F\u00FCge Spiele aus deiner Sammlung oder per BGG-Import hinzu.
+              Füge Spiele aus deiner Sammlung oder per BGG-Import hinzu.
             </p>
             <Button onClick={() => setAddDialogOpen(true)}>
               <Plus className="h-4 w-4 mr-2" />
-              Erstes Spiel hinzuf\u00FCgen
+              Erstes Spiel hinzufügen
             </Button>
           </CardContent>
         </Card>
@@ -501,7 +501,7 @@ export default function SeriesDetailPage() {
               onClick={resetFilters}
               className="text-sm text-primary hover:underline"
             >
-              Filter zur\u00FCcksetzen
+              Filter zurücksetzen
             </button>
           </CardContent>
         </Card>
@@ -547,7 +547,7 @@ export default function SeriesDetailPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>Spiel aus Reihe entfernen</AlertDialogTitle>
             <AlertDialogDescription>
-              M\u00F6chtest du <strong>{deleteEntryTarget?.game.name}</strong> aus dieser Reihe entfernen?
+              Möchtest du <strong>{deleteEntryTarget?.game.name}</strong> aus dieser Reihe entfernen?
               Das Spiel bleibt in deiner Sammlung erhalten.
             </AlertDialogDescription>
           </AlertDialogHeader>
@@ -568,9 +568,9 @@ export default function SeriesDetailPage() {
       <AlertDialog open={deleteSeriesOpen} onOpenChange={setDeleteSeriesOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Reihe l\u00F6schen</AlertDialogTitle>
+            <AlertDialogTitle>Reihe löschen</AlertDialogTitle>
             <AlertDialogDescription>
-              M\u00F6chtest du die Reihe <strong>{series.name}</strong> wirklich l\u00F6schen?
+              Möchtest du die Reihe <strong>{series.name}</strong> wirklich löschen?
               Die Spiele bleiben in deiner Sammlung, nur die Reihe und der Fortschritt werden entfernt.
             </AlertDialogDescription>
           </AlertDialogHeader>
@@ -581,7 +581,7 @@ export default function SeriesDetailPage() {
               disabled={deleting}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              {deleting ? "Wird gel\u00F6scht..." : "Reihe l\u00F6schen"}
+              {deleting ? "Wird gelöscht..." : "Reihe löschen"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
