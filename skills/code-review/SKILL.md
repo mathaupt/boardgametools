@@ -431,7 +431,7 @@ const isValid = await compare(inputPassword, group.password);
 
 ## Evaluator-Feedback (automatisch generiert)
 
-> Letzter Lauf: 2026-03-21 08:54:43
+> Letzter Lauf: 2026-03-21 09:16:12
 > Gesamt-Score: **8.1/10**
 
 ### Kategorie-Scores
@@ -447,25 +447,22 @@ const isValid = await compare(inputPassword, group.password);
 | Datenbank | **9.3/10** | 10 | 10 | 10 | 10 | 5 |
 | Konzept-Konformität | **5.5/10** | 10 | 3.8 | 10 | 4 | 0 |
 
-### Erledigte Findings (32)
+### Erledigte Findings (27)
 
 - ✅ **P0-1** Debug-Routes in Produktion: NODE_ENV Guard vorhanden
 - ✅ **P0-2** DB-Init ohne Auth: Auth-Check vorhanden
 - ✅ **P0-3** Hardcoded Admin-Credentials: Credentials externalisiert
 - ✅ **P0-4** Gruppen-Passwörter im Klartext: bcrypt wird verwendet
 - ✅ **P0-5** Kein Rate Limiting + keine middleware.ts: Middleware + Rate Limiting vorhanden
-- ✅ **P0-6** passwordHash in API-Responses: Alle Prisma-Queries nutzen `select`
+- ✅ **P0-6** passwordHash in API-Responses: passwordHash wird nicht exponiert
 - ✅ **P1-7** PII in Logs: Keine PII in API-Logs
 - ✅ **P1-8** Fehlende Input-Validierung: validation.ts in 24 Routes importiert
 - ✅ **P1-9** Keine Pagination: Pagination auf allen Listen-Endpoints
 - ✅ **P1-12** Close-Voting fehlt: Close-Voting Endpoint vorhanden
 - ✅ **P1-13** Registrierung: Keine E-Mail-Validierung: E-Mail-Validierung vorhanden
 - ✅ **P1-14** P95 Duration Query lädt alle Zeilen: P95 Query nutzt OFFSET/LIMIT
-- ✅ **P1-15** Admin kann sich selbst deaktivieren: Self-Protection in change-password + deactivate
 - ✅ **P1-16** Admin-Endpoints: 401 statt 403: Middleware gibt 403 für Non-Admins
-- ✅ **P1-39** Score=0 Bug: sessions/route.ts nutzt `??` (Nullish Coalescing)
-- ✅ **P1-40** Close-Voting Draft→Closed: close/route.ts prüft `status !== "voting"`
-- ✅ **P2-17** Mega-Komponenten aufteilen: 5 Mega-Komponenten aufgeteilt
+- ✅ **P2-17** Mega-Komponenten aufteilen: Alle Mega-Komponenten aufgeteilt
 - ✅ **P2-18** any-Types im Code: Keine any-Types
 - ✅ **P2-19** Duplikat: Prisma-Client-Dateien: Duplikat entfernt
 - ✅ **P2-20** Duplikat: BGG-Logik: Kein dupliziertes XML-Parsing
@@ -480,20 +477,18 @@ const isValid = await compare(inputPassword, group.password);
 - ✅ **P3-33** Links zu /terms und /privacy fehlen: Beide Seiten vorhanden
 - ✅ **P3-35** Fehlende DB-Indices: 13 @@index Definitionen
 
-### Offene Findings (8)
+### Offene Findings (6)
 
-- ❌ **P0-37** Session-Voting broken: Session-ID als proposalId → FK-Constraint-Fehler
-- ❌ **P0-38** Close-Voting verliert BGG-Ergebnis: selectedGameId=null bei BGG-only Proposals
 - ❌ **P1-10** Statistiken komplett fehlend: Weder Seite noch API vorhanden
 - ❌ **P1-11** Session-Detailseite fehlt: Keine Session-Detailseite
-- ❌ **P2-42** validation.ts Bugs: min-falsy-check, max ohne trim, Number("")=0
+- ❌ **P1-15** Admin kann sich selbst deaktivieren: Keine Self-Protection
 - ❌ **P3-28** Tags/Kategorien fehlen: Kein Tag/Category-Model im Schema
 - ❌ **P3-29** Bild-Upload fehlt: Kein Bild-Upload implementiert
 - ❌ **P3-30** Gruppen-Statistiken fehlen: Keine Gruppen-Statistiken
 
 ### Empfohlene Reviewer-Anpassungen
 
-- ➕ NEU: "Große Dateien (>400 Zeilen)" – page.tsx (760), date-poll-client.tsx (731), page.tsx (693), page.tsx (591), profile-client.tsx (588), page.tsx (471), create-poll-form.tsx (426), page.tsx (423) (Schwelle: 5)
+- ➕ NEU: "Große Dateien (>400 Zeilen)" – page.tsx (760), date-poll-client.tsx (731), page.tsx (693), page.tsx (591), profile-client.tsx (588), page.tsx (471), create-poll-form.tsx (426), page.tsx (425) (Schwelle: 5)
 - ➕ NEU: "Test Coverage Lücken" – 6 von 18 lib-Dateien getestet (Schwelle: 5)
 - 📝 Handlungsfähigkeit in "TypeScript" niedrig (0/10) – konkretere Fix-Vorschläge ergänzen
 - 📝 Abdeckung in "Architektur" niedrig (0/10) – weitere Prüfpunkte hinzufügen

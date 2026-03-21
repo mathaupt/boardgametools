@@ -17,7 +17,6 @@ export const GET = withApiLogging(async function GET(
   const { id } = await params;
 
   try {
-    // Session mit Voting-Details laden
     const sessionData = await prisma.gameSession.findUnique({
       where: { id },
       include: {
@@ -25,7 +24,11 @@ export const GET = withApiLogging(async function GET(
         createdBy: { select: { id: true, name: true, email: true } },
         players: {
           include: { user: { select: { id: true, name: true, email: true } } }
-        }
+        },
+        ratings: {
+          include: { user: { select: { id: true, name: true, email: true } } },
+          orderBy: { createdAt: "desc" },
+        },
       }
     });
 
@@ -61,20 +64,18 @@ export const POST = withApiLogging(async function POST(
 
   try {
     const body = await request.json();
-    const { gameId } = body;
+    const { rating, comment } = body;
 
-    if (!gameId) {
-      return NextResponse.json({ 
-        error: "Missing required field: gameId" 
+    if (rating === undefined || typeof rating !== "number" || rating < 1 || rating > 5) {
+      return NextResponse.json({
+        error: "rating muss eine Zahl zwischen 1 und 5 sein"
       }, { status: 400 });
     }
 
     // Prüfe ob Session existiert und User Berechtigung hat
     const sessionData = await prisma.gameSession.findUnique({
       where: { id },
-      include: {
-        players: true
-      }
+      include: { players: true }
     });
 
     if (!sessionData) {
@@ -89,20 +90,29 @@ export const POST = withApiLogging(async function POST(
       return NextResponse.json({ error: "Access denied" }, { status: 403 });
     }
 
-    // Für Session Voting verwenden wir die Vote-Tabelle (ähnlich wie Event Voting)
-    const vote = await prisma.vote.create({
-      data: {
-        proposalId: id, // Session ID als Proposal ID verwenden
-        userId: session.user.id
+    // Upsert: Bewertung erstellen oder aktualisieren
+    const sessionRating = await prisma.sessionRating.upsert({
+      where: {
+        sessionId_userId: { sessionId: id, userId: session.user.id },
+      },
+      create: {
+        sessionId: id,
+        userId: session.user.id,
+        rating,
+        comment: comment?.trim() || null,
+      },
+      update: {
+        rating,
+        comment: comment?.trim() || null,
       },
       include: {
         user: { select: { id: true, name: true, email: true } }
       }
     });
 
-    return NextResponse.json(vote, { status: 201 });
+    return NextResponse.json(sessionRating, { status: 201 });
   } catch (error) {
-    console.error("Error creating vote:", error);
+    console.error("Error creating session rating:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 });

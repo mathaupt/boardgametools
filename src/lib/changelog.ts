@@ -11,6 +11,17 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.14.4",
+    date: "2026-03-21",
+    title: "Session-Bewertungen (SessionRating Modell)",
+    description: "Session-Voting Bug behoben: Neues SessionRating-Modell ersetzt den fehlerhaften Versuch, Event-Votes für Sessions zu missbrauchen.",
+    changes: [
+      { type: "fix", text: "Session-Bewertungen funktionieren jetzt korrekt mit eigenem Datenmodell (1-5 Sterne + Kommentar) (P0-37)" },
+      { type: "feature", text: "Bewertungen können aktualisiert werden (Upsert statt nur Create)" },
+      { type: "internal", text: "Neues SessionRating-Modell in Prisma Schema mit eigener DB-Tabelle" },
+    ],
+  },
+  {
     version: "0.14.3",
     date: "2026-03-21",
     title: "Bugfixes: Validierung, Close-Voting & .env.example",

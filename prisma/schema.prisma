@@ -41,6 +41,7 @@ model User {
   groupPollVotes  GroupPollVote[]  @relation("GroupPollVotes")
   groupComments   GroupComment[]   @relation("GroupComments")
   apiLogs         ApiLog[]         @relation("apiLogs")
+  sessionRatings  SessionRating[]  @relation("SessionRatings")
 }
 
 // ============================================
@@ -89,8 +90,24 @@ model GameSession {
   game            Game            @relation(fields: [gameId], references: [id], onDelete: Cascade)
   createdBy       User            @relation(fields: [createdById], references: [id], onDelete: Cascade)
   players         SessionPlayer[]
+  ratings         SessionRating[]
 
   @@index([createdById])
+}
+
+model SessionRating {
+  id          String      @id @default(cuid())
+  sessionId   String
+  userId      String
+  rating      Int         // 1-5 stars
+  comment     String?
+  createdAt   DateTime    @default(now())
+
+  session     GameSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  user        User        @relation("SessionRatings", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([sessionId, userId])
+  @@index([sessionId])
 }
 
 model SessionPlayer {
