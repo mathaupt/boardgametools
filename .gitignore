@@ -40,8 +40,10 @@ security-report.md
 # review evaluation (generated per commit)
 review-evaluation.json
 
-# database backups
+# database backups & dumps
 *.bak
+*.sql
+!prisma/migrations/**/*.sql
 /backups/
 
 # SQLite

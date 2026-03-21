@@ -54,7 +54,7 @@ export const POST = withApiLogging(async function POST(
     const event = await prisma.event.findFirst({
       where: { id, createdById: session.user.id },
       include: {
-        invites: { include: { user: true } },
+        invites: { include: { user: { select: { id: true, name: true, email: true } } } },
       },
     });
 

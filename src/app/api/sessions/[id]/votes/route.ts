@@ -22,9 +22,9 @@ export const GET = withApiLogging(async function GET(
       where: { id },
       include: {
         game: true,
-        createdBy: true,
+        createdBy: { select: { id: true, name: true, email: true } },
         players: {
-          include: { user: true }
+          include: { user: { select: { id: true, name: true, email: true } } }
         }
       }
     });
@@ -96,7 +96,7 @@ export const POST = withApiLogging(async function POST(
         userId: session.user.id
       },
       include: {
-        user: true
+        user: { select: { id: true, name: true, email: true } }
       }
     });
 

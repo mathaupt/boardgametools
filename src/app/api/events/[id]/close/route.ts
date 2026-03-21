@@ -49,6 +49,13 @@ export const POST = withApiLogging(async function POST(
       );
     }
 
+    if (event.status !== "voting") {
+      return NextResponse.json(
+        { error: "Abstimmung kann nur im Status 'voting' beendet werden" },
+        { status: 400 }
+      );
+    }
+
     // Find the winning game (most total votes = user votes + guest votes)
     const sortedProposals = [...event.proposals].sort(
       (a, b) =>

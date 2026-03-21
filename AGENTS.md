@@ -2,22 +2,75 @@
 
 ## Projektübersicht
 
-BoardGameTools ist eine Next.js 14 Webanwendung zur Verwaltung von Brettspielen, Spielsessions und Events mit Voting-Funktionalität.
+BoardGameTools ist eine Next.js 16 Webanwendung zur Verwaltung von Brettspielen, Spielsessions, Events mit Voting-Funktionalität, Gruppen und Spielereihen.
 
 ## Tech Stack
 
-- **Framework**: Next.js 14 (App Router)
-- **Sprache**: TypeScript
-- **Datenbank**: SQLite + Prisma ORM
-- **Styling**: Tailwind CSS + shadcn/ui Komponenten
+- **Framework**: Next.js 16 (App Router, Turbopack)
+- **Sprache**: TypeScript (strict)
+- **Datenbank**: PostgreSQL (Prisma Postgres) + Prisma ORM
+- **Styling**: Tailwind CSS 4 + shadcn/ui Komponenten
 - **Auth**: NextAuth.js v5 (beta) mit Credentials Provider
 - **Testing**: Vitest (Unit), CodeceptJS + Playwright (E2E)
+- **CI/Hooks**: Husky (pre-commit: Tests + Security + Review, pre-push: DB-Backup)
+
+## PFLICHT-Regeln
+
+### 1. Changelog-Pflicht (KRITISCH!)
+
+**Bei JEDER Änderung muss ein Changelog-Eintrag geschrieben werden!**
+
+- Datei: `src/lib/changelog.ts`
+- Neue Version als erstes Element im `changelog`-Array einfügen
+- Typen: `feature`, `fix`, `improvement`, `internal`
+- Deutsch schreiben, verständlich für Endnutzer
+- Auch bei reinen Refactorings oder internen Änderungen (als `internal`)
+
+```typescript
+{
+  version: "X.Y.Z",
+  date: "YYYY-MM-DD",
+  title: "Kurztitel",
+  description: "Was wurde gemacht und warum.",
+  changes: [
+    { type: "feature", text: "Beschreibung für Endnutzer" },
+    { type: "fix", text: "Was wurde gefixt" },
+    { type: "internal", text: "Interne Änderung" },
+  ],
+}
+```
+
+### 2. Review-Workflow nach jeder Umsetzung
+
+1. Änderungen committen
+2. `npm run review-evaluate` ausführen
+3. Ergebnis in `skills/code-review/SKILL.md` prüfen
+4. Behobene Findings mit ~~Strikethrough~~ ✅ markieren
+5. Score-Entwicklung verfolgen – Ziel: steigend!
+
+### 3. Prisma-Queries: NIEMALS `user: true` oder `createdBy: true`
+
+```typescript
+// VERBOTEN – leakt passwordHash:
+include: { user: true }
+include: { createdBy: true }
+
+// RICHTIG:
+include: { user: { select: { id: true, name: true, email: true } } }
+include: { createdBy: { select: { id: true, name: true, email: true } } }
+```
+
+### 4. Komponenten-Größe
+
+- Maximum ~300 Zeilen pro Datei
+- Große Komponenten in Subkomponenten aufteilen
+- Shared State über Props oder Context weitergeben
 
 ## Projektstruktur
 
 ```
 boardgametools/
-├── AGENTS.md              # Diese Datei
+├── AGENTS.md              # Diese Datei (IMMER aktuell halten!)
 ├── CONCEPT.md             # Detailliertes Konzept
 ├── skills/                # AgentSkills (siehe unten)
 ├── prisma/
@@ -28,9 +81,11 @@ boardgametools/
 │   │   ├── (dashboard)/   # Geschützte Routen
 │   │   └── api/           # API Routes
 │   ├── components/
-│   │   ├── ui/            # Basis-Komponenten
-│   │   └── layout/        # Layout-Komponenten
-│   └── lib/               # Utilities, DB, Auth
+│   │   ├── ui/            # shadcn/ui Basis-Komponenten
+│   │   ├── layout/        # Layout-Komponenten
+│   │   └── public-event/  # Public Event Subkomponenten
+│   └── lib/               # Utilities, DB, Auth, Validation
+├── scripts/               # Build/Deploy/Backup-Scripts
 ├── tests/
 │   ├── unit/              # Vitest Tests
 │   └── e2e/               # CodeceptJS Tests
@@ -38,8 +93,6 @@ boardgametools/
 ```
 
 ## Verfügbare Skills
-
-Die Skills im `skills/` Verzeichnis beschreiben detailliert wie Features funktionieren:
 
 | Skill | Beschreibung |
 |-------|-------------|
@@ -62,7 +115,8 @@ Die Skills im `skills/` Verzeichnis beschreiben detailliert wie Features funktio
 3. Erstelle/erweitere API Routes in `src/app/api/`
 4. Erstelle UI-Komponenten und Seiten
 5. Schreibe Unit Tests in `tests/unit/`
-6. Schreibe E2E Tests in `tests/e2e/`
+6. **Changelog-Eintrag schreiben** in `src/lib/changelog.ts`
+7. Commit + Review-Evaluator prüfen
 
 ### Datenbank ändern
 
@@ -73,47 +127,35 @@ Die Skills im `skills/` Verzeichnis beschreiben detailliert wie Features funktio
 ### Tests ausführen
 
 ```bash
-# Unit Tests
-npm run test
-
-# Unit Tests mit Watch
-npm run test:watch
-
-# E2E Tests (Server muss laufen)
-npm run test:e2e
-
-# E2E Tests headless
-HEADLESS=true npm run test:e2e
+npm run test              # Unit Tests
+npm run test:watch        # Unit Tests mit Watch
+npm run test:e2e          # E2E Tests (Server muss laufen)
+HEADLESS=true npm run test:e2e  # E2E Tests headless
 ```
 
 ### Review & Qualitätssicherung
 
 ```bash
-# Review-Evaluator (bewertet Code-Review-Findings, aktualisiert SKILL.md)
-npm run review-evaluate
-
-# Nur Report (ohne SKILL.md Update)
-npm run review-evaluate:report
-
-# JSON-Output (für CI/CD)
-npm run review-evaluate:json
-
-# Strict-Modus (Exit 1 bei Score < 5/10)
-npm run review-evaluate:strict
-
-# OWASP Security Check
-npm run security-check
+npm run review-evaluate          # Bewertet Findings, aktualisiert SKILL.md
+npm run review-evaluate:report   # Nur Report (ohne SKILL.md Update)
+npm run review-evaluate:json     # JSON-Output (für CI/CD)
+npm run review-evaluate:strict   # Exit 1 bei Score < 5/10
+npm run security-check           # OWASP Security Check
+npm run backup:prod              # Manuelles Prod-DB-Backup
 ```
 
-**Pre-Commit Hook** führt automatisch aus: Unit Tests → Security Check → Review Evaluator
+**Pre-Commit Hook**: Unit Tests → Security Check → Review Evaluator
+**Pre-Push Hook**: Prod-DB-Backup (automatisch)
 
 ## Code-Konventionen
 
 ### API Routes
 
 - Immer Auth prüfen: `const session = await auth()`
-- Fehler als JSON mit Status-Code zurückgeben
-- Prisma für alle DB-Operationen verwenden
+- Fehler als JSON: `{ error: string }` mit passendem HTTP-Status
+- Input-Validierung mit `src/lib/validation.ts`
+- **NIEMALS** `include: { user: true }` – immer mit `select`!
+- Prisma für alle DB-Operationen
 
 ```typescript
 export async function GET() {
@@ -131,13 +173,14 @@ export async function GET() {
 - `"use client"` nur wenn nötig (Interaktivität, Hooks)
 - shadcn/ui Komponenten aus `@/components/ui/` verwenden
 - Lucide Icons für Icons
+- Max ~300 Zeilen – danach aufteilen!
 
 ### Styling
 
 - Tailwind CSS Klassen verwenden
 - `cn()` Utility für bedingte Klassen
 - CSS Variablen für Theming (definiert in `globals.css`)
-- **Accessibility first**: Mindestens WCAG AA Kontrast (4.5:1 für Text), deutliche Fokuszustände, ausreichend große Touch-Flächen (>44px) und semantische Beschriftungen.
+- **Accessibility first**: WCAG AA Kontrast (4.5:1), Fokuszustände, Touch-Targets >44px
 
 ## Wichtige Dateien
 
@@ -146,85 +189,25 @@ export async function GET() {
 | `src/lib/db.ts` | Prisma Client Singleton |
 | `src/lib/auth.ts` | NextAuth Konfiguration |
 | `src/lib/utils.ts` | Utility Funktionen |
+| `src/lib/validation.ts` | Input-Validierung |
+| `src/lib/rate-limit.ts` | Rate Limiting |
+| `src/lib/changelog.ts` | **Changelog (PFLICHT bei jeder Änderung!)** |
 | `prisma/schema.prisma` | Datenbank-Schema |
-| `.env` | Umgebungsvariablen |
+| `.env` | Lokale Umgebungsvariablen |
+| `.env.prod` | Prod-DB-Credentials (NIEMALS committen!) |
 
 ## Umgebungsvariablen
 
 ```env
-DATABASE_URL="file:./dev.db"
+SQL_DATABASE_URL="postgres://..."      # PostgreSQL Connection
 NEXTAUTH_URL="http://localhost:3000"
 NEXTAUTH_SECRET="<secret>"
 ```
 
-## Häufige Aufgaben
-
-### User erstellen (für Tests)
-```typescript
-import { hash } from "bcryptjs";
-import prisma from "@/lib/db";
-
-const user = await prisma.user.create({
-  data: {
-    email: "test@example.com",
-    passwordHash: await hash("password123", 12),
-    name: "Test User",
-  },
-});
-```
-
-### Spiel mit Sessions laden
-```typescript
-const game = await prisma.game.findUnique({
-  where: { id },
-  include: {
-    sessions: {
-      include: { players: { include: { user: true } } },
-      orderBy: { playedAt: "desc" },
-    },
-  },
-});
-```
-
-### Event mit Voting-Status laden
-```typescript
-const event = await prisma.event.findUnique({
-  where: { id },
-  include: {
-    invites: { include: { user: true } },
-    proposals: {
-      include: {
-        game: true,
-        _count: { select: { votes: true } },
-      },
-    },
-  },
-});
-```
-
 ## Troubleshooting
 
-### Prisma Client nicht gefunden
 ```bash
-npx prisma generate
+npx prisma generate          # Prisma Client nicht gefunden
+npx prisma migrate dev       # Schema out of sync
+npm run backup:prod          # Manuelles DB-Backup
 ```
-
-### Datenbank-Schema out of sync
-```bash
-npx prisma migrate dev
-```
-
-### TypeScript Fehler nach Schema-Änderung
-```bash
-npx prisma generate
-# IDE neu starten
-```
-
-## Nächste Schritte (TODO)
-
-- [ ] Sessions API und UI implementieren
-- [ ] Events API und UI implementieren
-- [ ] Groups API und UI implementieren
-- [ ] Statistics API und UI implementieren
-- [ ] BGG Import implementieren
-- [ ] E-Mail Einladungen für Events

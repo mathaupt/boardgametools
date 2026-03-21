@@ -21,7 +21,7 @@ export const GET = withApiLogging(async function GET(
     where: { id, ownerId: session.user.id },
     include: {
       sessions: {
-        include: { players: { include: { user: true } } },
+        include: { players: { include: { user: { select: { id: true, name: true, email: true } } } } },
         orderBy: { playedAt: "desc" },
         take: 10,
       },

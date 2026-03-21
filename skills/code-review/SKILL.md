@@ -442,7 +442,7 @@ const isValid = await compare(inputPassword, group.password);
 
 ## Evaluator-Feedback (automatisch generiert)
 
-> Letzter Lauf: 2026-03-21 07:56:44
+> Letzter Lauf: 2026-03-21 08:05:43
 > Gesamt-Score: **6.5/10**
 
 ### Kategorie-Scores
@@ -500,7 +500,7 @@ boardgametools_dump.sql
 
 ### Empfohlene Reviewer-Anpassungen
 
-- ➕ NEU: "Große Dateien (>400 Zeilen)" – public-event-client.tsx (1152), group-detail-client.tsx (989), monitoring-dashboard.tsx (906), barcode-scanner.tsx (823), page.tsx (818), page.tsx (760), date-poll-client.tsx (731), page.tsx (693), profile-client.tsx (588), page.tsx (429), page.tsx (423) (Schwelle: 5)
+- ➕ NEU: "Große Dateien (>400 Zeilen)" – public-event-client.tsx (1152), group-detail-client.tsx (989), page.tsx (976), monitoring-dashboard.tsx (906), barcode-scanner.tsx (823), page.tsx (760), date-poll-client.tsx (731), page.tsx (693), profile-client.tsx (588), page.tsx (429), page.tsx (423) (Schwelle: 5)
 - ➕ NEU: "Test Coverage Lücken" – 1 von 18 lib-Dateien getestet (Schwelle: 5)
 - 📝 Handlungsfähigkeit in "TypeScript" niedrig (0/10) – konkretere Fix-Vorschläge ergänzen
 - ⬆️ Umsetzungsrate in "TypeScript" kritisch niedrig (0/10) – Prioritäten eskalieren

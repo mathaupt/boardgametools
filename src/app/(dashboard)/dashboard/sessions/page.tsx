@@ -14,7 +14,7 @@ export default async function SessionsPage() {
     include: {
       game: true,
       players: {
-        include: { user: true }
+        include: { user: { select: { id: true, name: true, email: true } } }
       }
     },
     orderBy: { playedAt: "desc" },

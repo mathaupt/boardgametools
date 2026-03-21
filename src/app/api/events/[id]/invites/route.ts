@@ -87,7 +87,7 @@ export const POST = withApiLogging(async function POST(
         email: targetUser ? null : email,
         status: "pending",
       },
-      include: { user: true },
+      include: { user: { select: { id: true, name: true, email: true } } },
     });
 
     // Sende Einladungs-Mail
@@ -153,7 +153,7 @@ export const PUT = withApiLogging(async function PUT(
         status,
         respondedAt: new Date(),
       },
-      include: { user: true },
+      include: { user: { select: { id: true, name: true, email: true } } },
     });
 
     // Benachrichtige Organisator per Mail

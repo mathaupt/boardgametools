@@ -27,7 +27,7 @@ export const GET = withApiLogging(async function GET(request: NextRequest) {
       include: {
         game: true,
         players: {
-          include: { user: true }
+          include: { user: { select: { id: true, name: true, email: true } } }
         }
       },
       orderBy: { playedAt: "desc" }
@@ -88,16 +88,16 @@ export const POST = withApiLogging(async function POST(request: NextRequest) {
         players: {
           create: players.map((player: SessionPlayerInput) => ({
             userId: player.userId,
-            score: player.score || null,
-            isWinner: player.isWinner || false,
-            placement: player.placement || null
+            score: player.score ?? null,
+            isWinner: player.isWinner ?? false,
+            placement: player.placement ?? null
           }))
         }
       },
       include: {
         game: true,
         players: {
-          include: { user: true }
+          include: { user: { select: { id: true, name: true, email: true } } }
         }
       }
     });

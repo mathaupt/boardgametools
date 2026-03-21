@@ -18,7 +18,7 @@ export default async function EventsPage() {
     where: { createdById: userId },
     include: {
       invites: {
-        include: { user: true }
+        include: { user: { select: { id: true, name: true, email: true } } }
       },
       proposals: {
         include: {

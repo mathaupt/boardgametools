@@ -39,7 +39,7 @@ export const POST = withApiLogging(async function POST(
     // Lade Einladung mit User
     const invite = await prisma.eventInvite.findUnique({
       where: { id: inviteId },
-      include: { user: true },
+      include: { user: { select: { id: true, name: true, email: true } } },
     });
 
     if (!invite || invite.eventId !== id) {

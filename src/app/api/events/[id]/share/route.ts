@@ -72,7 +72,7 @@ export const POST = withApiLogging(async function POST(
             status: "pending"
           },
           include: {
-            user: true
+            user: { select: { id: true, name: true, email: true } }
           }
         });
 

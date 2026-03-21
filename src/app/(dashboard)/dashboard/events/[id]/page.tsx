@@ -40,9 +40,9 @@ export default async function EventDetailPage({
   const event = await prisma.event.findUnique({
     where: { id },
     include: {
-      createdBy: true,
+      createdBy: { select: { id: true, name: true, email: true } },
       invites: {
-        include: { user: true }
+        include: { user: { select: { id: true, name: true, email: true } } }
       },
       proposals: {
         include: {
