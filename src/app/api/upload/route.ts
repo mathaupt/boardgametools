@@ -2,9 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
 import { withApiLogging } from "@/lib/api-logger";
-import { writeFile, mkdir } from "fs/promises";
-import path from "path";
-import crypto from "crypto";
+import { storage, generateFileName } from "@/lib/storage";
 
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 const MAX_SIZE = 5 * 1024 * 1024; // 5 MB
@@ -37,19 +35,10 @@ export const POST = withApiLogging(async function POST(request: NextRequest) {
       );
     }
 
-    // Generate unique filename
-    const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
-    const hash = crypto.randomBytes(16).toString("hex");
-    const fileName = `${hash}.${ext}`;
-    const uploadsDir = path.join(process.cwd(), "public", "uploads");
-    const filePath = path.join(uploadsDir, fileName);
-
-    // Ensure uploads directory exists
-    await mkdir(uploadsDir, { recursive: true });
-
-    // Write file
+    // Upload via storage provider (local or blob)
+    const fileName = generateFileName(file.name);
     const bytes = await file.arrayBuffer();
-    await writeFile(filePath, Buffer.from(bytes));
+    const result = await storage.upload(Buffer.from(bytes), fileName, file.type);
 
     // Store metadata in DB
     const upload = await prisma.upload.create({
@@ -57,7 +46,7 @@ export const POST = withApiLogging(async function POST(request: NextRequest) {
         fileName: file.name,
         mimeType: file.type,
         sizeBytes: file.size,
-        storagePath: `uploads/${fileName}`,
+        storagePath: result.storagePath,
         ownerId: session.user.id,
       },
     });
@@ -65,7 +54,7 @@ export const POST = withApiLogging(async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         id: upload.id,
-        url: `/uploads/${fileName}`,
+        url: result.publicUrl,
         fileName: file.name,
         mimeType: file.type,
         sizeBytes: file.size,

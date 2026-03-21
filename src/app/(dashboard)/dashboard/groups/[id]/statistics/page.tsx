@@ -18,7 +18,12 @@ import {
   Vote,
   BarChart3,
 } from "lucide-react";
-import { GroupStatisticsCharts } from "./group-statistics-charts";
+import dynamic from "next/dynamic";
+
+const GroupStatisticsCharts = dynamic(
+  () => import("./group-statistics-charts").then((mod) => mod.GroupStatisticsCharts),
+  { ssr: false }
+);
 
 export default async function GroupStatisticsPage({
   params,

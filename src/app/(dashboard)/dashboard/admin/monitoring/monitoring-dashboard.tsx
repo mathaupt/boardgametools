@@ -15,7 +15,13 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 
-import { OverviewTab, type StatsData } from "./overview-tab";
+import dynamic from "next/dynamic";
+import type { StatsData } from "./overview-tab";
+
+const OverviewTab = dynamic(
+  () => import("./overview-tab").then((mod) => mod.OverviewTab),
+  { ssr: false }
+);
 import { LogsTab } from "./logs-tab";
 import { AnomaliesTab, type AnomaliesData } from "./anomalies-tab";
 

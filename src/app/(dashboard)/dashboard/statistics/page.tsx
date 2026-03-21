@@ -19,8 +19,13 @@ import {
   BarChart3,
   TrendingUp,
 } from "lucide-react";
+import dynamic from "next/dynamic";
 import { formatDuration } from "@/lib/utils";
-import { StatisticsCharts } from "./statistics-charts";
+
+const StatisticsCharts = dynamic(
+  () => import("./statistics-charts").then((mod) => mod.StatisticsCharts),
+  { ssr: false }
+);
 
 export default async function StatisticsPage() {
   const session = await auth();

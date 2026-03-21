@@ -523,25 +523,25 @@ const isValid = await compare(inputPassword, group.password);
 
 ## Evaluator-Feedback (automatisch generiert)
 
-> Letzter Lauf: 2026-03-21 15:08:18
-> Gesamt-Score: **8.9/10**
+> Letzter Lauf: 2026-03-21 15:19:54
+> Gesamt-Score: **9.5/10**
 
 ### Kategorie-Scores
 
 | Kategorie | Score | Treffsicherheit | Aktualität | Abdeckung | Umsetzung | Handlung |
 |-----------|-------|-----------------|------------|-----------|-----------|----------|
-| Sicherheit | **9.3/10** | 10 | 8.5 | 10 | 8.8 | 10 |
+| Sicherheit | **9.7/10** | 10 | 9.2 | 10 | 9.5 | 10 |
 | TypeScript | **10/10** | 10 | 10 | 10 | 10 | 10 |
 | Architektur | **10/10** | 10 | 10 | 10 | 10 | 10 |
-| Performance | **7.7/10** | 10 | 6.7 | 5 | 7.7 | 10 |
+| Performance | **9.2/10** | 10 | 8.3 | 10 | 8.5 | 10 |
 | API Design | **10/10** | 10 | 10 | 10 | 10 | 10 |
-| Testing | **10/10** | 10 | 10 | 10 | 10 | 10 |
+| Testing | **8/10** | 10 | 10 | 0 | 10 | 10 |
 | Datenbank | **10/10** | 10 | 10 | 10 | 10 | 10 |
 | Konzept-Konformität | **10/10** | 10 | 10 | 10 | 10 | 10 |
-| Best Practices | **6.7/10** | 10 | 6 | 5 | 5 | 10 |
-| Skalierung | **6.6/10** | 10 | 3.3 | 10 | 3.2 | 10 |
+| Best Practices | **8.6/10** | 10 | 10 | 5 | 8.8 | 10 |
+| Skalierung | **9.2/10** | 10 | 10 | 10 | 7.7 | 10 |
 
-### Erledigte Findings (38)
+### Erledigte Findings (45)
 
 - ✅ **P0-1** Debug-Routes in Produktion: NODE_ENV Guard vorhanden
 - ✅ **P0-2** DB-Init ohne Auth: Auth-Check vorhanden
@@ -576,31 +576,32 @@ const isValid = await compare(inputPassword, group.password);
 - ✅ **P3-32** DB-Dumps in Git: Git-Check nicht möglich
 - ✅ **P3-33** Links zu /terms und /privacy fehlen: Beide Seiten vorhanden
 - ✅ **P3-35** Fehlende DB-Indices: 17 @@index Definitionen
+- ✅ **SEC-44** Fehlende Security Headers: CSP, X-Frame-Options, X-Content-Type-Options vorhanden
 - ✅ **SEC-46** XSS: dangerouslySetInnerHTML ohne Sanitization: Kein dangerouslySetInnerHTML verwendet
+- ✅ **PERF-48** Keine Bundle-Analyse konfiguriert: @next/bundle-analyzer konfiguriert
 - ✅ **PERF-49** Keine API Caching Headers: 3 Caching-Konfigurationen gefunden
 - ✅ **BP-50** ESLint Warnings/Errors: ESLint clean
 - ✅ **BP-51** Ungenutzte Dependencies in package.json: Alle Dependencies werden verwendet
+- ✅ **BP-53** ENV-Validierung beim Start: ENV-Validierung vorhanden
+- ✅ **BP-54** Fehlende Loading States (loading.tsx): 13 loading.tsx für 41 pages (32%)
 - ✅ **SCALE-55** Kein Health-Check Endpoint: Health-Check Endpoint vorhanden
+- ✅ **SCALE-57** In-Memory Rate Limiting nicht skalierbar: Redis-basiertes Rate Limiting
+- ✅ **SCALE-58** Kein Caching-Layer: Redis Cache vorhanden
+- ✅ **SCALE-59** Kein strukturiertes Logging: Strukturiertes Logging-Framework vorhanden
 
-### Offene Findings (10)
+### Offene Findings (2)
 
-- ❌ **SEC-44** Fehlende Security Headers: Keine Security Headers konfiguriert
-- ❌ **SEC-45** npm audit: Bekannte Vulnerabilities: npm audit konnte nicht ausgeführt werden
+- ❌ **SEC-45** npm audit: Bekannte Vulnerabilities: 0 critical, 13 high, 2 moderate
 - ❌ **PERF-47** Schwere Libraries ohne Dynamic Import: recharts (300KB+) statisch importiert
-- ❌ **PERF-48** Keine Bundle-Analyse konfiguriert: Kein Bundle-Analyzer in Dependencies oder Config
-- ❌ **BP-52** Fehlende Error Boundaries: Keine Error Boundaries
-- ❌ **BP-53** ENV-Validierung beim Start: Keine systematische ENV-Validierung
-- ❌ **SCALE-56** File-Uploads auf lokalem Dateisystem: Lokales Dateisystem (public/uploads/) – nicht skalierbar
-- ❌ **SCALE-57** In-Memory Rate Limiting nicht skalierbar: In-Memory Map – funktioniert nicht bei horizontaler Skalierung
-- ❌ **SCALE-58** Kein Caching-Layer: Kein Caching-Layer
-- ❌ **SCALE-59** Kein strukturiertes Logging: Nur console.log – nicht für Log-Aggregation geeignet
 
-### Teilweise gelöst (2)
+### Teilweise gelöst (3)
 
-- 🔶 **BP-54** Fehlende Loading States (loading.tsx): Nur 1 loading.tsx für 41 pages
+- 🔶 **BP-52** Fehlende Error Boundaries: Nur globale Error Boundary
+- 🔶 **SCALE-56** File-Uploads auf lokalem Dateisystem: Storage-Abstraktion vorhanden (Blob + Local Fallback)
 - 🔶 **SCALE-60** DB Connection Pooling nicht konfiguriert: DB-URL vorhanden, aber kein explizites Pooling
 
 ### Empfohlene Reviewer-Anpassungen
 
-- ➕ NEU: "Statische Imports schwerer Libraries" – Statisch: recharts, html5-qrcode (Schwelle: 1)
-- ➕ NEU: "Fehlende error.tsx Boundaries" – 1 error.tsx für 41 pages (2%) (Schwelle: 3)
+- ➕ NEU: "Test Coverage Lücken" – 16 von 22 lib-Dateien getestet (Schwelle: 5)
+- ➕ NEU: "Fehlende error.tsx Boundaries" – 2 error.tsx für 41 pages (5%) (Schwelle: 3)
+- 📝 Abdeckung in "Testing" niedrig (0/10) – weitere Prüfpunkte hinzufügen
