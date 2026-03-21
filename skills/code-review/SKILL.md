@@ -258,14 +258,7 @@ Erstelle einen Report mit folgendem Format:
 3. ~~**Hardcoded Admin-Credentials**~~ ✅ Behoben: Credentials externalisiert.
 4. ~~**Gruppen-Passwörter im Klartext**~~ ✅ Behoben: bcrypt wird verwendet.
 5. ~~**Kein Rate Limiting + keine middleware.ts**~~ ✅ Behoben: Middleware + Rate Limiting vorhanden.
-6. **passwordHash in API-Responses**: `createdBy: true` ohne `select` in **5 Dateien** – passwordHash wird an Client gesendet.
-   - `src/app/api/events/route.ts` (Zeile 27)
-   - `src/app/api/events/[id]/route.ts` (Zeile 24)
-   - `src/app/api/events/[id]/calendar/route.ts` (Zeile 24)
-   - `src/app/api/sessions/[id]/votes/route.ts` (Zeile 25)
-   - `src/app/(dashboard)/dashboard/events/[id]/page.tsx` (Zeile 43) – Server Component, aber unnötig breit
-   Zusätzlich 19× `user: true` ohne select in src/ – gleiches Leak-Risiko.
-   **Fix**: `createdBy: { select: { id: true, name: true, email: true } }` in allen Dateien.
+6. ~~**passwordHash in API-Responses**~~ ✅ Behoben: 0 Treffer für `createdBy: true` / `user: true` ohne `select` – alle Prisma-Queries nutzen `select`.
 37. **Session-Voting schreibt Session-ID als ProposalId**: `src/app/api/sessions/[id]/votes/route.ts` Zeile 93-96 nutzt die Session-ID als `proposalId` in `prisma.vote.create()`. Da `Vote.proposalId` eine FK-Constraint auf `GameProposal.id` hat, schlägt dies mit DB-Fehler fehl. **Session-Voting ist komplett broken.**
     **Fix**: Eigene Tabelle `SessionVote` erstellen oder Logik korrigieren, sodass die korrekte ProposalId verwendet wird.
 38. **Close-Voting verliert BGG-Ergebnis**: `src/app/api/events/[id]/close/route.ts` Zeile 64: `winningProposal?.gameId || null` – BGG-only Proposals haben `gameId = null`, daher wird `selectedGameId = null` gesetzt und das Ergebnis geht verloren.
@@ -283,19 +276,15 @@ Erstelle einen Report mit folgendem Format:
 12. ~~**Close-Voting fehlt**~~ ✅ Behoben: Close-Voting Endpoint und Button vorhanden.
 13. ~~**Registrierung: Keine E-Mail-Validierung**~~ ✅ Behoben: E-Mail-Validierung vorhanden.
 14. ~~**P95 Duration Query lädt alle Zeilen**~~ ✅ Behoben: P95 Query nutzt OFFSET/LIMIT.
-15. **Admin kann sich selbst deaktivieren**: Self-Protection nur in `/api/admin/users/deactivate` vorhanden. `/api/admin/users/change-password` hat **keine** Self-Protection.
-    **Fix**: `if (targetUserId === session.user.id) return 400` Check in `change-password` ergänzen.
+15. ~~**Admin kann sich selbst deaktivieren**~~ ✅ Behoben: Self-Protection in `change-password` (Zeile 24) und `deactivate` vorhanden.
 16. ~~**Admin-Endpoints: 401 statt 403**~~ ✅ Behoben: Middleware gibt 403 für Non-Admins.
-39. **Score=0 Bug (falsy check)**: `src/app/api/sessions/route.ts` Zeile 91: `score: player.score || null` – `player.score = 0` (ein valider Punktestand) wird zu `null`.
-    **Fix**: `player.score ?? null` statt `player.score || null`.
-40. **Close-Voting erlaubt Draft→Closed**: `src/app/api/events/[id]/close/route.ts` Zeile 45 prüft nur `status === "closed"`, erlaubt aber Draft→Closed ohne laufende Abstimmung.
-    **Fix**: `if (event.status !== "voting") return 400` prüfen.
+39. ~~**Score=0 Bug (falsy check)**~~ ✅ Behoben: `sessions/route.ts` Zeile 104 nutzt `player.score ?? null` (Nullish Coalescing).
+40. ~~**Close-Voting erlaubt Draft→Closed**~~ ✅ Behoben: `close/route.ts` Zeile 52 prüft `event.status !== "voting"` und lehnt Draft ab.
 41. **Rate-Limit unwirksam auf Serverless**: `src/lib/rate-limit.ts` nutzt in-memory Map + `setInterval`. Auf Vercel/Serverless wird der Cleanup nie ausgeführt, und jeder Cold-Start hat eine leere Map → Rate-Limiting wirkt nicht.
     **Fix**: Redis/KV-Store oder Vercel Edge Config für persistentes Rate-Limiting nutzen.
 
 ### P2 – Verbesserung
-17. **Mega-Komponenten aufteilen**: `public-event-client.tsx` (1152 Zeilen), `group-detail-client.tsx` (989 Zeilen), `monitoring-dashboard.tsx` (906 Zeilen).
-    **Fix**: Subkomponenten extrahieren – siehe Codebeispiel "Komponenten-Aufteilung" unten.
+17. ~~**Mega-Komponenten aufteilen**~~ ✅ Behoben: Alle 5 Mega-Komponenten aufgeteilt (public-event 1152→354, group-detail 989→396, monitoring 906→144, barcode 825→338, series 976→591). Noch 8 Dateien >400 Zeilen übrig (games/import 760, date-poll-client 731, voting/page 693, series/page 591, profile-client 588, public/group 471, create-poll-form 426, events/page 423).
 18. **24× `any` Type** (vorher 38, dann 20, jetzt 24 – leicht gestiegen durch neue Dateien).
     **Fix**: `grep -rn ': any\|as any' src/` ausführen und jeden Treffer mit konkretem Interface ersetzen.
 19. ~~**Duplikat: Prisma-Client-Dateien**~~ ✅ Behoben: Duplikat entfernt.
@@ -442,8 +431,8 @@ const isValid = await compare(inputPassword, group.password);
 
 ## Evaluator-Feedback (automatisch generiert)
 
-> Letzter Lauf: 2026-03-21 08:25:07
-> Gesamt-Score: **7.9/10**
+> Letzter Lauf: 2026-03-21 08:54:43
+> Gesamt-Score: **8.1/10**
 
 ### Kategorie-Scores
 
@@ -451,28 +440,32 @@ const isValid = await compare(inputPassword, group.password);
 |-----------|-------|-----------------|------------|-----------|-----------|----------|
 | Sicherheit | **8.9/10** | 10 | 9 | 10 | 9.1 | 6 |
 | TypeScript | **8.5/10** | 10 | 10 | 10 | 10 | 0 |
-| Architektur | **5.7/10** | 10 | 8 | 0 | 7.8 | 2 |
+| Architektur | **6.8/10** | 10 | 10 | 0 | 10 | 2 |
 | Performance | **9/10** | 10 | 10 | 10 | 10 | 3.3 |
 | API Design | **9/10** | 10 | 10 | 10 | 10 | 3.3 |
 | Testing | **6.5/10** | 10 | 10 | 0 | 10 | 0 |
 | Datenbank | **9.3/10** | 10 | 10 | 10 | 10 | 5 |
 | Konzept-Konformität | **5.5/10** | 10 | 3.8 | 10 | 4 | 0 |
 
-### Erledigte Findings (26)
+### Erledigte Findings (32)
 
 - ✅ **P0-1** Debug-Routes in Produktion: NODE_ENV Guard vorhanden
 - ✅ **P0-2** DB-Init ohne Auth: Auth-Check vorhanden
 - ✅ **P0-3** Hardcoded Admin-Credentials: Credentials externalisiert
 - ✅ **P0-4** Gruppen-Passwörter im Klartext: bcrypt wird verwendet
 - ✅ **P0-5** Kein Rate Limiting + keine middleware.ts: Middleware + Rate Limiting vorhanden
-- ✅ **P0-6** passwordHash in API-Responses: passwordHash wird nicht exponiert
+- ✅ **P0-6** passwordHash in API-Responses: Alle Prisma-Queries nutzen `select`
 - ✅ **P1-7** PII in Logs: Keine PII in API-Logs
 - ✅ **P1-8** Fehlende Input-Validierung: validation.ts in 24 Routes importiert
 - ✅ **P1-9** Keine Pagination: Pagination auf allen Listen-Endpoints
 - ✅ **P1-12** Close-Voting fehlt: Close-Voting Endpoint vorhanden
 - ✅ **P1-13** Registrierung: Keine E-Mail-Validierung: E-Mail-Validierung vorhanden
 - ✅ **P1-14** P95 Duration Query lädt alle Zeilen: P95 Query nutzt OFFSET/LIMIT
+- ✅ **P1-15** Admin kann sich selbst deaktivieren: Self-Protection in change-password + deactivate
 - ✅ **P1-16** Admin-Endpoints: 401 statt 403: Middleware gibt 403 für Non-Admins
+- ✅ **P1-39** Score=0 Bug: sessions/route.ts nutzt `??` (Nullish Coalescing)
+- ✅ **P1-40** Close-Voting Draft→Closed: close/route.ts prüft `status !== "voting"`
+- ✅ **P2-17** Mega-Komponenten aufteilen: 5 Mega-Komponenten aufgeteilt
 - ✅ **P2-18** any-Types im Code: Keine any-Types
 - ✅ **P2-19** Duplikat: Prisma-Client-Dateien: Duplikat entfernt
 - ✅ **P2-20** Duplikat: BGG-Logik: Kein dupliziertes XML-Parsing
@@ -487,19 +480,20 @@ const isValid = await compare(inputPassword, group.password);
 - ✅ **P3-33** Links zu /terms und /privacy fehlen: Beide Seiten vorhanden
 - ✅ **P3-35** Fehlende DB-Indices: 13 @@index Definitionen
 
-### Offene Findings (7)
+### Offene Findings (8)
 
+- ❌ **P0-37** Session-Voting broken: Session-ID als proposalId → FK-Constraint-Fehler
+- ❌ **P0-38** Close-Voting verliert BGG-Ergebnis: selectedGameId=null bei BGG-only Proposals
 - ❌ **P1-10** Statistiken komplett fehlend: Weder Seite noch API vorhanden
 - ❌ **P1-11** Session-Detailseite fehlt: Keine Session-Detailseite
-- ❌ **P1-15** Admin kann sich selbst deaktivieren: Keine Self-Protection
-- ❌ **P2-17** Mega-Komponenten aufteilen: public-event-client.tsx: 1153 Zeilen, group-detail-client.tsx: 990 Zeilen
+- ❌ **P2-42** validation.ts Bugs: min-falsy-check, max ohne trim, Number("")=0
 - ❌ **P3-28** Tags/Kategorien fehlen: Kein Tag/Category-Model im Schema
 - ❌ **P3-29** Bild-Upload fehlt: Kein Bild-Upload implementiert
 - ❌ **P3-30** Gruppen-Statistiken fehlen: Keine Gruppen-Statistiken
 
 ### Empfohlene Reviewer-Anpassungen
 
-- ➕ NEU: "Große Dateien (>400 Zeilen)" – public-event-client.tsx (1152), group-detail-client.tsx (989), page.tsx (976), monitoring-dashboard.tsx (906), barcode-scanner.tsx (825), page.tsx (760), date-poll-client.tsx (731), page.tsx (693), profile-client.tsx (588), page.tsx (471), page.tsx (423) (Schwelle: 5)
+- ➕ NEU: "Große Dateien (>400 Zeilen)" – page.tsx (760), date-poll-client.tsx (731), page.tsx (693), page.tsx (591), profile-client.tsx (588), page.tsx (471), create-poll-form.tsx (426), page.tsx (423) (Schwelle: 5)
 - ➕ NEU: "Test Coverage Lücken" – 6 von 18 lib-Dateien getestet (Schwelle: 5)
 - 📝 Handlungsfähigkeit in "TypeScript" niedrig (0/10) – konkretere Fix-Vorschläge ergänzen
 - 📝 Abdeckung in "Architektur" niedrig (0/10) – weitere Prüfpunkte hinzufügen
