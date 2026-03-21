@@ -11,6 +11,15 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.17.4",
+    date: "2026-03-21",
+    title: "Middleware zu Proxy migriert",
+    description: "Next.js 16 Deprecation-Warning behoben: middleware.ts in proxy.ts umbenannt.",
+    changes: [
+      { type: "fix", text: "Middleware-Datei zu proxy.ts migriert (Next.js 16 Konvention)" },
+    ],
+  },
+  {
     version: "0.17.3",
     date: "2026-03-21",
     title: "Vercel Build-Fixes",
