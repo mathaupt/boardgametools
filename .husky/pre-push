@@ -1,0 +1,2 @@
+echo "🗄️  Erstelle Prod-DB Backup vor Push..."
+bash scripts/backup-prod-db.sh

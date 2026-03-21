@@ -42,6 +42,7 @@ review-evaluation.json
 
 # database backups
 *.bak
+/backups/
 
 # SQLite
 *.db

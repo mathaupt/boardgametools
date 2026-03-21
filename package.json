@@ -30,7 +30,8 @@
     "review-evaluate": "node scripts/review-evaluate.mjs --apply",
     "review-evaluate:json": "node scripts/review-evaluate.mjs --json",
     "review-evaluate:strict": "node scripts/review-evaluate.mjs --apply --strict",
-    "review-evaluate:report": "node scripts/review-evaluate.mjs"
+    "review-evaluate:report": "node scripts/review-evaluate.mjs",
+    "backup:prod": "bash scripts/backup-prod-db.sh"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",
