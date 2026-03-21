@@ -11,6 +11,20 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.15.0",
+    date: "2026-03-21",
+    title: "Statistiken, Session-Detailseite & Rate-Limit Verbesserungen",
+    description: "P0/P1-Findings umgesetzt: Statistik-Dashboard mit Charts, Session-Detailseite mit Bearbeiten/Löschen, und Rate-Limiting gegen Memory-Wachstum abgesichert.",
+    changes: [
+      { type: "feature", text: "Statistik-Dashboard mit Übersichtskarten, monatlicher Aktivität (Bar-Chart), Spieler-Rangliste und Top-10 meistgespielte Spiele (P1-10)" },
+      { type: "feature", text: "Statistik-API: GET /api/statistics liefert Übersicht, meistgespielte Spiele, Spieler-Stats und monatliche Aktivität" },
+      { type: "feature", text: "Session-Detailseite: /dashboard/sessions/[id] mit Spielinfo, Spieler-Tabelle, Bewertungen, Bearbeiten & Löschen (P1-11)" },
+      { type: "feature", text: "Session-Edit-Seite: /dashboard/sessions/[id]/edit mit vorausgefülltem Formular" },
+      { type: "feature", text: "Session-API: GET/PUT/DELETE /api/sessions/[id] mit Auth-Check, $transaction für Player-Updates" },
+      { type: "improvement", text: "Rate-Limiting: maxSize-Guard (10.000 Einträge), LRU-Eviction bei Überlauf, Dokumentation für Serverless-Umgebungen (P1-41)" },
+    ],
+  },
+  {
     version: "0.14.5",
     date: "2026-03-21",
     title: "Mega-Komponenten aufgeteilt",
