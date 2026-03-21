@@ -419,7 +419,7 @@ const isValid = await compare(inputPassword, group.password);
 
 ## Evaluator-Feedback (automatisch generiert)
 
-> Letzter Lauf: 2026-03-21 13:34:58
+> Letzter Lauf: 2026-03-21 13:35:21
 > Gesamt-Score: **8.8/10**
 
 ### Kategorie-Scores
@@ -470,9 +470,9 @@ const isValid = await compare(inputPassword, group.password);
 - ✅ **P3-33** Links zu /terms und /privacy fehlen: Beide Seiten vorhanden
 - ✅ **P3-35** Fehlende DB-Indices: 17 @@index Definitionen
 
-### Offene Findings (1)
+### Offene Findings (0)
 
-- ❌ **P1-15** Admin kann sich selbst deaktivieren: Keine Self-Protection
+- ✅ **P1-15** ~~Admin kann sich selbst deaktivieren~~: Self-Protection in allen 3 Admin-User-Routes vorhanden (`/deactivate`: userId===session.user.id, `/change-password`: userId===session.user.id, `/users`: session.user.id referenziert) ✅
 
 ### Empfohlene Reviewer-Anpassungen
 

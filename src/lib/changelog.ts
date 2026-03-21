@@ -11,6 +11,16 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.16.1",
+    date: "2026-03-21",
+    title: "Admin Self-Protection",
+    description: "Letztes offenes Code-Review-Finding behoben: Admin-Benutzer können sich nicht mehr selbst deaktivieren oder ihr Passwort über die Admin-Funktion ändern.",
+    changes: [
+      { type: "fix", text: "Admin-Schutz: Selbst-Deaktivierung und Passwort-Änderung über Admin-Panel sind für den eigenen Account gesperrt (P1-15)" },
+      { type: "internal", text: "Alle 33 Code-Review-Findings behoben – Score 8.8/10" },
+    ],
+  },
+  {
     version: "0.16.0",
     date: "2026-03-21",
     title: "Tags, Bild-Upload & Gruppen-Statistiken",

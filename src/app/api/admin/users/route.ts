@@ -17,6 +17,7 @@ export const POST = withApiLogging(async function POST(request: Request) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
+    const adminId = session.user.id;
     const { name, email, password, role } = await request.json();
 
     const validationError = firstError(
