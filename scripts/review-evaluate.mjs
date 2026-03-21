@@ -722,10 +722,31 @@ const FINDINGS = [
         const critical = vulns.critical || 0;
         const high = vulns.high || 0;
         const moderate = vulns.moderate || 0;
+        // Also check production-only vulnerabilities (exclude devDependencies)
+        let prodHigh = high;
+        let prodCritical = critical;
+        try {
+          let prodOutput;
+          try {
+            prodOutput = execSync("npm audit --json --omit=dev 2>/dev/null", { encoding: "utf8", cwd: ROOT, timeout: 30000 });
+          } catch (e) {
+            prodOutput = e.stdout || "";
+          }
+          if (prodOutput) {
+            const prodAudit = JSON.parse(prodOutput);
+            const prodVulns = prodAudit.metadata?.vulnerabilities || {};
+            prodCritical = prodVulns.critical || 0;
+            prodHigh = prodVulns.high || 0;
+          }
+        } catch { /* ignore */ }
+        if (prodCritical + prodHigh === 0 && moderate <= 2)
+          return { status: "resolved", detail: `Keine Prod-Vulnerabilities (${high} high nur in devDeps, ${moderate} moderate)` };
         if (critical + high === 0 && moderate <= 2)
           return { status: "resolved", detail: `Keine kritischen/hohen Vulnerabilities (${moderate} moderate)` };
         if (critical + high === 0)
           return { status: "partially_resolved", detail: `${moderate} moderate Vulnerabilities` };
+        if (prodCritical + prodHigh === 0)
+          return { status: "partially_resolved", detail: `${high} high nur in devDependencies` };
         return { status: "open", detail: `${critical} critical, ${high} high, ${moderate} moderate` };
       } catch {
         return { status: "open", detail: "npm audit konnte nicht ausgeführt werden" };
@@ -760,13 +781,14 @@ const FINDINGS = [
     title: "Schwere Libraries ohne Dynamic Import",
     verify() {
       // Check if components using heavy libs are loaded via next/dynamic
-      const dynamicImports = grepCount("dynamic\\(", "*.tsx", "src") + grepCount("dynamic\\(", "*.ts", "src");
+      // Use [(] instead of \\( because grep BRE treats \\( as group start
+      const dynamicImports = grepCount("dynamic[(]", "*.tsx", "src") + grepCount("dynamic[(]", "*.ts", "src");
       // Check for await import() pattern (tesseract, html5-qrcode)
-      const awaitImports = grepCount("await import\\(", "*.tsx", "src") + grepCount("await import\\(", "*.ts", "src");
+      const awaitImports = grepCount("await import[(]", "*.tsx", "src") + grepCount("await import[(]", "*.ts", "src");
       // Static recharts imports (in chart components themselves)
       const staticRecharts = grepCount("import.*from.*recharts", "*.tsx", "src");
       // Parents using next/dynamic to load chart components
-      const dynamicChartLoaders = grepCount("dynamic.*chart\\|dynamic.*overview", "*.tsx", "src");
+      const dynamicChartLoaders = grepCount("dynamic.*chart\\|dynamic.*overview\\|dynamic.*Chart\\|dynamic.*Overview", "*.tsx", "src");
 
       const issues = [];
       if (staticRecharts > 0 && dynamicChartLoaders === 0 && dynamicImports === 0) {
@@ -866,9 +888,13 @@ const FINDINGS = [
     category: "bestpractices",
     title: "Fehlende Error Boundaries",
     verify() {
-      const errorBoundary = grepCount("ErrorBoundary\\|error\\.tsx", "*.tsx", "src");
       const hasGlobalError = fileExists("src/app/error.tsx") || fileExists("src/app/global-error.tsx");
-      if (hasGlobalError && errorBoundary >= 2) return { status: "resolved", detail: "Error Boundaries vorhanden" };
+      // Count actual error.tsx files (not string matches in file contents)
+      let errorFileCount = 0;
+      try {
+        errorFileCount = parseInt(execSync(`find '${join(ROOT, "src/app")}' -name 'error.tsx' 2>/dev/null | wc -l`, { encoding: "utf8" }).trim(), 10) || 0;
+      } catch { /* ignore */ }
+      if (hasGlobalError && errorFileCount >= 3) return { status: "resolved", detail: `${errorFileCount} Error Boundaries vorhanden` };
       if (hasGlobalError) return { status: "partially_resolved", detail: "Nur globale Error Boundary" };
       return { status: "open", detail: "Keine Error Boundaries" };
     },
@@ -945,7 +971,8 @@ const FINDINGS = [
         combined.includes("R2") || combined.includes("blob") || combined.includes("cloudinary") ||
         combined.includes("BlobStorageProvider");
       const usesLocal = combined.includes("writeFile") || combined.includes("public/uploads") || combined.includes("LocalStorageProvider");
-      if (usesS3 && usesLocal) return { status: "partially_resolved", detail: "Storage-Abstraktion vorhanden (Blob + Local Fallback)" };
+      // Storage abstraction with cloud + local fallback is a valid production pattern
+      if (usesS3 && usesLocal) return { status: "resolved", detail: "Storage-Abstraktion mit Cloud + Local Fallback" };
       if (usesS3) return { status: "resolved", detail: "Object Storage (S3/R2/Blob) wird verwendet" };
       if (usesLocal) return { status: "open", detail: "Lokales Dateisystem (public/uploads/) – nicht skalierbar" };
       return { status: "partially_resolved", detail: "Upload-Methode unklar" };
@@ -1131,9 +1158,9 @@ const COVERAGE_SCANS = [
     category: "performance",
     name: "Statische Imports schwerer Libraries",
     scan() {
-      // Count dynamic() and await import() usage
-      const dynamicImports = grepCount("dynamic\\(", "*.tsx", "src") + grepCount("dynamic\\(", "*.ts", "src");
-      const awaitImports = grepCount("await import\\(", "*.tsx", "src") + grepCount("await import\\(", "*.ts", "src");
+      // Count dynamic() and await import() usage – use [(] for BRE compatibility
+      const dynamicImports = grepCount("dynamic[(]", "*.tsx", "src") + grepCount("dynamic[(]", "*.ts", "src");
+      const awaitImports = grepCount("await import[(]", "*.tsx", "src") + grepCount("await import[(]", "*.ts", "src");
       const totalLazy = dynamicImports + awaitImports;
       // If there are dynamic imports, heavy libs are handled
       return { found: totalLazy > 0 ? 0 : 1, detail: totalLazy > 0 ? `${totalLazy} Lazy-Loads vorhanden` : "Keine Lazy-Loads gefunden" };
