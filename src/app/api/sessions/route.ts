@@ -19,18 +19,31 @@ export const GET = withApiLogging(async function GET(request: NextRequest) {
 
   const { searchParams } = new URL(request.url);
   const userId = session.user.id;
+  const page = parseInt(searchParams.get("page") || "0", 10);
+  const limit = Math.min(parseInt(searchParams.get("limit") || "0", 10), 100);
 
   try {
-    // Alle Sessions des Users
+    const where = { createdById: userId };
+    const includeRelations = {
+      game: true as const,
+      players: {
+        include: { user: { select: { id: true, name: true, email: true } } }
+      }
+    };
+
+    if (page > 0 && limit > 0) {
+      const [sessions, total] = await Promise.all([
+        prisma.gameSession.findMany({
+          where, include: includeRelations, orderBy: { playedAt: "desc" },
+          skip: (page - 1) * limit, take: limit,
+        }),
+        prisma.gameSession.count({ where }),
+      ]);
+      return NextResponse.json({ data: sessions, total, page, limit, totalPages: Math.ceil(total / limit) });
+    }
+
     const sessions = await prisma.gameSession.findMany({
-      where: { createdById: userId },
-      include: {
-        game: true,
-        players: {
-          include: { user: { select: { id: true, name: true, email: true } } }
-        }
-      },
-      orderBy: { playedAt: "desc" }
+      where, include: includeRelations, orderBy: { playedAt: "desc" },
     });
 
     return NextResponse.json(sessions);

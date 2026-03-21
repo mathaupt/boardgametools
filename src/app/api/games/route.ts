@@ -4,16 +4,43 @@ import prisma from "@/lib/db";
 import { withApiLogging } from "@/lib/api-logger";
 import { validateString, validateNumber, firstError } from "@/lib/validation";
 
-export const GET = withApiLogging(async function GET() {
+export const GET = withApiLogging(async function GET(request: NextRequest) {
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  const { searchParams } = new URL(request.url);
+  const page = parseInt(searchParams.get("page") || "0", 10);
+  const limit = Math.min(parseInt(searchParams.get("limit") || "0", 10), 100);
+  const include = searchParams.get("include");
+
+  const where = { ownerId: session.user.id };
+
+  if (page > 0 && limit > 0) {
+    const [games, total] = await Promise.all([
+      prisma.game.findMany({
+        where,
+        orderBy: { name: "asc" },
+        include: {
+          _count: { select: { sessions: true } },
+          ...(include === "sessions" ? { sessions: { orderBy: { playedAt: "desc" as const }, take: 5 } } : {}),
+        },
+        skip: (page - 1) * limit,
+        take: limit,
+      }),
+      prisma.game.count({ where }),
+    ]);
+    return NextResponse.json({ data: games, total, page, limit, totalPages: Math.ceil(total / limit) });
+  }
+
   const games = await prisma.game.findMany({
-    where: { ownerId: session.user.id },
+    where,
     orderBy: { name: "asc" },
-    include: { _count: { select: { sessions: true } } },
+    include: {
+      _count: { select: { sessions: true } },
+      ...(include === "sessions" ? { sessions: { orderBy: { playedAt: "desc" as const }, take: 5 } } : {}),
+    },
   });
 
   return NextResponse.json(games);

@@ -1,5 +1,73 @@
 import { Prisma } from "@prisma/client";
 
+interface PublicEventRaw {
+  id: string;
+  title: string;
+  description: string | null;
+  eventDate: Date;
+  location: string | null;
+  status: string;
+  shareToken: string | null;
+  isPublic: boolean;
+  selectedDate: Date | null;
+  createdBy: { id: string; name: string | null };
+  invites: Array<{
+    id: string;
+    status: string;
+    email: string | null;
+    user: { name: string | null } | null;
+  }>;
+  selectedGame: {
+    id: string;
+    name: string;
+    imageUrl: string | null;
+    minPlayers: number | null;
+    maxPlayers: number | null;
+    playTimeMinutes: number | null;
+  } | null;
+  proposals: Array<{
+    id: string;
+    bggId: string | null;
+    bggName: string | null;
+    bggImageUrl: string | null;
+    bggMinPlayers: number | null;
+    bggMaxPlayers: number | null;
+    bggPlayTimeMinutes: number | null;
+    game: {
+      id: string;
+      name: string;
+      imageUrl: string | null;
+      minPlayers: number | null;
+      maxPlayers: number | null;
+      playTimeMinutes: number | null;
+    } | null;
+    proposedBy: { id: string; name: string | null } | null;
+    guest: { id: string; nickname: string } | null;
+    votes?: Array<{ id: string }>;
+    _count: { votes: number; guestVotes: number };
+  }>;
+  guestParticipants: Array<{
+    id: string;
+    nickname: string;
+    createdAt: Date;
+    _count?: { votes: number };
+  }>;
+  dateProposals: Array<{
+    id: string;
+    date: Date;
+    votes: Array<{
+      id: string;
+      availability: string;
+      user: { id: string; name: string; email: string };
+    }>;
+    guestVotes: Array<{
+      id: string;
+      availability: string;
+      guest: { id: string; nickname: string };
+    }>;
+  }>;
+}
+
 export const buildPublicEventInclude = (userId?: string | null): Prisma.EventInclude => ({
   createdBy: {
     select: { id: true, name: true },
@@ -133,9 +201,8 @@ export interface SerializedPublicEvent {
   currentUserId: string | null;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function serializePublicEvent(
-  event: any,
+  event: PublicEventRaw,
   currentUserId: string | null
 ): SerializedPublicEvent {
   return {
@@ -148,12 +215,12 @@ export function serializePublicEvent(
     shareToken: event.shareToken,
     isPublic: event.isPublic,
     createdBy: event.createdBy,
-    invites: (event.invites ?? []).map((invite: any) => ({
+    invites: (event.invites ?? []).map((invite: PublicEventRaw["invites"][number]) => ({
       name: invite.user?.name || (invite.email ? invite.email.replace(/(.{2}).*(@.*)/, "$1***$2") : "Gast"),
       status: invite.status,
     })),
     selectedGame: event.selectedGame,
-    proposals: event.proposals.map((proposal: any) => {
+    proposals: event.proposals.map((proposal: PublicEventRaw["proposals"][number]) => {
       const registeredVotes = proposal._count.votes;
       const guestVotes = proposal._count.guestVotes;
       const userHasVoted = currentUserId ? (proposal.votes?.length ?? 0) > 0 : false;
@@ -185,21 +252,21 @@ export function serializePublicEvent(
         userHasVoted,
       };
     }),
-    guestParticipants: event.guestParticipants.map((guest: any) => ({
+    guestParticipants: event.guestParticipants.map((guest: PublicEventRaw["guestParticipants"][number]) => ({
       id: guest.id,
       nickname: guest.nickname,
       votesCount: guest._count?.votes ?? 0,
       createdAt: guest.createdAt.toISOString(),
     })),
-    dateProposals: (event.dateProposals ?? []).map((dp: any) => ({
+    dateProposals: (event.dateProposals ?? []).map((dp: PublicEventRaw["dateProposals"][number]) => ({
       id: dp.id,
       date: dp.date.toISOString(),
-      votes: dp.votes.map((v: any) => ({
+      votes: dp.votes.map((v: PublicEventRaw["dateProposals"][number]["votes"][number]) => ({
         id: v.id,
         availability: v.availability,
         user: v.user,
       })),
-      guestVotes: dp.guestVotes.map((v: any) => ({
+      guestVotes: dp.guestVotes.map((v: PublicEventRaw["dateProposals"][number]["guestVotes"][number]) => ({
         id: v.id,
         availability: v.availability,
         guest: v.guest,

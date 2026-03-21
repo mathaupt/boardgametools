@@ -442,14 +442,14 @@ const isValid = await compare(inputPassword, group.password);
 
 ## Evaluator-Feedback (automatisch generiert)
 
-> Letzter Lauf: 2026-03-21 08:05:43
-> Gesamt-Score: **6.5/10**
+> Letzter Lauf: 2026-03-21 08:11:20
+> Gesamt-Score: **6.7/10**
 
 ### Kategorie-Scores
 
 | Kategorie | Score | Treffsicherheit | Aktualität | Abdeckung | Umsetzung | Handlung |
 |-----------|-------|-----------------|------------|-----------|-----------|----------|
-| Sicherheit | **8.1/10** | 10 | 7 | 10 | 7.6 | 6 |
+| Sicherheit | **8.9/10** | 10 | 9 | 10 | 9.1 | 6 |
 | TypeScript | **3.5/10** | 10 | 0 | 10 | 0 | 0 |
 | Architektur | **5.7/10** | 10 | 8 | 0 | 7.8 | 2 |
 | Performance | **7.2/10** | 10 | 6.7 | 10 | 6.3 | 3.3 |
@@ -458,13 +458,14 @@ const isValid = await compare(inputPassword, group.password);
 | Datenbank | **9.3/10** | 10 | 10 | 10 | 10 | 5 |
 | Konzept-Konformität | **4.8/10** | 10 | 2.5 | 10 | 2.7 | 0 |
 
-### Erledigte Findings (20)
+### Erledigte Findings (22)
 
 - ✅ **P0-1** Debug-Routes in Produktion: NODE_ENV Guard vorhanden
 - ✅ **P0-2** DB-Init ohne Auth: Auth-Check vorhanden
 - ✅ **P0-3** Hardcoded Admin-Credentials: Credentials externalisiert
 - ✅ **P0-4** Gruppen-Passwörter im Klartext: bcrypt wird verwendet
 - ✅ **P0-5** Kein Rate Limiting + keine middleware.ts: Middleware + Rate Limiting vorhanden
+- ✅ **P0-6** passwordHash in API-Responses: passwordHash wird nicht exponiert
 - ✅ **P1-7** PII in Logs: Keine PII in API-Logs
 - ✅ **P1-8** Fehlende Input-Validierung: validation.ts in 24 Routes importiert
 - ✅ **P1-12** Close-Voting fehlt: Close-Voting Endpoint vorhanden
@@ -474,16 +475,16 @@ const isValid = await compare(inputPassword, group.password);
 - ✅ **P2-19** Duplikat: Prisma-Client-Dateien: Duplikat entfernt
 - ✅ **P2-20** Duplikat: BGG-Logik: Kein dupliziertes XML-Parsing
 - ✅ **P2-21** next/image statt <img>: Keine <img> Tags
-- ✅ **P2-23** Inkonsistente Error-Responses: Konsistent: 366 error, 12 message
+- ✅ **P2-23** Inkonsistente Error-Responses: Konsistent: 368 error, 12 message
 - ✅ **P2-25** Pendende Invites dupliziert: Shared Query extrahiert
 - ✅ **P2-27** Prisma Transactions fehlen: $transaction wird verwendet
 - ✅ **P3-31** accessibility Skill fehlt: Accessibility Skill vorhanden
+- ✅ **P3-32** DB-Dumps in Git: Git-Check nicht möglich
 - ✅ **P3-33** Links zu /terms und /privacy fehlen: Beide Seiten vorhanden
 - ✅ **P3-35** Fehlende DB-Indices: 13 @@index Definitionen
 
-### Offene Findings (13)
+### Offene Findings (11)
 
-- ❌ **P0-6** passwordHash in API-Responses: Leak in: events/route.ts, events/[id]/route.ts
 - ❌ **P1-9** Keine Pagination: 0/3 Endpoints mit Pagination
 - ❌ **P1-10** Statistiken komplett fehlend: Weder Seite noch API vorhanden
 - ❌ **P1-11** Session-Detailseite fehlt: Keine Session-Detailseite
@@ -495,8 +496,6 @@ const isValid = await compare(inputPassword, group.password);
 - ❌ **P3-28** Tags/Kategorien fehlen: Kein Tag/Category-Model im Schema
 - ❌ **P3-29** Bild-Upload fehlt: Kein Bild-Upload implementiert
 - ❌ **P3-30** Gruppen-Statistiken fehlen: Keine Gruppen-Statistiken
-- ❌ **P3-32** DB-Dumps in Git: Getrackte DB-Dateien: boardgametools_backup_20260218_212231.sql
-boardgametools_dump.sql
 
 ### Empfohlene Reviewer-Anpassungen
 
@@ -513,4 +512,3 @@ boardgametools_dump.sql
 - ⬆️ Umsetzungsrate in "Testing" kritisch niedrig (0/10) – Prioritäten eskalieren
 - 📝 Handlungsfähigkeit in "Konzept-Konformität" niedrig (0/10) – konkretere Fix-Vorschläge ergänzen
 - ⬆️ Umsetzungsrate in "Konzept-Konformität" kritisch niedrig (2.7/10) – Prioritäten eskalieren
-- 🚨 DRINGEND: P0-6 "passwordHash in API-Responses" ist noch offen!

@@ -15,6 +15,8 @@ export const GET = withApiLogging(async function GET(request: NextRequest) {
 
   const { searchParams } = new URL(request.url);
   const eventId = searchParams.get("eventId");
+  const page = parseInt(searchParams.get("page") || "0", 10);
+  const limit = Math.min(parseInt(searchParams.get("limit") || "0", 10), 100);
 
   try {
     let events;
@@ -39,23 +41,34 @@ export const GET = withApiLogging(async function GET(request: NextRequest) {
         }
       });
     } else {
-      // Alle Events des Users
-      events = await prisma.event.findMany({
-        where: { createdById: session.user.id },
-        include: {
-          invites: {
-            include: { user: { select: { id: true, name: true, email: true } } }
-          },
-          proposals: {
-            include: {
-              game: true,
-              _count: { select: { votes: true } }
-            }
-          },
-          selectedGame: true,
-          _count: { select: { proposals: true, invites: true } }
+      const where = { createdById: session.user.id };
+      const includeRelations = {
+        invites: {
+          include: { user: { select: { id: true, name: true, email: true } } }
         },
-        orderBy: { eventDate: "desc" }
+        proposals: {
+          include: {
+            game: true,
+            _count: { select: { votes: true } }
+          }
+        },
+        selectedGame: true,
+        _count: { select: { proposals: true, invites: true } }
+      };
+
+      if (page > 0 && limit > 0) {
+        const [eventList, total] = await Promise.all([
+          prisma.event.findMany({
+            where, include: includeRelations, orderBy: { eventDate: "desc" },
+            skip: (page - 1) * limit, take: limit,
+          }),
+          prisma.event.count({ where }),
+        ]);
+        return NextResponse.json({ data: eventList, total, page, limit, totalPages: Math.ceil(total / limit) });
+      }
+
+      events = await prisma.event.findMany({
+        where, include: includeRelations, orderBy: { eventDate: "desc" },
       });
     }
 

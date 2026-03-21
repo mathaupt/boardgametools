@@ -168,11 +168,13 @@ export function BarcodeScanner({
           // scan error (no barcode found in frame) - ignore
         }
       );
-    } catch (err: any) {
+    } catch (err: unknown) {
       setScanning(false);
-      if (err?.message?.includes("NotAllowed") || err?.name === "NotAllowedError") {
+      const message = err instanceof Error ? err.message : String(err);
+      const name = err instanceof Error ? err.name : "";
+      if (message.includes("NotAllowed") || name === "NotAllowedError") {
         setError("Kamera-Zugriff verweigert. Bitte erlaube den Kamera-Zugriff in den Browser-Einstellungen.");
-      } else if (err?.message?.includes("NotFound") || err?.name === "NotFoundError") {
+      } else if (message.includes("NotFound") || name === "NotFoundError") {
         setError("Keine Kamera gefunden. Du kannst den Barcode auch manuell eingeben.");
       } else {
         setError("Kamera konnte nicht gestartet werden. Versuche die manuelle Eingabe.");
@@ -268,8 +270,8 @@ export function BarcodeScanner({
           videoRef.current.srcObject = coverStreamRef.current;
         }
       });
-    } catch (err: any) {
-      if (err?.name === "NotAllowedError") {
+    } catch (err: unknown) {
+      if (err instanceof Error && err.name === "NotAllowedError") {
         setOcrError("Kamera-Zugriff verweigert. Bitte erlaube den Kamera-Zugriff.");
       } else {
         setOcrError("Kamera konnte nicht gestartet werden.");

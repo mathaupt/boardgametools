@@ -16,13 +16,55 @@ import {
   CheckCircle,
 } from "lucide-react";
 
+interface GroupVote {
+  id: string;
+  voterName: string;
+}
+
+interface GroupPollOption {
+  id: string;
+  text: string;
+  _count?: { votes: number };
+  votes?: GroupVote[];
+}
+
+interface GroupComment {
+  id: string;
+  content: string;
+  authorName: string;
+  createdAt: string;
+}
+
+interface GroupPoll {
+  id: string;
+  title: string;
+  description?: string;
+  status: string;
+  createdBy?: { name: string };
+  options: GroupPollOption[];
+  comments?: GroupComment[];
+}
+
+interface GroupMember {
+  id: string;
+  user: { name: string };
+}
+
+interface Group {
+  name: string;
+  description?: string;
+  members?: GroupMember[];
+  polls?: GroupPoll[];
+  comments?: GroupComment[];
+}
+
 interface PublicGroupPageProps {
   params: Promise<{ token: string }>;
 }
 
 export default function PublicGroupPage({ params }: PublicGroupPageProps) {
   const [token, setToken] = useState("");
-  const [group, setGroup] = useState<any>(null);
+  const [group, setGroup] = useState<Group | null>(null);
   const [requiresPassword, setRequiresPassword] = useState(false);
   const [password, setPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
@@ -255,7 +297,7 @@ export default function PublicGroupPage({ params }: PublicGroupPageProps) {
           </CardHeader>
           <CardContent>
             <div className="flex flex-wrap gap-2">
-              {group.members?.map((m: any) => (
+              {group.members?.map((m) => (
                 <span
                   key={m.id}
                   className="inline-flex items-center gap-1 bg-muted px-2 py-1 rounded text-sm"
@@ -268,14 +310,14 @@ export default function PublicGroupPage({ params }: PublicGroupPageProps) {
         </Card>
 
         {/* Polls */}
-        {group.polls?.map((poll: any) => {
+        {group.polls?.map((poll) => {
           const totalVotes = poll.options.reduce(
-            (sum: number, opt: any) => sum + (opt._count?.votes || opt.votes?.length || 0),
+            (sum: number, opt: GroupPollOption) => sum + (opt._count?.votes || opt.votes?.length || 0),
             0
           );
           const isOpen = poll.status === "open";
-          const myVote = poll.options.find((o: any) =>
-            o.votes?.some((v: any) => v.voterName === voterName.trim())
+          const myVote = poll.options.find((o) =>
+            o.votes?.some((v) => v.voterName === voterName.trim())
           )?.id;
 
           return (
@@ -295,11 +337,11 @@ export default function PublicGroupPage({ params }: PublicGroupPageProps) {
                 </p>
               </CardHeader>
               <CardContent className="space-y-2">
-                {poll.options.map((option: any) => {
+                {poll.options.map((option) => {
                   const voteCount = option._count?.votes || option.votes?.length || 0;
                   const pct = totalVotes > 0 ? Math.round((voteCount / totalVotes) * 100) : 0;
                   const isMyVote = myVote === option.id;
-                  const voterNames = option.votes?.map((v: any) => v.voterName).join(", ") || "";
+                  const voterNames = option.votes?.map((v) => v.voterName).join(", ") || "";
 
                   return (
                     <button
@@ -337,7 +379,7 @@ export default function PublicGroupPage({ params }: PublicGroupPageProps) {
                 {/* Poll Comments */}
                 {poll.comments?.length > 0 && (
                   <div className="mt-3 pt-3 border-t space-y-2">
-                    {poll.comments.map((c: any) => (
+                    {poll.comments.map((c) => (
                       <div key={c.id} className="p-2 rounded bg-muted/30 text-sm">
                         <span className="font-medium">{c.authorName}:</span>{" "}
                         <span className="text-muted-foreground">{c.content}</span>
@@ -403,7 +445,7 @@ export default function PublicGroupPage({ params }: PublicGroupPageProps) {
               </p>
             ) : (
               <div className="space-y-2">
-                {group.comments?.map((c: any) => (
+                {group.comments?.map((c) => (
                   <div key={c.id} className="p-3 rounded-lg border bg-muted/20">
                     <div className="flex items-center justify-between mb-1">
                       <span className="text-sm font-medium">{c.authorName}</span>
