@@ -24,12 +24,22 @@ interface Invite {
   status: "pending" | "accepted" | "declined";
 }
 
+interface EventData {
+  id: string;
+  title: string;
+  eventDate: string;
+  shareToken: string | null;
+  isPublic: boolean;
+  isCreator: boolean;
+  invites: Invite[];
+}
+
 export default function EventSharePage() {
   const params = useParams();
   const router = useRouter();
   const eventId = params.id as string;
   
-  const [event, setEvent] = useState<any>(null);
+  const [event, setEvent] = useState<EventData | null>(null);
   const [users, setUsers] = useState<User[]>([]);
   const [existingInvites, setExistingInvites] = useState<Invite[]>([]);
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);

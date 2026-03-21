@@ -11,6 +11,19 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.15.1",
+    date: "2026-03-21",
+    title: "Code-Qualität: Typsicherheit, Validierung & Review-Fixes",
+    description: "P2/P3-Findings umgesetzt: Alle any-Types durch typisierte Interfaces ersetzt, zentrale Validierungsfunktionen ergänzt, inline-Regex durch validateEmail ersetzt, SKILL.md aktualisiert.",
+    changes: [
+      { type: "improvement", text: "Alle 5 verbliebenen `any`-Types durch typisierte Interfaces ersetzt (BGGSearchResult, EventData, Html5Qrcode) (P2-18)" },
+      { type: "feature", text: "Zentrale Validierungsfunktionen: validateEmail, validateUrl, validateDate, validateEnum in validation.ts (P2-43)" },
+      { type: "improvement", text: "Inline-Email-Regex in register/route.ts durch zentrales validateEmail ersetzt" },
+      { type: "internal", text: "28 neue Unit Tests für validateEmail, validateUrl, validateDate, validateEnum (132 Tests gesamt)" },
+      { type: "internal", text: "SKILL.md: 12 weitere Findings als behoben markiert (P0-37/38, P1-10/11/41, P2-18/26/42/43, P3-32/34/36)" },
+    ],
+  },
+  {
     version: "0.15.0",
     date: "2026-03-21",
     title: "Statistiken, Session-Detailseite & Rate-Limit Verbesserungen",

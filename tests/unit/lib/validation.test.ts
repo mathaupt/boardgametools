@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { validateString, validateNumber, firstError } from "@/lib/validation";
+import { validateString, validateNumber, validateEmail, validateUrl, validateDate, validateEnum, firstError } from "@/lib/validation";
 
 describe("validateString", () => {
   it("returns error for missing required value", () => {
@@ -125,5 +125,133 @@ describe("firstError", () => {
 
   it("returns single error", () => {
     expect(firstError(null, null, "Only Error")).toBe("Only Error");
+  });
+});
+
+describe("validateEmail", () => {
+  it("returns error for missing required value", () => {
+    expect(validateEmail(undefined)).toBe("E-Mail ist erforderlich");
+    expect(validateEmail(null)).toBe("E-Mail ist erforderlich");
+    expect(validateEmail("")).toBe("E-Mail ist erforderlich");
+  });
+
+  it("returns null for missing optional value", () => {
+    expect(validateEmail(undefined, "E-Mail", { required: false })).toBeNull();
+    expect(validateEmail("", "E-Mail", { required: false })).toBeNull();
+  });
+
+  it("returns error for invalid email formats", () => {
+    expect(validateEmail("notanemail")).toBe("E-Mail ist keine gültige E-Mail-Adresse");
+    expect(validateEmail("missing@domain")).toBe("E-Mail ist keine gültige E-Mail-Adresse");
+    expect(validateEmail("@domain.com")).toBe("E-Mail ist keine gültige E-Mail-Adresse");
+    expect(validateEmail("spaces in@email.com")).toBe("E-Mail ist keine gültige E-Mail-Adresse");
+  });
+
+  it("accepts valid email formats", () => {
+    expect(validateEmail("user@example.com")).toBeNull();
+    expect(validateEmail("user.name@domain.co")).toBeNull();
+    expect(validateEmail("  USER@EXAMPLE.COM  ")).toBeNull();
+  });
+
+  it("rejects overly long emails", () => {
+    const longEmail = "a".repeat(250) + "@b.com";
+    expect(validateEmail(longEmail)).toBe("E-Mail ist zu lang");
+  });
+
+  it("uses custom field name", () => {
+    expect(validateEmail("", "Kontakt-Email")).toBe("Kontakt-Email ist erforderlich");
+  });
+});
+
+describe("validateUrl", () => {
+  it("returns error for missing required value", () => {
+    expect(validateUrl(undefined)).toBe("URL ist erforderlich");
+    expect(validateUrl("")).toBe("URL ist erforderlich");
+  });
+
+  it("returns null for missing optional value", () => {
+    expect(validateUrl(undefined, "URL", { required: false })).toBeNull();
+    expect(validateUrl("", "URL", { required: false })).toBeNull();
+  });
+
+  it("returns error for invalid URLs", () => {
+    expect(validateUrl("not-a-url")).toBe("URL ist keine gültige URL");
+    expect(validateUrl("just text")).toBe("URL ist keine gültige URL");
+  });
+
+  it("accepts valid URLs", () => {
+    expect(validateUrl("https://example.com")).toBeNull();
+    expect(validateUrl("http://localhost:3000")).toBeNull();
+    expect(validateUrl("https://boardgamegeek.com/boardgame/123")).toBeNull();
+  });
+
+  it("rejects disallowed protocols", () => {
+    expect(validateUrl("ftp://example.com")).toContain("muss mit");
+    expect(validateUrl("javascript:alert(1)")).toContain("muss mit");
+  });
+
+  it("allows custom protocols", () => {
+    expect(validateUrl("ftp://example.com", "URL", { protocols: ["ftp:"] })).toBeNull();
+  });
+});
+
+describe("validateDate", () => {
+  it("returns error for missing required value", () => {
+    expect(validateDate(undefined)).toBe("Datum ist erforderlich");
+    expect(validateDate(null)).toBe("Datum ist erforderlich");
+  });
+
+  it("returns null for missing optional value", () => {
+    expect(validateDate(undefined, "Datum", { required: false })).toBeNull();
+  });
+
+  it("returns error for invalid dates", () => {
+    expect(validateDate("not-a-date")).toBe("Datum ist kein gültiges Datum");
+    expect(validateDate("2024-13-01")).toBe("Datum ist kein gültiges Datum");
+  });
+
+  it("accepts valid date strings", () => {
+    expect(validateDate("2024-06-15")).toBeNull();
+    expect(validateDate("2024-01-01T12:00:00Z")).toBeNull();
+  });
+
+  it("accepts Date objects", () => {
+    expect(validateDate(new Date("2024-06-15"))).toBeNull();
+  });
+
+  it("validates min/max date boundaries", () => {
+    const min = new Date("2024-01-01");
+    const max = new Date("2024-12-31");
+    expect(validateDate("2023-12-31", "Datum", { min })).toContain("darf nicht vor");
+    expect(validateDate("2025-01-01", "Datum", { max })).toContain("darf nicht nach");
+    expect(validateDate("2024-06-15", "Datum", { min, max })).toBeNull();
+  });
+});
+
+describe("validateEnum", () => {
+  const allowed = ["draft", "voting", "closed"] as const;
+
+  it("returns error for missing required value", () => {
+    expect(validateEnum(undefined, "Status", allowed)).toBe("Status ist erforderlich");
+    expect(validateEnum("", "Status", allowed)).toBe("Status ist erforderlich");
+  });
+
+  it("returns null for missing optional value", () => {
+    expect(validateEnum(undefined, "Status", allowed, { required: false })).toBeNull();
+  });
+
+  it("returns error for invalid enum value", () => {
+    expect(validateEnum("invalid", "Status", allowed)).toContain("muss einer der folgenden Werte sein");
+    expect(validateEnum("DRAFT", "Status", allowed)).toContain("draft, voting, closed");
+  });
+
+  it("accepts valid enum values", () => {
+    expect(validateEnum("draft", "Status", allowed)).toBeNull();
+    expect(validateEnum("voting", "Status", allowed)).toBeNull();
+    expect(validateEnum("closed", "Status", allowed)).toBeNull();
+  });
+
+  it("returns error for non-string types", () => {
+    expect(validateEnum(123, "Status", allowed)).toBe("Status muss ein Text sein");
   });
 });

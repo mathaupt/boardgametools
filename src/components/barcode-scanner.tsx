@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { CoverScanTab } from "@/components/cover-scan-tab";
 import { BarcodeResultsPanel } from "@/components/barcode-results-panel";
+import type { Html5Qrcode } from "html5-qrcode";
 
 interface BarcodeLookupResponse {
   source: "local" | "upcitemdb" | "not_found";
@@ -62,7 +63,7 @@ export function BarcodeScanner({
   const [error, setError] = useState<string | null>(null);
   const [scannedEan, setScannedEan] = useState<string | null>(null);
   const scannerRef = useRef<HTMLDivElement>(null);
-  const html5QrcodeRef = useRef<any>(null);
+  const html5QrcodeRef = useRef<Html5Qrcode | null>(null);
 
   const stopScanner = useCallback(async () => {
     if (html5QrcodeRef.current) {

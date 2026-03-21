@@ -3,7 +3,7 @@ import { hash } from "bcryptjs";
 import prisma from "@/lib/db";
 import { withApiLogging } from "@/lib/api-logger";
 import { checkRateLimit, rateLimitResponse } from "@/lib/rate-limit";
-import { validateString, firstError } from "@/lib/validation";
+import { validateString, validateEmail, firstError } from "@/lib/validation";
 
 export const POST = withApiLogging(async function POST(request: NextRequest) {
   try {
@@ -16,33 +16,11 @@ export const POST = withApiLogging(async function POST(request: NextRequest) {
     const lengthError = firstError(
       validateString(name, "name", { min: 1, max: 100 }),
       validateString(password, "password", { min: 8, max: 100 }),
-      validateString(email, "email", { max: 254 })
+      validateEmail(email)
     );
     if (lengthError) return NextResponse.json({ error: lengthError }, { status: 400 });
 
-    if (!email || !password || !name) {
-      return NextResponse.json(
-        { error: "Email, password and name are required" },
-        { status: 400 }
-      );
-    }
-
-    // Validate email format and normalize
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const normalizedEmail = email.trim().toLowerCase();
-    if (!emailRegex.test(normalizedEmail)) {
-      return NextResponse.json(
-        { error: "Invalid email format" },
-        { status: 400 }
-      );
-    }
-
-    if (password.length < 8) {
-      return NextResponse.json(
-        { error: "Password must be at least 8 characters" },
-        { status: 400 }
-      );
-    }
+    const normalizedEmail = (email as string).trim().toLowerCase();
 
     const existingUser = await prisma.user.findUnique({
       where: { email: normalizedEmail },

@@ -28,12 +28,18 @@ interface UserOption {
   email: string;
 }
 
+interface EventData {
+  title: string;
+  eventDate: string;
+  invites: Invite[];
+}
+
 export default function EventInvitePage() {
   const params = useParams();
   const router = useRouter();
   const eventId = params.id as string;
   
-  const [event, setEvent] = useState<any>(null);
+  const [event, setEvent] = useState<EventData | null>(null);
   const [invites, setInvites] = useState<Invite[]>([]);
   const [newEmail, setNewEmail] = useState("");
   const [users, setUsers] = useState<UserOption[]>([]);

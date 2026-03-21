@@ -10,6 +10,14 @@ import { ProposalWithDetails, EventResponse } from "./voting-types";
 import ProposalRankingList from "./proposal-ranking-list";
 import GameProposalPanel from "./game-proposal-panel";
 
+interface BGGSearchResult {
+  bggId: string;
+  name: string;
+  yearPublished: string;
+  type: string;
+  imageUrl?: string;
+}
+
 export default function EventVotingPage() {
   const params = useParams();
   const router = useRouter();
@@ -23,7 +31,7 @@ export default function EventVotingPage() {
   const [voting, setVoting] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [collectionSearch, setCollectionSearch] = useState("");
-  const [bggResults, setBggResults] = useState<any[]>([]);
+  const [bggResults, setBggResults] = useState<BGGSearchResult[]>([]);
   const [bggLoading, setBggLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<"collection" | "bgg">("collection");
   const [deletingProposal, setDeletingProposal] = useState<string | null>(null);

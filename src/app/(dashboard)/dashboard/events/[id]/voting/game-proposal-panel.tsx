@@ -7,6 +7,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Plus, Search, ExternalLink, Gamepad2 } from "lucide-react";
 
+interface BGGSearchResult {
+  bggId: string;
+  name: string;
+  yearPublished: string;
+  type: string;
+  imageUrl?: string;
+}
+
 interface GameProposalPanelProps {
   availableGames: Game[];
   collectionSearch: string;
@@ -15,7 +23,7 @@ interface GameProposalPanelProps {
   onTabChange: (tab: "collection" | "bgg") => void;
   searchQuery: string;
   onSearchQueryChange: (val: string) => void;
-  bggResults: any[];
+  bggResults: BGGSearchResult[];
   bggLoading: boolean;
   onAddProposal: (gameId: string) => void;
   onBggSearch: () => void;
