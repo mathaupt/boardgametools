@@ -2,31 +2,13 @@
 
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
-import Image from "next/image";
-import { Game, Event, GameProposal, User } from "@prisma/client";
-import { Button } from "@/components/ui/button";
+import { Game } from "@prisma/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { ArrowLeft, Plus, Users, Star, Trophy, Vote, X, Search, ExternalLink, Gamepad2, Trash2 } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
-
-interface ProposalWithDetails extends GameProposal {
-  game: Game;
-  proposedBy: User | { id: string; name: string };
-  _count: { votes: number };
-  userVoted?: boolean;
-  userHasVoted?: boolean;
-}
-
-interface EventResponse extends Event {
-  proposals: ProposalWithDetails[];
-  invites: Array<{ id: string; userId: string; user: User; status: string }>;
-  createdBy: User;
-  selectedGame: Game | null;
-  currentUserId: string;
-  isCreator: boolean;
-}
+import { ProposalWithDetails, EventResponse } from "./voting-types";
+import ProposalRankingList from "./proposal-ranking-list";
+import GameProposalPanel from "./game-proposal-panel";
 
 export default function EventVotingPage() {
   const params = useParams();
@@ -335,10 +317,6 @@ export default function EventVotingPage() {
     !proposals.some(p => p.gameId === game.id)
   );
 
-  const filteredCollection = availableGames.filter(game =>
-    game.name.toLowerCase().includes(collectionSearch.trim().toLowerCase())
-  );
-
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -374,318 +352,33 @@ export default function EventVotingPage() {
 
       {/* Voting Dashboard */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Rangliste */}
         <div className="lg:col-span-2 space-y-4">
-          <h2 className="text-xl font-bold flex items-center gap-2">
-            <Trophy className="h-5 w-5 text-warning" />
-            Voting-Rangliste
-          </h2>
-          
-          {proposals.length === 0 ? (
-            <Card>
-              <CardContent className="text-center py-8">
-                <div className="text-4xl mb-4">🗳️</div>
-                <h3 className="font-semibold mb-2">Noch keine Vorschläge</h3>
-                <p className="text-muted-foreground mb-4">
-                  Füge Spiele hinzu, damit abgestimmt werden kann.
-                </p>
-              </CardContent>
-            </Card>
-          ) : (
-            proposals.map((proposal, index) => (
-              <Card key={proposal.id} className="relative">
-                <CardHeader>
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        {/* Game Image */}
-                        <div className="flex-shrink-0">
-                          {proposal.game.imageUrl ? (
-                            <Image 
-                              src={proposal.game.imageUrl} 
-                              alt={proposal.game.name}
-                              width={48}
-                              height={48}
-                              className="rounded-lg object-cover border border-border"
-                            />
-                          ) : (
-                            <div className="w-12 h-12 rounded-lg bg-muted border border-border flex items-center justify-center">
-                              <Gamepad2 className="h-6 w-6 text-muted-foreground" />
-                            </div>
-                          )}
-                        </div>
-                        <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-primary-foreground ${
-                          index === 0 ? 'bg-warning' : 
-                          index === 1 ? 'bg-muted-foreground' : 
-                          index === 2 ? 'bg-accent' : 'bg-muted'
-                        }`}>
-                          {index + 1}
-                        </div>
-                        <CardTitle className="text-lg">{proposal.game.name}</CardTitle>
-                      </div>
-                      
-                      {/* Spiel-Details */}
-                      <div className="flex flex-wrap gap-2 mb-3">
-                        <Badge variant="outline" className="flex items-center gap-1">
-                          <Users className="h-3 w-3" />
-                          {proposal.game.minPlayers}-{proposal.game.maxPlayers} Spieler
-                        </Badge>
-                        
-                        {proposal.game.playTimeMinutes && (
-                          <Badge variant="outline" className="flex items-center gap-1">
-                            ⏱️ {proposal.game.playTimeMinutes} Min.
-                          </Badge>
-                        )}
-                        
-                        {proposal.game.complexity && (
-                          <Badge variant="outline" className="flex items-center gap-1">
-                            <Star className="h-3 w-3" />
-                            {"★".repeat(proposal.game.complexity)}{"☆".repeat(5 - proposal.game.complexity)}
-                          </Badge>
-                        )}
-                      </div>
-                      
-                      <CardDescription>
-                        Vorgeschlagen von {proposal.proposedBy.name}
-                      </CardDescription>
-                    </div>
-                    
-                    <div className="flex items-center gap-2">
-                      <div className="text-center">
-                        <div className="text-2xl font-bold">{proposal._count.votes}</div>
-                        <div className="text-sm text-muted-foreground">Votes</div>
-                      </div>
-                      {(event?.isCreator || proposal.proposedById === event?.currentUserId) && (
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleDeleteProposal(proposal.id)}
-                          disabled={deletingProposal === proposal.id}
-                          className="text-muted-foreground hover:text-destructive"
-                          aria-label="Vorschlag löschen"
-                        >
-                          {deletingProposal === proposal.id ? (
-                            <span className="text-xs">...</span>
-                          ) : (
-                            <Trash2 className="h-4 w-4" />
-                          )}
-                        </Button>
-                      )}
-                    </div>
-                  </div>
-                </CardHeader>
-                
-                <CardContent>
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                    {proposal.game.description && (
-                      <p className="text-sm text-muted-foreground flex-1 mr-4">
-                        {proposal.game.description}
-                      </p>
-                    )}
-                    
-                    <Button
-                      onClick={() => proposal.userVoted ? handleRemoveVote(proposal.id) : handleVote(proposal.id)}
-                      disabled={voting === proposal.id}
-                      variant={proposal.userVoted ? "outline" : "default"}
-                      className="flex items-center gap-2"
-                    >
-                      {proposal.userVoted ? (
-                        <>
-                          <X className="h-4 w-4" />
-                          Vote entfernen
-                        </>
-                      ) : (
-                        <>
-                          <Vote className="h-4 w-4" />
-                          {voting === proposal.id ? 'Wird abgestimmt...' : 'Vote'}
-                        </>
-                      )}
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))
-          )}
+          <ProposalRankingList
+            proposals={proposals}
+            voting={voting}
+            deletingProposal={deletingProposal}
+            eventIsCreator={event?.isCreator ?? false}
+            currentUserId={event?.currentUserId ?? ""}
+            onVote={handleVote}
+            onRemoveVote={handleRemoveVote}
+            onDeleteProposal={handleDeleteProposal}
+          />
         </div>
-
-        {/* Spiele hinzufügen */}
         <div className="space-y-4">
-          <h2 className="text-xl font-bold flex items-center gap-2">
-            <Plus className="h-5 w-5" />
-            Spiel vorschlagen
-          </h2>
-          
-          <Card>
-            <CardHeader>
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
-                <CardTitle className="text-lg">Spiel auswählen</CardTitle>
-                <div className="flex gap-2">
-                  <Button
-                    variant={activeTab === "collection" ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => setActiveTab("collection")}
-                  >
-                    Meine Sammlung
-                  </Button>
-                  <Button
-                    variant={activeTab === "bgg" ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => setActiveTab("bgg")}
-                  >
-                    BGG Suche
-                  </Button>
-                </div>
-              </div>
-              <CardDescription>
-                {activeTab === "collection" 
-                  ? "Wähle ein Spiel aus deiner Sammlung" 
-                  : "Suche und importiere Spiele von BoardGameGeek"
-                }
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {activeTab === "collection" ? (
-                // Eigene Sammlung
-                <>
-                  {availableGames.length === 0 ? (
-                    <p className="text-muted-foreground text-center py-4">
-                      Alle Spiele wurden bereits vorgeschlagen
-                    </p>
-                  ) : (
-                    <>
-                      <div className="flex gap-2">
-                        <Input
-                          placeholder="Spiel suchen..."
-                          value={collectionSearch}
-                          onChange={(e) => setCollectionSearch(e.target.value)}
-                        />
-                      </div>
-                      {filteredCollection.length === 0 ? (
-                        <p className="text-muted-foreground text-center py-4">
-                          {collectionSearch ? `Keine Treffer für "${collectionSearch}"` : "Keine Spiele verfügbar"}
-                        </p>
-                      ) : (
-                        filteredCollection.map((game) => (
-                          <div key={game.id} className="flex items-center justify-between p-3 border rounded-lg">
-                            <div className="flex items-center gap-3">
-                              {/* Game Image */}
-                              <div className="flex-shrink-0">
-                                {game.imageUrl ? (
-                                  <Image 
-                                    src={game.imageUrl} 
-                                    alt={game.name}
-                                    width={40}
-                                    height={40}
-                                    className="rounded-lg object-cover border border-border"
-                                  />
-                                ) : (
-                                  <div className="w-10 h-10 rounded-lg bg-muted border border-border flex items-center justify-center">
-                                    <Gamepad2 className="h-5 w-5 text-muted-foreground" />
-                                  </div>
-                                )}
-                              </div>
-                              <div>
-                                <div className="font-medium">{game.name}</div>
-                                <div className="text-sm text-muted-foreground">
-                                  {game.minPlayers}-{game.maxPlayers} Spieler
-                                  {game.complexity && ` • ${game.complexity}/5 Komplexität`}
-                                </div>
-                              </div>
-                            </div>
-                            <Button
-                              size="sm"
-                              onClick={() => handleAddProposal(game.id)}
-                              className="flex items-center gap-1"
-                            >
-                              <Plus className="h-3 w-3" />
-                              Vorschlagen
-                            </Button>
-                          </div>
-                        ))
-                      )}
-                    </>
-                  )}
-                </>
-              ) : (
-                // BGG Suche
-                <>
-                  <div className="flex gap-2">
-                    <Input
-                      placeholder="z.B. Catan, Monopoly, Carcassonne..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      onKeyPress={(e) => e.key === 'Enter' && handleBggSearch()}
-                    />
-                    <Button onClick={handleBggSearch} disabled={bggLoading}>
-                      <Search className="h-4 w-4 mr-2" />
-                      {bggLoading ? 'Suche...' : 'Suchen'}
-                    </Button>
-                  </div>
-
-                  {bggResults.length > 0 && (
-                    <div className="space-y-2 max-h-96 overflow-y-auto">
-                      <p className="text-sm text-muted-foreground mb-2">
-                        {bggResults.length} Spiele gefunden
-                      </p>
-                      {bggResults.map((game) => (
-                        <div key={game.bggId} className="flex items-center justify-between p-3 border rounded-lg">
-                          <div className="flex items-center gap-3 flex-1">
-                            {/* Game Image */}
-                            <div className="flex-shrink-0">
-                              {game.imageUrl ? (
-                                <Image 
-                                  src={game.imageUrl} 
-                                  alt={game.name}
-                                  width={40}
-                                  height={40}
-                                  className="rounded-lg object-cover border border-border"
-                                />
-                              ) : (
-                                <div className="w-10 h-10 rounded-lg bg-muted border border-border flex items-center justify-center">
-                                  <Gamepad2 className="h-5 w-5 text-muted-foreground" />
-                                </div>
-                              )}
-                            </div>
-                            <div className="flex-1">
-                              <div className="font-medium">{game.name}</div>
-                              {game.yearPublished && (
-                                <div className="text-sm text-muted-foreground">{game.yearPublished}</div>
-                              )}
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleBggImport(game.bggId)}
-                              className="flex items-center gap-1"
-                            >
-                              <Plus className="h-3 w-3" />
-                              Importieren
-                            </Button>
-                            <a
-                              href={`https://boardgamegeek.com/boardgame/${game.bggId}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-primary hover:text-primary/80"
-                            >
-                              <ExternalLink className="h-4 w-4" />
-                            </a>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-
-                  {searchQuery && bggResults.length === 0 && !bggLoading && (
-                    <p className="text-muted-foreground text-center py-4">
-                      Keine Spiele gefunden für "{searchQuery}"
-                    </p>
-                  )}
-                </>
-              )}
-            </CardContent>
-          </Card>
+          <GameProposalPanel
+            availableGames={availableGames}
+            collectionSearch={collectionSearch}
+            onCollectionSearchChange={setCollectionSearch}
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+            searchQuery={searchQuery}
+            onSearchQueryChange={setSearchQuery}
+            bggResults={bggResults}
+            bggLoading={bggLoading}
+            onAddProposal={handleAddProposal}
+            onBggSearch={handleBggSearch}
+            onBggImport={handleBggImport}
+          />
         </div>
       </div>
     </div>

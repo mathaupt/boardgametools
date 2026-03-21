@@ -1,49 +1,18 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   Users,
   Vote,
-  MessageSquare,
   Lock,
-  Check,
-  Plus,
-  CheckCircle,
 } from "lucide-react";
-
-interface GroupVote {
-  id: string;
-  voterName: string;
-}
-
-interface GroupPollOption {
-  id: string;
-  text: string;
-  _count?: { votes: number };
-  votes?: GroupVote[];
-}
-
-interface GroupComment {
-  id: string;
-  content: string;
-  authorName: string;
-  createdAt: string;
-}
-
-interface GroupPoll {
-  id: string;
-  title: string;
-  description?: string;
-  status: string;
-  createdBy?: { name: string };
-  options: GroupPollOption[];
-  comments?: GroupComment[];
-}
+import type { GroupPoll, GroupComment } from "./public-group-types";
+import PublicPollCard from "./public-poll-card";
+import PublicDiscussionCard from "./public-discussion-card";
 
 interface GroupMember {
   id: string;
@@ -227,19 +196,19 @@ export default function PublicGroupPage({ params }: PublicGroupPageProps) {
               <div className="w-10 h-10 bg-primary/10 rounded flex items-center justify-center">
                 👥
               </div>
-              {group.name}
+              {group!.name}
             </CardTitle>
-            {group.description && (
-              <p className="text-muted-foreground">{group.description}</p>
+            {group!.description && (
+              <p className="text-muted-foreground">{group!.description}</p>
             )}
             <div className="flex items-center gap-4 text-sm text-muted-foreground mt-2">
               <div className="flex items-center gap-1">
                 <Users className="h-4 w-4" />
-                {group.members?.length || 0} Mitglieder
+                {group!.members?.length || 0} Mitglieder
               </div>
               <div className="flex items-center gap-1">
                 <Vote className="h-4 w-4" />
-                {group.polls?.length || 0} Abstimmungen
+                {group!.polls?.length || 0} Abstimmungen
               </div>
             </div>
           </CardHeader>
@@ -297,7 +266,7 @@ export default function PublicGroupPage({ params }: PublicGroupPageProps) {
           </CardHeader>
           <CardContent>
             <div className="flex flex-wrap gap-2">
-              {group.members?.map((m) => (
+              {group!.members?.map((m) => (
                 <span
                   key={m.id}
                   className="inline-flex items-center gap-1 bg-muted px-2 py-1 rounded text-sm"
@@ -310,161 +279,29 @@ export default function PublicGroupPage({ params }: PublicGroupPageProps) {
         </Card>
 
         {/* Polls */}
-        {group.polls?.map((poll) => {
-          const totalVotes = poll.options.reduce(
-            (sum: number, opt: GroupPollOption) => sum + (opt._count?.votes || opt.votes?.length || 0),
-            0
-          );
-          const isOpen = poll.status === "open";
-          const myVote = poll.options.find((o) =>
-            o.votes?.some((v) => v.voterName === voterName.trim())
-          )?.id;
-
-          return (
-            <Card key={poll.id} className={!isOpen ? "opacity-75" : ""}>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-base flex items-center gap-2">
-                  {poll.title}
-                  <Badge variant={isOpen ? "default" : "secondary"}>
-                    {isOpen ? "Offen" : "Geschlossen"}
-                  </Badge>
-                </CardTitle>
-                {poll.description && (
-                  <p className="text-sm text-muted-foreground">{poll.description}</p>
-                )}
-                <p className="text-xs text-muted-foreground">
-                  von {poll.createdBy?.name} · {totalVotes} Stimme{totalVotes !== 1 ? "n" : ""}
-                </p>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                {poll.options.map((option) => {
-                  const voteCount = option._count?.votes || option.votes?.length || 0;
-                  const pct = totalVotes > 0 ? Math.round((voteCount / totalVotes) * 100) : 0;
-                  const isMyVote = myVote === option.id;
-                  const voterNames = option.votes?.map((v) => v.voterName).join(", ") || "";
-
-                  return (
-                    <button
-                      key={option.id}
-                      onClick={() => isOpen && nameSet && handleVote(poll.id, option.id)}
-                      disabled={!isOpen || !nameSet || loading === `vote-${poll.id}`}
-                      className={`w-full text-left p-3 rounded-lg border transition-colors ${
-                        isMyVote
-                          ? "border-primary bg-primary/5"
-                          : "border-border hover:border-primary/50"
-                      } ${!isOpen || !nameSet ? "cursor-default" : "cursor-pointer"}`}
-                    >
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="text-sm font-medium flex items-center gap-2">
-                          {option.text}
-                          {isMyVote && <Check className="h-3 w-3 text-primary" />}
-                        </span>
-                        <span className="text-xs text-muted-foreground">
-                          {voteCount} ({pct}%)
-                        </span>
-                      </div>
-                      <div className="w-full bg-muted rounded-full h-2">
-                        <div
-                          className="bg-primary rounded-full h-2 transition-all"
-                          style={{ width: `${pct}%` }}
-                        />
-                      </div>
-                      {voterNames && (
-                        <p className="text-xs text-muted-foreground mt-1">{voterNames}</p>
-                      )}
-                    </button>
-                  );
-                })}
-
-                {/* Poll Comments */}
-                {poll.comments?.length > 0 && (
-                  <div className="mt-3 pt-3 border-t space-y-2">
-                    {poll.comments.map((c) => (
-                      <div key={c.id} className="p-2 rounded bg-muted/30 text-sm">
-                        <span className="font-medium">{c.authorName}:</span>{" "}
-                        <span className="text-muted-foreground">{c.content}</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {nameSet && (
-                  <div className="flex gap-2 mt-2">
-                    <Input
-                      placeholder="Kommentar..."
-                      value={pollComments[poll.id] || ""}
-                      onChange={(e) =>
-                        setPollComments((prev) => ({ ...prev, [poll.id]: e.target.value }))
-                      }
-                      onKeyDown={(e) => e.key === "Enter" && handleComment(poll.id)}
-                      className="text-sm"
-                    />
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => handleComment(poll.id)}
-                      disabled={loading === `comment-${poll.id}`}
-                    >
-                      <MessageSquare className="h-3 w-3" />
-                    </Button>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          );
-        })}
+        {group!.polls?.map((poll) => (
+          <PublicPollCard
+            key={poll.id}
+            poll={poll}
+            voterName={voterName}
+            nameSet={nameSet}
+            loading={loading}
+            pollComment={pollComments[poll.id] || ""}
+            onPollCommentChange={(val) => setPollComments((prev) => ({ ...prev, [poll.id]: val }))}
+            onVote={handleVote}
+            onComment={handleComment}
+          />
+        ))}
 
         {/* General Discussion */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-base">
-              <MessageSquare className="h-4 w-4" />
-              Diskussion
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {nameSet && (
-              <div className="flex gap-2">
-                <Input
-                  placeholder="Schreibe einen Kommentar..."
-                  value={comment}
-                  onChange={(e) => setComment(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && handleComment()}
-                />
-                <Button
-                  onClick={() => handleComment()}
-                  disabled={loading === "comment" || !comment.trim()}
-                >
-                  Senden
-                </Button>
-              </div>
-            )}
-            {group.comments?.length === 0 ? (
-              <p className="text-sm text-muted-foreground text-center py-4">
-                Noch keine Kommentare.
-              </p>
-            ) : (
-              <div className="space-y-2">
-                {group.comments?.map((c) => (
-                  <div key={c.id} className="p-3 rounded-lg border bg-muted/20">
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-sm font-medium">{c.authorName}</span>
-                      <span className="text-xs text-muted-foreground">
-                        {new Date(c.createdAt).toLocaleDateString("de-DE", {
-                          day: "2-digit",
-                          month: "2-digit",
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
-                      </span>
-                    </div>
-                    <p className="text-sm text-muted-foreground">{c.content}</p>
-                  </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+        <PublicDiscussionCard
+          nameSet={nameSet}
+          loading={loading}
+          comment={comment}
+          onCommentChange={setComment}
+          onComment={() => handleComment()}
+          comments={group!.comments || []}
+        />
       </div>
     </div>
   );

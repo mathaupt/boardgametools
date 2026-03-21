@@ -431,7 +431,7 @@ const isValid = await compare(inputPassword, group.password);
 
 ## Evaluator-Feedback (automatisch generiert)
 
-> Letzter Lauf: 2026-03-21 09:16:12
+> Letzter Lauf: 2026-03-21 09:20:08
 > Gesamt-Score: **8.1/10**
 
 ### Kategorie-Scores
@@ -475,7 +475,7 @@ const isValid = await compare(inputPassword, group.password);
 - ✅ **P3-31** accessibility Skill fehlt: Accessibility Skill vorhanden
 - ✅ **P3-32** DB-Dumps in Git: Git-Check nicht möglich
 - ✅ **P3-33** Links zu /terms und /privacy fehlen: Beide Seiten vorhanden
-- ✅ **P3-35** Fehlende DB-Indices: 13 @@index Definitionen
+- ✅ **P3-35** Fehlende DB-Indices: 14 @@index Definitionen
 
 ### Offene Findings (6)
 

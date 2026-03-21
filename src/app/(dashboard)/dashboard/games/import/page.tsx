@@ -2,24 +2,14 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { ArrowLeft, Search, Loader2, Users, Clock, Star, ExternalLink, Library, CheckSquare, ScanBarcode } from "lucide-react";
+import { ArrowLeft, Search, Loader2, ScanBarcode } from "lucide-react";
 import { BarcodeScanner } from "@/components/barcode-scanner";
+import { CollectionImportDialog } from "./collection-import-dialog";
+import { GamePreviewCard } from "./game-preview-card";
 
 interface BGGSearchResult {
   bggId: string;
@@ -43,18 +33,6 @@ interface BGGGameData {
   rating: number | null;
 }
 
-interface BGGCollectionItem {
-  bggId: string;
-  name: string;
-  yearPublished: number | null;
-  thumbnailUrl: string | null;
-  minPlayers: number | null;
-  maxPlayers: number | null;
-  playTimeMinutes: number | null;
-  rating: number | null;
-  numPlays: number;
-}
-
 export default function ImportBGGPage() {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
@@ -70,21 +48,8 @@ export default function ImportBGGPage() {
   const [isLoadingExistingGames, setIsLoadingExistingGames] = useState(true);
   const [existingGamesError, setExistingGamesError] = useState<string | null>(null);
 
-  // Collection import state
-  const [collectionDialogOpen, setCollectionDialogOpen] = useState(false);
-  const [bggUsername, setBggUsername] = useState("");
-  const [collection, setCollection] = useState<BGGCollectionItem[]>([]);
-  const [selectedBggIds, setSelectedBggIds] = useState<Set<string>>(new Set());
-  const [isLoadingCollection, setIsLoadingCollection] = useState(false);
-  const [collectionError, setCollectionError] = useState<string | null>(null);
-  const [isBulkImporting, setIsBulkImporting] = useState(false);
-  const [bulkImportResult, setBulkImportResult] = useState<{ imported: number; skipped: number } | null>(null);
   const [barcodeScannerOpen, setBarcodeScannerOpen] = useState(false);
   const [barcodeEan, setBarcodeEan] = useState<string | null>(null);
-  const handleImageError = (event: React.SyntheticEvent<HTMLImageElement>) => {
-    event.currentTarget.onerror = null;
-    event.currentTarget.src = "/window.svg";
-  };
 
   // Load existing collection once so we can block duplicate imports by exact BGG ID
   useEffect(() => {
@@ -218,116 +183,12 @@ export default function ImportBGGPage() {
     await loadGameDetails(bggId);
   }
 
-  async function handleLoadCollection(e: React.FormEvent) {
-    e.preventDefault();
-    if (!bggUsername.trim()) return;
-
-    setIsLoadingCollection(true);
-    setCollectionError(null);
-    setCollection([]);
-    setSelectedBggIds(new Set());
-    setBulkImportResult(null);
-
-    try {
-      const response = await fetch(`/api/bgg/collection?username=${encodeURIComponent(bggUsername.trim())}`);
-      const data = await response.json();
-
-      if (!response.ok) {
-        setCollectionError(data.error || "Sammlung konnte nicht geladen werden");
-        return;
-      }
-
-      const items: BGGCollectionItem[] = data.collection;
-      setCollection(items);
-      const selectableIds = items
-        .map((g) => g.bggId)
-        .filter((id): id is string => Boolean(id) && !existingBggIds.has(id));
-      setSelectedBggIds(new Set(selectableIds));
-    } catch {
-      setCollectionError("Verbindungsfehler – bitte erneut versuchen");
-    } finally {
-      setIsLoadingCollection(false);
-    }
-  }
-
-  function toggleSelectAll() {
-    const selectableIds = collection
-      .map((g) => g.bggId)
-      .filter((id): id is string => Boolean(id) && !existingBggIds.has(id));
-
-    if (selectedBggIds.size === selectableIds.length) {
-      setSelectedBggIds(new Set());
-    } else {
-      setSelectedBggIds(new Set(selectableIds));
-    }
-  }
-
-  function toggleGame(bggId: string) {
-    if (!bggId || existingBggIds.has(bggId)) {
-      return;
-    }
-    setSelectedBggIds((prev) => {
+  function handleCollectionImported(newIds: string[]) {
+    setExistingBggIds((prev) => {
       const next = new Set(prev);
-      if (next.has(bggId)) {
-        next.delete(bggId);
-      } else {
-        next.add(bggId);
-      }
+      newIds.forEach((id) => next.add(id));
       return next;
     });
-  }
-
-  async function handleBulkImport() {
-    if (selectedBggIds.size === 0) return;
-
-    setIsBulkImporting(true);
-    setCollectionError(null);
-    setBulkImportResult(null);
-
-    let imported = 0;
-    let skipped = 0;
-
-    const newlyImportedIds: string[] = [];
-    for (const bggId of Array.from(selectedBggIds)) {
-      if (!bggId) {
-        continue;
-      }
-
-      if (existingBggIds.has(bggId)) {
-        skipped++;
-        continue;
-      }
-
-      try {
-        const response = await fetch("/api/games/import-bgg", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ bggId }),
-        });
-        if (response.ok) {
-          imported++;
-          newlyImportedIds.push(bggId);
-        } else if (response.status === 409) {
-          skipped++;
-          newlyImportedIds.push(bggId);
-        } else {
-          skipped++;
-        }
-      } catch {
-        skipped++;
-      }
-    }
-
-    setIsBulkImporting(false);
-    setBulkImportResult({ imported, skipped });
-
-    if (newlyImportedIds.length > 0) {
-      setExistingBggIds((prev) => {
-        const next = new Set(prev);
-        newlyImportedIds.forEach((id) => next.add(id));
-        return next;
-      });
-    }
   }
 
   return (
@@ -352,181 +213,10 @@ export default function ImportBGGPage() {
             <span className="hidden sm:inline">Barcode</span>
           </Button>
 
-          {/* Collection Import Dialog */}
-          <Dialog open={collectionDialogOpen} onOpenChange={(open) => {
-          setCollectionDialogOpen(open);
-          if (!open) {
-            setBulkImportResult(null);
-            setCollectionError(null);
-          }
-        }}>
-          <DialogTrigger asChild>
-            <Button variant="outline" className="flex items-center gap-2">
-              <Library className="h-4 w-4 sm:mr-0" />
-              <span className="hidden sm:inline">Gesamte Sammlung importieren</span>
-              <span className="sm:hidden">Sammlung</span>
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-2xl max-h-[85vh] flex flex-col">
-            <DialogHeader>
-              <DialogTitle>BGG-Sammlung importieren</DialogTitle>
-              <DialogDescription>
-                Gib deinen BGG-Benutzernamen ein, um deine gesamte Sammlung zu laden und auszuwählen, welche Spiele du importieren möchtest.
-              </DialogDescription>
-            </DialogHeader>
-
-            <div className="flex flex-col gap-4 flex-1 overflow-hidden">
-              {/* Username form */}
-              <form onSubmit={handleLoadCollection} className="flex gap-2">
-                <Input
-                  placeholder="BGG-Benutzername (z.B. Moritz42)"
-                  value={bggUsername}
-                  onChange={(e) => setBggUsername(e.target.value)}
-                  disabled={isLoadingCollection}
-                />
-                <Button type="submit" disabled={isLoadingCollection || !bggUsername.trim()}>
-                  {isLoadingCollection ? (
-                    <>
-                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                      Laden...
-                    </>
-                  ) : (
-                    <>
-                      <Search className="h-4 w-4 mr-2" />
-                      Laden
-                    </>
-                  )}
-                </Button>
-              </form>
-
-              {collectionError && (
-                <div className="p-3 text-sm text-destructive bg-destructive/10 rounded-md">
-                  {collectionError}
-                </div>
-              )}
-
-              {bulkImportResult && (
-                <div className="p-3 text-sm bg-success/10 border border-success/20 rounded-md text-success">
-                  ✓ {bulkImportResult.imported} Spiel{bulkImportResult.imported !== 1 ? "e" : ""} importiert
-                  {bulkImportResult.skipped > 0 && `, ${bulkImportResult.skipped} bereits vorhanden / übersprungen`}
-                </div>
-              )}
-
-              {collection.length > 0 && (
-                <>
-                  {/* Select all / count bar */}
-                  <div className="flex items-center justify-between text-sm">
-                    <button
-                      type="button"
-                      onClick={toggleSelectAll}
-                      className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
-                    >
-                      <CheckSquare className="h-4 w-4" />
-                      {selectedBggIds.size === collection.length ? "Alle abwählen" : "Alle auswählen"}
-                    </button>
-                    <span className="text-muted-foreground">
-                      {selectedBggIds.size} / {collection.length} ausgewählt
-                    </span>
-                  </div>
-
-                  {/* Game list */}
-                  <div className="overflow-y-auto flex-1 border rounded-md divide-y">
-                    {collection.map((game) => (
-                      <label
-                        key={game.bggId}
-                        className="flex items-center gap-3 px-3 py-2 hover:bg-accent cursor-pointer"
-                      >
-                        <Checkbox
-                          checked={game.bggId ? selectedBggIds.has(game.bggId) : false}
-                          onChange={() => game.bggId && toggleGame(game.bggId)}
-                          disabled={!game.bggId || existingBggIds.has(game.bggId)}
-                        />
-                        {game.thumbnailUrl ? (
-                          <Image
-                            src={game.thumbnailUrl}
-                            alt={game.name}
-                            width={40}
-                            height={40}
-                            className="object-cover rounded flex-shrink-0"
-                          />
-                        ) : (
-                          <div className="w-10 h-10 rounded flex-shrink-0 bg-muted flex items-center justify-center text-xs text-muted-foreground">
-                            🎲
-                          </div>
-                        )}
-                        <div className="flex-1 min-w-0">
-                          <div className="font-medium truncate flex items-center gap-2">
-                            <span>{game.name}</span>
-                            {game.bggId && existingBggIds.has(game.bggId) && (
-                              <span className="text-xs text-muted-foreground">(bereits importiert)</span>
-                            )}
-                          </div>
-                          <div className="flex gap-3 text-xs text-muted-foreground">
-                            {game.yearPublished && <span>{game.yearPublished}</span>}
-                            {game.minPlayers && game.maxPlayers && (
-                              <span className="flex items-center gap-1">
-                                <Users className="h-3 w-3" />
-                                {game.minPlayers}–{game.maxPlayers}
-                              </span>
-                            )}
-                            {game.playTimeMinutes ? (
-                              <span className="flex items-center gap-1">
-                                <Clock className="h-3 w-3" />
-                                {game.playTimeMinutes} Min.
-                              </span>
-                            ) : null}
-                            {game.rating && (
-                              <span className="flex items-center gap-1">
-                                <Star className="h-3 w-3" />
-                                {game.rating}
-                              </span>
-                            )}
-                            {game.numPlays > 0 && (
-                              <span>{game.numPlays}× gespielt</span>
-                            )}
-                          </div>
-                        </div>
-                      </label>
-                    ))}
-                  </div>
-                </>
-              )}
-            </div>
-
-            <DialogFooter className="gap-2 mt-2">
-              <Button variant="outline" onClick={() => setCollectionDialogOpen(false)}>
-                Schließen
-              </Button>
-              {collection.length > 0 && (
-                <Button
-                  onClick={handleBulkImport}
-                  disabled={isBulkImporting || selectedBggIds.size === 0}
-                >
-                  {isBulkImporting ? (
-                    <>
-                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                      Importiere...
-                    </>
-                  ) : (
-                    <>
-                      <Library className="h-4 w-4 mr-2" />
-                      {selectedBggIds.size} Spiel{selectedBggIds.size !== 1 ? "e" : ""} importieren
-                    </>
-                  )}
-                </Button>
-              )}
-              {bulkImportResult && (
-                <Button onClick={() => {
-                  setCollectionDialogOpen(false);
-                  router.push("/dashboard/games");
-                  router.refresh();
-                }}>
-                  Zur Spielesammlung
-                </Button>
-              )}
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+          <CollectionImportDialog
+            existingBggIds={existingBggIds}
+            onImported={handleCollectionImported}
+          />
         </div>
       </div>
 
@@ -603,150 +293,14 @@ export default function ImportBGGPage() {
           )}
         </div>
 
-        <div>
-          {error && (
-            <div className="p-3 text-sm text-destructive bg-destructive/10 rounded-md mb-4">
-              {error}
-            </div>
-          )}
-          {!isLoadingExistingGames && selectedGame && existingBggIds.has(selectedGame.bggId) && (
-            <div className="p-3 text-sm bg-warning/10 border border-warning/20 text-warning rounded-md mb-4">
-              Dieses Spiel befindet sich bereits in deiner Sammlung.
-            </div>
-          )}
-
-          {isLoading && (
-            <Card>
-              <CardContent className="flex items-center justify-center py-12">
-                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-              </CardContent>
-            </Card>
-          )}
-
-          {selectedGame && !isLoading && (
-            <Card>
-              <CardHeader>
-                <div className="flex flex-col sm:flex-row gap-4">
-                  {selectedGame.imageUrl ? (
-                    <Image
-                      src={selectedGame.imageUrl}
-                      alt={selectedGame.name}
-                      width={128}
-                      height={128}
-                      className="w-full sm:w-32 sm:h-32 object-cover rounded-lg flex-shrink-0"
-                    />
-                  ) : (
-                    <div className="w-24 h-24 rounded flex-shrink-0 bg-muted flex items-center justify-center text-xs text-muted-foreground">
-                      🎲
-                    </div>
-                  )}
-                  <div className="flex-1 min-w-0">
-                    <CardTitle>{selectedGame.name}</CardTitle>
-                    {selectedGame.yearPublished && (
-                      <CardDescription>Erschienen {selectedGame.yearPublished}</CardDescription>
-                    )}
-                    <div className="flex flex-wrap gap-3 mt-2 text-sm text-muted-foreground">
-                      <div className="flex items-center gap-1">
-                        <Users className="h-4 w-4" />
-                        <span>{selectedGame.minPlayers}-{selectedGame.maxPlayers}</span>
-                      </div>
-                      {selectedGame.playTimeMinutes && (
-                        <div className="flex items-center gap-1">
-                          <Clock className="h-4 w-4" />
-                          <span>{selectedGame.playTimeMinutes} Min.</span>
-                        </div>
-                      )}
-                      {selectedGame.complexity && (
-                        <div className="flex items-center gap-1">
-                          <Star className="h-4 w-4" />
-                          <span>{selectedGame.complexity}/5</span>
-                        </div>
-                      )}
-                      {selectedGame.rating && (
-                        <div className="flex items-center gap-1">
-                          <span>⭐ {selectedGame.rating}/10</span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {selectedGame.description && (
-                  <p className="text-sm text-muted-foreground line-clamp-4">
-                    {selectedGame.description}
-                  </p>
-                )}
-
-                {selectedGame.designers.length > 0 && (
-                  <div>
-                    <Label className="text-xs text-muted-foreground">Designer</Label>
-                    <p className="text-sm">{selectedGame.designers.slice(0, 3).join(", ")}</p>
-                  </div>
-                )}
-
-                {selectedGame.categories.length > 0 && (
-                  <div>
-                    <Label className="text-xs text-muted-foreground">Kategorien</Label>
-                    <div className="flex flex-wrap gap-1 mt-1">
-                      {selectedGame.categories.slice(0, 5).map((cat) => (
-                        <span key={cat} className="text-xs bg-secondary px-2 py-1 rounded">
-                          {cat}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {selectedGame.mechanics.length > 0 && (
-                  <div>
-                    <Label className="text-xs text-muted-foreground">Mechaniken</Label>
-                    <div className="flex flex-wrap gap-1 mt-1">
-                      {selectedGame.mechanics.slice(0, 5).map((mech) => (
-                        <span key={mech} className="text-xs bg-secondary px-2 py-1 rounded">
-                          {mech}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                <div className="flex gap-2 pt-4">
-                  <Button onClick={handleImport} disabled={isImporting} className="flex-1">
-                    {isImporting ? (
-                      <>
-                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                        Importieren...
-                      </>
-                    ) : (
-                      "Zur Sammlung hinzufügen"
-                    )}
-                  </Button>
-                  <a
-                    href={`https://boardgamegeek.com/boardgame/${selectedGame.bggId}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <Button variant="outline" size="icon">
-                      <ExternalLink className="h-4 w-4" />
-                    </Button>
-                  </a>
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
-          {!selectedGame && !isLoading && (
-            <Card>
-              <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-                <Search className="h-12 w-12 text-muted-foreground mb-4" />
-                <p className="text-muted-foreground">
-                  Suche nach einem Spiel oder gib eine BGG-ID ein
-                </p>
-              </CardContent>
-            </Card>
-          )}
-        </div>
+        <GamePreviewCard
+          selectedGame={selectedGame}
+          isLoading={isLoading}
+          isImporting={isImporting}
+          error={error}
+          isAlreadyOwned={!isLoadingExistingGames && !!selectedGame && existingBggIds.has(selectedGame.bggId)}
+          onImport={handleImport}
+        />
       </div>
 
       {/* Barcode Scanner Dialog */}

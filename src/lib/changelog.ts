@@ -11,6 +11,20 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.14.5",
+    date: "2026-03-21",
+    title: "Mega-Komponenten aufgeteilt",
+    description: "Alle Dateien mit mehr als 400 Zeilen wurden systematisch in kleinere Subkomponenten aufgeteilt, um Wartbarkeit und Lesbarkeit zu verbessern.",
+    changes: [
+      { type: "internal", text: "games/import/page.tsx: 760 -> 280 Zeilen (CollectionImportDialog, GamePreviewCard extrahiert)" },
+      { type: "internal", text: "profile-client.tsx: 588 -> 118 Zeilen (ProfileEditForm, PasswordChangeForm, ProfileActivityCards, ProfileMessagesCard extrahiert)" },
+      { type: "internal", text: "date-poll-client.tsx: 731 -> 290 Zeilen (DatePollTypes, DateCreateForm, DatePollResetDialog, DateVotingMatrix extrahiert)" },
+      { type: "internal", text: "voting/page.tsx: 693 -> 310 Zeilen (VotingTypes, ProposalRankingList, GameProposalPanel extrahiert)" },
+      { type: "internal", text: "public/group/page.tsx: 471 -> 305 Zeilen (PublicGroupTypes, PublicPollCard, PublicDiscussionCard extrahiert)" },
+      { type: "internal", text: "create-poll-form.tsx: 426 -> 159 Zeilen (GameOptionPicker extrahiert)" },
+    ],
+  },
+  {
     version: "0.14.4",
     date: "2026-03-21",
     title: "Session-Bewertungen (SessionRating Modell)",

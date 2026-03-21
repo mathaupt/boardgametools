@@ -4,96 +4,11 @@ import { useState, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
-  Calendar,
-  Check,
-  HelpCircle,
-  X,
-  Trash2,
-  Crown,
-  Loader2,
-  RefreshCcw,
-} from "lucide-react";
-
-type DateVote = {
-  id: string;
-  availability: string;
-  user: { id: string; name: string; email: string };
-};
-
-type GuestDateVote = {
-  id: string;
-  availability: string;
-  guest: { id: string; nickname: string };
-};
-
-type DateProposal = {
-  id: string;
-  date: string;
-  votes: DateVote[];
-  guestVotes: GuestDateVote[];
-};
-
-const WEEKDAY_LABELS = [
-  { value: 0, label: "So" },
-  { value: 1, label: "Mo" },
-  { value: 2, label: "Di" },
-  { value: 3, label: "Mi" },
-  { value: 4, label: "Do" },
-  { value: 5, label: "Fr" },
-  { value: 6, label: "Sa" },
-];
-
-function getAvailabilityIcon(availability: string) {
-  switch (availability) {
-    case "yes":
-      return <Check className="h-4 w-4 text-success" />;
-    case "maybe":
-      return <HelpCircle className="h-4 w-4 text-warning" />;
-    case "no":
-      return <X className="h-4 w-4 text-destructive" />;
-    default:
-      return null;
-  }
-}
-
-function getAvailabilityColor(availability: string) {
-  switch (availability) {
-    case "yes":
-      return "bg-success/10 text-success border-success/50";
-    case "maybe":
-      return "bg-warning/10 text-warning border-warning/50";
-    case "no":
-      return "bg-destructive/10 text-destructive border-destructive/50";
-    default:
-      return "bg-muted text-muted-foreground border-border";
-  }
-}
-
-function countAvailability(proposal: DateProposal) {
-  const all = [
-    ...proposal.votes.map((v) => v.availability),
-    ...proposal.guestVotes.map((v) => v.availability),
-  ];
-  return {
-    yes: all.filter((a) => a === "yes").length,
-    maybe: all.filter((a) => a === "maybe").length,
-    no: all.filter((a) => a === "no").length,
-    total: all.length,
-  };
-}
+import { Calendar, Trash2 } from "lucide-react";
+import { DateProposal } from "./date-poll-types";
+import { DateCreateForm } from "./date-poll-create-form";
+import { DateVotingMatrix } from "./date-poll-voting-matrix";
+import { PollClosedBanner, ResetPollDialog } from "./date-poll-reset-dialog";
 
 export default function DatePollClient({
   eventId,
@@ -368,363 +283,69 @@ export default function DatePollClient({
         )}
 
         {pollClosed && finalDate && (
-          <div className="space-y-4">
-            <div className="rounded-lg border border-success/50 bg-success/10 p-4 text-sm text-success">
-              Die Terminabstimmung ist abgeschlossen. Der ausgewählte Termin ist
-              <span className="font-semibold">
-                {" "}
-                {new Date(finalDate).toLocaleDateString("de-DE", {
-                  weekday: "long",
-                  day: "numeric",
-                  month: "long",
-                  year: "numeric",
-                })}
-              </span>
-              .
-            </div>
-            {isCreator && !isPast && (
-              <Button
-                variant="outline"
-                onClick={() => setShowResetDialog(true)}
-                disabled={resetting}
-                data-testid="date-poll-reset"
-              >
-                {resetting ? (
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                ) : (
-                  <RefreshCcw className="h-4 w-4 mr-2" />
-                )}
-                Neue Terminabstimmung starten
-              </Button>
-            )}
-          </div>
+          <PollClosedBanner
+            finalDate={finalDate}
+            isCreator={isCreator}
+            isPast={isPast}
+            resetting={resetting}
+            onResetClick={() => setShowResetDialog(true)}
+          />
         )}
 
         {!pollClosed && (
           <>
-        {/* Create Form */}
-        {showCreateForm && (
-          <div className="p-4 border rounded-lg bg-muted/30 space-y-4">
-            <h4 className="font-medium">Zeitraum & Wochentage wählen</h4>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="startDate">Von</Label>
-                <Input
-                  id="startDate"
-                  type="date"
-                  value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
-                />
-              </div>
-              <div>
-                <Label htmlFor="endDate">Bis</Label>
-                <Input
-                  id="endDate"
-                  type="date"
-                  value={endDate}
-                  onChange={(e) => setEndDate(e.target.value)}
-                />
-              </div>
-            </div>
+            {/* Create Form */}
+            {showCreateForm && (
+              <DateCreateForm
+                startDate={startDate}
+                endDate={endDate}
+                selectedWeekdays={selectedWeekdays}
+                loading={loading}
+                onStartDateChange={setStartDate}
+                onEndDateChange={setEndDate}
+                onToggleWeekday={toggleWeekday}
+                onSubmit={handleCreateProposals}
+              />
+            )}
 
-            <div>
-              <Label>Nur bestimmte Wochentage (optional)</Label>
-              <div className="flex flex-wrap gap-2 mt-2">
-                {WEEKDAY_LABELS.map((day) => (
-                  <label
-                    key={day.value}
-                    className="flex items-center gap-1.5 cursor-pointer"
-                  >
-                    <Checkbox
-                      checked={selectedWeekdays.includes(day.value)}
-                      onChange={() => toggleWeekday(day.value)}
-                    />
-                    <span className="text-sm">{day.label}</span>
-                  </label>
-                ))}
-              </div>
-              {selectedWeekdays.length === 0 && (
-                <p className="text-xs text-muted-foreground mt-1">
-                  Keine Auswahl = alle Tage
+            {/* Voting Matrix */}
+            {proposals.length > 0 && (
+              <DateVotingMatrix
+                proposals={proposals}
+                allUsers={allUsers}
+                allGuests={allGuests}
+                userId={userId}
+                isPast={isPast}
+                selectedDate={selectedDate}
+                votingLoading={votingLoading}
+                selectingDate={selectingDate}
+                isCreator={isCreator}
+                onVote={handleVote}
+                onSelectDate={handleSelectDate}
+                getUserVote={getUserVote}
+              />
+            )}
+
+            {proposals.length === 0 && !showCreateForm && (
+              <div className="text-center py-8">
+                <div className="text-4xl mb-4">📅</div>
+                <h3 className="font-semibold mb-2">Keine Terminvorschläge</h3>
+                <p className="text-muted-foreground mb-4">
+                  {isCreator
+                    ? "Erstelle Terminvorschläge, damit die Teilnehmer abstimmen können."
+                    : "Der Organisator hat noch keine Terminvorschläge erstellt."}
                 </p>
-              )}
-            </div>
-
-            <Button
-              onClick={handleCreateProposals}
-              disabled={loading || !startDate || !endDate}
-            >
-              {loading ? (
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-              ) : (
-                <Calendar className="h-4 w-4 mr-2" />
-              )}
-              Termine erstellen
-            </Button>
-          </div>
-        )}
-
-        {/* Voting Matrix */}
-        {proposals.length > 0 && (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm border-collapse">
-              <thead>
-                <tr className="border-b">
-                  <th className="text-left p-2 min-w-[140px]">Datum</th>
-                  {Array.from(allUsers).map(([id, name]) => (
-                    <th key={id} className="text-center p-2 min-w-[80px]">
-                      <span className="text-xs font-medium">{name}</span>
-                    </th>
-                  ))}
-                  {Array.from(allGuests).map(([id, nickname]) => (
-                    <th key={id} className="text-center p-2 min-w-[80px]">
-                      <span className="text-xs font-medium text-muted-foreground">
-                        {nickname} (Gast)
-                      </span>
-                    </th>
-                  ))}
-                  <th className="text-center p-2 min-w-[60px]">Summe</th>
-                  {userId && !isPast && (
-                    <th className="text-center p-2 min-w-[150px]">Deine Stimme</th>
-                  )}
-                  {isCreator && !isPast && (
-                    <th className="text-center p-2 min-w-[80px]">Auswählen</th>
-                  )}
-                </tr>
-              </thead>
-              <tbody>
-                {proposals.map((proposal) => {
-                  const d = new Date(proposal.date);
-                  const counts = countAvailability(proposal);
-                  const myVote = getUserVote(proposal);
-                  const isSelected =
-                    selectedDate &&
-                    new Date(selectedDate).toDateString() === d.toDateString();
-
-                  return (
-                    <tr
-                      key={proposal.id}
-                      className={`border-b hover:bg-muted/30 ${
-                        isSelected ? "bg-success/10" : ""
-                      }`}
-                    >
-                      <td className="p-2">
-                        <div className="flex items-center gap-2">
-                          {isSelected && (
-                            <Crown className="h-4 w-4 text-success" />
-                          )}
-                          <div>
-                            <div className="font-medium">
-                              {d.toLocaleDateString("de-DE", {
-                                weekday: "short",
-                                day: "numeric",
-                                month: "short",
-                              })}
-                            </div>
-                            <div className="text-xs text-muted-foreground">
-                              {d.toLocaleDateString("de-DE", {
-                                year: "numeric",
-                              })}
-                            </div>
-                          </div>
-                        </div>
-                      </td>
-
-                      {/* User votes */}
-                      {Array.from(allUsers).map(([uid]) => {
-                        const vote = proposal.votes.find(
-                          (v) => v.user.id === uid
-                        );
-                        return (
-                          <td key={uid} className="text-center p-2">
-                            {vote ? (
-                              <span
-                                className={`inline-flex items-center justify-center w-7 h-7 rounded-full border ${getAvailabilityColor(
-                                  vote.availability
-                                )}`}
-                              >
-                                {getAvailabilityIcon(vote.availability)}
-                              </span>
-                            ) : (
-                              <span className="text-muted-foreground">—</span>
-                            )}
-                          </td>
-                        );
-                      })}
-
-                      {/* Guest votes */}
-                      {Array.from(allGuests).map(([gid]) => {
-                        const vote = proposal.guestVotes.find(
-                          (v) => v.guest.id === gid
-                        );
-                        return (
-                          <td key={gid} className="text-center p-2">
-                            {vote ? (
-                              <span
-                                className={`inline-flex items-center justify-center w-7 h-7 rounded-full border ${getAvailabilityColor(
-                                  vote.availability
-                                )}`}
-                              >
-                                {getAvailabilityIcon(vote.availability)}
-                              </span>
-                            ) : (
-                              <span className="text-muted-foreground">—</span>
-                            )}
-                          </td>
-                        );
-                      })}
-
-                      {/* Counts */}
-                      <td className="text-center p-2">
-                        <div className="flex items-center justify-center gap-1">
-                          <Badge
-                            variant="secondary"
-                            className="text-xs bg-success/10 text-success"
-                          >
-                            {counts.yes}
-                          </Badge>
-                          {counts.maybe > 0 && (
-                            <Badge
-                              variant="secondary"
-                              className="text-xs bg-warning/10 text-warning"
-                            >
-                              {counts.maybe}
-                            </Badge>
-                          )}
-                        </div>
-                      </td>
-
-                      {/* User voting buttons */}
-                      {userId && !isPast && (
-                        <td className="text-center p-2">
-                          <div className="flex items-center justify-center gap-1">
-                            {votingLoading === proposal.id ? (
-                              <Loader2 className="h-4 w-4 animate-spin" />
-                            ) : (
-                              <>
-                                <button
-                                  onClick={() =>
-                                    handleVote(proposal.id, "yes")
-                                  }
-                                  className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition-colors ${
-                                    myVote === "yes"
-                                      ? "border-success bg-success/10"
-                                      : "border-border hover:border-success/50"
-                                  }`}
-                                  title="Ja, passt"
-                                  aria-label="Ja, passt"
-                                >
-                                  <Check className="h-4 w-4 text-success" />
-                                </button>
-                                <button
-                                  onClick={() =>
-                                    handleVote(proposal.id, "maybe")
-                                  }
-                                  className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition-colors ${
-                                    myVote === "maybe"
-                                      ? "border-warning bg-warning/10"
-                                      : "border-border hover:border-warning/50"
-                                  }`}
-                                  title="Vielleicht"
-                                  aria-label="Vielleicht"
-                                >
-                                  <HelpCircle className="h-4 w-4 text-warning" />
-                                </button>
-                                <button
-                                  onClick={() =>
-                                    handleVote(proposal.id, "no")
-                                  }
-                                  className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition-colors ${
-                                    myVote === "no"
-                                      ? "border-destructive bg-destructive/10"
-                                      : "border-border hover:border-destructive/50"
-                                  }`}
-                                  title="Nein, geht nicht"
-                                  aria-label="Nein, geht nicht"
-                                >
-                                  <X className="h-4 w-4 text-destructive" />
-                                </button>
-                              </>
-                            )}
-                          </div>
-                        </td>
-                      )}
-
-                      {/* Select button for creator */}
-                      {isCreator && !isPast && (
-                        <td className="text-center p-2">
-                          {isSelected ? (
-                            <Badge className="bg-success">Gewählt</Badge>
-                          ) : (
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleSelectDate(proposal.id)}
-                              disabled={selectingDate === proposal.id}
-                            >
-                              {selectingDate === proposal.id ? (
-                                <Loader2 className="h-3 w-3 animate-spin" />
-                              ) : (
-                                <Crown className="h-3 w-3" />
-                              )}
-                            </Button>
-                          )}
-                        </td>
-                      )}
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        )}
-
-        {proposals.length === 0 && !showCreateForm && (
-          <div className="text-center py-8">
-            <div className="text-4xl mb-4">📅</div>
-            <h3 className="font-semibold mb-2">Keine Terminvorschläge</h3>
-            <p className="text-muted-foreground mb-4">
-              {isCreator
-                ? "Erstelle Terminvorschläge, damit die Teilnehmer abstimmen können."
-                : "Der Organisator hat noch keine Terminvorschläge erstellt."}
-            </p>
-          </div>
-        )}
+              </div>
+            )}
           </>
         )}
 
-        <Dialog open={showResetDialog} onOpenChange={setShowResetDialog}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Abstimmung zurücksetzen?</DialogTitle>
-              <DialogDescription>
-                Dadurch werden alle Terminvorschläge und Stimmen gelöscht. Du kannst im
-                Anschluss eine neue Abstimmung starten.
-              </DialogDescription>
-            </DialogHeader>
-            <DialogFooter className="flex gap-2 sm:justify-end">
-              <Button
-                variant="outline"
-                onClick={() => setShowResetDialog(false)}
-                disabled={resetting}
-              >
-                Abbrechen
-              </Button>
-              <Button
-                variant="destructive"
-                onClick={handleResetPoll}
-                disabled={resetting}
-              >
-                {resetting ? (
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                ) : (
-                  <RefreshCcw className="h-4 w-4 mr-2" />
-                )}
-                Abstimmung zurücksetzen
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+        <ResetPollDialog
+          open={showResetDialog}
+          onOpenChange={setShowResetDialog}
+          resetting={resetting}
+          onReset={handleResetPoll}
+        />
       </CardContent>
     </Card>
   );
