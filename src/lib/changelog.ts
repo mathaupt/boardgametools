@@ -11,6 +11,21 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.17.0",
+    date: "2026-03-21",
+    title: "Erweiterter Code-Review: Security, Performance, Best Practices & Skalierung",
+    description: "Review-Skill und Evaluator um 5 neue Prüfbereiche erweitert: OWASP-Security-Report, Performance-Analyse (Bundle, Dynamic Imports, Caching), Best Practices (ESLint, Error Boundaries, ENV-Validierung), Architektur-Audit und Skalierungs-Analyse (Connection Pooling, Caching-Layer, File Storage).",
+    changes: [
+      { type: "feature", text: "OWASP Top 10 Checkliste im Security-Review mit automatischer Prüfung (CSP, XSS, npm audit, Secrets)" },
+      { type: "feature", text: "Neue Kategorie 'Best Practices' im Review: ESLint, Error Boundaries, Loading States, ENV-Validierung, Dead Dependencies" },
+      { type: "feature", text: "Neue Kategorie 'Skalierung' im Review: DB Connection Pooling, Caching-Layer, File Storage, Rate Limiting, Health-Check, Logging" },
+      { type: "improvement", text: "Performance-Review erweitert: Dynamic Imports, Bundle-Analyse, API Caching Headers" },
+      { type: "improvement", text: "7 neue Coverage-Scans: dangerouslySetInnerHTML, Hardcoded Secrets, schwere Libraries, Error Boundaries, lokaler File Storage, In-Memory State, Magic Numbers" },
+      { type: "improvement", text: "17 neue automatisierte Findings (SEC-44 bis SCALE-60) mit konkreten Fix-Vorschlägen" },
+      { type: "internal", text: "Review-Score: 8.9/10 – 38 von 50 Findings gelöst, 12 neue offene Findings in den erweiterten Bereichen" },
+    ],
+  },
+  {
     version: "0.16.2",
     date: "2026-03-21",
     title: "Review-Evaluator: Perfekter Score",

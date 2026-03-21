@@ -678,6 +678,335 @@ const FINDINGS = [
     hasFixSuggestion: true,
     fixSuggestion: "Ergänze @@index auf häufig gefilterte Felder (createdById, eventId, groupId, etc.).",
   },
+
+  // ── Security Extended (OWASP, Headers, Dependencies) ──────────
+  {
+    id: "SEC-44",
+    priority: "P1",
+    category: "security",
+    title: "Fehlende Security Headers",
+    verify() {
+      const middleware = readSafe("src/middleware.ts");
+      const nextConfig = readSafe("next.config.ts") || readSafe("next.config.js") || readSafe("next.config.mjs");
+      const hasCSP = (middleware && middleware.includes("Content-Security-Policy")) ||
+        (nextConfig && nextConfig.includes("Content-Security-Policy"));
+      const hasXFrame = (middleware && middleware.includes("X-Frame-Options")) ||
+        (nextConfig && nextConfig.includes("X-Frame-Options"));
+      const hasXCTO = (middleware && middleware.includes("X-Content-Type-Options")) ||
+        (nextConfig && nextConfig.includes("X-Content-Type-Options"));
+      const count = [hasCSP, hasXFrame, hasXCTO].filter(Boolean).length;
+      if (count >= 3) return { status: "resolved", detail: "CSP, X-Frame-Options, X-Content-Type-Options vorhanden" };
+      if (count > 0) return { status: "partially_resolved", detail: `${count}/3 Security Headers vorhanden` };
+      return { status: "open", detail: "Keine Security Headers konfiguriert" };
+    },
+    hasFixSuggestion: true,
+    fixSuggestion: "Ergänze Security Headers in middleware.ts oder next.config headers(): CSP, X-Frame-Options: DENY, X-Content-Type-Options: nosniff, Referrer-Policy: strict-origin-when-cross-origin.",
+  },
+  {
+    id: "SEC-45",
+    priority: "P2",
+    category: "security",
+    title: "npm audit: Bekannte Vulnerabilities",
+    verify() {
+      try {
+        const output = execSync("npm audit --json 2>/dev/null", { encoding: "utf8", cwd: ROOT, timeout: 30000 });
+        const audit = JSON.parse(output);
+        const vulns = audit.metadata?.vulnerabilities || {};
+        const critical = vulns.critical || 0;
+        const high = vulns.high || 0;
+        const moderate = vulns.moderate || 0;
+        if (critical + high === 0 && moderate <= 2)
+          return { status: "resolved", detail: `Keine kritischen/hohen Vulnerabilities (${moderate} moderate)` };
+        if (critical + high === 0)
+          return { status: "partially_resolved", detail: `${moderate} moderate Vulnerabilities` };
+        return { status: "open", detail: `${critical} critical, ${high} high, ${moderate} moderate` };
+      } catch {
+        return { status: "open", detail: "npm audit konnte nicht ausgeführt werden" };
+      }
+    },
+    hasFixSuggestion: true,
+    fixSuggestion: "Führe `npm audit fix` aus oder aktualisiere betroffene Dependencies manuell.",
+  },
+  {
+    id: "SEC-46",
+    priority: "P2",
+    category: "security",
+    title: "XSS: dangerouslySetInnerHTML ohne Sanitization",
+    verify() {
+      const count = grepCount("dangerouslySetInnerHTML", "*.tsx", "src");
+      if (count === 0) return { status: "resolved", detail: "Kein dangerouslySetInnerHTML verwendet" };
+      // Check if sanitization library is used
+      const hasSanitize = grepCount("DOMPurify\\|sanitize-html\\|xss\\|isomorphic-dompurify", "*.ts", "src") +
+        grepCount("DOMPurify\\|sanitize-html\\|xss\\|isomorphic-dompurify", "*.tsx", "src");
+      if (hasSanitize > 0) return { status: "resolved", detail: `${count} dangerouslySetInnerHTML mit Sanitization` };
+      return { status: "open", detail: `${count}× dangerouslySetInnerHTML ohne Sanitization-Library` };
+    },
+    hasFixSuggestion: true,
+    fixSuggestion: "Nutze DOMPurify.sanitize() vor dangerouslySetInnerHTML oder entferne es komplett.",
+  },
+
+  // ── Performance Extended ──────────────────────────────────────
+  {
+    id: "PERF-47",
+    priority: "P2",
+    category: "performance",
+    title: "Schwere Libraries ohne Dynamic Import",
+    verify() {
+      // Check if tesseract.js and recharts are dynamically imported
+      const staticTesseract = grepCount("import.*from.*tesseract", "*.tsx", "src") +
+        grepCount("import.*from.*tesseract", "*.ts", "src");
+      const dynamicTesseract = grepCount("dynamic\\(.*tesseract\\|import\\(.*tesseract", "*.tsx", "src") +
+        grepCount("dynamic\\(.*tesseract\\|import\\(.*tesseract", "*.ts", "src");
+      const staticRecharts = grepCount("import.*from.*recharts", "*.tsx", "src");
+      const dynamicRecharts = grepCount("dynamic\\(.*recharts\\|import\\(.*recharts", "*.tsx", "src");
+      const issues = [];
+      if (staticTesseract > 0 && dynamicTesseract === 0) issues.push("tesseract.js (7MB+) statisch importiert");
+      if (staticRecharts > 0 && dynamicRecharts === 0) issues.push("recharts (300KB+) statisch importiert");
+      if (issues.length === 0) return { status: "resolved", detail: "Schwere Libraries dynamisch geladen" };
+      return { status: "open", detail: issues.join(", ") };
+    },
+    hasFixSuggestion: true,
+    fixSuggestion: "Nutze next/dynamic mit { ssr: false } für tesseract.js und recharts: const Chart = dynamic(() => import('./Chart'), { ssr: false }).",
+  },
+  {
+    id: "PERF-48",
+    priority: "P3",
+    category: "performance",
+    title: "Keine Bundle-Analyse konfiguriert",
+    verify() {
+      const pkg = readSafe("package.json");
+      const nextConfig = readSafe("next.config.ts") || readSafe("next.config.js") || readSafe("next.config.mjs");
+      const hasAnalyzer = (pkg && pkg.includes("bundle-analyzer")) ||
+        (nextConfig && nextConfig.includes("bundle-analyzer"));
+      return hasAnalyzer
+        ? { status: "resolved", detail: "@next/bundle-analyzer konfiguriert" }
+        : { status: "open", detail: "Kein Bundle-Analyzer in Dependencies oder Config" };
+    },
+    hasFixSuggestion: true,
+    fixSuggestion: "Installiere @next/bundle-analyzer und ergänze ANALYZE=true in next.config: npm i -D @next/bundle-analyzer.",
+  },
+  {
+    id: "PERF-49",
+    priority: "P2",
+    category: "performance",
+    title: "Keine API Caching Headers",
+    verify() {
+      const cacheControl = grepCount("Cache-Control\\|s-maxage\\|stale-while-revalidate", "*.ts", "src/app/api");
+      const revalidate = grepCount("revalidate", "*.ts", "src/app/api") + grepCount("revalidate", "*.tsx", "src/app");
+      const total = cacheControl + revalidate;
+      if (total >= 3) return { status: "resolved", detail: `${total} Caching-Konfigurationen gefunden` };
+      if (total > 0) return { status: "partially_resolved", detail: `Nur ${total} Caching-Konfigurationen` };
+      return { status: "open", detail: "Keine Cache-Control Headers oder revalidate in API/Pages" };
+    },
+    hasFixSuggestion: true,
+    fixSuggestion: "Ergänze Cache-Control Headers auf GET-Endpoints: res.headers.set('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300').",
+  },
+
+  // ── Best Practices ────────────────────────────────────────────
+  {
+    id: "BP-50",
+    priority: "P2",
+    category: "bestpractices",
+    title: "ESLint Warnings/Errors",
+    verify() {
+      try {
+        execSync("npx next lint --quiet 2>/dev/null", { encoding: "utf8", cwd: ROOT, timeout: 60000 });
+        return { status: "resolved", detail: "ESLint clean (keine Errors)" };
+      } catch (e) {
+        const output = e.stdout || e.stderr || "";
+        const errorLines = output.split("\n").filter((l) => l.includes("Error") || l.includes("error")).length;
+        if (errorLines === 0) return { status: "resolved", detail: "ESLint clean" };
+        return { status: "open", detail: `${errorLines} ESLint-Fehler` };
+      }
+    },
+    hasFixSuggestion: true,
+    fixSuggestion: "Führe `npx next lint --fix` aus und behebe verbleibende Fehler manuell.",
+  },
+  {
+    id: "BP-51",
+    priority: "P3",
+    category: "bestpractices",
+    title: "Ungenutzte Dependencies in package.json",
+    verify() {
+      const pkg = readSafe("package.json");
+      if (!pkg) return { status: "open", detail: "package.json nicht gefunden" };
+      const parsed = JSON.parse(pkg);
+      const deps = Object.keys(parsed.dependencies || {});
+      const unusedCandidates = [];
+      for (const dep of deps) {
+        // Skip Next.js ecosystem, React, types, and known runtime-only deps
+        if (dep.startsWith("@types/") || dep.startsWith("@next/") ||
+          ["react", "react-dom", "next", "typescript", "prisma", "@prisma/client", "postcss", "tailwindcss", "autoprefixer"].includes(dep))
+          continue;
+        const importCount = grepCount(dep.replace("/", "\\/"), "*.ts", "src") +
+          grepCount(dep.replace("/", "\\/"), "*.tsx", "src") +
+          grepCount(dep.replace("/", "\\/"), "*.mjs", "scripts");
+        if (importCount === 0) unusedCandidates.push(dep);
+      }
+      if (unusedCandidates.length === 0) return { status: "resolved", detail: "Alle Dependencies werden verwendet" };
+      if (unusedCandidates.length <= 3) return { status: "partially_resolved", detail: `Möglicherweise ungenutzt: ${unusedCandidates.join(", ")}` };
+      return { status: "open", detail: `${unusedCandidates.length} potenziell ungenutzt: ${unusedCandidates.slice(0, 5).join(", ")}` };
+    },
+    hasFixSuggestion: true,
+    fixSuggestion: "Prüfe ungenutzte Dependencies mit `npx depcheck` und entferne sie mit `npm uninstall <pkg>`.",
+  },
+  {
+    id: "BP-52",
+    priority: "P2",
+    category: "bestpractices",
+    title: "Fehlende Error Boundaries",
+    verify() {
+      const errorBoundary = grepCount("ErrorBoundary\\|error\\.tsx", "*.tsx", "src");
+      const hasGlobalError = fileExists("src/app/error.tsx") || fileExists("src/app/global-error.tsx");
+      if (hasGlobalError && errorBoundary >= 2) return { status: "resolved", detail: "Error Boundaries vorhanden" };
+      if (hasGlobalError) return { status: "partially_resolved", detail: "Nur globale Error Boundary" };
+      return { status: "open", detail: "Keine Error Boundaries" };
+    },
+    hasFixSuggestion: true,
+    fixSuggestion: "Erstelle src/app/error.tsx und src/app/global-error.tsx als Error Boundaries + pro Feature-Segment error.tsx.",
+  },
+  {
+    id: "BP-53",
+    priority: "P3",
+    category: "bestpractices",
+    title: "ENV-Validierung beim Start",
+    verify() {
+      const hasEnvCheck = grepCount("process\\.env.*throw\\|process\\.env.*required\\|z\\.object.*process\\.env\\|env\\.mjs\\|env\\.ts", "*.ts", "src/lib") +
+        grepCount("process\\.env.*throw\\|process\\.env.*required\\|z\\.object.*process\\.env", "*.mjs", "src");
+      const hasEnvFile = fileExists("src/env.ts") || fileExists("src/env.mjs") || fileExists("src/lib/env.ts");
+      if (hasEnvFile || hasEnvCheck >= 2) return { status: "resolved", detail: "ENV-Validierung vorhanden" };
+      if (hasEnvCheck > 0) return { status: "partially_resolved", detail: "Teilweise ENV-Prüfungen" };
+      return { status: "open", detail: "Keine systematische ENV-Validierung" };
+    },
+    hasFixSuggestion: true,
+    fixSuggestion: "Erstelle src/lib/env.ts mit Zod-Schema für alle ENV-Variablen und importiere es in db.ts/auth.ts.",
+  },
+  {
+    id: "BP-54",
+    priority: "P2",
+    category: "bestpractices",
+    title: "Fehlende Loading States (loading.tsx)",
+    verify() {
+      try {
+        const cmd = `find '${join(ROOT, "src/app")}' -name 'loading.tsx' 2>/dev/null | wc -l`;
+        const loadingFiles = parseInt(execSync(cmd, { encoding: "utf8" }).trim(), 10) || 0;
+        const cmd2 = `find '${join(ROOT, "src/app")}' -name 'page.tsx' 2>/dev/null | wc -l`;
+        const pageFiles = parseInt(execSync(cmd2, { encoding: "utf8" }).trim(), 10) || 0;
+        const ratio = pageFiles > 0 ? loadingFiles / pageFiles : 0;
+        if (ratio >= 0.3) return { status: "resolved", detail: `${loadingFiles} loading.tsx für ${pageFiles} pages (${Math.round(ratio * 100)}%)` };
+        if (loadingFiles > 0) return { status: "partially_resolved", detail: `Nur ${loadingFiles} loading.tsx für ${pageFiles} pages` };
+        return { status: "open", detail: `Keine loading.tsx Dateien (${pageFiles} pages)` };
+      } catch {
+        return { status: "open", detail: "Konnte loading.tsx nicht zählen" };
+      }
+    },
+    hasFixSuggestion: true,
+    fixSuggestion: "Erstelle loading.tsx in wichtigen Route-Segmenten mit Skeleton-Komponenten.",
+  },
+
+  // ── Scalability ───────────────────────────────────────────────
+  {
+    id: "SCALE-55",
+    priority: "P2",
+    category: "scalability",
+    title: "Kein Health-Check Endpoint",
+    verify() {
+      const hasHealth = fileExists("src/app/api/health/route.ts") ||
+        fileExists("src/app/api/healthz/route.ts") ||
+        fileExists("src/app/api/ping/route.ts");
+      return hasHealth
+        ? { status: "resolved", detail: "Health-Check Endpoint vorhanden" }
+        : { status: "open", detail: "Kein /api/health oder /api/healthz Endpoint" };
+    },
+    hasFixSuggestion: true,
+    fixSuggestion: "Erstelle /api/health/route.ts: Prüft DB-Verbindung, gibt { status: 'ok', db: 'connected' } zurück.",
+  },
+  {
+    id: "SCALE-56",
+    priority: "P2",
+    category: "scalability",
+    title: "File-Uploads auf lokalem Dateisystem",
+    verify() {
+      const uploadRoute = readSafe("src/app/api/upload/route.ts");
+      if (!uploadRoute) return { status: "resolved", detail: "Kein Upload-Endpoint" };
+      const usesLocal = uploadRoute.includes("writeFile") || uploadRoute.includes("public/uploads");
+      const usesS3 = uploadRoute.includes("S3") || uploadRoute.includes("s3") ||
+        uploadRoute.includes("R2") || uploadRoute.includes("blob") || uploadRoute.includes("cloudinary");
+      if (usesS3) return { status: "resolved", detail: "Object Storage (S3/R2/Cloudinary) wird verwendet" };
+      if (usesLocal) return { status: "open", detail: "Lokales Dateisystem (public/uploads/) – nicht skalierbar" };
+      return { status: "partially_resolved", detail: "Upload-Methode unklar" };
+    },
+    hasFixSuggestion: true,
+    fixSuggestion: "Migriere File-Uploads auf S3/R2/Vercel Blob Storage statt public/uploads/.",
+  },
+  {
+    id: "SCALE-57",
+    priority: "P2",
+    category: "scalability",
+    title: "In-Memory Rate Limiting nicht skalierbar",
+    verify() {
+      const rateLimit = readSafe("src/lib/rate-limit.ts");
+      if (!rateLimit) return { status: "open", detail: "Kein Rate Limiting vorhanden" };
+      const usesMap = rateLimit.includes("new Map");
+      const usesRedis = rateLimit.includes("redis") || rateLimit.includes("ioredis") || rateLimit.includes("upstash");
+      if (usesRedis) return { status: "resolved", detail: "Redis-basiertes Rate Limiting" };
+      if (usesMap) return { status: "open", detail: "In-Memory Map – funktioniert nicht bei horizontaler Skalierung" };
+      return { status: "partially_resolved", detail: "Rate Limiting vorhanden, Implementierung prüfen" };
+    },
+    hasFixSuggestion: true,
+    fixSuggestion: "Ersetze In-Memory Map durch Upstash Redis Rate Limiting (@upstash/ratelimit).",
+  },
+  {
+    id: "SCALE-58",
+    priority: "P3",
+    category: "scalability",
+    title: "Kein Caching-Layer",
+    verify() {
+      const hasRedis = grepCount("redis\\|ioredis\\|upstash", "*.ts", "src") > 0;
+      const hasUnstableCache = grepCount("unstable_cache\\|cacheTag\\|revalidateTag", "*.ts", "src") +
+        grepCount("unstable_cache\\|cacheTag\\|revalidateTag", "*.tsx", "src") > 0;
+      const hasInMemoryCache = grepCount("NodeCache\\|lru-cache\\|Map.*cache\\|cache.*Map", "*.ts", "src/lib") > 0;
+      if (hasRedis) return { status: "resolved", detail: "Redis Cache vorhanden" };
+      if (hasUnstableCache) return { status: "resolved", detail: "Next.js unstable_cache wird genutzt" };
+      if (hasInMemoryCache) return { status: "partially_resolved", detail: "Nur In-Memory Cache (nicht skalierbar)" };
+      return { status: "open", detail: "Kein Caching-Layer" };
+    },
+    hasFixSuggestion: true,
+    fixSuggestion: "Nutze Next.js unstable_cache für DB-Queries oder Upstash Redis für verteiltes Caching.",
+  },
+  {
+    id: "SCALE-59",
+    priority: "P3",
+    category: "scalability",
+    title: "Kein strukturiertes Logging",
+    verify() {
+      const hasPino = grepCount("pino\\|winston\\|bunyan\\|structured.*log", "*.ts", "src") > 0;
+      const hasJsonLog = grepCount("JSON\\.stringify.*log\\|log.*JSON\\.stringify", "*.ts", "src/lib") > 0;
+      if (hasPino) return { status: "resolved", detail: "Strukturiertes Logging-Framework vorhanden" };
+      if (hasJsonLog) return { status: "partially_resolved", detail: "JSON-Logging teilweise vorhanden" };
+      return { status: "open", detail: "Nur console.log – nicht für Log-Aggregation geeignet" };
+    },
+    hasFixSuggestion: true,
+    fixSuggestion: "Installiere pino + pino-pretty und erstelle src/lib/logger.ts als zentrale Logging-Instanz.",
+  },
+  {
+    id: "SCALE-60",
+    priority: "P1",
+    category: "scalability",
+    title: "DB Connection Pooling nicht konfiguriert",
+    verify() {
+      const schema = readSafe("prisma/schema.prisma");
+      const dbTs = readSafe("src/lib/db.ts");
+      const hasPoolConfig = (schema && (schema.includes("connection_limit") || schema.includes("pool_timeout") || schema.includes("pgbouncer"))) ||
+        (dbTs && (dbTs.includes("connection_limit") || dbTs.includes("pool")));
+      const hasUrl = schema && schema.includes("DATABASE_URL");
+      if (hasPoolConfig) return { status: "resolved", detail: "Connection Pool konfiguriert" };
+      if (hasUrl) return { status: "partially_resolved", detail: "DB-URL vorhanden, aber kein explizites Pooling" };
+      return { status: "open", detail: "Keine Connection Pool Konfiguration" };
+    },
+    hasFixSuggestion: true,
+    fixSuggestion: "Ergänze ?connection_limit=10&pool_timeout=20 in DATABASE_URL oder nutze PgBouncer.",
+  },
 ];
 
 // ══════════════════════════════════════════════════════════════════
@@ -759,6 +1088,101 @@ const COVERAGE_SCANS = [
     },
     threshold: 5,
   },
+  // ── New Coverage Scans ──────────────────────────────────────────
+  {
+    id: "COV-7",
+    category: "security",
+    name: "dangerouslySetInnerHTML Usage",
+    scan() {
+      const count = grepCount("dangerouslySetInnerHTML", "*.tsx", "src");
+      return { found: count, detail: `${count}× dangerouslySetInnerHTML` };
+    },
+    threshold: 0,
+  },
+  {
+    id: "COV-8",
+    category: "security",
+    name: "Hardcoded Secrets/Keys",
+    scan() {
+      const apiKeys = grepCount("api[_-]key.*=.*[a-zA-Z0-9]\\{20,\\}", "*.ts", "src") +
+        grepCount("api[_-]key.*=.*[a-zA-Z0-9]\\{20,\\}", "*.tsx", "src");
+      const secrets = grepCount("secret.*=.*[a-zA-Z0-9]\\{20,\\}", "*.ts", "src") +
+        grepCount("secret.*=.*[a-zA-Z0-9]\\{20,\\}", "*.tsx", "src");
+      return { found: apiKeys + secrets, detail: `${apiKeys + secrets} potenzielle hartcodierte Secrets` };
+    },
+    threshold: 0,
+  },
+  {
+    id: "COV-9",
+    category: "performance",
+    name: "Statische Imports schwerer Libraries",
+    scan() {
+      const heavy = ["tesseract", "recharts", "html5-qrcode", "xlsx", "pdf"];
+      let count = 0;
+      const found = [];
+      for (const lib of heavy) {
+        const staticCount = grepCount(`import.*from.*${lib}`, "*.tsx", "src") +
+          grepCount(`import.*from.*${lib}`, "*.ts", "src");
+        const dynamicCount = grepCount(`dynamic\\(.*${lib}\\|import\\(.*${lib}`, "*.tsx", "src") +
+          grepCount(`dynamic\\(.*${lib}\\|import\\(.*${lib}`, "*.ts", "src");
+        if (staticCount > 0 && dynamicCount === 0) {
+          count++;
+          found.push(lib);
+        }
+      }
+      return { found: count, detail: found.length > 0 ? `Statisch: ${found.join(", ")}` : "Alle schweren Libs dynamisch" };
+    },
+    threshold: 1,
+  },
+  {
+    id: "COV-10",
+    category: "bestpractices",
+    name: "Fehlende error.tsx Boundaries",
+    scan() {
+      try {
+        const pages = parseInt(execSync(`find '${join(ROOT, "src/app")}' -name 'page.tsx' 2>/dev/null | wc -l`, { encoding: "utf8" }).trim(), 10) || 0;
+        const errors = parseInt(execSync(`find '${join(ROOT, "src/app")}' -name 'error.tsx' 2>/dev/null | wc -l`, { encoding: "utf8" }).trim(), 10) || 0;
+        const missing = Math.max(0, Math.floor(pages * 0.3) - errors); // Expect at least 30% coverage
+        return { found: missing, detail: `${errors} error.tsx für ${pages} pages (${pages > 0 ? Math.round(errors / pages * 100) : 0}%)` };
+      } catch {
+        return { found: 0, detail: "Konnte error.tsx nicht zählen" };
+      }
+    },
+    threshold: 3,
+  },
+  {
+    id: "COV-11",
+    category: "scalability",
+    name: "Lokaler File Storage",
+    scan() {
+      const localWrites = grepCount("writeFile.*public\\|fs\\.write.*upload\\|createWriteStream", "*.ts", "src");
+      return { found: localWrites, detail: `${localWrites}× lokale Dateischreibvorgänge` };
+    },
+    threshold: 0,
+  },
+  {
+    id: "COV-12",
+    category: "scalability",
+    name: "In-Memory State über Requests",
+    scan() {
+      // Check for module-level Maps/Sets that persist between requests
+      const maps = grepCount("^const.*= new Map\\|^let.*= new Map\\|^const.*= new Set", "*.ts", "src/lib") +
+        grepCount("^const.*= new Map\\|^let.*= new Map\\|^const.*= new Set", "*.ts", "src/app");
+      return { found: maps, detail: `${maps} module-level Map/Set Instanzen` };
+    },
+    threshold: 2,
+  },
+  {
+    id: "COV-13",
+    category: "bestpractices",
+    name: "Magic Numbers in Code",
+    scan() {
+      // Look for numeric literals that are likely magic numbers (not 0, 1, common values)
+      const magicNumbers = grepCount("=== [0-9][0-9][0-9]\\|> [0-9][0-9][0-9]\\|< [0-9][0-9][0-9]\\|setTimeout.*[0-9][0-9][0-9][0-9]", "*.ts", "src/app/api");
+      return { found: magicNumbers, detail: `${magicNumbers} potenzielle Magic Numbers in API Routes` };
+    },
+    threshold: 10,
+  },
 ];
 
 // ══════════════════════════════════════════════════════════════════
@@ -775,6 +1199,8 @@ function computeScores(verifications, coverageResults) {
     testing: { name: "Testing", weight: 1 },
     database: { name: "Datenbank", weight: 1 },
     concept: { name: "Konzept-Konformität", weight: 1 },
+    bestpractices: { name: "Best Practices", weight: 1 },
+    scalability: { name: "Skalierung", weight: 2 },
   };
 
   const scores = {};
