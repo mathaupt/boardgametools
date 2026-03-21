@@ -419,8 +419,8 @@ const isValid = await compare(inputPassword, group.password);
 
 ## Evaluator-Feedback (automatisch generiert)
 
-> Letzter Lauf: 2026-03-21 12:03:34
-> Gesamt-Score: **8.6/10**
+> Letzter Lauf: 2026-03-21 13:34:58
+> Gesamt-Score: **8.8/10**
 
 ### Kategorie-Scores
 
@@ -431,11 +431,11 @@ const isValid = await compare(inputPassword, group.password);
 | Architektur | **8.8/10** | 10 | 10 | 10 | 10 | 2 |
 | Performance | **9/10** | 10 | 10 | 10 | 10 | 3.3 |
 | API Design | **9/10** | 10 | 10 | 10 | 10 | 3.3 |
-| Testing | **6.5/10** | 10 | 10 | 0 | 10 | 0 |
+| Testing | **8.5/10** | 10 | 10 | 10 | 10 | 0 |
 | Datenbank | **9.3/10** | 10 | 10 | 10 | 10 | 5 |
-| Konzept-Konformität | **7.2/10** | 10 | 6.3 | 10 | 8 | 0 |
+| Konzept-Konformität | **8.5/10** | 10 | 10 | 10 | 10 | 0 |
 
-### Erledigte Findings (29)
+### Erledigte Findings (32)
 
 - ✅ **P0-1** Debug-Routes in Produktion: NODE_ENV Guard vorhanden
 - ✅ **P0-2** DB-Init ohne Auth: Auth-Check vorhanden
@@ -444,7 +444,7 @@ const isValid = await compare(inputPassword, group.password);
 - ✅ **P0-5** Kein Rate Limiting + keine middleware.ts: Middleware + Rate Limiting vorhanden
 - ✅ **P0-6** passwordHash in API-Responses: passwordHash wird nicht exponiert
 - ✅ **P1-7** PII in Logs: Keine PII in API-Logs
-- ✅ **P1-8** Fehlende Input-Validierung: validation.ts in 25 Routes importiert
+- ✅ **P1-8** Fehlende Input-Validierung: validation.ts in 26 Routes importiert
 - ✅ **P1-9** Keine Pagination: Pagination auf allen Listen-Endpoints
 - ✅ **P1-10** Statistiken komplett fehlend: Statistiken-Seite + API vorhanden
 - ✅ **P1-11** Session-Detailseite fehlt: Session-Detailseite vorhanden
@@ -457,30 +457,28 @@ const isValid = await compare(inputPassword, group.password);
 - ✅ **P2-19** Duplikat: Prisma-Client-Dateien: Duplikat entfernt
 - ✅ **P2-20** Duplikat: BGG-Logik: Kein dupliziertes XML-Parsing
 - ✅ **P2-21** next/image statt <img>: Keine <img> Tags
-- ✅ **P2-22** Fehlende Unit Tests: 10 Test-Dateien
-- ✅ **P2-23** Inkonsistente Error-Responses: Konsistent: 381 error, 13 message
+- ✅ **P2-22** Fehlende Unit Tests: 14 Test-Dateien
+- ✅ **P2-23** Inkonsistente Error-Responses: Konsistent: 395 error, 14 message
 - ✅ **P2-24** CONCEPT.md aktualisieren: Tech-Stack aktuell
 - ✅ **P2-25** Pendende Invites dupliziert: Shared Query extrahiert
 - ✅ **P2-27** Prisma Transactions fehlen: $transaction wird verwendet
+- ✅ **P3-28** Tags/Kategorien fehlen: Tag/Category-Model vorhanden
+- ✅ **P3-29** Bild-Upload fehlt: Upload-Endpoint vorhanden
+- ✅ **P3-30** Gruppen-Statistiken fehlen: Gruppen-Statistiken vorhanden
 - ✅ **P3-31** accessibility Skill fehlt: Accessibility Skill vorhanden
 - ✅ **P3-32** DB-Dumps in Git: Git-Check nicht möglich
 - ✅ **P3-33** Links zu /terms und /privacy fehlen: Beide Seiten vorhanden
-- ✅ **P3-35** Fehlende DB-Indices: 14 @@index Definitionen
+- ✅ **P3-35** Fehlende DB-Indices: 17 @@index Definitionen
 
-### Offene Findings (4)
+### Offene Findings (1)
 
 - ❌ **P1-15** Admin kann sich selbst deaktivieren: Keine Self-Protection
-- ❌ **P3-28** Tags/Kategorien fehlen: Kein Tag/Category-Model im Schema
-- ❌ **P3-29** Bild-Upload fehlt: Kein Bild-Upload implementiert
-- ❌ **P3-30** Gruppen-Statistiken fehlen: Keine Gruppen-Statistiken
 
 ### Empfohlene Reviewer-Anpassungen
 
-- ➕ NEU: "Test Coverage Lücken" – 6 von 18 lib-Dateien getestet (Schwelle: 5)
 - 📝 Handlungsfähigkeit in "TypeScript" niedrig (0/10) – konkretere Fix-Vorschläge ergänzen
 - 📝 Handlungsfähigkeit in "Architektur" niedrig (2/10) – konkretere Fix-Vorschläge ergänzen
 - 📝 Handlungsfähigkeit in "Performance" niedrig (3.3/10) – konkretere Fix-Vorschläge ergänzen
 - 📝 Handlungsfähigkeit in "API Design" niedrig (3.3/10) – konkretere Fix-Vorschläge ergänzen
-- 📝 Abdeckung in "Testing" niedrig (0/10) – weitere Prüfpunkte hinzufügen
 - 📝 Handlungsfähigkeit in "Testing" niedrig (0/10) – konkretere Fix-Vorschläge ergänzen
 - 📝 Handlungsfähigkeit in "Konzept-Konformität" niedrig (0/10) – konkretere Fix-Vorschläge ergänzen

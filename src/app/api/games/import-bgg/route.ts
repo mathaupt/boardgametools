@@ -49,6 +49,24 @@ export const POST = withApiLogging(async function POST(request: NextRequest) {
       },
     });
 
+    // Auto-create tags from BGG categories
+    if (bggData.categories && bggData.categories.length > 0) {
+      for (const categoryName of bggData.categories) {
+        const trimmed = categoryName.trim();
+        if (!trimmed) continue;
+        const tag = await prisma.tag.upsert({
+          where: { name_ownerId: { name: trimmed, ownerId: session.user.id } },
+          create: { name: trimmed, ownerId: session.user.id, source: "bgg" },
+          update: {},
+        });
+        await prisma.gameTag.upsert({
+          where: { gameId_tagId: { gameId: game.id, tagId: tag.id } },
+          create: { gameId: game.id, tagId: tag.id },
+          update: {},
+        });
+      }
+    }
+
     return NextResponse.json(
       {
         message: "Game imported successfully",

@@ -1,7 +1,7 @@
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, BarChart3 } from "lucide-react";
 import Link from "next/link";
 import { getPublicBaseUrl } from "@/lib/public-link";
 import { GroupDetailClient } from "./group-detail-client";
@@ -101,10 +101,16 @@ export default async function GroupDetailPage({
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-4">
+      <div className="flex items-center justify-between">
         <Link href="/dashboard/groups" className="text-muted-foreground hover:text-foreground flex items-center gap-2">
           <ArrowLeft className="h-4 w-4" />
           Zurück zu Gruppen
+        </Link>
+        <Link href={`/dashboard/groups/${id}/statistics`}>
+          <Button variant="outline" size="sm">
+            <BarChart3 className="h-4 w-4 mr-2" />
+            Statistiken
+          </Button>
         </Link>
       </div>
 

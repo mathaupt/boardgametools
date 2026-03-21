@@ -42,6 +42,7 @@ model User {
   groupComments   GroupComment[]   @relation("GroupComments")
   apiLogs         ApiLog[]         @relation("apiLogs")
   sessionRatings  SessionRating[]  @relation("SessionRatings")
+  tags            Tag[]
 }
 
 // ============================================
@@ -69,6 +70,7 @@ model Game {
   proposals       GameProposal[]
   selectedEvents  Event[]         @relation("SelectedGame")
   seriesEntries   GameSeriesEntry[]
+  tags            GameTag[]
 
   @@index([ownerId])
 }
@@ -444,6 +446,50 @@ model PasswordResetToken {
 }
 
 // ── API Monitoring ──────────────────────────────────────────────
+
+// ============================================
+// TAGS / KATEGORIEN
+// ============================================
+
+model Tag {
+  id        String    @id @default(cuid())
+  name      String
+  ownerId   String
+  source    String    @default("manual") // manual, bgg
+  createdAt DateTime  @default(now())
+
+  owner     User      @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  games     GameTag[]
+
+  @@unique([name, ownerId])
+  @@index([ownerId])
+}
+
+model GameTag {
+  id      String @id @default(cuid())
+  gameId  String
+  tagId   String
+
+  game    Game   @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  tag     Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@unique([gameId, tagId])
+  @@index([tagId])
+}
+
+// ── Uploads ─────────────────────────────────────────────────────
+
+model Upload {
+  id          String   @id @default(cuid())
+  fileName    String
+  mimeType    String
+  sizeBytes   Int
+  storagePath String   // relative path under /public/uploads/
+  ownerId     String
+  createdAt   DateTime @default(now())
+
+  @@index([ownerId])
+}
 
 model ApiLog {
   id           String   @id @default(cuid())

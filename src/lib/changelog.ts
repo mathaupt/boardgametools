@@ -11,6 +11,21 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.16.0",
+    date: "2026-03-21",
+    title: "Tags, Bild-Upload & Gruppen-Statistiken",
+    description: "Drei große Features implementiert: Tags/Kategorien für Spiele mit BGG-Auto-Import, Bild-Upload-API und vollständige Gruppen-Statistiken mit Charts. Zusätzlich neue Unit Tests für API-Logger, Event-Share und Group-Share.",
+    changes: [
+      { type: "feature", text: "Tags/Kategorien: Spiele können nun mit Tags versehen werden. Neues Tag-Modell im Datenbankschema, Tags-API (CRUD), automatische Tag-Erstellung beim BGG-Import aus Kategorien" },
+      { type: "feature", text: "Bild-Upload: Neue Upload-API (/api/upload) für Bilder bis 5 MB (JPEG, PNG, WebP, GIF) mit Metadaten-Speicherung" },
+      { type: "feature", text: "Gruppen-Statistiken: Übersicht mit Mitgliedern, Umfragen, Kommentaren und Events. Monatliche Aktivitäts-Charts und Top-Kommentierer-Leaderboard" },
+      { type: "improvement", text: "Game-APIs liefern jetzt Tags in GET-Responses mit, PUT/POST akzeptieren tagNames-Parameter" },
+      { type: "internal", text: "24 neue Unit Tests: api-logger (8), event-share (8), group-share (8) – 14 Test-Dateien, 163 Tests gesamt" },
+      { type: "internal", text: "Prisma-Migration: Tag, GameTag und Upload Modelle hinzugefügt" },
+      { type: "internal", text: "SKILL.md: P3-28, P3-29, P3-30 als behoben markiert – nur noch 1 von 33 Findings offen" },
+    ],
+  },
+  {
     version: "0.15.2",
     date: "2026-03-21",
     title: "Dokumentation, Pagination-Bestätigung & Tests",

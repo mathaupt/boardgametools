@@ -25,6 +25,7 @@ export const GET = withApiLogging(async function GET(
         orderBy: { playedAt: "desc" },
         take: 10,
       },
+      tags: { include: { tag: true } },
     },
   });
 
@@ -56,7 +57,7 @@ export const PUT = withApiLogging(async function PUT(
 
   try {
     const body = await request.json();
-    const { name, description, minPlayers, maxPlayers, playTimeMinutes, complexity, bggId, imageUrl } = body;
+    const { name, description, minPlayers, maxPlayers, playTimeMinutes, complexity, bggId, imageUrl, tagNames } = body;
 
     const validationError = firstError(
       validateString(name, "Name", { required: false, max: 200 }),
@@ -84,7 +85,31 @@ export const PUT = withApiLogging(async function PUT(
       },
     });
 
-    return NextResponse.json(game);
+    // Update tags if provided
+    if (Array.isArray(tagNames)) {
+      // Remove existing tags
+      await prisma.gameTag.deleteMany({ where: { gameId: id } });
+      // Add new tags
+      for (const tagName of tagNames) {
+        const trimmed = String(tagName).trim();
+        if (!trimmed) continue;
+        const tag = await prisma.tag.upsert({
+          where: { name_ownerId: { name: trimmed, ownerId: session.user.id } },
+          create: { name: trimmed, ownerId: session.user.id, source: "manual" },
+          update: {},
+        });
+        await prisma.gameTag.create({
+          data: { gameId: game.id, tagId: tag.id },
+        });
+      }
+    }
+
+    const result = await prisma.game.findUnique({
+      where: { id: game.id },
+      include: { tags: { include: { tag: true } } },
+    });
+
+    return NextResponse.json(result);
   } catch (error) {
     console.error("Error updating game:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
