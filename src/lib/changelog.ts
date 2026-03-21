@@ -11,6 +11,19 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.14.2",
+    date: "2026-03-21",
+    title: "Architektur: Mega-Komponenten aufgeteilt",
+    description: "Große Komponenten (>400 Zeilen) in kleinere, wartbare Subkomponenten aufgeteilt. Verbessert Lesbarkeit, Testbarkeit und Entwicklerproduktivität.",
+    changes: [
+      { type: "internal", text: "monitoring-dashboard.tsx (906 → 144 Zeilen): Aufgeteilt in overview-tab, logs-tab und anomalies-tab" },
+      { type: "internal", text: "series/[id]/page.tsx (976 → 592 Zeilen): Filter/Sort-Bar und Entry-Cards in eigene Komponenten extrahiert" },
+      { type: "internal", text: "group-detail-client.tsx (989 → ~310 Zeilen): Poll-Voting in poll-card.tsx ausgelagert (vorherige Session)" },
+      { type: "internal", text: "barcode-scanner.tsx (825 → ~340 Zeilen): Cover-Scan und Ergebnis-Panel in eigene Komponenten (vorherige Session)" },
+      { type: "improvement", text: "Alle aufgeteilten Komponenten halten die 300-Zeilen-Regel ein" },
+    ],
+  },
+  {
     version: "0.14.1",
     date: "2026-03-21",
     title: "Spielreihen-Details & Prod-DB-Backup",

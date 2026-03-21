@@ -1,106 +1,51 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { SerializedPublicEvent } from "@/lib/public-event";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/components/ui/use-toast";
 import {
-  Users,
-  UserPlus,
   Loader2,
-  Copy,
   Trophy,
   Vote,
-  UserCircle,
   Gamepad2,
   ThumbsUp,
   ThumbsDown,
-  Plus,
-  Search,
-  Calendar,
-  Check,
-  HelpCircle,
-  X,
-  Crown,
-  Globe,
-  ExternalLink,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { GuestRegistrationPanel } from "./guest-registration-panel";
+import { DateVotingSection } from "./date-voting-section";
+import { CollectionGameProposer } from "./collection-game-proposer";
+import { BggGameSearch } from "./bgg-game-search";
+import type { Proposal, StoredGuestState } from "./types";
 
 interface PublicEventClientProps {
   token: string;
   event: SerializedPublicEvent;
 }
 
-type Proposal = SerializedPublicEvent["proposals"][number];
-type Guest = SerializedPublicEvent["guestParticipants"][number];
-
-type DateProposal = SerializedPublicEvent["dateProposals"][number];
-
 const STORAGE_PREFIX = "bgt-public-guest:";
-
-interface StoredGuestState {
-  id: string;
-  nickname: string;
-  votes?: string[];
-}
-
-interface BggSearchResult {
-  bggId: string;
-  name: string;
-  yearPublished?: string;
-  type?: string;
-  imageUrl?: string;
-}
-
-interface BggGameDetail {
-  bggId: string;
-  name: string;
-  imageUrl?: string;
-  minPlayers?: string;
-  maxPlayers?: string;
-  playTimeMinutes?: string;
-  complexity?: string;
-  rating?: string;
-  description?: string;
-}
 
 export function PublicEventClient({ token, event }: PublicEventClientProps) {
   const { toast } = useToast();
-  const [nickname, setNickname] = useState("");
-  const [joining, setJoining] = useState(false);
-  const [guestList, setGuestList] = useState<Guest[]>(event.guestParticipants);
   const [activeGuest, setActiveGuest] = useState<StoredGuestState | null>(null);
   const [guestVotes, setGuestVotes] = useState<Set<string>>(new Set());
   const [proposals, setProposals] = useState<Proposal[]>(event.proposals);
   const [userVoting, setUserVoting] = useState<string | null>(null);
   const [guestVoting, setGuestVoting] = useState<string | null>(null);
-  const [games, setGames] = useState<GameSummary[]>([]);
-  const [gamesLoading, setGamesLoading] = useState(false);
-  const [gameSearch, setGameSearch] = useState("");
-  const [gamesError, setGamesError] = useState<string | null>(null);
-  const [dateProposals, setDateProposals] = useState<DateProposal[]>(event.dateProposals);
-  const [dateVotingLoading, setDateVotingLoading] = useState<string | null>(null);
-
-  // BGG search state
-  const [bggQuery, setBggQuery] = useState("");
-  const [bggResults, setBggResults] = useState<BggSearchResult[]>([]);
-  const [bggLoading, setBggLoading] = useState(false);
-  const [bggDetail, setBggDetail] = useState<BggGameDetail | null>(null);
-  const [bggDetailLoading, setBggDetailLoading] = useState<string | null>(null);
-  const [bggProposing, setBggProposing] = useState(false);
-  const [proposeTab, setProposeTab] = useState<"collection" | "bgg">(
-    event.currentUserId ? "collection" : "bgg"
-  );
 
   const storageKey = `${STORAGE_PREFIX}${token}`;
   const isPast = useMemo(() => {
     return new Date(event.eventDate) < new Date();
   }, [event.eventDate]);
+
+  const proposedGameIds = useMemo(
+    () => new Set(proposals.map((p) => p.game.id)),
+    [proposals]
+  );
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -115,31 +60,7 @@ export function PublicEventClient({ token, event }: PublicEventClientProps) {
     }
   }, [storageKey]);
 
-  useEffect(() => {
-    if (!event.currentUserId) return;
-    const loadGames = async () => {
-      setGamesLoading(true);
-      setGamesError(null);
-      try {
-        const response = await fetch("/api/games", {
-          headers: { "Content-Type": "application/json" },
-        });
-        if (!response.ok) {
-          throw new Error("Konnte Sammlung nicht laden");
-        }
-        const data: GameSummary[] = await response.json();
-        setGames(data);
-      } catch (error) {
-        console.error("Error loading games", error);
-        setGamesError("Sammlung konnte nicht geladen werden");
-      } finally {
-        setGamesLoading(false);
-      }
-    };
-    loadGames();
-  }, [event.currentUserId]);
-
-  const persistGuest = (guest: StoredGuestState, votes: Set<string>) => {
+  const persistGuest = useCallback((guest: StoredGuestState, votes: Set<string>) => {
     if (typeof window === "undefined") return;
     const payload: StoredGuestState = {
       id: guest.id,
@@ -147,49 +68,16 @@ export function PublicEventClient({ token, event }: PublicEventClientProps) {
       votes: Array.from(votes),
     };
     window.localStorage.setItem(storageKey, JSON.stringify(payload));
-  };
+  }, [storageKey]);
 
-  const handleGuestJoin = async () => {
-    if (!nickname.trim()) {
-      toast({ title: "Nickname fehlt", description: "Bitte einen Spitznamen eingeben.", variant: "destructive" });
-      return;
-    }
-    setJoining(true);
-    try {
-      const response = await fetch(`/api/public/event/${token}/join`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ nickname: nickname.trim() }),
-      });
-      if (!response.ok) {
-        const data = await response.json().catch(() => null);
-        throw new Error(data?.error ?? "Beitritt fehlgeschlagen");
-      }
-      const participant: Guest = await response.json();
-      setGuestList((prev) => {
-        const exists = prev.some((guest) => guest.id === participant.id);
-        if (exists) {
-          return prev.map((guest) => (guest.id === participant.id ? participant : guest));
-        }
-        return [...prev, participant].sort((a, b) => a.createdAt.localeCompare(b.createdAt));
-      });
-      const stored: StoredGuestState = { id: participant.id, nickname: participant.nickname };
-      setActiveGuest(stored);
-      setGuestVotes(new Set());
-      persistGuest(stored, new Set());
-      setNickname("");
-      toast({ title: "Willkommen!", description: "Du bist jetzt für das Event registriert." });
-    } catch (error) {
-      console.error("Guest join error", error);
-      toast({
-        title: "Beitritt fehlgeschlagen",
-        description: error instanceof Error ? error.message : "Versuche es erneut.",
-        variant: "destructive",
-      });
-    } finally {
-      setJoining(false);
-    }
-  };
+  const handleGuestJoined = useCallback((guest: StoredGuestState) => {
+    setActiveGuest(guest);
+    setGuestVotes(new Set());
+  }, []);
+
+  const handleProposalAdded = useCallback((proposal: Proposal) => {
+    setProposals((prev) => [...prev, proposal].sort((a, b) => b.totalVotes - a.totalVotes));
+  }, []);
 
   const updateProposalState = (
     proposalId: string,
@@ -291,301 +179,15 @@ export function PublicEventClient({ token, event }: PublicEventClientProps) {
     }
   };
 
-  const availableGames = useMemo(() => {
-    if (!event.currentUserId) return [];
-    const proposedIds = new Set(proposals.map((proposal) => proposal.game.id));
-    return games.filter((game) => !proposedIds.has(game.id));
-  }, [event.currentUserId, games, proposals]);
-
-  const filteredGames = useMemo(() => {
-    if (!gameSearch.trim()) return availableGames;
-    return availableGames.filter((game) =>
-      game.name.toLowerCase().includes(gameSearch.trim().toLowerCase())
-    );
-  }, [availableGames, gameSearch]);
-
-  const handleProposeGame = async (gameId: string) => {
-    setGamesLoading(true);
-    try {
-      const response = await fetch(`/api/public/event/${token}/propose`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ gameId }),
-      });
-      if (!response.ok) {
-        const data = await response.json().catch(() => null);
-        throw new Error(data?.error ?? "Vorschlag fehlgeschlagen");
-      }
-      const proposal: Proposal = await response.json();
-      setProposals((prev) => [...prev, proposal].sort((a, b) => b.totalVotes - a.totalVotes));
-      toast({ title: "Spiel vorgeschlagen", description: "Danke für deinen Beitrag!" });
-    } catch (error) {
-      console.error("Propose error", error);
-      toast({
-        title: "Fehler beim Vorschlag",
-        description: error instanceof Error ? error.message : "Bitte versuche es erneut.",
-        variant: "destructive",
-      });
-    } finally {
-      setGamesLoading(false);
-    }
-  };
-
-  // BGG search handler
-  const handleBggSearch = async () => {
-    const q = bggQuery.trim();
-    if (q.length < 2) {
-      toast({ title: "Suchbegriff zu kurz", description: "Bitte mindestens 2 Zeichen eingeben.", variant: "destructive" });
-      return;
-    }
-    setBggLoading(true);
-    setBggResults([]);
-    setBggDetail(null);
-    try {
-      const res = await fetch(`/api/bgg?query=${encodeURIComponent(q)}`);
-      if (!res.ok) throw new Error("BGG-Suche fehlgeschlagen");
-      const data: BggSearchResult[] = await res.json();
-      setBggResults(data.slice(0, 20));
-    } catch (error) {
-      console.error("BGG search error", error);
-      toast({
-        title: "BGG-Suche fehlgeschlagen",
-        description: "Bitte versuche es erneut.",
-        variant: "destructive",
-      });
-    } finally {
-      setBggLoading(false);
-    }
-  };
-
-  // BGG game detail fetch
-  const handleBggDetail = async (bggId: string) => {
-    if (bggDetailLoading) return;
-    setBggDetailLoading(bggId);
-    try {
-      const res = await fetch(`/api/bgg?bggId=${encodeURIComponent(bggId)}`);
-      if (!res.ok) throw new Error("BGG-Details konnten nicht geladen werden");
-      const data: BggGameDetail = await res.json();
-      setBggDetail(data);
-    } catch (error) {
-      console.error("BGG detail error", error);
-      toast({
-        title: "Details laden fehlgeschlagen",
-        description: error instanceof Error ? error.message : "Bitte versuche es erneut.",
-        variant: "destructive",
-      });
-    } finally {
-      setBggDetailLoading(null);
-    }
-  };
-
-  // BGG propose handler (works for guests and logged-in users)
-  const handleBggPropose = async (bggId: string) => {
-    if (!activeGuest && !event.currentUserId) {
-      toast({
-        title: "Bitte zuerst registrieren",
-        description: "Registriere dich als Gast oder logge dich ein, um Spiele vorzuschlagen.",
-        variant: "destructive",
-      });
-      return;
-    }
-    setBggProposing(true);
-    try {
-      const res = await fetch(`/api/public/event/${token}/propose-bgg`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          bggId,
-          guestId: activeGuest?.id ?? undefined,
-        }),
-      });
-      if (!res.ok) {
-        const data = await res.json().catch(() => null);
-        throw new Error(data?.error ?? "Vorschlag fehlgeschlagen");
-      }
-      const proposal: Proposal = await res.json();
-      setProposals((prev) => [...prev, proposal].sort((a, b) => b.totalVotes - a.totalVotes));
-      setBggDetail(null);
-      toast({ title: "Spiel vorgeschlagen!", description: `"${proposal.game.name}" wurde zur Abstimmung hinzugefügt.` });
-    } catch (error) {
-      console.error("BGG propose error", error);
-      toast({
-        title: "Fehler beim Vorschlag",
-        description: error instanceof Error ? error.message : "Bitte versuche es erneut.",
-        variant: "destructive",
-      });
-    } finally {
-      setBggProposing(false);
-    }
-  };
-
-  const handleDateVote = async (dateProposalId: string, availability: string) => {
-    setDateVotingLoading(dateProposalId);
-    try {
-      if (event.currentUserId) {
-        // Logged-in user votes via authenticated API
-        const res = await fetch(`/api/events/${event.id}/date-proposals/vote`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ dateProposalId, availability }),
-        });
-        if (!res.ok) {
-          const data = await res.json().catch(() => null);
-          throw new Error(data?.error ?? "Vote fehlgeschlagen");
-        }
-      } else if (activeGuest) {
-        // Guest votes via public API
-        const res = await fetch(`/api/public/event/${token}/date-vote`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            guestId: activeGuest.id,
-            votes: [{ dateProposalId, availability }],
-          }),
-        });
-        if (!res.ok) {
-          const data = await res.json().catch(() => null);
-          throw new Error(data?.error ?? "Gast-Vote fehlgeschlagen");
-        }
-      }
-
-      // Optimistic local update
-      setDateProposals((prev) =>
-        prev.map((dp) => {
-          if (dp.id !== dateProposalId) return dp;
-          if (event.currentUserId) {
-            const existing = dp.votes.findIndex((v) => v.user.id === event.currentUserId);
-            const newVotes = [...dp.votes];
-            if (existing >= 0) {
-              newVotes[existing] = { ...newVotes[existing], availability };
-            } else {
-              newVotes.push({
-                id: "temp-" + Date.now(),
-                availability,
-                user: { id: event.currentUserId!, name: "Du", email: "" },
-              });
-            }
-            return { ...dp, votes: newVotes };
-          } else if (activeGuest) {
-            const existing = dp.guestVotes.findIndex((v) => v.guest.id === activeGuest.id);
-            const newGuestVotes = [...dp.guestVotes];
-            if (existing >= 0) {
-              newGuestVotes[existing] = { ...newGuestVotes[existing], availability };
-            } else {
-              newGuestVotes.push({
-                id: "temp-" + Date.now(),
-                availability,
-                guest: { id: activeGuest.id, nickname: activeGuest.nickname },
-              });
-            }
-            return { ...dp, guestVotes: newGuestVotes };
-          }
-          return dp;
-        })
-      );
-    } catch (error) {
-      console.error("Date vote error", error);
-      toast({
-        title: "Termin-Vote fehlgeschlagen",
-        description: error instanceof Error ? error.message : "Bitte versuche es erneut.",
-        variant: "destructive",
-      });
-    } finally {
-      setDateVotingLoading(null);
-    }
-  };
-
   return (
     <div className="space-y-6">
-      <section className="grid gap-6 lg:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <UserPlus className="h-5 w-5" />
-              Als Gast teilnehmen
-            </CardTitle>
-            <CardDescription>
-              Nickname eingeben, um abstimmen zu können
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {activeGuest ? (
-              <div className="rounded-lg border border-success bg-success/10 p-4 text-sm">
-                <p className="font-semibold text-success">Willkommen zurück, {activeGuest.nickname}!</p>
-                <p className="text-muted-foreground">
-                  Du kannst jetzt als Gast abstimmen. Deine Stimme wird unter deinem Nickname gezählt.
-                </p>
-              </div>
-            ) : (
-              <>
-                <label htmlFor="guest-nickname" className="text-sm font-medium text-muted-foreground">
-                  Spitzname
-                </label>
-                <Input
-                  id="guest-nickname"
-                  data-testid="guest-nickname-input"
-                  placeholder="z.B. W0rkerPlacementPro"
-                  value={nickname}
-                  onChange={(event) => setNickname(event.target.value)}
-                  disabled={joining}
-                  className="bg-background/80"
-                />
-                <Button
-                  data-testid="guest-join-button"
-                  onClick={handleGuestJoin}
-                  disabled={joining || nickname.trim().length < 2}
-                  className="w-full"
-                >
-                  {joining ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <UserPlus className="mr-2 h-4 w-4" />}
-                  {joining ? "Beitritt läuft..." : "Als Gast registrieren"}
-                </Button>
-              </>
-            )}
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <Users className="h-5 w-5" />
-              Gästeliste ({guestList.length})
-            </CardTitle>
-            <CardDescription>
-              Alle öffentlichen Teilnehmer:innen
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3 max-h-[320px] overflow-y-auto pr-1">
-            {guestList.length === 0 ? (
-              <p className="text-sm text-muted-foreground">Noch keine Gäste registriert.</p>
-            ) : (
-              guestList.map((guest) => (
-                <div
-                  key={guest.id}
-                  className={cn(
-                    "flex items-center justify-between rounded-lg border border-border/60 bg-background/60 px-3 py-2",
-                    activeGuest?.id === guest.id && "border-success bg-success/10"
-                  )}
-                >
-                  <div className="flex items-center gap-2">
-                    <div className="rounded-full bg-muted p-2 text-muted-foreground">
-                      <UserCircle className="h-4 w-4" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium">{guest.nickname}</p>
-                      <p className="text-xs text-muted-foreground">
-                        Beigetreten am {new Date(guest.createdAt).toLocaleDateString("de-DE")}
-                      </p>
-                    </div>
-                  </div>
-                  <Badge variant="secondary" className="text-xs">
-                    {guest.votesCount} Votes
-                  </Badge>
-                </div>
-              ))
-            )}
-          </CardContent>
-        </Card>
-      </section>
+      <GuestRegistrationPanel
+        token={token}
+        activeGuest={activeGuest}
+        initialGuestList={event.guestParticipants}
+        onGuestJoined={handleGuestJoined}
+        persistGuest={persistGuest}
+      />
 
       <section>
         <div className="flex items-center justify-between gap-4">
@@ -719,434 +321,34 @@ export function PublicEventClient({ token, event }: PublicEventClientProps) {
       </section>
 
       {/* Terminabstimmung */}
-      {dateProposals.length > 0 && (
-        <section>
-          <Card className="border-border/60 bg-background/60">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-lg text-foreground">
-                <Calendar className="h-5 w-5" />
-                Terminabstimmung
-              </CardTitle>
-              <CardDescription>
-                Stimme ab, welche Termine für dich passen.
-                {event.selectedDate && (
-                  <span className="ml-2 text-success font-medium">
-                    Gewählter Termin: {new Date(event.selectedDate).toLocaleDateString("de-DE", {
-                      weekday: "long",
-                      day: "numeric",
-                      month: "long",
-                      year: "numeric",
-                    })}
-                  </span>
-                )}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm border-collapse">
-                  <thead>
-                    <tr className="border-b border-border">
-                      <th className="text-left p-2 min-w-[140px] text-muted-foreground">Datum</th>
-                      <th className="text-center p-2 min-w-[60px] text-muted-foreground">Zusagen</th>
-                      {(activeGuest || event.currentUserId) && !isPast && (
-                        <th className="text-center p-2 min-w-[180px] text-muted-foreground">Deine Stimme</th>
-                      )}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {dateProposals.map((dp) => {
-                      const d = new Date(dp.date);
-                      const yesCount = [...dp.votes, ...dp.guestVotes].filter(
-                        (v) => v.availability === "yes"
-                      ).length;
-                      const maybeCount = [...dp.votes, ...dp.guestVotes].filter(
-                        (v) => v.availability === "maybe"
-                      ).length;
-                      const isSelected =
-                        event.selectedDate &&
-                        new Date(event.selectedDate).toDateString() === d.toDateString();
-
-                      // Find current guest or user vote
-                      let myAvailability: string | null = null;
-                      if (event.currentUserId) {
-                        const uv = dp.votes.find((v) => v.user.id === event.currentUserId);
-                        myAvailability = uv?.availability ?? null;
-                      } else if (activeGuest) {
-                        const gv = dp.guestVotes.find((v) => v.guest.id === activeGuest.id);
-                        myAvailability = gv?.availability ?? null;
-                      }
-
-                      return (
-                        <tr
-                          key={dp.id}
-                          className={cn(
-                            "border-b border-border/50 hover:bg-muted",
-                            isSelected && "bg-success/20"
-                          )}
-                        >
-                          <td className="p-2">
-                            <div className="flex items-center gap-2">
-                              {isSelected && <Crown className="h-4 w-4 text-success" />}
-                              <div>
-                                <div className="font-medium text-foreground">
-                                  {d.toLocaleDateString("de-DE", {
-                                    weekday: "short",
-                                    day: "numeric",
-                                    month: "short",
-                                  })}
-                                </div>
-                                <div className="text-xs text-muted-foreground">
-                                  {d.toLocaleDateString("de-DE", { year: "numeric" })}
-                                </div>
-                              </div>
-                            </div>
-                          </td>
-                          <td className="text-center p-2">
-                            <div className="flex items-center justify-center gap-1">
-                              <Badge variant="secondary" className="text-xs bg-success/40 text-success">
-                                {yesCount}
-                              </Badge>
-                              {maybeCount > 0 && (
-                                <Badge variant="secondary" className="text-xs bg-warning/40 text-warning">
-                                  {maybeCount}
-                                </Badge>
-                              )}
-                            </div>
-                          </td>
-                          {(activeGuest || event.currentUserId) && !isPast && (
-                            <td className="text-center p-2">
-                              {dateVotingLoading === dp.id ? (
-                                <Loader2 className="h-4 w-4 animate-spin mx-auto" />
-                              ) : (
-                                <div className="flex items-center justify-center gap-1">
-                                  {(["yes", "maybe", "no"] as const).map((avail) => {
-                                    const icon =
-                                      avail === "yes" ? <Check className="h-4 w-4 text-success" /> :
-                                      avail === "maybe" ? <HelpCircle className="h-4 w-4 text-warning" /> :
-                                      <X className="h-4 w-4 text-destructive" />;
-                                    const colors =
-                                      avail === "yes" ? "border-success bg-success/40" :
-                                      avail === "maybe" ? "border-warning bg-warning/40" :
-                                      "border-destructive bg-destructive/40";
-                                    const isActive = myAvailability === avail;
-                                    return (
-                                      <button
-                                        key={avail}
-                                        onClick={() => handleDateVote(dp.id, avail)}
-                                        className={cn(
-                                          "w-8 h-8 rounded-full border-2 flex items-center justify-center transition-colors",
-                                          isActive ? colors : "border-border hover:border-border/80"
-                                        )}
-                                        title={
-                                          avail === "yes" ? "Ja, passt" :
-                                          avail === "maybe" ? "Vielleicht" :
-                                          "Nein, geht nicht"
-                                        }
-                                        aria-label={
-                                          avail === "yes" ? "Ja, passt" :
-                                          avail === "maybe" ? "Vielleicht" :
-                                          "Nein, geht nicht"
-                                        }
-                                      >
-                                        {icon}
-                                      </button>
-                                    );
-                                  })}
-                                </div>
-                              )}
-                            </td>
-                          )}
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            </CardContent>
-          </Card>
-        </section>
-      )}
+      <DateVotingSection
+        eventId={event.id}
+        token={token}
+        currentUserId={event.currentUserId}
+        activeGuest={activeGuest}
+        isPast={isPast}
+        selectedDate={event.selectedDate}
+        initialDateProposals={event.dateProposals}
+      />
 
       {event.currentUserId && (
-        <section>
-          <Card className="border-border/60 bg-background/70">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-lg">
-                <Plus className="h-5 w-5" />
-                Spiel aus Sammlung vorschlagen
-              </CardTitle>
-              <CardDescription>
-                Wähle ein Spiel aus deiner Sammlung aus, um es der Abstimmung hinzuzufügen.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex flex-col gap-2 sm:flex-row">
-                <Input
-                  placeholder="Spiel suchen ..."
-                  value={gameSearch}
-                  onChange={(event) => setGameSearch(event.target.value)}
-                  className="bg-background"
-                />
-                <Button
-                  variant="outline"
-                  onClick={() => setGameSearch("")}
-                  title="Suche zurücksetzen"
-                >
-                  <Search className="mr-2 h-4 w-4" />
-                  Reset
-                </Button>
-              </div>
-              {gamesError && <p className="text-sm text-destructive">{gamesError}</p>}
-              <div className="space-y-3 max-h-[320px] overflow-y-auto pr-1">
-                {gamesLoading ? (
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    Sammlung wird geladen...
-                  </div>
-                ) : filteredGames.length === 0 ? (
-                  <p className="text-sm text-muted-foreground">
-                    {availableGames.length === 0
-                      ? "Alle Spiele deiner Sammlung sind bereits im Voting."
-                      : "Keine Spiele gefunden."}
-                  </p>
-                ) : (
-                  filteredGames.map((game) => (
-                    <div
-                      key={game.id}
-                      className="flex items-center justify-between rounded-lg border border-border/60 bg-background/80 px-3 py-2"
-                    >
-                      <div>
-                        <p className="font-medium text-sm text-foreground">{game.name}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {game.minPlayers ?? "?"}-{game.maxPlayers ?? "?"} Spieler
-                        </p>
-                      </div>
-                      <Button
-                        size="icon"
-                        variant="secondary"
-                        disabled={gamesLoading}
-                        onClick={() => handleProposeGame(game.id)}
-                        data-testid={`propose-${game.id}`}
-                        title="Spiel vorschlagen"
-                        className="h-8 w-8 sm:h-8 sm:w-auto sm:px-3"
-                      >
-                        <Plus className="h-4 w-4 sm:mr-1 sm:h-3 sm:w-3" />
-                        <span className="hidden sm:inline text-xs">Vorschlagen</span>
-                      </Button>
-                    </div>
-                  ))
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        </section>
+        <CollectionGameProposer
+          token={token}
+          currentUserId={event.currentUserId}
+          proposedGameIds={proposedGameIds}
+          onProposalAdded={handleProposalAdded}
+        />
       )}
 
       {/* BGG-Import: available to everyone (guests + logged-in) */}
       {!isPast && (
-        <section>
-          <Card className="border-border/60 bg-background/70">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-lg">
-                <Globe className="h-5 w-5" />
-                Spiel von BoardGameGeek vorschlagen
-              </CardTitle>
-              <CardDescription>
-                Suche auf BoardGameGeek nach einem Spiel und schlage es direkt vor &ndash; ohne Account.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {!activeGuest && !event.currentUserId && (
-                <div className="rounded-lg border border-warning bg-warning/10 p-3 text-sm text-muted-foreground">
-                  Bitte registriere dich oben als Gast, um Spiele vorschlagen zu können.
-                </div>
-              )}
-
-              <div className="flex flex-col gap-2 sm:flex-row">
-                <Input
-                  placeholder="Spielname eingeben (z.B. Catan, Azul, ...)"
-                  value={bggQuery}
-                  onChange={(e) => setBggQuery(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && handleBggSearch()}
-                  className="bg-background"
-                  disabled={bggLoading}
-                />
-                <Button
-                  onClick={handleBggSearch}
-                  disabled={bggLoading || bggQuery.trim().length < 2}
-                >
-                  {bggLoading ? (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  ) : (
-                    <Search className="mr-2 h-4 w-4" />
-                  )}
-                  {bggLoading ? "Suche..." : "BGG Suchen"}
-                </Button>
-              </div>
-
-              {/* BGG Detail View */}
-              {bggDetail && (
-                <div className="rounded-lg border border-primary/30 bg-primary/5 p-4 space-y-3">
-                  <div className="flex gap-4">
-                    {bggDetail.imageUrl && (
-                      <Image
-                        src={bggDetail.imageUrl}
-                        alt={bggDetail.name}
-                        width={80}
-                        height={80}
-                        className="rounded-lg object-cover flex-shrink-0"
-                      />
-                    )}
-                    <div className="flex-1 min-w-0">
-                      <h4 className="font-semibold text-foreground">{bggDetail.name}</h4>
-                      <div className="flex flex-wrap gap-2 mt-1 text-xs text-muted-foreground">
-                        {bggDetail.minPlayers && bggDetail.maxPlayers && (
-                          <span>{bggDetail.minPlayers}-{bggDetail.maxPlayers} Spieler</span>
-                        )}
-                        {bggDetail.playTimeMinutes && <span>• {bggDetail.playTimeMinutes} Min.</span>}
-                        {bggDetail.complexity && (
-                          <span>• Komplexität: {parseFloat(bggDetail.complexity).toFixed(1)}/5</span>
-                        )}
-                        {bggDetail.rating && (
-                          <span>• Rating: {parseFloat(bggDetail.rating).toFixed(1)}/10</span>
-                        )}
-                      </div>
-                      {bggDetail.description && (
-                        <p className="text-xs text-muted-foreground mt-2 line-clamp-2">
-                          {bggDetail.description}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button
-                      onClick={() => handleBggPropose(bggDetail.bggId)}
-                      disabled={bggProposing || (!activeGuest && !event.currentUserId)}
-                      className="flex-1"
-                    >
-                      {bggProposing ? (
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      ) : (
-                        <Plus className="mr-2 h-4 w-4" />
-                      )}
-                      {bggProposing ? "Wird vorgeschlagen..." : "Vorschlagen"}
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={() => setBggDetail(null)}
-                      title="Schließen"
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      asChild
-                      title="Auf BGG ansehen"
-                    >
-                      <a
-                        href={`https://boardgamegeek.com/boardgame/${bggDetail.bggId}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        <ExternalLink className="h-4 w-4" />
-                      </a>
-                    </Button>
-                  </div>
-                </div>
-              )}
-
-              {/* BGG Search Results */}
-              {bggResults.length > 0 && !bggDetail && (
-                <div className="space-y-2 max-h-[400px] overflow-y-auto pr-1">
-                  <p className="text-xs text-muted-foreground">
-                    {bggResults.length} Ergebnis{bggResults.length !== 1 ? "se" : ""} gefunden
-                  </p>
-                  {bggResults.map((result) => (
-                    <div
-                      key={result.bggId}
-                      className="flex items-center gap-3 rounded-lg border border-border/60 bg-background/80 px-3 py-2"
-                    >
-                      <div className="flex-shrink-0">
-                        {result.imageUrl ? (
-                          <Image
-                            src={result.imageUrl}
-                            alt={result.name}
-                            width={40}
-                            height={40}
-                            className="rounded object-cover"
-                          />
-                        ) : (
-                          <div className="flex h-10 w-10 items-center justify-center rounded bg-muted/40">
-                            <Gamepad2 className="h-5 w-5 text-muted-foreground" />
-                          </div>
-                        )}
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <p className="font-medium text-sm text-foreground truncate">
-                          {result.name}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          {result.yearPublished ? `(${result.yearPublished})` : ""} BGG #{result.bggId}
-                        </p>
-                      </div>
-                      <div className="flex gap-1.5 flex-shrink-0 ml-2">
-                        <Button
-                          size="icon"
-                          variant="outline"
-                          onClick={() => handleBggDetail(result.bggId)}
-                          disabled={bggDetailLoading === result.bggId}
-                          title="Details anzeigen"
-                          className="h-8 w-8 sm:h-8 sm:w-auto sm:px-3"
-                        >
-                          {bggDetailLoading === result.bggId ? (
-                            <Loader2 className="h-4 w-4 animate-spin sm:mr-1 sm:h-3 sm:w-3" />
-                          ) : (
-                            <Search className="h-4 w-4 sm:mr-1 sm:h-3 sm:w-3" />
-                          )}
-                          <span className="hidden sm:inline text-xs">Details</span>
-                        </Button>
-                        <Button
-                          size="icon"
-                          variant="secondary"
-                          onClick={() => handleBggPropose(result.bggId)}
-                          disabled={bggProposing || (!activeGuest && !event.currentUserId)}
-                          title="Spiel vorschlagen"
-                          className="h-8 w-8 sm:h-8 sm:w-auto sm:px-3"
-                        >
-                          {bggProposing ? (
-                            <Loader2 className="h-4 w-4 animate-spin sm:mr-1 sm:h-3 sm:w-3" />
-                          ) : (
-                            <Plus className="h-4 w-4 sm:mr-1 sm:h-3 sm:w-3" />
-                          )}
-                          <span className="hidden sm:inline text-xs">Vorschlagen</span>
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {bggResults.length === 0 && !bggLoading && bggQuery.trim().length >= 2 && !bggDetail && (
-                <p className="text-sm text-muted-foreground text-center py-4">
-                  Keine Ergebnisse gefunden. Versuche einen anderen Suchbegriff.
-                </p>
-              )}
-            </CardContent>
-          </Card>
-        </section>
+        <BggGameSearch
+          token={token}
+          activeGuestId={activeGuest?.id ?? null}
+          currentUserId={event.currentUserId}
+          onProposalAdded={handleProposalAdded}
+        />
       )}
     </div>
   );
-}
-
-interface GameSummary {
-  id: string;
-  name: string;
-  minPlayers: number | null;
-  maxPlayers: number | null;
-  playTimeMinutes: number | null;
-  complexity?: number | null;
-  imageUrl?: string | null;
 }

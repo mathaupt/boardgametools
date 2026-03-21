@@ -442,8 +442,8 @@ const isValid = await compare(inputPassword, group.password);
 
 ## Evaluator-Feedback (automatisch generiert)
 
-> Letzter Lauf: 2026-03-21 08:15:12
-> Gesamt-Score: **7.4/10**
+> Letzter Lauf: 2026-03-21 08:25:07
+> Gesamt-Score: **7.9/10**
 
 ### Kategorie-Scores
 
@@ -454,11 +454,11 @@ const isValid = await compare(inputPassword, group.password);
 | Architektur | **5.7/10** | 10 | 8 | 0 | 7.8 | 2 |
 | Performance | **9/10** | 10 | 10 | 10 | 10 | 3.3 |
 | API Design | **9/10** | 10 | 10 | 10 | 10 | 3.3 |
-| Testing | **1.5/10** | 10 | 0 | 0 | 0 | 0 |
+| Testing | **6.5/10** | 10 | 10 | 0 | 10 | 0 |
 | Datenbank | **9.3/10** | 10 | 10 | 10 | 10 | 5 |
-| Konzept-Konformität | **4.8/10** | 10 | 2.5 | 10 | 2.7 | 0 |
+| Konzept-Konformität | **5.5/10** | 10 | 3.8 | 10 | 4 | 0 |
 
-### Erledigte Findings (24)
+### Erledigte Findings (26)
 
 - ✅ **P0-1** Debug-Routes in Produktion: NODE_ENV Guard vorhanden
 - ✅ **P0-2** DB-Init ohne Auth: Auth-Check vorhanden
@@ -477,7 +477,9 @@ const isValid = await compare(inputPassword, group.password);
 - ✅ **P2-19** Duplikat: Prisma-Client-Dateien: Duplikat entfernt
 - ✅ **P2-20** Duplikat: BGG-Logik: Kein dupliziertes XML-Parsing
 - ✅ **P2-21** next/image statt <img>: Keine <img> Tags
+- ✅ **P2-22** Fehlende Unit Tests: 10 Test-Dateien
 - ✅ **P2-23** Inkonsistente Error-Responses: Konsistent: 368 error, 12 message
+- ✅ **P2-24** CONCEPT.md aktualisieren: Tech-Stack aktuell
 - ✅ **P2-25** Pendende Invites dupliziert: Shared Query extrahiert
 - ✅ **P2-27** Prisma Transactions fehlen: $transaction wird verwendet
 - ✅ **P3-31** accessibility Skill fehlt: Accessibility Skill vorhanden
@@ -485,14 +487,12 @@ const isValid = await compare(inputPassword, group.password);
 - ✅ **P3-33** Links zu /terms und /privacy fehlen: Beide Seiten vorhanden
 - ✅ **P3-35** Fehlende DB-Indices: 13 @@index Definitionen
 
-### Offene Findings (9)
+### Offene Findings (7)
 
 - ❌ **P1-10** Statistiken komplett fehlend: Weder Seite noch API vorhanden
 - ❌ **P1-11** Session-Detailseite fehlt: Keine Session-Detailseite
 - ❌ **P1-15** Admin kann sich selbst deaktivieren: Keine Self-Protection
 - ❌ **P2-17** Mega-Komponenten aufteilen: public-event-client.tsx: 1153 Zeilen, group-detail-client.tsx: 990 Zeilen
-- ❌ **P2-22** Fehlende Unit Tests: Nur 3 Test-Dateien
-- ❌ **P2-24** CONCEPT.md aktualisieren: Tech-Stack veraltet (Next.js 14, SQLite?)
 - ❌ **P3-28** Tags/Kategorien fehlen: Kein Tag/Category-Model im Schema
 - ❌ **P3-29** Bild-Upload fehlt: Kein Bild-Upload implementiert
 - ❌ **P3-30** Gruppen-Statistiken fehlen: Keine Gruppen-Statistiken
@@ -500,7 +500,7 @@ const isValid = await compare(inputPassword, group.password);
 ### Empfohlene Reviewer-Anpassungen
 
 - ➕ NEU: "Große Dateien (>400 Zeilen)" – public-event-client.tsx (1152), group-detail-client.tsx (989), page.tsx (976), monitoring-dashboard.tsx (906), barcode-scanner.tsx (825), page.tsx (760), date-poll-client.tsx (731), page.tsx (693), profile-client.tsx (588), page.tsx (471), page.tsx (423) (Schwelle: 5)
-- ➕ NEU: "Test Coverage Lücken" – 1 von 18 lib-Dateien getestet (Schwelle: 5)
+- ➕ NEU: "Test Coverage Lücken" – 6 von 18 lib-Dateien getestet (Schwelle: 5)
 - 📝 Handlungsfähigkeit in "TypeScript" niedrig (0/10) – konkretere Fix-Vorschläge ergänzen
 - 📝 Abdeckung in "Architektur" niedrig (0/10) – weitere Prüfpunkte hinzufügen
 - 📝 Handlungsfähigkeit in "Architektur" niedrig (2/10) – konkretere Fix-Vorschläge ergänzen
@@ -508,6 +508,4 @@ const isValid = await compare(inputPassword, group.password);
 - 📝 Handlungsfähigkeit in "API Design" niedrig (3.3/10) – konkretere Fix-Vorschläge ergänzen
 - 📝 Abdeckung in "Testing" niedrig (0/10) – weitere Prüfpunkte hinzufügen
 - 📝 Handlungsfähigkeit in "Testing" niedrig (0/10) – konkretere Fix-Vorschläge ergänzen
-- ⬆️ Umsetzungsrate in "Testing" kritisch niedrig (0/10) – Prioritäten eskalieren
 - 📝 Handlungsfähigkeit in "Konzept-Konformität" niedrig (0/10) – konkretere Fix-Vorschläge ergänzen
-- ⬆️ Umsetzungsrate in "Konzept-Konformität" kritisch niedrig (2.7/10) – Prioritäten eskalieren
