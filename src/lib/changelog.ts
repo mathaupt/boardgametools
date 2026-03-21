@@ -11,6 +11,29 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.14.0",
+    date: "2026-03-21",
+    title: "Code-Qualität, Sicherheit & Review-Evaluator",
+    description: "Umfassendes Code-Review mit Sicherheitshärtung, Performance-Optimierung, Type-Safety-Verbesserungen und einem neuen automatischen Review-Evaluator für kontinuierliche Codequalität.",
+    changes: [
+      { type: "feature", text: "Review-Evaluator: automatisches Bewertungsskript für Code-Review-Findings mit 5 Dimensionen (Präzision, Aktualität, Abdeckung, Umsetzungsrate, Handlungsfähigkeit)" },
+      { type: "feature", text: "Pre-Commit Hook prüft jetzt automatisch: Tests → Security Check → Review Evaluator" },
+      { type: "feature", text: "Abstimmung beenden: neuer Button und API-Endpoint zum Schließen der Event-Abstimmung" },
+      { type: "feature", text: "Datenschutz- und Nutzungsbedingungen-Seiten hinzugefügt (/terms, /privacy)" },
+      { type: "feature", text: "Accessibility-Skill mit WCAG 2.1 AA Regeln dokumentiert" },
+      { type: "improvement", text: "Input-Validierung mit Längenbegrenzungen auf allen öffentlichen und authentifizierten API-Routes" },
+      { type: "improvement", text: "Rate-Limiting auf Auth-Endpoints (Registrierung, Passwort-Reset)" },
+      { type: "improvement", text: "19 <img>-Tags auf next/image umgestellt für bessere Bildoptimierung" },
+      { type: "improvement", text: "19 `any`-Types durch typisierte Interfaces ersetzt (SerializedGroup, BGGGameDetail u.a.)" },
+      { type: "fix", text: "Datenbank-Transaktionen für Poll-Votes verhindern Datenverlust bei gleichzeitigen Abstimmungen" },
+      { type: "fix", text: "voterName-Trim-Inkonsistenz in öffentlicher Vote-Route behoben" },
+      { type: "internal", text: "7 neue Datenbank-Indizes auf häufig abgefragten Foreign Keys" },
+      { type: "internal", text: "Composite-Index auf ApiLog für P95-Percentile-Query-Optimierung" },
+      { type: "internal", text: "Geteilte getPendingInvites()-Query extrahiert (Deduplizierung Dashboard + Events)" },
+      { type: "internal", text: "SQLite-DB-Dateien und Backups aus Git entfernt (.gitignore erweitert)" },
+    ],
+  },
+  {
     version: "0.13.2",
     date: "2026-03-17",
     title: "Mobile Responsiveness",
