@@ -11,6 +11,22 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.14.1",
+    date: "2026-03-21",
+    title: "Spielreihen-Details & Prod-DB-Backup",
+    description: "Erweiterte Spielreihen-Einträge mit Spielzeit, Spieleranzahl, Punkte und Erfolgs-Tracking. Neues automatisches Backup-System für die Produktions-Datenbank vor jedem Push.",
+    changes: [
+      { type: "feature", text: "Spielreihen: Spielzeit, Spieleranzahl, Punkte und Erfolgreich/Nicht-geschafft pro Eintrag erfassbar" },
+      { type: "feature", text: "Spielreihen: Aufklappbarer Detail-Bereich mit Inline-Editing (Speichern bei Fokusverlust)" },
+      { type: "feature", text: "Spielreihen: Erfolgreich/Nicht-geschafft Badges und Zusammenfassungs-Icons in der Kartenansicht" },
+      { type: "feature", text: "Prod-DB-Backup: Automatisches gzip-komprimiertes SQL-Backup vor jedem git push (Pre-Push Hook)" },
+      { type: "feature", text: "npm run backup:prod – manuelles Backup der Produktions-Datenbank jederzeit ausführbar" },
+      { type: "improvement", text: "Backup-Rotation: Maximal 10 Backups werden behalten, ältere automatisch aufgeräumt" },
+      { type: "internal", text: "Prisma-Migration: 4 neue Felder auf GameSeriesEntry (playTimeMinutes, playerCount, score, successful)" },
+      { type: "internal", text: "API: PUT /api/series/[id]/entries/[entryId] akzeptiert und validiert neue Felder, cleared bei Un-Play" },
+    ],
+  },
+  {
     version: "0.14.0",
     date: "2026-03-21",
     title: "Code-Qualität, Sicherheit & Review-Evaluator",
