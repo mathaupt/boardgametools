@@ -523,7 +523,7 @@ const isValid = await compare(inputPassword, group.password);
 
 ## Evaluator-Feedback (automatisch generiert)
 
-> Letzter Lauf: 2026-03-21 15:56:16
+> Letzter Lauf: 2026-03-21 15:56:59
 > Gesamt-Score: **10/10**
 
 ### Kategorie-Scores
@@ -579,7 +579,7 @@ const isValid = await compare(inputPassword, group.password);
 - ✅ **SEC-44** Fehlende Security Headers: CSP, X-Frame-Options, X-Content-Type-Options vorhanden
 - ✅ **SEC-45** npm audit: Bekannte Vulnerabilities: Keine Prod-Vulnerabilities (4 high nur in devDeps, 0 moderate)
 - ✅ **SEC-46** XSS: dangerouslySetInnerHTML ohne Sanitization: Kein dangerouslySetInnerHTML verwendet
-- ✅ **PERF-47** Schwere Libraries ohne Dynamic Import: 3 dynamic() + 6 await import() Lazy-Loads
+- ✅ **PERF-47** Schwere Libraries ohne Dynamic Import: 4 dynamic() + 7 await import() Lazy-Loads
 - ✅ **PERF-48** Keine Bundle-Analyse konfiguriert: @next/bundle-analyzer konfiguriert
 - ✅ **PERF-49** Keine API Caching Headers: 3 Caching-Konfigurationen gefunden
 - ✅ **BP-50** ESLint Warnings/Errors: ESLint clean

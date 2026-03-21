@@ -228,8 +228,9 @@ export interface SerializedPublicEvent {
   currentUserId: string | null;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function serializePublicEvent(
-  event: PublicEventRaw,
+  event: any,
   currentUserId: string | null
 ): SerializedPublicEvent {
   return {

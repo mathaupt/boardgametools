@@ -17,11 +17,8 @@ let upstashRatelimit: {
 async function getUpstashRatelimit() {
   if (upstashRatelimit) return upstashRatelimit;
   try {
-    // Dynamic package names prevent Vite from resolving at build time
-    const ratelimitPkg = "@upstash/ratelimit";
-    const redisPkg = "@upstash/redis";
-    const { Ratelimit } = await import(/* @vite-ignore */ ratelimitPkg);
-    const { Redis } = await import(/* @vite-ignore */ redisPkg);
+    const { Ratelimit } = await import("@upstash/ratelimit");
+    const { Redis } = await import("@upstash/redis");
     upstashRatelimit = new Ratelimit({
       redis: Redis.fromEnv(),
       limiter: Ratelimit.slidingWindow(10, "60 s"),

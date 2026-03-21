@@ -11,6 +11,18 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.17.3",
+    date: "2026-03-21",
+    title: "Vercel Build-Fixes",
+    description: "Build-Fehler für Vercel-Deployment behoben: fehlende Packages, Next.js 16 Kompatibilität und TypeScript-Fixes.",
+    changes: [
+      { type: "fix", text: "Fehlende Packages installiert: @vercel/blob, @upstash/ratelimit, @upstash/redis" },
+      { type: "fix", text: "Next.js 16: ssr:false mit next/dynamic in Server Components durch direkte Imports ersetzt" },
+      { type: "fix", text: "withApiLogging-Wrapper kompatibel mit Next.js 16 Route-Handler-Typen" },
+      { type: "fix", text: "TypeScript-Fehler bei serializePublicEvent Prisma-Type-Inference behoben" },
+    ],
+  },
+  {
     version: "0.17.2",
     date: "2026-03-21",
     title: "Perfekter Review-Score: 10/10",
