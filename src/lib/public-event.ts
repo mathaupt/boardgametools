@@ -25,6 +25,16 @@ interface PublicEventRaw {
     maxPlayers: number | null;
     playTimeMinutes: number | null;
   } | null;
+  winningProposal: {
+    id: string;
+    bggId: string | null;
+    bggName: string | null;
+    bggImageUrl: string | null;
+    bggMinPlayers: number | null;
+    bggMaxPlayers: number | null;
+    bggPlayTimeMinutes: number | null;
+    gameId: string | null;
+  } | null;
   proposals: Array<{
     id: string;
     bggId: string | null;
@@ -89,6 +99,18 @@ export const buildPublicEventInclude = (userId?: string | null): Prisma.EventInc
       minPlayers: true,
       maxPlayers: true,
       playTimeMinutes: true,
+    },
+  },
+  winningProposal: {
+    select: {
+      id: true,
+      bggId: true,
+      bggName: true,
+      bggImageUrl: true,
+      bggMinPlayers: true,
+      bggMaxPlayers: true,
+      bggPlayTimeMinutes: true,
+      gameId: true,
     },
   },
   proposals: {
@@ -162,6 +184,11 @@ export interface SerializedPublicEvent {
     maxPlayers: number | null;
     playTimeMinutes: number | null;
   } | null;
+  winningProposal: {
+    id: string;
+    bggName: string | null;
+    bggImageUrl: string | null;
+  } | null;
   proposals: Array<{
     id: string;
     game: {
@@ -220,6 +247,11 @@ export function serializePublicEvent(
       status: invite.status,
     })),
     selectedGame: event.selectedGame,
+    winningProposal: event.winningProposal ? {
+      id: event.winningProposal.id,
+      bggName: event.winningProposal.bggName,
+      bggImageUrl: event.winningProposal.bggImageUrl,
+    } : null,
     proposals: event.proposals.map((proposal: PublicEventRaw["proposals"][number]) => {
       const registeredVotes = proposal._count.votes;
       const guestVotes = proposal._count.guestVotes;

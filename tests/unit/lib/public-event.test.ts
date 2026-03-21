@@ -18,6 +18,7 @@ function makeEvent(overrides = {}) {
       { id: "inv-2", status: "pending", email: "anna@example.com", user: null },
     ],
     selectedGame: null,
+    winningProposal: null,
     proposals: [
       {
         id: "prop-1",

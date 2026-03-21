@@ -10,6 +10,7 @@ import type { GameSession, Event, Game, GameProposal } from "@prisma/client";
 
 type UpcomingEvent = Event & {
   selectedGame: Game | null;
+  winningProposal: GameProposal | null;
   proposals: (GameProposal & { game: Game | null })[];
 };
 
@@ -48,6 +49,7 @@ export default async function DashboardPage() {
     },
     include: {
       selectedGame: true,
+      winningProposal: true,
       proposals: {
         include: {
           game: true,
@@ -247,9 +249,9 @@ export default async function DashboardPage() {
                         <p className="text-xs text-muted-foreground mt-0.5">{evt.location}</p>
                       )}
                       <div className="mt-2">
-                        {evt.selectedGame ? (
+                        {(evt.selectedGame || evt.winningProposal) ? (
                           <span className="inline-flex items-center rounded-md bg-success/10 px-2 py-0.5 text-xs text-success font-medium">
-                            {evt.selectedGame.name}
+                            {evt.selectedGame?.name || evt.winningProposal?.bggName}
                           </span>
                         ) : (
                           <span className="inline-flex items-center rounded-md bg-warning/10 px-2 py-0.5 text-xs text-warning-foreground font-medium">

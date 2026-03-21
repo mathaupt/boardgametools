@@ -11,6 +11,20 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.14.3",
+    date: "2026-03-21",
+    title: "Bugfixes: Validierung, Close-Voting & .env.example",
+    description: "Drei Bugs in der Eingabevalidierung behoben, Close-Voting zeigt jetzt auch BGG-only Gewinner korrekt an, .env.example auf PostgreSQL aktualisiert.",
+    changes: [
+      { type: "fix", text: "Close-Voting: BGG-only Spielvorschläge werden jetzt korrekt als Gewinner gespeichert und angezeigt (P0-38)" },
+      { type: "fix", text: "Validierung: min=0 wurde fälschlich ignoriert (falsy-Check)" },
+      { type: "fix", text: "Validierung: Maximallänge wird jetzt auf getrimmtem Text geprüft" },
+      { type: "fix", text: "Validierung: Leerer String bei Zahlen wird nicht mehr als 0 akzeptiert" },
+      { type: "internal", text: ".env.example auf PostgreSQL/SQL_DATABASE_URL aktualisiert" },
+      { type: "internal", text: "Neues DB-Feld winningProposalId auf Event für BGG-only Gewinner" },
+    ],
+  },
+  {
     version: "0.14.2",
     date: "2026-03-21",
     title: "Architektur: Mega-Komponenten aufgeteilt",

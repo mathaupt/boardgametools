@@ -33,6 +33,7 @@ interface VotingClientProps {
   userVoteIds: Set<string>;
   isPast: boolean;
   selectedGameId?: string;
+  winningProposalId?: string;
 }
 
 export default function VotingClient({ 
@@ -41,7 +42,8 @@ export default function VotingClient({
   userId, 
   userVoteIds, 
   isPast, 
-  selectedGameId 
+  selectedGameId,
+  winningProposalId 
 }: VotingClientProps) {
   const [voting, setVoting] = useState<string | null>(null);
   const [localUserVoteIds, setLocalUserVoteIds] = useState<Set<string>>(userVoteIds);
@@ -133,7 +135,7 @@ export default function VotingClient({
         .map((proposal, index) => (
           <div key={proposal.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 border border-border rounded-lg hover:bg-accent/50 focus-within:ring-2 focus-within:ring-ring transition-colors bg-card gap-4 sm:gap-0">
             <div className="flex items-start sm:items-center gap-3 flex-1">
-              {index === 0 && selectedGameId && (
+              {index === 0 && (selectedGameId || winningProposalId) && (
                 <Trophy className="h-5 w-5 text-warning flex-shrink-0 mt-0.5 sm:mt-0" aria-label="Trophy für führendes Spiel" />
               )}
               {/* Game Image */}
@@ -221,7 +223,7 @@ export default function VotingClient({
               )}
               
               {/* Selected Badge */}
-              {selectedGameId === proposal.game.id && (
+              {(selectedGameId === proposal.game.id || winningProposalId === proposal.id) && (
                 <Badge variant="default" className="bg-success text-success-foreground border-success">Ausgewählt</Badge>
               )}
             </div>

@@ -42,6 +42,7 @@ export default async function EventsPage() {
         }
       },
       selectedGame: true,
+      winningProposal: true,
       _count: { select: { proposals: true, invites: true } }
     },
     orderBy: { eventDate: "desc" },
@@ -154,12 +155,12 @@ export default async function EventsPage() {
                 </CardContent>
               )}
 
-              {event.selectedGame && (
+              {(event.selectedGame || event.winningProposal) && (
                 <CardContent className="pt-0">
                   <div className="flex items-center gap-2 text-sm">
                     <Trophy className="h-4 w-4 text-warning" aria-label="Trophy Icon" />
                     <span className="font-medium text-foreground">Ausgewähltes Spiel:</span>
-                    <span className="text-muted-foreground">{event.selectedGame.name}</span>
+                    <span className="text-muted-foreground">{event.selectedGame?.name || event.winningProposal?.bggName}</span>
                   </div>
                 </CardContent>
               )}

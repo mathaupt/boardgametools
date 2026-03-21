@@ -222,6 +222,7 @@ model Event {
   createdById     String
   groupId         String?
   selectedGameId  String?
+  winningProposalId String?   @unique
   isPublic        Boolean   @default(false)
   shareToken      String?   @unique
   createdAt       DateTime  @default(now())
@@ -231,6 +232,7 @@ model Event {
   createdBy       User            @relation(fields: [createdById], references: [id], onDelete: Cascade)
   group           Group?          @relation(fields: [groupId], references: [id], onDelete: SetNull)
   selectedGame    Game?           @relation("SelectedGame", fields: [selectedGameId], references: [id], onDelete: SetNull)
+  winningProposal GameProposal?   @relation("WinningProposal", fields: [winningProposalId], references: [id], onDelete: SetNull)
   selectedDate    DateTime?
   invites         EventInvite[]
   proposals       GameProposal[]
@@ -281,6 +283,7 @@ model GameProposal {
   guest       GuestParticipant? @relation(fields: [guestId], references: [id], onDelete: Cascade)
   votes       Vote[]
   guestVotes  GuestVote[]
+  wonEvent    Event?          @relation("WinningProposal")
 
   @@unique([eventId, gameId])
 }

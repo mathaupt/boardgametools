@@ -45,17 +45,30 @@ describe("validateString", () => {
   it("handles whitespace-only strings with min length", () => {
     expect(validateString("   ", "Name", { min: 1 })).toBe("Name muss mindestens 1 Zeichen lang sein");
   });
+
+  it("handles min=0 correctly (not falsy bug)", () => {
+    expect(validateString("", "Name", { required: false, min: 0 })).toBeNull();
+    expect(validateString("a", "Name", { min: 0 })).toBeNull();
+  });
+
+  it("validates max on trimmed value (not raw)", () => {
+    // "  ab  " has raw length 6 but trimmed length 2 → should pass max=3
+    expect(validateString("  ab  ", "Name", { max: 3 })).toBeNull();
+    expect(validateString("  abcd  ", "Name", { max: 3 })).toBe("Name darf maximal 3 Zeichen lang sein");
+  });
 });
 
 describe("validateNumber", () => {
   it("returns error for missing required value", () => {
     expect(validateNumber(undefined, "Alter")).toBe("Alter ist erforderlich");
     expect(validateNumber(null, "Alter")).toBe("Alter ist erforderlich");
+    expect(validateNumber("", "Alter")).toBe("Alter ist erforderlich");
   });
 
   it("returns null for missing optional value", () => {
     expect(validateNumber(undefined, "Alter", { required: false })).toBeNull();
     expect(validateNumber(null, "Alter", { required: false })).toBeNull();
+    expect(validateNumber("", "Alter", { required: false })).toBeNull();
   });
 
   it("returns error for NaN", () => {

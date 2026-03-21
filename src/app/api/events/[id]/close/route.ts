@@ -69,9 +69,11 @@ export const POST = withApiLogging(async function POST(
       data: {
         status: "closed",
         selectedGameId: winningProposal?.gameId || null,
+        winningProposalId: winningProposal?.id || null,
       },
       include: {
         selectedGame: true,
+        winningProposal: true,
       },
     });
 

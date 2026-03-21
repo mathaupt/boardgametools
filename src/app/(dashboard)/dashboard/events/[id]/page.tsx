@@ -53,6 +53,7 @@ export default async function EventDetailPage({
         }
       },
       selectedGame: true,
+      winningProposal: true,
       guestParticipants: {
         include: {
           _count: { select: { votes: true } }
@@ -274,14 +275,14 @@ export default async function EventDetailPage({
                   <span>Erstellt am:</span>
                   <span>{new Date(event.createdAt).toLocaleDateString('de-DE')}</span>
                 </div>
-                {event.selectedGame && (
+                {(event.selectedGame || event.winningProposal) && (
                   <div className="flex items-center gap-3">
                     <span className="text-sm text-muted-foreground">Ausgewähltes Spiel:</span>
                     <div className="flex items-center gap-2">
-                      {event.selectedGame.imageUrl ? (
+                      {(event.selectedGame?.imageUrl || event.winningProposal?.bggImageUrl) ? (
                         <Image 
-                          src={event.selectedGame.imageUrl} 
-                          alt={event.selectedGame.name}
+                          src={(event.selectedGame?.imageUrl || event.winningProposal?.bggImageUrl)!} 
+                          alt={event.selectedGame?.name || event.winningProposal?.bggName || "Spiel"}
                           width={32}
                           height={32}
                           className="rounded object-cover border border-border"
@@ -291,7 +292,7 @@ export default async function EventDetailPage({
                           <Gamepad className="h-4 w-4 text-muted-foreground" />
                         </div>
                       )}
-                      <span className="font-medium">{event.selectedGame.name}</span>
+                      <span className="font-medium">{event.selectedGame?.name || event.winningProposal?.bggName}</span>
                     </div>
                   </div>
                 )}
@@ -414,6 +415,7 @@ export default async function EventDetailPage({
               userVoteIds={userVoteIds}
               isPast={isPast}
               selectedGameId={event.selectedGame?.id}
+              winningProposalId={event.winningProposalId ?? undefined}
             />
           )}
         </CardContent>
