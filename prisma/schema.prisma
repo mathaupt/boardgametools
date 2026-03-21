@@ -396,6 +396,10 @@ model GameSeriesEntry {
   playedAt    DateTime?
   rating      Int?      // 1-5 stars
   difficulty  String?   // "einsteiger", "fortgeschritten", "profi"
+  playTimeMinutes Int?  // actual play time in minutes
+  successful  Boolean?  // was the game completed successfully (e.g. EXIT games)
+  playerCount Int?      // number of players
+  score       Int?      // points/score achieved
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 

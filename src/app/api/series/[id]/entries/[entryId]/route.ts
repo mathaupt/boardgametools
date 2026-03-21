@@ -31,12 +31,15 @@ export const PUT = withApiLogging(async function PUT(
 
   try {
     const body = await request.json();
-    const { played, playedAt, rating, difficulty, sortOrder } = body;
+    const { played, playedAt, rating, difficulty, sortOrder, playTimeMinutes, successful, playerCount, score } = body;
 
     const validationError = firstError(
       validateNumber(rating, "rating", { required: false, min: 1, max: 5 }),
       validateString(difficulty, "difficulty", { required: false, max: 50 }),
-      validateNumber(sortOrder, "sortOrder", { required: false, min: 0, max: 9999 })
+      validateNumber(sortOrder, "sortOrder", { required: false, min: 0, max: 9999 }),
+      validateNumber(playTimeMinutes, "playTimeMinutes", { required: false, min: 0, max: 9999 }),
+      validateNumber(playerCount, "playerCount", { required: false, min: 1, max: 99 }),
+      validateNumber(score, "score", { required: false, min: 0, max: 999999 })
     );
     if (validationError) return NextResponse.json({ error: validationError }, { status: 400 });
 
@@ -50,6 +53,10 @@ export const PUT = withApiLogging(async function PUT(
       if (!played) {
         data.playedAt = null;
         data.rating = null;
+        data.playTimeMinutes = null;
+        data.successful = null;
+        data.playerCount = null;
+        data.score = null;
       }
     }
 
@@ -70,6 +77,22 @@ export const PUT = withApiLogging(async function PUT(
 
     if (sortOrder !== undefined) {
       data.sortOrder = sortOrder;
+    }
+
+    if (playTimeMinutes !== undefined) {
+      data.playTimeMinutes = playTimeMinutes;
+    }
+
+    if (successful !== undefined) {
+      data.successful = successful;
+    }
+
+    if (playerCount !== undefined) {
+      data.playerCount = playerCount;
+    }
+
+    if (score !== undefined) {
+      data.score = score;
     }
 
     const updated = await prisma.gameSeriesEntry.update({

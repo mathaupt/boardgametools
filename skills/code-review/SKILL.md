@@ -442,7 +442,7 @@ const isValid = await compare(inputPassword, group.password);
 
 ## Evaluator-Feedback (automatisch generiert)
 
-> Letzter Lauf: 2026-03-21 07:56:21
+> Letzter Lauf: 2026-03-21 07:56:44
 > Gesamt-Score: **6.5/10**
 
 ### Kategorie-Scores

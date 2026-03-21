@@ -36,6 +36,8 @@ import {
   ArrowUpDown,
   Filter,
   X,
+  Trophy,
+  ChevronRight,
 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { AddGameDialog } from "./add-game-dialog";
@@ -61,6 +63,10 @@ interface SeriesEntry {
   playedAt: string | null;
   rating: number | null;
   difficulty: string | null;
+  playTimeMinutes: number | null;
+  successful: boolean | null;
+  playerCount: number | null;
+  score: number | null;
   game: GameData;
 }
 
@@ -159,6 +165,7 @@ export default function SeriesDetailPage() {
   const [deleting, setDeleting] = useState(false);
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [search, setSearch] = useState("");
+  const [expandedEntry, setExpandedEntry] = useState<string | null>(null);
   const [playedFilter, setPlayedFilter] = useState<PlayedFilter>("alle");
   const [difficultyFilter, setDifficultyFilter] = useState<DifficultyFilter>("alle");
   const [sortOption, setSortOption] = useState<EntrySortOption>("sortOrder");
@@ -181,11 +188,26 @@ export default function SeriesDetailPage() {
         ...prev,
         entries: prev.entries.map((e) =>
           e.id === entry.id
-            ? { ...e, played: newPlayed, playedAt: newPlayed ? new Date().toISOString() : null, rating: newPlayed ? e.rating : null }
+            ? {
+                ...e,
+                played: newPlayed,
+                playedAt: newPlayed ? new Date().toISOString() : null,
+                rating: newPlayed ? e.rating : null,
+                playTimeMinutes: newPlayed ? e.playTimeMinutes : null,
+                successful: newPlayed ? e.successful : null,
+                playerCount: newPlayed ? e.playerCount : null,
+                score: newPlayed ? e.score : null,
+              }
             : e
         ),
       };
     });
+
+    if (newPlayed) {
+      setExpandedEntry(entry.id);
+    } else {
+      setExpandedEntry(null);
+    }
 
     const res = await fetch(`/api/series/${seriesId}/entries/${entry.id}`, {
       method: "PUT",
@@ -195,6 +217,27 @@ export default function SeriesDetailPage() {
 
     if (!res.ok) {
       toast({ title: "Fehler", description: "Status konnte nicht gespeichert werden", variant: "destructive" });
+      loadSeries();
+    }
+  }
+
+  async function handlePlayDetailChange(entry: SeriesEntry, field: string, value: unknown) {
+    setSeries((prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        entries: prev.entries.map((e) => e.id === entry.id ? { ...e, [field]: value } : e),
+      };
+    });
+
+    const res = await fetch(`/api/series/${seriesId}/entries/${entry.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ [field]: value }),
+    });
+
+    if (!res.ok) {
+      toast({ title: "Fehler", description: "Änderung konnte nicht gespeichert werden", variant: "destructive" });
       loadSeries();
     }
   }
@@ -698,9 +741,19 @@ export default function SeriesDetailPage() {
                           {DIFFICULTY_CONFIG[entry.difficulty].label}
                         </Badge>
                       )}
+                      {entry.played && entry.successful === true && (
+                        <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-5 bg-success/10 text-success border-success">
+                          Erfolgreich
+                        </Badge>
+                      )}
+                      {entry.played && entry.successful === false && (
+                        <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-5 bg-destructive/10 text-destructive border-destructive">
+                          Nicht geschafft
+                        </Badge>
+                      )}
                     </div>
 
-                    <div className="flex items-center gap-3 text-xs text-muted-foreground mt-1">
+                    <div className="flex items-center gap-3 text-xs text-muted-foreground mt-1 flex-wrap">
                       <span className="flex items-center gap-1">
                         <Users className="h-3 w-3" />
                         {entry.game.minPlayers}-{entry.game.maxPlayers}
@@ -716,15 +769,41 @@ export default function SeriesDetailPage() {
                           gespielt {new Date(entry.playedAt).toLocaleDateString("de-DE")}
                         </span>
                       )}
+                      {entry.played && entry.playerCount && (
+                        <span className="flex items-center gap-1">
+                          <Users className="h-3 w-3" />
+                          {entry.playerCount} Spieler
+                        </span>
+                      )}
+                      {entry.played && entry.playTimeMinutes && (
+                        <span className="flex items-center gap-1">
+                          <Clock className="h-3 w-3" />
+                          {entry.playTimeMinutes} Min. gespielt
+                        </span>
+                      )}
+                      {entry.played && entry.score != null && (
+                        <span className="flex items-center gap-1">
+                          <Trophy className="h-3 w-3" />
+                          {entry.score} Punkte
+                        </span>
+                      )}
                     </div>
 
-                    {/* Rating (only when played) */}
+                    {/* Rating + expand toggle (only when played) */}
                     {entry.played && (
-                      <div className="mt-1.5">
+                      <div className="mt-1.5 flex items-center gap-2">
                         <StarRating
                           value={entry.rating}
                           onChange={(rating) => handleRatingChange(entry, rating)}
                         />
+                        <button
+                          onClick={() => setExpandedEntry(expandedEntry === entry.id ? null : entry.id)}
+                          className="ml-1 text-xs text-muted-foreground hover:text-foreground flex items-center gap-0.5 transition-colors"
+                          aria-label="Details bearbeiten"
+                        >
+                          <ChevronRight className={`h-3.5 w-3.5 transition-transform ${expandedEntry === entry.id ? "rotate-90" : ""}`} />
+                          Details
+                        </button>
                       </div>
                     )}
                   </div>
@@ -752,6 +831,85 @@ export default function SeriesDetailPage() {
                     </button>
                   </div>
                 </div>
+
+                {/* Expanded play details */}
+                {entry.played && expandedEntry === entry.id && (
+                  <div className="mt-3 pt-3 border-t ml-[52px] sm:ml-[68px]">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      {/* Play time */}
+                      <div>
+                        <label className="text-xs font-medium text-muted-foreground mb-1 block">
+                          Spielzeit (Minuten)
+                        </label>
+                        <Input
+                          type="number"
+                          min={0}
+                          max={9999}
+                          placeholder="z.B. 90"
+                          defaultValue={entry.playTimeMinutes ?? ""}
+                          onBlur={(e) => {
+                            const val = e.target.value === "" ? null : parseInt(e.target.value, 10);
+                            if (val !== entry.playTimeMinutes) handlePlayDetailChange(entry, "playTimeMinutes", val);
+                          }}
+                          className="h-8 text-sm"
+                        />
+                      </div>
+
+                      {/* Player count */}
+                      <div>
+                        <label className="text-xs font-medium text-muted-foreground mb-1 block">
+                          Anzahl Spieler
+                        </label>
+                        <Input
+                          type="number"
+                          min={1}
+                          max={99}
+                          placeholder="z.B. 4"
+                          defaultValue={entry.playerCount ?? ""}
+                          onBlur={(e) => {
+                            const val = e.target.value === "" ? null : parseInt(e.target.value, 10);
+                            if (val !== entry.playerCount) handlePlayDetailChange(entry, "playerCount", val);
+                          }}
+                          className="h-8 text-sm"
+                        />
+                      </div>
+
+                      {/* Score */}
+                      <div>
+                        <label className="text-xs font-medium text-muted-foreground mb-1 block">
+                          Punkte
+                        </label>
+                        <Input
+                          type="number"
+                          min={0}
+                          max={999999}
+                          placeholder="z.B. 120"
+                          defaultValue={entry.score ?? ""}
+                          onBlur={(e) => {
+                            const val = e.target.value === "" ? null : parseInt(e.target.value, 10);
+                            if (val !== entry.score) handlePlayDetailChange(entry, "score", val);
+                          }}
+                          className="h-8 text-sm"
+                        />
+                      </div>
+
+                      {/* Successful checkbox */}
+                      <div className="flex items-end pb-1">
+                        <label className="flex items-center gap-2 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={entry.successful === true}
+                            onChange={(e) => {
+                              handlePlayDetailChange(entry, "successful", e.target.checked ? true : null);
+                            }}
+                            className="h-4 w-4 rounded border-input accent-success"
+                          />
+                          <span className="text-sm">Erfolgreich abgeschlossen</span>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </CardContent>
             </Card>
             );
