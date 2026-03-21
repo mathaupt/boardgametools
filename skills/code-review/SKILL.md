@@ -60,13 +60,11 @@ metadata:
 - [ ] Debug-Routes in Produktion deaktiviert
 
 **Bekannte Hotspots:**
-- `src/app/api/debug/env/route.ts` – Environment-Variablen exponiert, muss in Prod deaktiviert sein
-- `src/app/api/debug/session/route.ts` – Session-Daten exponiert
-- `src/app/api/db/init/route.ts` – DB-Init ohne Admin-Check
-- `src/app/api/bgg/search/route.ts` – loggt `session?.user?.email`
-- `src/app/api/bgg/[id]/route.ts` – loggt `session?.user?.email`
-- Auth-Routes ohne Rate Limiting: register, password-reset, login
+- `createdBy: true` ohne `select` in 5 Dateien – leakt passwordHash: events/route.ts, events/[id]/route.ts, events/[id]/calendar/route.ts, sessions/[id]/votes/route.ts, dashboard/events/[id]/page.tsx
+- Zusätzlich 19× `user: true` ohne select in src/ – gleiches Leak-Risiko
+- Auth-Routes ohne Rate Limiting: `[...nextauth]/route.ts` (login)
 - `src/app/api/public/group/[token]/route.ts` – Passwort als Query-Parameter
+- `src/lib/rate-limit.ts` – Memory Leak durch unbegrenztes Map-Wachstum
 
 ### 4. Performance
 
@@ -170,7 +168,7 @@ metadata:
 | Statistiken | Ja | FEHLT | **Komplett unimplementiert** – Sidebar-Link vorhanden, aber keine Seite, keine API |
 | Gruppen-Statistiken | Ja | FEHLT | Teil des fehlenden Statistik-Systems |
 | BGG Integration | Ja | 100%+ | Import, Suche, Collection-Import, Thumbnails |
-| Event-Voting | Ja | 85% | **Close-Voting Endpoint fehlt** (`POST /events/[id]/close`), kein Status-Wechsel |
+| Event-Voting | Ja | 95% | Close-Voting Endpoint + Button vorhanden; **passwordHash-Leak in Event-API** |
 | Spielereihen | Ja | 100% | Vollständig inkl. Sort/Filter |
 | Public Events + Gäste | Nein | Implementiert | Erweiterung über Konzept hinaus |
 | Date Polling | Nein | Implementiert | Doodle-ähnliche Terminabstimmung |
@@ -252,50 +250,83 @@ Erstelle einen Report mit folgendem Format:
 | P2 – Verbesserung | Code-Qualität, Refactoring, bessere Types | Backlog |
 | P3 – Nice-to-have | Kosmetik, Dokumentation, zusätzliche Tests | Gelegenheit |
 
-## Aktuelle Top-Findings (Stand: 2026-03-17)
+## Aktuelle Top-Findings (Stand: 2026-03-21)
 
 ### P0 – Kritisch
-1. **Debug-Routes in Produktion**: `/api/debug/env` und `/api/debug/session` exponieren sensible Daten ohne Auth. Müssen hinter `NODE_ENV === 'development'` Guard.
-2. **DB-Init ohne Auth**: `/api/db/init` kann ohne Berechtigung aufgerufen werden und erstellt User mit Passwort `password123`. Außerdem nutzt es SQLite-Queries auf PostgreSQL.
-3. **Hardcoded Admin-Credentials**: `src/lib/admin-create.ts` enthält Admin-E-Mail und Passwort (`Admin123!`) im Klartext im Quellcode – committed in Git.
-4. **Gruppen-Passwörter im Klartext**: Gruppen-Passwörter in DB gespeichert und mit `===` verglichen (timing-attack-anfällig). Werden auch als URL-Query-Parameter übertragen.
-5. **Kein Rate Limiting + keine middleware.ts**: Keine zentrale Auth-Middleware. Jede Route prüft manuell. Vergessene Checks = offene Route. `/api/bgg/route.ts` ist komplett unauthentifiziert und nutzbar als Proxy.
-6. **passwordHash in API-Responses**: `events/route.ts` und `events/[id]/route.ts` inkludieren `createdBy: true` ohne `select` – passwordHash wird an Client gesendet.
+1. ~~**Debug-Routes in Produktion**~~ ✅ Behoben: NODE_ENV Guard vorhanden.
+2. ~~**DB-Init ohne Auth**~~ ✅ Behoben: Auth-Check vorhanden.
+3. ~~**Hardcoded Admin-Credentials**~~ ✅ Behoben: Credentials externalisiert.
+4. ~~**Gruppen-Passwörter im Klartext**~~ ✅ Behoben: bcrypt wird verwendet.
+5. ~~**Kein Rate Limiting + keine middleware.ts**~~ ✅ Behoben: Middleware + Rate Limiting vorhanden.
+6. **passwordHash in API-Responses**: `createdBy: true` ohne `select` in **5 Dateien** – passwordHash wird an Client gesendet.
+   - `src/app/api/events/route.ts` (Zeile 27)
+   - `src/app/api/events/[id]/route.ts` (Zeile 24)
+   - `src/app/api/events/[id]/calendar/route.ts` (Zeile 24)
+   - `src/app/api/sessions/[id]/votes/route.ts` (Zeile 25)
+   - `src/app/(dashboard)/dashboard/events/[id]/page.tsx` (Zeile 43) – Server Component, aber unnötig breit
+   Zusätzlich 19× `user: true` ohne select in src/ – gleiches Leak-Risiko.
+   **Fix**: `createdBy: { select: { id: true, name: true, email: true } }` in allen Dateien.
+37. **Session-Voting schreibt Session-ID als ProposalId**: `src/app/api/sessions/[id]/votes/route.ts` Zeile 93-96 nutzt die Session-ID als `proposalId` in `prisma.vote.create()`. Da `Vote.proposalId` eine FK-Constraint auf `GameProposal.id` hat, schlägt dies mit DB-Fehler fehl. **Session-Voting ist komplett broken.**
+    **Fix**: Eigene Tabelle `SessionVote` erstellen oder Logik korrigieren, sodass die korrekte ProposalId verwendet wird.
+38. **Close-Voting verliert BGG-Ergebnis**: `src/app/api/events/[id]/close/route.ts` Zeile 64: `winningProposal?.gameId || null` – BGG-only Proposals haben `gameId = null`, daher wird `selectedGameId = null` gesetzt und das Ergebnis geht verloren.
+    **Fix**: Auch `bggGameId`/`bggGameName` des Winning-Proposals speichern oder `GameProposal.id` als Winner referenzieren.
 
 ### P1 – Wichtig
-7. **PII in Logs**: `console.log` mit User-E-Mails in BGG-Routes + `admin-create.ts`. 175 console.log-Statements insgesamt in Production-Code.
-8. **Fehlende Input-Validierung**: API Routes prüfen nicht auf max. String-Längen. Nur `join/route.ts` truncated auf 80 Zeichen.
-9. **Keine Pagination**: Listen-Endpoints (`/api/games`, `/api/sessions`, `/api/events`) geben alle Datensätze zurück.
+7. ~~**PII in Logs**~~ ✅ Behoben: Keine PII in API-Logs.
+8. ~~**Fehlende Input-Validierung**~~ ✅ Behoben: validation.ts in 24 Routes importiert.
+9. **Keine Pagination**: Listen-Endpoints (`/api/games`, `/api/sessions`, `/api/events`) geben alle Datensätze zurück. Bei wachsender Datenmenge Performance-Problem.
+   **Fix**: `?page=1&limit=50` Parameter mit Prisma `skip`/`take` implementieren.
 10. **Statistiken komplett fehlend**: Im Konzept vorgesehen, Sidebar-Link vorhanden, aber weder Seite noch API existiert.
+    **Fix**: `src/app/(dashboard)/dashboard/statistics/page.tsx` und `/api/statistics/*` Routes erstellen.
 11. **Session-Detailseite fehlt**: Links zu `/sessions/[id]` und `/sessions/[id]/edit` führen ins Leere. Kein Edit/Delete für Sessions.
-12. **Close-Voting fehlt**: Kein `POST /events/[id]/close` Endpoint. Event-Status kann nicht von `voting` auf `closed` gewechselt werden.
-13. **Registrierung: Keine E-Mail-Validierung**: Kein Format-Check, kein Lowercase-Normalisierung. `Test@Example.com` und `test@example.com` könnten getrennte Accounts sein.
-14. **P95 Duration Query lädt alle Zeilen**: `admin/monitoring/stats/route.ts` fetcht ALLE ApiLog-Durations in Speicher für P95-Berechnung. OOM-Risiko bei vielen Logs.
-15. **Admin kann sich selbst deaktivieren**: Keine Self-Protection in `/api/admin/users/deactivate` und `/api/admin/users/change-password`.
-16. **Admin-Endpoints: 401 statt 403**: Authentifizierte Non-Admin-User bekommen 401 statt 403.
+    **Fix**: `src/app/(dashboard)/dashboard/sessions/[id]/page.tsx` erstellen mit Detail-/Edit-Ansicht.
+12. ~~**Close-Voting fehlt**~~ ✅ Behoben: Close-Voting Endpoint und Button vorhanden.
+13. ~~**Registrierung: Keine E-Mail-Validierung**~~ ✅ Behoben: E-Mail-Validierung vorhanden.
+14. ~~**P95 Duration Query lädt alle Zeilen**~~ ✅ Behoben: P95 Query nutzt OFFSET/LIMIT.
+15. **Admin kann sich selbst deaktivieren**: Self-Protection nur in `/api/admin/users/deactivate` vorhanden. `/api/admin/users/change-password` hat **keine** Self-Protection.
+    **Fix**: `if (targetUserId === session.user.id) return 400` Check in `change-password` ergänzen.
+16. ~~**Admin-Endpoints: 401 statt 403**~~ ✅ Behoben: Middleware gibt 403 für Non-Admins.
+39. **Score=0 Bug (falsy check)**: `src/app/api/sessions/route.ts` Zeile 91: `score: player.score || null` – `player.score = 0` (ein valider Punktestand) wird zu `null`.
+    **Fix**: `player.score ?? null` statt `player.score || null`.
+40. **Close-Voting erlaubt Draft→Closed**: `src/app/api/events/[id]/close/route.ts` Zeile 45 prüft nur `status === "closed"`, erlaubt aber Draft→Closed ohne laufende Abstimmung.
+    **Fix**: `if (event.status !== "voting") return 400` prüfen.
+41. **Rate-Limit unwirksam auf Serverless**: `src/lib/rate-limit.ts` nutzt in-memory Map + `setInterval`. Auf Vercel/Serverless wird der Cleanup nie ausgeführt, und jeder Cold-Start hat eine leere Map → Rate-Limiting wirkt nicht.
+    **Fix**: Redis/KV-Store oder Vercel Edge Config für persistentes Rate-Limiting nutzen.
 
 ### P2 – Verbesserung
-17. **Mega-Komponenten aufteilen**: `public-event-client.tsx` (1130 Zeilen), `group-detail-client.tsx` (987 Zeilen), `monitoring-dashboard.tsx` (906 Zeilen).
-18. **38× `any` Type**: Besonders in `public-event.ts` (7×), `group-detail-client.tsx` (9×), BGG XML-Parsing.
-19. **Duplikat: Prisma-Client-Dateien**: `db.ts` und `db-postgres.ts` existieren parallel, letztere wird nie importiert.
-20. **Duplikat: BGG-Logik**: `bgg/route.ts` dupliziert XML-Parsing aus `lib/bgg.ts` mit weniger robuster Implementierung + Hardcoded Mock-Daten.
-21. **`next/image` statt `<img>`**: Externe Bilder werden nicht optimiert. `next.config.ts` nutzt deprecated `images.domains`.
+17. **Mega-Komponenten aufteilen**: `public-event-client.tsx` (1152 Zeilen), `group-detail-client.tsx` (989 Zeilen), `monitoring-dashboard.tsx` (906 Zeilen).
+    **Fix**: Subkomponenten extrahieren – siehe Codebeispiel "Komponenten-Aufteilung" unten.
+18. **24× `any` Type** (vorher 38, dann 20, jetzt 24 – leicht gestiegen durch neue Dateien).
+    **Fix**: `grep -rn ': any\|as any' src/` ausführen und jeden Treffer mit konkretem Interface ersetzen.
+19. ~~**Duplikat: Prisma-Client-Dateien**~~ ✅ Behoben: Duplikat entfernt.
+20. ~~**Duplikat: BGG-Logik**~~ ✅ Behoben: Kein dupliziertes XML-Parsing.
+21. ~~**`next/image` statt `<img>`**~~ ✅ Behoben: 19 img-Tags auf next/image migriert.
 22. **Fehlende Unit Tests**: Nur 3 Test-Dateien (bgg, utils, security-check). Keine Tests für: Auth, API-Routes, Komponenten, Voting, Guest-Flow.
-23. **Inkonsistente Error-Responses**: `{ error }` vs `{ message }` vs `{ success }`. Sprachen gemischt (Deutsch/Englisch).
-24. **CONCEPT.md aktualisieren**: Tech-Stack (Next.js 16, PostgreSQL), neue Features, geänderte Projektstruktur nachziehen.
-25. **Pendende Invites dupliziert**: Gleicher Query-Code in `dashboard/page.tsx` und `events/page.tsx`.
+    **Fix**: Mindestens Tests für `auth.ts`, `validation.ts`, `rate-limit.ts`, `queries/pending-invites.ts` hinzufügen.
+23. ~~**Inkonsistente Error-Responses**~~ ✅ Behoben: Konsistentes Format.
+24. **CONCEPT.md aktualisieren**: Tech-Stack veraltet (Next.js 14→16, SQLite→PostgreSQL), neue Features (Public Events, Date Polling, Admin Monitoring, EAN-Scanner etc.) nicht dokumentiert.
+    **Fix**: CONCEPT.md Sektion "Technologie-Stack" und "Features" aktualisieren.
+25. ~~**Pendende Invites dupliziert**~~ ✅ Behoben: Shared Query extrahiert.
 26. **Navbar nutzt Inline-Styles**: Einzige Komponente mit `style={{}}` statt Tailwind-Klassen.
-27. **Prisma Transactions fehlen**: Event-Share erstellt mehrere Invites ohne Transaction – bei Fehler bleiben Teil-Invites.
+27. ~~**Prisma Transactions fehlen**~~ ✅ Behoben: $transaction wird verwendet.
+42. **validation.ts Bugs**: `validateString` hat Inkonsistenz: `min` prüft `trim().length`, `max` prüft `length` ohne trim. Außerdem: `min=0` wird wegen falsy-Check ignoriert. `validateNumber`: `Number("")` = 0 kommt als gültig durch.
+    **Fix**: Beide Checks auf `trim().length` normalisieren; `min !== undefined` statt `min` prüfen; `value === ""` in validateNumber abfangen.
+43. **Fehlende Validierungsfunktionen**: Kein zentrales `validateEmail`, `validateUrl`, `validateDate`, `validateEnum` in validation.ts. Email-Regex ist inline in register/route.ts, URLs und Dates werden gar nicht validiert.
+    **Fix**: Zentrale Validierungsfunktionen in `src/lib/validation.ts` ergänzen.
 
 ### P3 – Nice-to-have
-28. **Tags/Kategorien**: Im Konzept vorgesehen, aber nicht implementiert.
+28. **Tags/Kategorien**: Im Konzept vorgesehen, aber nicht implementiert. Kein Tag/Category-Model im Schema.
 29. **Bild-Upload**: Nur URL-basiert, kein echter File-Upload.
 30. **Gruppen-Statistiken**: Im Konzept vorgesehen, fehlt noch.
-31. **accessibility Skill**: In AGENTS.md referenziert, aber Datei existiert nicht.
-32. **DB-Dumps in Git**: `.sql`, `.bak`, `.db` Dateien committed – könnten Nutzerdaten enthalten.
-33. **Links zu /terms und /privacy**: Registrierungsseite verlinkt auf nicht existierende Seiten.
-34. **ENV-Variablen inkonsistent**: `.env.example` sagt `DATABASE_URL`, Schema nutzt `SQL_DATABASE_URL`.
-35. **Fehlende DB-Indices**: `Game.ownerId`, `GameSession.createdById`, `Event.createdById`, `Event.eventDate`, `GroupMember.userId` ohne Index.
+31. ~~**accessibility Skill**~~ ✅ Behoben: Accessibility Skill vorhanden.
+32. **DB-Dumps in Git**: `boardgametools_backup_20260218_212231.sql` und `boardgametools_dump.sql` noch getrackt – könnten Nutzerdaten enthalten.
+    **Fix**: `git rm --cached boardgametools_backup_20260218_212231.sql boardgametools_dump.sql` und `.gitignore` ergänzen.
+33. ~~**Links zu /terms und /privacy**~~ ✅ Behoben: Beide Seiten vorhanden.
+34. **ENV-Variablen inkonsistent**: `.env.example` definiert `DATABASE_URL` mit SQLite, aber `schema.prisma` nutzt `SQL_DATABASE_URL` mit PostgreSQL. Neue Entwickler die `.env.example` kopieren bekommen einen Fehler.
+    **Fix**: `.env.example` auf `SQL_DATABASE_URL` mit PostgreSQL-URL aktualisieren.
+35. ~~**Fehlende DB-Indices**~~ ✅ Behoben: 13 @@index Definitionen.
+36. **Rate-Limit Memory Leak**: `src/lib/rate-limit.ts` nutzt unbegrenztes `Map`-Wachstum. Cleanup-Intervall vorhanden (60s), aber zwischen Cleanups kann die Map bei DDoS unkontrolliert wachsen. Kein `maxSize`-Limit.
+    **Fix**: LRU-Cache mit max. Größe implementieren oder `maxSize`-Check vor `set()` hinzufügen.
 
 ## Codebeispiele für Fixes
 
@@ -411,14 +442,14 @@ const isValid = await compare(inputPassword, group.password);
 
 ## Evaluator-Feedback (automatisch generiert)
 
-> Letzter Lauf: 2026-03-20 22:39:40
-> Gesamt-Score: **6.6/10**
+> Letzter Lauf: 2026-03-21 07:56:21
+> Gesamt-Score: **6.5/10**
 
 ### Kategorie-Scores
 
 | Kategorie | Score | Treffsicherheit | Aktualität | Abdeckung | Umsetzung | Handlung |
 |-----------|-------|-----------------|------------|-----------|-----------|----------|
-| Sicherheit | **8.4/10** | 10 | 8 | 10 | 7.9 | 6 |
+| Sicherheit | **8.1/10** | 10 | 7 | 10 | 7.6 | 6 |
 | TypeScript | **3.5/10** | 10 | 0 | 10 | 0 | 0 |
 | Architektur | **5.7/10** | 10 | 8 | 0 | 7.8 | 2 |
 | Performance | **7.2/10** | 10 | 6.7 | 10 | 6.3 | 3.3 |
@@ -427,7 +458,7 @@ const isValid = await compare(inputPassword, group.password);
 | Datenbank | **9.3/10** | 10 | 10 | 10 | 10 | 5 |
 | Konzept-Konformität | **4.8/10** | 10 | 2.5 | 10 | 2.7 | 0 |
 
-### Erledigte Findings (21)
+### Erledigte Findings (20)
 
 - ✅ **P0-1** Debug-Routes in Produktion: NODE_ENV Guard vorhanden
 - ✅ **P0-2** DB-Init ohne Auth: Auth-Check vorhanden
@@ -447,11 +478,10 @@ const isValid = await compare(inputPassword, group.password);
 - ✅ **P2-25** Pendende Invites dupliziert: Shared Query extrahiert
 - ✅ **P2-27** Prisma Transactions fehlen: $transaction wird verwendet
 - ✅ **P3-31** accessibility Skill fehlt: Accessibility Skill vorhanden
-- ✅ **P3-32** DB-Dumps in Git: Git-Check nicht möglich
 - ✅ **P3-33** Links zu /terms und /privacy fehlen: Beide Seiten vorhanden
 - ✅ **P3-35** Fehlende DB-Indices: 13 @@index Definitionen
 
-### Offene Findings (12)
+### Offene Findings (13)
 
 - ❌ **P0-6** passwordHash in API-Responses: Leak in: events/route.ts, events/[id]/route.ts
 - ❌ **P1-9** Keine Pagination: 0/3 Endpoints mit Pagination
@@ -465,6 +495,8 @@ const isValid = await compare(inputPassword, group.password);
 - ❌ **P3-28** Tags/Kategorien fehlen: Kein Tag/Category-Model im Schema
 - ❌ **P3-29** Bild-Upload fehlt: Kein Bild-Upload implementiert
 - ❌ **P3-30** Gruppen-Statistiken fehlen: Keine Gruppen-Statistiken
+- ❌ **P3-32** DB-Dumps in Git: Getrackte DB-Dateien: boardgametools_backup_20260218_212231.sql
+boardgametools_dump.sql
 
 ### Empfohlene Reviewer-Anpassungen
 
