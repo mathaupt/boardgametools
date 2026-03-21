@@ -179,6 +179,14 @@ SessionPlayer
 ├── isWinner
 └── placement
 
+SessionRating
+├── id (CUID)
+├── sessionId (FK GameSession)
+├── userId (FK User)
+├── rating (1-5)
+├── comment (optional)
+└── createdAt
+
 Group
 ├── id (CUID)
 ├── name
@@ -240,6 +248,7 @@ Event
 ├── createdById (FK User)
 ├── groupId (FK Group, optional)
 ├── selectedGameId (FK Game, optional)
+├── winningProposalId (FK GameProposal, optional)
 ├── selectedDate (optional)
 ├── isPublic (Boolean)
 ├── shareToken (unique, optional)
@@ -380,7 +389,11 @@ ApiLog
 ### Sessions
 - `GET /api/sessions` - Alle Sessions (mit Pagination)
 - `POST /api/sessions` - Session erstellen
+- `GET /api/sessions/[id]` - Session Details
+- `PUT /api/sessions/[id]` - Session aktualisieren
+- `DELETE /api/sessions/[id]` - Session löschen
 - `GET /api/sessions/[id]/votes` - Session-Bewertungen
+- `POST /api/sessions/[id]/votes` - Session bewerten
 
 ### Events
 - `GET /api/events` - Meine Events (mit Pagination)
@@ -463,6 +476,7 @@ ApiLog
 ### System
 - `GET /api/health` - Health-Check
 - `POST /api/db/init` - Datenbank initialisieren
+- `GET /api/statistics` - Übersicht, meistgespielte Spiele, Spieler-Stats, monatliche Aktivität
 
 ---
 

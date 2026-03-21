@@ -265,8 +265,7 @@ Erstelle einen Report mit folgendem Format:
 ### P1 – Wichtig
 7. ~~**PII in Logs**~~ ✅ Behoben: Keine PII in API-Logs.
 8. ~~**Fehlende Input-Validierung**~~ ✅ Behoben: validation.ts in 24 Routes importiert.
-9. **Keine Pagination**: Listen-Endpoints (`/api/games`, `/api/sessions`, `/api/events`) geben alle Datensätze zurück. Bei wachsender Datenmenge Performance-Problem.
-   **Fix**: `?page=1&limit=50` Parameter mit Prisma `skip`/`take` implementieren.
+9. ~~**Keine Pagination**~~ ✅ Behoben: Alle Listen-Endpoints (`/api/games`, `/api/sessions`, `/api/events`) unterstützen `?page=X&limit=Y` mit Prisma `skip`/`take`.
 10. ~~**Statistiken komplett fehlend**~~ ✅ Behoben: Statistik-Dashboard mit API und Charts implementiert (v0.14.5).
 11. ~~**Session-Detailseite fehlt**~~ ✅ Behoben: Session-Detail, Edit und Delete implementiert (v0.14.5).
 12. ~~**Close-Voting fehlt**~~ ✅ Behoben: Close-Voting Endpoint und Button vorhanden.
@@ -288,8 +287,7 @@ Erstelle einen Report mit folgendem Format:
 22. **Fehlende Unit Tests**: 10 Test-Dateien vorhanden (bgg, utils, security-check, changelog, monitoring, public-event, rate-limit, sessions, validation, admin-users), 132 Tests. Keine Tests für: Auth, API-Routes (Integration), Komponenten, Voting, Guest-Flow.
     **Fix**: Mindestens Tests für `auth.ts`, `validation.ts`, `rate-limit.ts`, `queries/pending-invites.ts` hinzufügen.
 23. ~~**Inkonsistente Error-Responses**~~ ✅ Behoben: Konsistentes Format.
-24. **CONCEPT.md aktualisieren**: Tech-Stack veraltet (Next.js 14→16, SQLite→PostgreSQL), neue Features (Public Events, Date Polling, Admin Monitoring, EAN-Scanner etc.) nicht dokumentiert.
-    **Fix**: CONCEPT.md Sektion "Technologie-Stack" und "Features" aktualisieren.
+24. ~~**CONCEPT.md aktualisieren**~~ ✅ Behoben: Tech-Stack, Schema (SessionRating, winningProposalId), API-Endpoints (Statistics, Sessions CRUD) aktualisiert.
 25. ~~**Pendende Invites dupliziert**~~ ✅ Behoben: Shared Query extrahiert.
 26. ~~**Navbar nutzt Inline-Styles**~~ ✅ Behoben: Navbar nutzt ausschließlich Tailwind-Klassen (inkl. Arbitrary Values für nicht-Standard-Größen).
 27. ~~**Prisma Transactions fehlen**~~ ✅ Behoben: $transaction wird verwendet.
@@ -421,15 +419,15 @@ const isValid = await compare(inputPassword, group.password);
 
 ## Evaluator-Feedback (automatisch generiert)
 
-> Letzter Lauf: 2026-03-21 11:54:57
-> Gesamt-Score: **8.4/10**
+> Letzter Lauf: 2026-03-21 12:03:34
+> Gesamt-Score: **8.6/10**
 
 ### Kategorie-Scores
 
 | Kategorie | Score | Treffsicherheit | Aktualität | Abdeckung | Umsetzung | Handlung |
 |-----------|-------|-----------------|------------|-----------|-----------|----------|
 | Sicherheit | **8.9/10** | 10 | 9 | 10 | 9.1 | 6 |
-| TypeScript | **6.8/10** | 10 | 10 | 10 | 5 | 0 |
+| TypeScript | **8.5/10** | 10 | 10 | 10 | 10 | 0 |
 | Architektur | **8.8/10** | 10 | 10 | 10 | 10 | 2 |
 | Performance | **9/10** | 10 | 10 | 10 | 10 | 3.3 |
 | API Design | **9/10** | 10 | 10 | 10 | 10 | 3.3 |
@@ -437,7 +435,7 @@ const isValid = await compare(inputPassword, group.password);
 | Datenbank | **9.3/10** | 10 | 10 | 10 | 10 | 5 |
 | Konzept-Konformität | **7.2/10** | 10 | 6.3 | 10 | 8 | 0 |
 
-### Erledigte Findings (28)
+### Erledigte Findings (29)
 
 - ✅ **P0-1** Debug-Routes in Produktion: NODE_ENV Guard vorhanden
 - ✅ **P0-2** DB-Init ohne Auth: Auth-Check vorhanden
@@ -455,11 +453,12 @@ const isValid = await compare(inputPassword, group.password);
 - ✅ **P1-14** P95 Duration Query lädt alle Zeilen: P95 Query nutzt OFFSET/LIMIT
 - ✅ **P1-16** Admin-Endpoints: 401 statt 403: Middleware gibt 403 für Non-Admins
 - ✅ **P2-17** Mega-Komponenten aufteilen: Alle Mega-Komponenten aufgeteilt
+- ✅ **P2-18** any-Types im Code: Keine any-Types
 - ✅ **P2-19** Duplikat: Prisma-Client-Dateien: Duplikat entfernt
 - ✅ **P2-20** Duplikat: BGG-Logik: Kein dupliziertes XML-Parsing
 - ✅ **P2-21** next/image statt <img>: Keine <img> Tags
 - ✅ **P2-22** Fehlende Unit Tests: 10 Test-Dateien
-- ✅ **P2-23** Inkonsistente Error-Responses: Konsistent: 384 error, 13 message
+- ✅ **P2-23** Inkonsistente Error-Responses: Konsistent: 381 error, 13 message
 - ✅ **P2-24** CONCEPT.md aktualisieren: Tech-Stack aktuell
 - ✅ **P2-25** Pendende Invites dupliziert: Shared Query extrahiert
 - ✅ **P2-27** Prisma Transactions fehlen: $transaction wird verwendet
@@ -474,10 +473,6 @@ const isValid = await compare(inputPassword, group.password);
 - ❌ **P3-28** Tags/Kategorien fehlen: Kein Tag/Category-Model im Schema
 - ❌ **P3-29** Bild-Upload fehlt: Kein Bild-Upload implementiert
 - ❌ **P3-30** Gruppen-Statistiken fehlen: Keine Gruppen-Statistiken
-
-### Teilweise gelöst (1)
-
-- 🔶 **P2-18** any-Types im Code: 1 any-Types verbleibend
 
 ### Empfohlene Reviewer-Anpassungen
 

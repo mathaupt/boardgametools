@@ -11,6 +11,18 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.15.2",
+    date: "2026-03-21",
+    title: "Dokumentation, Pagination-Bestätigung & Tests",
+    description: "CONCEPT.md aktualisiert (SessionRating-Modell, Statistics-API, Sessions-CRUD), Pagination bereits vorhanden bestätigt, public-link Tests ergänzt.",
+    changes: [
+      { type: "improvement", text: "CONCEPT.md: SessionRating-Modell, winningProposalId, Sessions-Detail-API und Statistics-API dokumentiert (P2-24)" },
+      { type: "internal", text: "P1-9 Pagination: Alle 3 Listen-Endpoints hatten bereits ?page=X&limit=Y – SKILL.md korrigiert" },
+      { type: "internal", text: "7 neue Unit Tests für public-link.ts (getClientBaseUrl Fallback-Kette) – 11 Test-Dateien, 139 Tests gesamt" },
+      { type: "internal", text: "SKILL.md: P1-9, P2-24 als behoben markiert" },
+    ],
+  },
+  {
     version: "0.15.1",
     date: "2026-03-21",
     title: "Code-Qualität: Typsicherheit, Validierung & Review-Fixes",
