@@ -26,7 +26,8 @@ class LocalStorageProvider implements StorageProvider {
 
 class BlobStorageProvider implements StorageProvider {
   async upload(buffer: Buffer, fileName: string, mimeType: string): Promise<StorageResult> {
-    const { put } = await import("@vercel/blob");
+    const blobPkg = "@vercel/blob";
+    const { put } = await import(/* @vite-ignore */ blobPkg);
     const blob = await put(fileName, buffer, {
       access: "public",
       contentType: mimeType,

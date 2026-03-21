@@ -11,6 +11,18 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.17.1",
+    date: "2026-03-21",
+    title: "Test Coverage & Error Boundaries",
+    description: "Letzte offene Review-Findings behoben: Unit Tests für alle lib-Module und error.tsx Boundaries für alle Route-Segmente.",
+    changes: [
+      { type: "improvement", text: "6 neue Unit-Test-Dateien für env, logger, storage, cache, mailer und db (insgesamt 188 Tests)" },
+      { type: "improvement", text: "8 neue error.tsx Boundaries für auth, games, events, groups, sessions, series, admin und public" },
+      { type: "fix", text: "Vite-Kompatibilität für @vercel/blob Dynamic Import in storage.ts" },
+      { type: "internal", text: "Review-Score auf 9.7/10 erhöht – 45 von 47 Findings gelöst" },
+    ],
+  },
+  {
     version: "0.17.0",
     date: "2026-03-21",
     title: "Erweiterter Code-Review: Security, Performance, Best Practices & Skalierung",

@@ -523,8 +523,8 @@ const isValid = await compare(inputPassword, group.password);
 
 ## Evaluator-Feedback (automatisch generiert)
 
-> Letzter Lauf: 2026-03-21 15:19:54
-> Gesamt-Score: **9.5/10**
+> Letzter Lauf: 2026-03-21 15:48:23
+> Gesamt-Score: **9.7/10**
 
 ### Kategorie-Scores
 
@@ -535,10 +535,10 @@ const isValid = await compare(inputPassword, group.password);
 | Architektur | **10/10** | 10 | 10 | 10 | 10 | 10 |
 | Performance | **9.2/10** | 10 | 8.3 | 10 | 8.5 | 10 |
 | API Design | **10/10** | 10 | 10 | 10 | 10 | 10 |
-| Testing | **8/10** | 10 | 10 | 0 | 10 | 10 |
+| Testing | **10/10** | 10 | 10 | 10 | 10 | 10 |
 | Datenbank | **10/10** | 10 | 10 | 10 | 10 | 10 |
 | Konzept-Konformität | **10/10** | 10 | 10 | 10 | 10 | 10 |
-| Best Practices | **8.6/10** | 10 | 10 | 5 | 8.8 | 10 |
+| Best Practices | **9.6/10** | 10 | 10 | 10 | 8.8 | 10 |
 | Skalierung | **9.2/10** | 10 | 10 | 10 | 7.7 | 10 |
 
 ### Erledigte Findings (45)
@@ -564,7 +564,7 @@ const isValid = await compare(inputPassword, group.password);
 - ✅ **P2-19** Duplikat: Prisma-Client-Dateien: Duplikat entfernt
 - ✅ **P2-20** Duplikat: BGG-Logik: Kein dupliziertes XML-Parsing
 - ✅ **P2-21** next/image statt <img>: Keine <img> Tags
-- ✅ **P2-22** Fehlende Unit Tests: 14 Test-Dateien
+- ✅ **P2-22** Fehlende Unit Tests: 20 Test-Dateien
 - ✅ **P2-23** Inkonsistente Error-Responses: Konsistent: 395 error, 14 message
 - ✅ **P2-24** CONCEPT.md aktualisieren: Tech-Stack aktuell
 - ✅ **P2-25** Pendende Invites dupliziert: Shared Query extrahiert
@@ -599,9 +599,3 @@ const isValid = await compare(inputPassword, group.password);
 - 🔶 **BP-52** Fehlende Error Boundaries: Nur globale Error Boundary
 - 🔶 **SCALE-56** File-Uploads auf lokalem Dateisystem: Storage-Abstraktion vorhanden (Blob + Local Fallback)
 - 🔶 **SCALE-60** DB Connection Pooling nicht konfiguriert: DB-URL vorhanden, aber kein explizites Pooling
-
-### Empfohlene Reviewer-Anpassungen
-
-- ➕ NEU: "Test Coverage Lücken" – 16 von 22 lib-Dateien getestet (Schwelle: 5)
-- ➕ NEU: "Fehlende error.tsx Boundaries" – 2 error.tsx für 41 pages (5%) (Schwelle: 3)
-- 📝 Abdeckung in "Testing" niedrig (0/10) – weitere Prüfpunkte hinzufügen
