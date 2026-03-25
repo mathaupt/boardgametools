@@ -127,8 +127,31 @@ export default defineConfig({
     include: ["tests/unit/**/*.test.ts", "tests/unit/**/*.test.tsx"],
     coverage: {
       provider: "v8",
-      reporter: ["text", "json", "html"],
-      exclude: ["node_modules/", "tests/"],
+      reporter: ["text", "text-summary", "json-summary", "html"],
+      include: [
+        "src/lib/**/*.ts",
+        "src/components/**/*.{ts,tsx}",
+        "src/app/**/*client*.tsx",
+        "src/app/**/*form*.tsx",
+        "src/app/**/*dialog*.tsx",
+        "src/app/**/*modal*.tsx",
+      ],
+      exclude: [
+        "node_modules/",
+        "tests/",
+        "src/components/ui/**",       // shadcn/ui -- 3rd-party
+        "src/lib/changelog.ts",       // reine Daten
+        "src/lib/faq.ts",             // reine Daten
+        "**/*.d.ts",
+      ],
+      thresholds: {
+        "src/lib/**": {
+          statements: 60,
+          branches: 50,
+          functions: 60,
+          lines: 60,
+        },
+      },
     },
   },
   resolve: {
@@ -147,7 +170,10 @@ export default defineConfig({
 | `globals`            | `true`                                      | `describe`, `it`, `expect` ohne Import    |
 | `setupFiles`         | `./tests/setup.ts`                          | `@testing-library/jest-dom` Matcher       |
 | `coverage.provider`  | `v8`                                        | Schnelle native Coverage-Erfassung        |
+| `coverage.thresholds`| `src/lib/**`: 60% Lines/Stmts/Funcs        | Mindeststandard fuer Business-Logik       |
 | `alias @`            | `./src`                                     | Gleiche Pfadaufloesung wie in Next.js     |
+
+**Abhaengigkeiten:** `@vitest/coverage-v8` muss installiert sein (devDependency).
 
 ### Test-Befehle
 
@@ -225,34 +251,292 @@ export const config = {
 
 ---
 
-## 4. Test-Abdeckungsziele
+## 4. Code-Abdeckung (Coverage)
 
-### Zielwerte nach Schicht
-
-| Schicht                      | Ziel-Coverage | Aktuell       | Strategie                                |
-|------------------------------|---------------|---------------|------------------------------------------|
-| `src/lib/` (Business-Logik)  | **90%+**      | 20/22 Dateien | Jede lib-Datei hat eine eigene Test-Datei |
-| `src/components/` (UI)       | Key Interactions | --         | Interaktive Komponenten mit Testing Library |
-| `src/app/api/` (API Routes)  | Kritische Pfade | --          | Integrations-Tests fuer Auth, Validierung |
-| E2E (Nutzerflows)            | Kern-Flows    | 2 Dateien     | Login, Game CRUD, Event-Voting           |
-
-### Coverage-Report
+### Coverage-Befehle
 
 ```bash
-npm run test:coverage
+npm run test:coverage          # Vollstaendiger Report (text + html + json-summary)
 ```
 
-| Format | Ort                      | Verwendung                        |
-|--------|--------------------------|-----------------------------------|
-| `text` | Terminal-Ausgabe          | Schnelle Uebersicht beim Entwickeln |
-| `json` | `coverage/coverage.json` | CI-Integration, Trend-Tracking    |
-| `html` | `coverage/index.html`    | Detaillierte Analyse im Browser   |
+Der HTML-Report wird in `coverage/index.html` generiert (gitignored).
+
+### Bewertungsskala
+
+| Score | src/lib/ Lines | src/components/ Lines | Gesamt Lines | Bewertung |
+|-------|----------------|----------------------|-------------|-----------|
+| 10/10 | >= 80%        | >= 50%               | >= 60%      | Vorbildlich |
+| 8/10  | >= 70%        | >= 30%               | >= 45%      | Gut |
+| 6/10  | >= 60%        | >= 15%               | >= 30%      | Akzeptabel |
+| 4/10  | >= 40%        | > 0%                 | >= 20%      | Ausbaufaehig |
+| 2/10  | > 0%          | 0%                   | > 0%        | Unzureichend |
+
+### Baseline (2026-03-24)
+
+| Bereich | Statements | Branches | Functions | Lines |
+|---------|-----------|----------|-----------|-------|
+| **src/lib/** | 61.4% | 54.2% | 73.0% | 61.6% |
+| **src/components/** | 0% | 0% | 0% | 0% |
+| **Gesamt** | 20.1% | 17.7% | 17.1% | 20.0% |
+
+**Aktueller Score: 4/10** (lib ueber 60%, aber components bei 0%)
+
+### Coverage pro lib-Datei (Baseline)
+
+| Datei | Lines | Bewertung |
+|-------|-------|-----------|
+| `api-logger.ts` | 100% | -- |
+| `cache.ts` | 100% | -- |
+| `env.ts` | 100% | -- |
+| `event-share.ts` | 100% | -- |
+| `group-share.ts` | 100% | -- |
+| `logger.ts` | 100% | -- |
+| `public-event.ts` | 100% | -- |
+| `utils.ts` | 100% | -- |
+| `validation.ts` | 100% | -- |
+| `crypto.ts` | 96.7% | -- |
+| `mailer.ts` | 95.2% | -- |
+| `db.ts` | 85.7% | -- |
+| `rate-limit.ts` | 48.9% | Ausbaufaehig |
+| `bgg.ts` | 45.6% | Ausbaufaehig |
+| `storage.ts` | 43.8% | Ausbaufaehig |
+| `public-link.ts` | 17.6% | Unzureichend |
+| `password-reset.ts` | 13.3% | Unzureichend |
+| `admin-create.ts` | 0% | Kein Test |
+| `auth.ts` | 0% | Kein Test |
+| `queries/pending-invites.ts` | 0% | Kein Test |
+
+### Was ist NICHT in der Coverage enthalten
+
+| Ausschluss | Grund |
+|-----------|-------|
+| `src/components/ui/**` | shadcn/ui Kopien -- 3rd-party, nicht testen |
+| `src/lib/changelog.ts` | Reine Daten (Array von Objekten) |
+| `src/lib/faq.ts` | Reine Daten |
+| `src/app/**/page.tsx` (Server) | Server Components ohne Client-Logik |
+| `src/app/**/loading.tsx` | Statische Skeleton-Screens |
+| `src/app/**/error.tsx` | Triviale Error Boundaries (30 Zeilen) |
+
+### Coverage-Entwicklung tracken
+
+Coverage-Ergebnisse werden in `docs/testing/` dokumentiert:
+
+```
+docs/testing/
+  YYYY-MM-DD_snapshot.md       # Coverage-Zahlen, Score, Vergleich
+  YYYY-MM-DD_bewertung.md      # Analyse und Handlungsbedarf
+```
 
 ---
 
-## 5. Mocking-Patterns
+## 5. Frontend-Test-Strategie (Komponenten)
 
-### 5.1 Prisma-Client mocken
+### Infrastruktur
+
+Die gesamte Infrastruktur ist vorhanden:
+
+| Paket | Version | Status |
+|-------|---------|--------|
+| `@testing-library/react` | ^16.3.2 | Installiert |
+| `@testing-library/jest-dom` | ^6.9.1 | Installiert, in setup.ts geladen |
+| `@vitejs/plugin-react` | ^5.1.4 | Installiert |
+| `jsdom` | ^28.0.0 | Konfiguriert als Test-Environment |
+
+### Komponentenlandschaft
+
+| Kategorie | Dateien | Testen? | Begruendung |
+|-----------|---------|---------|-------------|
+| shadcn/ui (`src/components/ui/`) | 21 | **Nein** | 3rd-party Kopien |
+| Error Boundaries (`error.tsx`) | 10 | **Nein** | Trivial (30 Zeilen) |
+| Loading States (`loading.tsx`) | 13 | **Nein** | Rein statisch |
+| Layout (`header/navbar/sidebar`) | 3 | **Nein** | Wenig Logik |
+| **Formulare** | 8 | **Ja (P0)** | Validierung, Submit-Logik |
+| **Interaktive Business-Logik** | 6 | **Ja (P1)** | Voting, Polls, State |
+| **Wiederverwendbare Komponenten** | 5 | **Ja (P1)** | Props, Callbacks |
+| **Listen mit Filter/Sort** | 4 | **Ja (P2)** | Filterung, Pagination |
+| **Admin-Modale** | 4 | **Ja (P2)** | Berechtigungen |
+| **Detail-Seiten** | 6 | **Ja (P3)** | Darstellung |
+
+### Prioritaeten
+
+**P0 – Formulare mit Validierung (8 Dateien)**
+
+| Datei | Was testen |
+|-------|-----------|
+| `(auth)/register/page.tsx` | Pflichtfelder, E-Mail-Validierung, Submit |
+| `(auth)/login/page.tsx` | Fehlermeldung bei falschem Login |
+| `games/new/page.tsx` | Spielname Pflicht, optionale Felder |
+| `sessions/new/page.tsx` | Spiel-Auswahl, Spieler, Submit |
+| `events/new/page.tsx` | Event erstellen, Datum, Submit |
+| `series/new/page.tsx` | Serie erstellen |
+| `groups/new/page.tsx` | Gruppe erstellen |
+| `profile/password-change-form.tsx` | Passwort-Validierung, Bestaetigung |
+
+**P1 – Interaktive Business-Logik (6 Dateien)**
+
+| Datei | Was testen |
+|-------|-----------|
+| `events/[id]/voting-client.tsx` | Vote/Unvote, optimistisches UI |
+| `events/[id]/date-poll-client.tsx` | Terminvorschlaege, Abstimmung |
+| `groups/[id]/group-detail-client.tsx` | Mitglieder, Polls, Kommentare |
+| `groups/[id]/poll-card.tsx` | Abstimmung, Ergebnis-Anzeige |
+| `public-event/guest-registration-panel.tsx` | Gast-Registrierung (hat data-testid) |
+| `public-event/bgg-game-search.tsx` | Suche, Detail-Anzeige, Vorschlag |
+
+**P1 – Wiederverwendbare Komponenten (5 Dateien)**
+
+| Datei | Was testen |
+|-------|-----------|
+| `event-mail-dialog.tsx` | Oeffnen, Tabs, Versand |
+| `pending-invites.tsx` | Liste, Annehmen/Ablehnen |
+| `barcode-scanner.tsx` | Scanner-Start (html5-qrcode Mock) |
+| `admin/create-user-modal.tsx` | Formular, Validierung |
+| `admin/change-password-modal.tsx` | Formular, Validierung |
+
+### Mocking fuer Komponenten-Tests
+
+#### Next.js Navigation
+
+```typescript
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({
+    push: vi.fn(),
+    refresh: vi.fn(),
+    back: vi.fn(),
+    replace: vi.fn(),
+  }),
+  usePathname: () => "/dashboard/games",
+  useSearchParams: () => new URLSearchParams(),
+}));
+```
+
+#### NextAuth Session
+
+```typescript
+vi.mock("next-auth/react", () => ({
+  signIn: vi.fn(),
+  signOut: vi.fn(),
+  useSession: () => ({
+    data: {
+      user: { id: "user-1", name: "Test User", email: "test@example.com" },
+    },
+    status: "authenticated",
+  }),
+}));
+```
+
+#### next/image
+
+```typescript
+vi.mock("next/image", () => ({
+  default: (props: Record<string, unknown>) => {
+    // eslint-disable-next-line @next/next/no-img-element
+    return <img {...props} />;
+  },
+}));
+```
+
+#### fetch (API-Aufrufe)
+
+```typescript
+const fetchSpy = vi.spyOn(global, "fetch").mockResolvedValue(
+  new Response(JSON.stringify({ id: "1", name: "Catan" }), {
+    status: 200,
+    headers: { "Content-Type": "application/json" },
+  })
+);
+
+afterEach(() => fetchSpy.mockRestore());
+```
+
+### Testmuster: Formular-Komponente
+
+```typescript
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { describe, it, expect, vi } from "vitest";
+
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ push: vi.fn(), refresh: vi.fn() }),
+  useSearchParams: () => new URLSearchParams(),
+}));
+
+describe("Neues Spiel erstellen", () => {
+  it("zeigt Validierungsfehler bei leerem Submit", async () => {
+    render(<NewGamePage />);
+    fireEvent.click(screen.getByRole("button", { name: /erstellen|speichern/i }));
+    await waitFor(() => {
+      expect(screen.getByText(/name.*erforderlich/i)).toBeInTheDocument();
+    });
+  });
+
+  it("sendet Formulardaten an API", async () => {
+    const fetchSpy = vi.spyOn(global, "fetch").mockResolvedValueOnce(
+      new Response(JSON.stringify({ id: "1" }), { status: 201 })
+    );
+    render(<NewGamePage />);
+    fireEvent.change(screen.getByLabelText(/name/i), { target: { value: "Catan" } });
+    fireEvent.click(screen.getByRole("button", { name: /erstellen|speichern/i }));
+    await waitFor(() => {
+      expect(fetchSpy).toHaveBeenCalledWith("/api/games", expect.anything());
+    });
+  });
+});
+```
+
+### Testmuster: Interaktive Komponente mit data-testid
+
+```typescript
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+
+describe("GuestRegistrationPanel", () => {
+  it("registriert Gast mit Nickname", async () => {
+    const fetchSpy = vi.spyOn(global, "fetch").mockResolvedValueOnce(
+      new Response(JSON.stringify({ id: "g1", name: "Max" }), { status: 201 })
+    );
+    render(<GuestRegistrationPanel eventId="evt-1" token="abc" onGuestRegistered={vi.fn()} />);
+    fireEvent.change(screen.getByTestId("guest-nickname-input"), { target: { value: "Max" } });
+    fireEvent.click(screen.getByTestId("guest-join-button"));
+    await waitFor(() => {
+      expect(fetchSpy).toHaveBeenCalled();
+    });
+  });
+});
+```
+
+### Dateistruktur fuer Frontend-Tests
+
+```
+tests/unit/
+  components/                   # Wiederverwendbare Komponenten
+    event-mail-dialog.test.tsx
+    pending-invites.test.tsx
+    barcode-scanner.test.tsx
+    admin/
+      create-user-modal.test.tsx
+      change-password-modal.test.tsx
+    public-event/
+      guest-registration-panel.test.tsx
+      bgg-game-search.test.tsx
+  pages/                        # Seiten-Komponenten
+    auth/
+      login.test.tsx
+      register.test.tsx
+    games/
+      new-game.test.tsx
+    events/
+      voting-client.test.tsx
+      date-poll-client.test.tsx
+    groups/
+      group-detail-client.test.tsx
+    sessions/
+      new-session.test.tsx
+```
+
+---
+
+## 6. Mocking-Patterns (lib)
+
+### 6.1 Prisma-Client mocken
 
 ```typescript
 import { describe, it, expect, vi } from "vitest";
@@ -281,7 +565,7 @@ describe("db", () => {
 });
 ```
 
-### 5.2 Externe API mocken (BGG)
+### 6.2 Externe API mocken (BGG)
 
 ```typescript
 const originalFetch = global.fetch;
@@ -304,7 +588,7 @@ describe("BGG API", () => {
 });
 ```
 
-### 5.3 Umgebungsvariablen mocken
+### 6.3 Umgebungsvariablen mocken
 
 ```typescript
 const originalEnv = { ...process.env };
@@ -321,7 +605,7 @@ it("liest gesetzte Variable", async () => {
 });
 ```
 
-### 5.4 Timer mocken (Rate Limiting)
+### 6.4 Timer mocken (Rate Limiting)
 
 ```typescript
 beforeEach(() => vi.useFakeTimers());
@@ -348,7 +632,7 @@ it("setzt Rate Limit nach Zeitfenster zurueck", async () => {
 
 ---
 
-## 6. Test-Konventionen
+## 7. Test-Konventionen
 
 ### Dateistruktur
 
@@ -401,7 +685,7 @@ describe("validateString", () => {
 
 ---
 
-## 7. Continuous Integration
+## 8. Continuous Integration
 
 ### Pre-Commit Hook (Husky)
 
@@ -428,7 +712,7 @@ npm run review-evaluate:regression    # Review-Evaluator mit Regressionserkennun
 
 ---
 
-## 8. Bewertungsprozess
+## 9. Bewertungsprozess
 
 ### Dokumentation
 
@@ -440,7 +724,7 @@ npm run review-evaluate:regression    # Review-Evaluator mit Regressionserkennun
 
 ---
 
-## 9. Checkliste fuer Code-Reviews
+## 10. Checkliste fuer Code-Reviews
 
 ### Pflicht-Pruefpunkte
 

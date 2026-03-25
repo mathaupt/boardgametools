@@ -523,7 +523,7 @@ const isValid = await compare(inputPassword, group.password);
 
 ## Evaluator-Feedback (automatisch generiert)
 
-> Letzter Lauf: 2026-03-25 10:51:32
+> Letzter Lauf: 2026-03-25 10:52:57
 > Gesamt-Score: **10/10**
 
 ### Kategorie-Scores
@@ -538,10 +538,10 @@ const isValid = await compare(inputPassword, group.password);
 | Testing | **10/10** | 10 | 10 | 10 | 10 | 10 |
 | Datenbank | **10/10** | 10 | 10 | 10 | 10 | 10 |
 | Konzept-Konformität | **10/10** | 10 | 10 | 10 | 10 | 10 |
-| Best Practices | **9.8/10** | 10 | 10 | 10 | 9.4 | 10 |
+| Best Practices | **10/10** | 10 | 10 | 10 | 10 | 10 |
 | Skalierung | **10/10** | 10 | 10 | 10 | 10 | 10 |
 
-### Erledigte Findings (49)
+### Erledigte Findings (50)
 
 - ✅ **P0-1** Debug-Routes in Produktion: NODE_ENV Guard vorhanden
 - ✅ **P0-2** DB-Init ohne Auth: Auth-Check vorhanden
@@ -583,6 +583,7 @@ const isValid = await compare(inputPassword, group.password);
 - ✅ **PERF-48** Keine Bundle-Analyse konfiguriert: @next/bundle-analyzer konfiguriert
 - ✅ **PERF-49** Keine API Caching Headers: 3 Caching-Konfigurationen gefunden
 - ✅ **BP-50** ESLint Warnings/Errors: ESLint clean
+- ✅ **BP-51** Ungenutzte Dependencies in package.json: Alle Dependencies werden verwendet
 - ✅ **BP-52** Fehlende Error Boundaries: 10 Error Boundaries vorhanden
 - ✅ **BP-53** ENV-Validierung beim Start: ENV-Validierung vorhanden
 - ✅ **BP-54** Fehlende Loading States (loading.tsx): 13 loading.tsx für 41 pages (32%)
@@ -592,15 +593,3 @@ const isValid = await compare(inputPassword, group.password);
 - ✅ **SCALE-58** Kein Caching-Layer: Redis Cache vorhanden
 - ✅ **SCALE-59** Kein strukturiertes Logging: Strukturiertes Logging-Framework vorhanden
 - ✅ **SCALE-60** DB Connection Pooling nicht konfiguriert: Connection Pool konfiguriert
-
-### Teilweise gelöst (1)
-
-- 🔶 **BP-51** Ungenutzte Dependencies in package.json: Möglicherweise ungenutzt: react-is
-
-### REGRESSIONEN (1)
-
-- 🔄 **BP-51** REGRESSION: BP-51 "Ungenutzte Dependencies in package.json" war resolved, ist jetzt partially_resolved. Möglicherweise ungenutzt: react-is
-
-### Empfohlene Reviewer-Anpassungen
-
-- 🔄 REGRESSION: BP-51 "Ungenutzte Dependencies in package.json" war resolved, ist jetzt partially_resolved. Möglicherweise ungenutzt: react-is

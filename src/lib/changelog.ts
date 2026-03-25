@@ -11,6 +11,21 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.20.1",
+    date: "2026-03-24",
+    title: "Coverage-Infrastruktur und Frontend-Test-Strategie",
+    description: "Code-Coverage-Messung mit @vitest/coverage-v8 eingerichtet, Baseline gemessen (lib 61%, components 0%), Coverage-Bewertungsskala definiert und Frontend-Test-Strategie mit Prioritätsmatrix für 33 Komponenten erarbeitet.",
+    changes: [
+      { type: "feature", text: "Code-Coverage-Messung: npm run test:coverage zeigt jetzt detaillierte Abdeckung pro Datei" },
+      { type: "feature", text: "Coverage-Baseline dokumentiert: src/lib/ bei 61.4% Statements, src/components/ bei 0%" },
+      { type: "feature", text: "Coverage-Bewertungsskala (1-10) im Testing-Skill definiert mit klaren Schwellenwerten" },
+      { type: "feature", text: "Frontend-Test-Strategie: Prioritätsmatrix (P0-P3) für 33 Komponenten erstellt" },
+      { type: "improvement", text: "Testing-Skill um Sektionen für Coverage-Tracking und Frontend-Test-Muster erweitert" },
+      { type: "improvement", text: "Testing-Dokumentation: Snapshot und Bewertung mit Coverage-Daten aktualisiert" },
+      { type: "internal", text: "@vitest/coverage-v8 als devDependency installiert, vitest.config.ts mit Thresholds konfiguriert" },
+    ],
+  },
+  {
     version: "0.20.0",
     date: "2026-03-24",
     title: "6 neue Skills und umfassende Projekt-Dokumentation",
