@@ -1,149 +1,49 @@
 import { NextRequest, NextResponse } from "next/server";
-import { invalidateTag } from "@/lib/cache";
-import { auth } from "@/lib/auth";
-import prisma from "@/lib/db";
 import { withApiLogging } from "@/lib/api-logger";
-import { validateString, validateNumber, firstError } from "@/lib/validation";
-import { CacheTags } from "@/lib/cache-tags";
+import { requireAuth, handleApiError } from "@/lib/require-auth";
+import { GameService } from "@/lib/services";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
 export const GET = withApiLogging(async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: RouteContext
 ) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  try {
+    const { userId } = await requireAuth();
+    const { id } = await params;
+    const result = await GameService.getById(userId, id);
+    return NextResponse.json(result);
+  } catch (error) {
+    return handleApiError(error);
   }
-
-  const { id } = await params;
-
-  const game = await prisma.game.findFirst({
-    where: { id, ownerId: session.user.id },
-    include: {
-      sessions: {
-        include: { players: { include: { user: { select: { id: true, name: true, email: true } } } } },
-        orderBy: { playedAt: "desc" },
-        take: 10,
-      },
-      tags: { include: { tag: true } },
-    },
-  });
-
-  if (!game) {
-    return NextResponse.json({ error: "Game not found" }, { status: 404 });
-  }
-
-  return NextResponse.json(game);
 });
 
 export const PUT = withApiLogging(async function PUT(
   request: NextRequest,
   { params }: RouteContext
 ) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  const { id } = await params;
-
-  const existing = await prisma.game.findFirst({
-    where: { id, ownerId: session.user.id },
-  });
-
-  if (!existing) {
-    return NextResponse.json({ error: "Game not found" }, { status: 404 });
-  }
-
   try {
+    const { userId } = await requireAuth();
+    const { id } = await params;
     const body = await request.json();
-    const { name, description, minPlayers, maxPlayers, playTimeMinutes, complexity, bggId, imageUrl, tagNames } = body;
-
-    const validationError = firstError(
-      validateString(name, "Name", { required: false, max: 200 }),
-      validateString(description, "Beschreibung", { required: false, max: 2000 }),
-      validateNumber(minPlayers, "Min. Spieler", { required: false, min: 1, max: 99 }),
-      validateNumber(maxPlayers, "Max. Spieler", { required: false, min: 1, max: 99 }),
-      validateNumber(playTimeMinutes, "Spieldauer", { required: false, min: 0, max: 9999 }),
-      validateNumber(complexity, "Komplexität", { required: false, min: 1, max: 5 }),
-    );
-    if (validationError) {
-      return NextResponse.json({ error: validationError }, { status: 400 });
-    }
-
-    const game = await prisma.game.update({
-      where: { id },
-      data: {
-        name,
-        description,
-        minPlayers,
-        maxPlayers,
-        playTimeMinutes,
-        complexity,
-        bggId,
-        imageUrl,
-      },
-    });
-
-    // Update tags if provided
-    if (Array.isArray(tagNames)) {
-      // Remove existing tags
-      await prisma.gameTag.deleteMany({ where: { gameId: id } });
-      // Add new tags
-      for (const tagName of tagNames) {
-        const trimmed = String(tagName).trim();
-        if (!trimmed) continue;
-        const tag = await prisma.tag.upsert({
-          where: { name_ownerId: { name: trimmed, ownerId: session.user.id } },
-          create: { name: trimmed, ownerId: session.user.id, source: "manual" },
-          update: {},
-        });
-        await prisma.gameTag.create({
-          data: { gameId: game.id, tagId: tag.id },
-        });
-      }
-    }
-
-    const result = await prisma.game.findUnique({
-      where: { id: game.id },
-      include: { tags: { include: { tag: true } } },
-    });
-
-    invalidateTag(CacheTags.userGames(session.user.id));
-    invalidateTag(CacheTags.userDashboard(session.user.id));
-
+    const result = await GameService.update(userId, id, body);
     return NextResponse.json(result);
   } catch (error) {
-    console.error("Error updating game:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return handleApiError(error);
   }
 });
 
 export const DELETE = withApiLogging(async function DELETE(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: RouteContext
 ) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  try {
+    const { userId } = await requireAuth();
+    const { id } = await params;
+    const result = await GameService.delete(userId, id);
+    return NextResponse.json(result);
+  } catch (error) {
+    return handleApiError(error);
   }
-
-  const { id } = await params;
-
-  const existing = await prisma.game.findFirst({
-    where: { id, ownerId: session.user.id },
-  });
-
-  if (!existing) {
-    return NextResponse.json({ error: "Game not found" }, { status: 404 });
-  }
-
-  await prisma.game.delete({ where: { id } });
-
-  invalidateTag(CacheTags.userGames(session.user.id));
-  invalidateTag(CacheTags.userDashboard(session.user.id));
-
-  return NextResponse.json({ message: "Game deleted" });
 });

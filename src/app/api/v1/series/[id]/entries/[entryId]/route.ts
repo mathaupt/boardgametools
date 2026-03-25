@@ -3,21 +3,7 @@ import { withApiLogging } from "@/lib/api-logger";
 import { requireAuth, handleApiError } from "@/lib/require-auth";
 import { SeriesService } from "@/lib/services";
 
-type RouteContext = { params: Promise<{ id: string }> };
-
-export const GET = withApiLogging(async function GET(
-  _request: NextRequest,
-  { params }: RouteContext
-) {
-  try {
-    const { userId } = await requireAuth();
-    const { id } = await params;
-    const result = await SeriesService.getById(userId, id);
-    return NextResponse.json(result);
-  } catch (error) {
-    return handleApiError(error);
-  }
-});
+type RouteContext = { params: Promise<{ id: string; entryId: string }> };
 
 export const PUT = withApiLogging(async function PUT(
   request: NextRequest,
@@ -25,10 +11,10 @@ export const PUT = withApiLogging(async function PUT(
 ) {
   try {
     const { userId } = await requireAuth();
-    const { id } = await params;
+    const { id, entryId } = await params;
     const body = await request.json();
-    const result = await SeriesService.update(userId, id, body);
-    return NextResponse.json(result);
+    const result = await SeriesService.updateEntry(userId, id, entryId, body);
+    return NextResponse.json(result, { headers: { "X-API-Version": "1" } });
   } catch (error) {
     return handleApiError(error);
   }
@@ -40,9 +26,9 @@ export const DELETE = withApiLogging(async function DELETE(
 ) {
   try {
     const { userId } = await requireAuth();
-    const { id } = await params;
-    const result = await SeriesService.delete(userId, id);
-    return NextResponse.json(result);
+    const { id, entryId } = await params;
+    const result = await SeriesService.deleteEntry(userId, id, entryId);
+    return NextResponse.json(result, { headers: { "X-API-Version": "1" } });
   } catch (error) {
     return handleApiError(error);
   }

@@ -7,12 +7,8 @@ export const DELETE = withApiLogging(async function DELETE(request: NextRequest)
   try {
     const { userId } = await requireAuth();
     const body = await request.json();
-    const { ids } = body as { ids?: string[] };
-    if (!Array.isArray(ids) || ids.length === 0 || ids.length > 500) {
-      return NextResponse.json({ error: "1\u2013500 IDs required" }, { status: 400 });
-    }
-    const result = await GameService.bulkDelete(userId, ids);
-    return NextResponse.json(result);
+    const result = await GameService.bulkDelete(userId, body.gameIds);
+    return NextResponse.json(result, { headers: { "X-API-Version": "1" } });
   } catch (error) {
     return handleApiError(error);
   }

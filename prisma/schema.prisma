@@ -63,6 +63,7 @@ model Game {
   ownerId         String
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
+  deletedAt       DateTime? // Soft delete
 
   // Relations
   owner           User            @relation(fields: [ownerId], references: [id], onDelete: Cascade)
@@ -73,6 +74,7 @@ model Game {
   tags            GameTag[]
 
   @@index([ownerId])
+  @@index([deletedAt])
 }
 
 // ============================================
@@ -87,6 +89,7 @@ model GameSession {
   notes           String?
   createdById     String
   createdAt       DateTime  @default(now())
+  deletedAt       DateTime? // Soft delete
 
   // Relations
   game            Game            @relation(fields: [gameId], references: [id], onDelete: Cascade)
@@ -95,6 +98,7 @@ model GameSession {
   ratings         SessionRating[]
 
   @@index([createdById])
+  @@index([deletedAt])
 }
 
 model SessionRating {
@@ -141,6 +145,7 @@ model Group {
   password    String?   // Optional simple page password for link-based access
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime? // Soft delete
 
   // Relations
   owner       User          @relation(fields: [ownerId], references: [id], onDelete: Cascade)
@@ -148,6 +153,8 @@ model Group {
   events      Event[]
   polls       GroupPoll[]
   comments    GroupComment[]
+
+  @@index([deletedAt])
 }
 
 model GroupMember {
@@ -246,6 +253,7 @@ model Event {
   shareToken      String?   @unique
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
+  deletedAt       DateTime? // Soft delete
 
   // Relations
   createdBy       User            @relation(fields: [createdById], references: [id], onDelete: Cascade)
@@ -260,6 +268,7 @@ model Event {
 
   @@index([createdById])
   @@index([eventDate])
+  @@index([deletedAt])
 }
 
 model EventInvite {
@@ -403,10 +412,13 @@ model GameSeries {
   ownerId     String
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime? // Soft delete
 
   // Relations
   owner       User              @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   entries     GameSeriesEntry[]
+
+  @@index([deletedAt])
 }
 
 model GameSeriesEntry {

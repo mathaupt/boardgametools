@@ -13,7 +13,7 @@ export const GET = withApiLogging(async function GET(
     const { userId } = await requireAuth();
     const { id } = await params;
     const result = await SessionService.getById(userId, id);
-    return NextResponse.json(result);
+    return NextResponse.json(result, { headers: { "X-API-Version": "1" } });
   } catch (error) {
     return handleApiError(error);
   }
@@ -28,7 +28,7 @@ export const PUT = withApiLogging(async function PUT(
     const { id } = await params;
     const body = await request.json();
     const result = await SessionService.update(userId, id, body);
-    return NextResponse.json(result);
+    return NextResponse.json(result, { headers: { "X-API-Version": "1" } });
   } catch (error) {
     return handleApiError(error);
   }
@@ -42,7 +42,7 @@ export const DELETE = withApiLogging(async function DELETE(
     const { userId } = await requireAuth();
     const { id } = await params;
     const result = await SessionService.delete(userId, id);
-    return NextResponse.json(result);
+    return NextResponse.json(result, { headers: { "X-API-Version": "1" } });
   } catch (error) {
     return handleApiError(error);
   }

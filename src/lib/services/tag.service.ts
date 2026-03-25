@@ -1,0 +1,55 @@
+import prisma from "@/lib/db";
+import { cachedQuery, invalidateTag } from "@/lib/cache";
+import { CacheTags } from "@/lib/cache-tags";
+import { ApiError } from "@/lib/require-auth";
+import { validateString } from "@/lib/validation";
+
+// ── Service ──────────────────────────────────────────────────────
+
+export const TagService = {
+  /** List all tags for a user (cached) */
+  async list(userId: string) {
+    return cachedQuery(
+      () =>
+        prisma.tag.findMany({
+          where: { ownerId: userId },
+          include: { _count: { select: { games: true } } },
+          orderBy: { name: "asc" },
+        }),
+      ["user-tags", userId],
+      { revalidate: 300, tags: [CacheTags.userTags(userId)] }
+    );
+  },
+
+  /** Create a tag (or return existing) */
+  async create(userId: string, name: string) {
+    const error = validateString(name, "Name", { max: 50 });
+    if (error) throw new ApiError(400, error);
+
+    const trimmed = name.trim();
+
+    const existing = await prisma.tag.findUnique({
+      where: { name_ownerId: { name: trimmed, ownerId: userId } },
+    });
+    if (existing) return { tag: existing, created: false };
+
+    const tag = await prisma.tag.create({
+      data: { name: trimmed, ownerId: userId, source: "manual" },
+    });
+
+    invalidateTag(CacheTags.userTags(userId));
+    return { tag, created: true };
+  },
+
+  /** Delete a tag */
+  async delete(userId: string, tagId: string) {
+    const tag = await prisma.tag.findFirst({
+      where: { id: tagId, ownerId: userId },
+    });
+    if (!tag) throw new ApiError(404, "Tag not found");
+
+    await prisma.tag.delete({ where: { id: tagId } });
+    invalidateTag(CacheTags.userTags(userId));
+    return { message: "Tag deleted" };
+  },
+};

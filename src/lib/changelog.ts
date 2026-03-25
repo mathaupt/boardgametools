@@ -11,6 +11,26 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.22.0",
+    date: "2026-03-24",
+    title: "Architektur-Refactoring: Service Layer, API v1, Soft Delete, SWR & Health Check",
+    description: "Umfassendes Architektur-Refactoring mit Einf\u00fchrung eines Service Layers, versionierter API (v1), Soft Delete f\u00fcr alle Kern-Modelle, SWR-Hooks f\u00fcr Client-seitiges Caching und erweitertem Health-Check-Endpoint.",
+    changes: [
+      { type: "feature", text: "Service Layer: Gesch\u00e4ftslogik aus API-Routes in zentrale Services extrahiert (Game, Session, Event, Group, Series, Tag)" },
+      { type: "feature", text: "API Versioning: Neue /api/v1/ Endpunkte mit X-API-Version Header f\u00fcr alle Kern-Dom\u00e4nen" },
+      { type: "feature", text: "Soft Delete: deletedAt-Feld f\u00fcr Game, GameSession, Event, Group und GameSeries \u2013 L\u00f6schen setzt nur Zeitstempel" },
+      { type: "feature", text: "SWR Integration: Zentraler API-Client und fertige React-Hooks f\u00fcr alle Dom\u00e4nen (useGames, useSessions, useEvents, useGroups, useSeries, useTags, useStatistics)" },
+      { type: "feature", text: "Health Check erweitert: Version, Uptime, Memory-Nutzung, DB-Antwortzeit, Komponenten-Status (healthy/degraded/unhealthy)" },
+      { type: "improvement", text: "requireAuth()-Helper: Zentralisierte Auth-Pr\u00fcfung mit typisiertem ApiError f\u00fcr konsistente Fehlerbehandlung" },
+      { type: "improvement", text: "9 bestehende API-Routes auf Service Layer umgestellt \u2013 deutlich kompakterer Code" },
+      { type: "improvement", text: "Zentrale Konstanten: SAFE_USER_SELECT und NOT_DELETED verhindern Password-Leaks und inkonsistente Soft-Delete-Filter" },
+      { type: "internal", text: "16 neue v1-Route-Dateien unter src/app/api/v1/ erstellt" },
+      { type: "internal", text: "src/lib/services/ mit SharedTypes, Pagination-Utilities und Barrel-Export" },
+      { type: "internal", text: "src/hooks/ mit generischem useApi-Hook und dom\u00e4nenspezifischen Hooks" },
+      { type: "internal", text: "Prisma Schema: 5 Modelle um deletedAt erweitert, Indizes f\u00fcr Performance hinzugef\u00fcgt" },
+    ],
+  },
+  {
     version: "0.21.0",
     date: "2026-03-24",
     title: "Performance: Caching-Infrastruktur und Cache-Invalidierung",
