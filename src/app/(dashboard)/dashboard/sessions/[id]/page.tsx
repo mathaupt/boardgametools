@@ -7,6 +7,17 @@ import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Calendar, Clock, Users, Trophy, ArrowLeft, Pencil, Trash2, Star } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface SessionPlayer {
   id: string;
@@ -41,11 +52,13 @@ interface SessionData {
 export default function SessionDetailPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
+  const { toast } = useToast();
 
   const [session, setSession] = useState<SessionData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   useEffect(() => {
     const fetchSession = async () => {
@@ -72,10 +85,7 @@ export default function SessionDetailPage() {
   }, [id]);
 
   const handleDelete = async () => {
-    if (!confirm("Möchtest du diese Session wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.")) {
-      return;
-    }
-
+    setDeleteDialogOpen(false);
     setDeleting(true);
     try {
       const res = await fetch(`/api/sessions/${id}`, { method: "DELETE" });
@@ -84,7 +94,7 @@ export default function SessionDetailPage() {
       }
       router.push("/dashboard/sessions");
     } catch {
-      alert("Fehler beim Löschen der Session.");
+      toast({ title: "Fehler", description: "Fehler beim Löschen der Session.", variant: "destructive" });
       setDeleting(false);
     }
   };
@@ -153,7 +163,7 @@ export default function SessionDetailPage() {
           <Button
             variant="destructive"
             size="sm"
-            onClick={handleDelete}
+            onClick={() => setDeleteDialogOpen(true)}
             disabled={deleting}
           >
             <Trash2 className="h-4 w-4 mr-2" />
@@ -313,6 +323,21 @@ export default function SessionDetailPage() {
           Zurück zu Sessions
         </Button>
       </Link>
+
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Session löschen</AlertDialogTitle>
+            <AlertDialogDescription>
+              Möchtest du diese Session wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Abbrechen</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete}>Löschen</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

@@ -33,6 +33,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
+import { useToast } from "@/components/ui/use-toast";
 
 // ── Types ───────────────────────────────────────────────────────
 
@@ -103,6 +104,7 @@ export function LogsTab({
   period: string;
   onRefreshAll: () => void;
 }) {
+  const { toast } = useToast();
   const [logs, setLogs] = useState<LogsResponse | null>(null);
   const [logsLoading, setLogsLoading] = useState(true);
   const [logPage, setLogPage] = useState(1);
@@ -147,7 +149,7 @@ export function LogsTab({
       });
       if (res.ok) {
         const data = await res.json();
-        alert(`${data.deleted} Logs gelöscht.`);
+        toast({ title: "Logs gelöscht", description: `${data.deleted} Logs wurden erfolgreich gelöscht.` });
         setPurgeOpen(false);
         onRefreshAll();
         fetchLogs();

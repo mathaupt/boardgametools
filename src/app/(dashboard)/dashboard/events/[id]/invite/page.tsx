@@ -9,6 +9,17 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Mail, Plus, Trash2, Users, Check, X } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface Invite {
   id?: string;
@@ -38,6 +49,7 @@ export default function EventInvitePage() {
   const params = useParams();
   const router = useRouter();
   const eventId = params.id as string;
+  const { toast } = useToast();
   
   const [event, setEvent] = useState<EventData | null>(null);
   const [invites, setInvites] = useState<Invite[]>([]);
@@ -47,6 +59,8 @@ export default function EventInvitePage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [userInviteSaving, setUserInviteSaving] = useState(false);
+  const [removeDialogOpen, setRemoveDialogOpen] = useState(false);
+  const [pendingRemoveId, setPendingRemoveId] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -103,7 +117,7 @@ export default function EventInvitePage() {
       
     } catch (error) {
       console.error('Add invite error:', error);
-      alert(error instanceof Error ? error.message : 'Fehler beim Hinzufügen der Einladung');
+      toast({ title: "Fehler", description: error instanceof Error ? error.message : "Fehler beim Hinzufügen der Einladung", variant: "destructive" });
     } finally {
       setSaving(false);
     }
@@ -132,17 +146,23 @@ export default function EventInvitePage() {
       setSelectedUserId("");
     } catch (error) {
       console.error('Add user invite error:', error);
-      alert(error instanceof Error ? error.message : 'Fehler beim Hinzufügen der Einladung');
+      toast({ title: "Fehler", description: error instanceof Error ? error.message : "Fehler beim Hinzufügen der Einladung", variant: "destructive" });
     } finally {
       setUserInviteSaving(false);
     }
   };
 
   const removeInvite = async (inviteId: string) => {
-    if (!confirm('Möchtest du diese Einladung wirklich entfernen?')) return;
+    setPendingRemoveId(inviteId);
+    setRemoveDialogOpen(true);
+  };
+
+  const confirmRemoveInvite = async () => {
+    if (!pendingRemoveId) return;
+    setRemoveDialogOpen(false);
 
     try {
-      const response = await fetch(`/api/events/${eventId}/invites?inviteId=${inviteId}`, {
+      const response = await fetch(`/api/events/${eventId}/invites?inviteId=${pendingRemoveId}`, {
         method: 'DELETE',
       });
 
@@ -150,11 +170,13 @@ export default function EventInvitePage() {
         throw new Error('Fehler beim Entfernen der Einladung');
       }
 
-      setInvites(prev => prev.filter(invite => invite.id !== inviteId));
+      setInvites(prev => prev.filter(invite => invite.id !== pendingRemoveId));
       
     } catch (error) {
       console.error('Remove invite error:', error);
-      alert('Fehler beim Entfernen der Einladung');
+      toast({ title: "Fehler", description: "Fehler beim Entfernen der Einladung", variant: "destructive" });
+    } finally {
+      setPendingRemoveId(null);
     }
   };
 
@@ -172,11 +194,11 @@ export default function EventInvitePage() {
         throw new Error('Fehler beim Senden der Erinnerung');
       }
 
-      alert('Erinnerung wurde gesendet!');
+      toast({ title: "Erinnerung gesendet", description: "Die Erinnerung wurde erfolgreich versendet." });
       
     } catch (error) {
       console.error('Resend error:', error);
-      alert('Fehler beim Senden der Erinnerung');
+      toast({ title: "Fehler", description: "Fehler beim Senden der Erinnerung", variant: "destructive" });
     }
   };
 
@@ -397,6 +419,21 @@ export default function EventInvitePage() {
           </div>
         </CardContent>
       </Card>
+
+      <AlertDialog open={removeDialogOpen} onOpenChange={setRemoveDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Einladung entfernen</AlertDialogTitle>
+            <AlertDialogDescription>
+              Möchtest du diese Einladung wirklich entfernen?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Abbrechen</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmRemoveInvite}>Entfernen</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

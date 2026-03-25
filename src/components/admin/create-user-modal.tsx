@@ -14,8 +14,10 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Plus } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
 
 export function CreateUserModal() {
+  const { toast } = useToast();
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -45,7 +47,7 @@ export function CreateUserModal() {
       window.location.reload();
     } catch (error) {
       console.error("Error creating user:", error);
-      alert("Fehler beim Erstellen des Benutzers");
+      toast({ title: "Fehler", description: "Fehler beim Erstellen des Benutzers", variant: "destructive" });
     } finally {
       setIsLoading(false);
     }

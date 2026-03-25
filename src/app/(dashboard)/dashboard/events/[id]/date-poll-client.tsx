@@ -5,6 +5,16 @@ import { useRouter } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Calendar, Trash2 } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { DateProposal } from "./date-poll-types";
 import { DateCreateForm } from "./date-poll-create-form";
 import { DateVotingMatrix } from "./date-poll-voting-matrix";
@@ -34,6 +44,7 @@ export default function DatePollClient({
   const [finalDate, setFinalDate] = useState<string | null>(selectedDate);
   const [resetting, setResetting] = useState(false);
   const [showResetDialog, setShowResetDialog] = useState(false);
+  const [showDeleteAllDialog, setShowDeleteAllDialog] = useState(false);
 
   // Create form state
   const [startDate, setStartDate] = useState("");
@@ -111,7 +122,7 @@ export default function DatePollClient({
 
   const handleDeleteAllProposals = async () => {
     if (pollClosed) return;
-    if (!confirm("Alle Terminvorschläge und Abstimmungen löschen?")) return;
+    setShowDeleteAllDialog(false);
 
     setLoading(true);
     try {
@@ -255,7 +266,7 @@ export default function DatePollClient({
                 <Button
                   variant="destructive"
                   size="sm"
-                  onClick={handleDeleteAllProposals}
+                  onClick={() => setShowDeleteAllDialog(true)}
                   disabled={loading}
                 >
                   <Trash2 className="h-4 w-4 mr-1" />
@@ -346,6 +357,21 @@ export default function DatePollClient({
           resetting={resetting}
           onReset={handleResetPoll}
         />
+
+        <AlertDialog open={showDeleteAllDialog} onOpenChange={setShowDeleteAllDialog}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Alle Terminvorschläge löschen</AlertDialogTitle>
+              <AlertDialogDescription>
+                Alle Terminvorschläge und Abstimmungen werden gelöscht. Diese Aktion kann nicht rückgängig gemacht werden.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Abbrechen</AlertDialogCancel>
+              <AlertDialogAction onClick={handleDeleteAllProposals}>Löschen</AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </CardContent>
     </Card>
   );

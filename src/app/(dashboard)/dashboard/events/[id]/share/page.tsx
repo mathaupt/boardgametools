@@ -11,6 +11,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { ArrowLeft, Share2, Users, Search, Check, X } from "lucide-react";
 import { PublicShareCard } from "../public-share-card";
 import { getClientBaseUrl } from "@/lib/public-link";
+import { useToast } from "@/components/ui/use-toast";
 
 interface User {
   id: string;
@@ -38,6 +39,7 @@ export default function EventSharePage() {
   const params = useParams();
   const router = useRouter();
   const eventId = params.id as string;
+  const { toast } = useToast();
   
   const [event, setEvent] = useState<EventData | null>(null);
   const [users, setUsers] = useState<User[]>([]);
@@ -115,7 +117,7 @@ export default function EventSharePage() {
       }
 
       const result = await response.json();
-      alert(`Event erfolgreich mit ${result.invites.length} Usern geteilt!`);
+      toast({ title: "Event geteilt", description: `Event erfolgreich mit ${result.invites.length} Usern geteilt!` });
       
       // Reset selection und reload data
       setSelectedUsers([]);
@@ -128,7 +130,7 @@ export default function EventSharePage() {
       
     } catch (error) {
       console.error('Share error:', error);
-      alert('Fehler beim Teilen des Events');
+      toast({ title: "Fehler", description: "Fehler beim Teilen des Events", variant: "destructive" });
     } finally {
       setSharing(false);
     }

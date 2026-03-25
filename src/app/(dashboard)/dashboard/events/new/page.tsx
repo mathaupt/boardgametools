@@ -8,9 +8,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { ArrowLeft, Calendar, MapPin, Users, Mail } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function NewEventPage() {
   const router = useRouter();
+  const { toast } = useToast();
   
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -52,7 +54,7 @@ export default function NewEventPage() {
       
     } catch (error) {
       console.error('Create error:', error);
-      alert('Fehler beim Erstellen des Events');
+      toast({ title: "Fehler", description: "Fehler beim Erstellen des Events", variant: "destructive" });
     } finally {
       setLoading(false);
     }

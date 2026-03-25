@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/components/ui/use-toast";
 import { Plus, Trash2, Trophy, Users } from "lucide-react";
 
 interface Player {
@@ -20,6 +21,7 @@ interface Player {
 export default function EditSessionPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
+  const { toast } = useToast();
 
   const [games, setGames] = useState<Game[]>([]);
   const [users, setUsers] = useState<User[]>([]);
@@ -139,7 +141,7 @@ export default function EditSessionPage() {
       router.push(`/dashboard/sessions/${id}`);
     } catch (err) {
       console.error("Save error:", err);
-      alert(err instanceof Error ? err.message : "Fehler beim Speichern der Session");
+      toast({ title: "Fehler", description: err instanceof Error ? err.message : "Fehler beim Speichern der Session", variant: "destructive" });
     } finally {
       setSaving(false);
     }

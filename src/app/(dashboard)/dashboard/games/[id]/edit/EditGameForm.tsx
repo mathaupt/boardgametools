@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Game } from "@prisma/client";
+import { useToast } from "@/components/ui/use-toast";
 
 interface EditGameFormProps {
   game: Game;
@@ -12,6 +13,7 @@ interface EditGameFormProps {
 
 export default function EditGameForm({ game, onSave, onCancel }: EditGameFormProps) {
   const router = useRouter();
+  const { toast } = useToast();
   const [formData, setFormData] = useState({
     name: game.name,
     description: game.description || "",
@@ -50,7 +52,7 @@ export default function EditGameForm({ game, onSave, onCancel }: EditGameFormPro
       router.push(`/dashboard/games/${game.id}`);
     } catch (error) {
       console.error('Save error:', error);
-      alert('Fehler beim Speichern des Spiels');
+      toast({ title: "Fehler", description: "Fehler beim Speichern des Spiels", variant: "destructive" });
     } finally {
       setIsSaving(false);
     }

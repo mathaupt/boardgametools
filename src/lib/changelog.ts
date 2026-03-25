@@ -11,6 +11,18 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.23.3",
+    date: "2026-03-26",
+    title: "UX: alert/confirm durch Toast-Benachrichtigungen und AlertDialog ersetzt",
+    description: "Alle nativen alert()- und confirm()-Aufrufe (19 alerts, 4 confirms in 13 Dateien) wurden durch nicht-blockierende Toast-Benachrichtigungen und modale AlertDialogs ersetzt. Bessere User Experience und konsistentes Design.",
+    changes: [
+      { type: "improvement", text: "Alle Fehler-Meldungen erscheinen jetzt als Toast-Benachrichtigungen statt als blockierende Browser-Alerts" },
+      { type: "improvement", text: "Erfolgs-Meldungen (BGG-Import, Event-Sharing, Erinnerungen) als Toast-Benachrichtigungen" },
+      { type: "improvement", text: "Bestaetigungs-Dialoge fuer destruktive Aktionen (Session loeschen, Einladung entfernen, Abstimmung beenden, Termine loeschen) durch modale AlertDialogs ersetzt" },
+      { type: "internal", text: "useToast + AlertDialog in 13 Komponenten integriert: Voting, Sessions (neu/bearbeiten/detail), BGG-Import, Events (neu/teilen/einladen), Spiel bearbeiten, Admin-Logs, Benutzer erstellen, Terminabstimmung, Abstimmung beenden" },
+    ],
+  },
+  {
     version: "0.23.2",
     date: "2026-03-25",
     title: "Rate-Limiting, Server Components, Logging & Architecture Hardening",

@@ -223,7 +223,7 @@ export default function EventVotingPage() {
       setBggResults(results);
     } catch (error) {
       console.error('BGG search error:', error);
-      alert('Fehler bei der BGG Suche');
+      toast({ title: "Fehler", description: "Fehler bei der BGG Suche", variant: "destructive" });
     } finally {
       setBggLoading(false);
     }

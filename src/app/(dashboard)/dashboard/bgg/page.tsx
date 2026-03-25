@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Search, Plus, Star, Users, Clock, ExternalLink } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
 
 interface BGGGame {
   bggId: string;
@@ -31,6 +32,7 @@ interface BGGSearchResult {
 }
 
 export default function BGGImportPage() {
+  const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<BGGSearchResult[]>([]);
   const [selectedGame, setSelectedGame] = useState<BGGGame | null>(null);
@@ -53,7 +55,7 @@ export default function BGGImportPage() {
       setSearchResults(results);
     } catch (error) {
       console.error('Search error:', error);
-      alert('Fehler bei der Suche');
+      toast({ title: "Fehler", description: "Fehler bei der Suche", variant: "destructive" });
     } finally {
       setSearching(false);
     }
@@ -72,7 +74,7 @@ export default function BGGImportPage() {
       setSelectedGame(game);
     } catch (error) {
       console.error('Fetch error:', error);
-      alert('Fehler beim Laden der Spiel-Details');
+      toast({ title: "Fehler", description: "Fehler beim Laden der Spiel-Details", variant: "destructive" });
     } finally {
       setLoading(false);
     }
@@ -105,7 +107,7 @@ export default function BGGImportPage() {
       }
 
       const importedGame = await response.json();
-      alert(`Spiel "${importedGame.name}" erfolgreich importiert!`);
+      toast({ title: "Spiel importiert", description: `Spiel "${importedGame.name}" erfolgreich importiert!` });
       
       // Reset form
       setSelectedGame(null);
@@ -114,7 +116,7 @@ export default function BGGImportPage() {
       
     } catch (error) {
       console.error('Import error:', error);
-      alert('Fehler beim Importieren des Spiels');
+      toast({ title: "Fehler", description: "Fehler beim Importieren des Spiels", variant: "destructive" });
     } finally {
       setImporting(false);
     }
