@@ -106,16 +106,16 @@ export default function NewGamePage() {
           <CardDescription>Gib die Informationen zum Spiel ein</CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4" data-testid="new-game-form">
             {error && (
-              <div className="p-3 text-sm text-destructive bg-destructive/10 rounded-md">
+              <div data-testid="new-game-error" className="p-3 text-sm text-destructive bg-destructive/10 rounded-md">
                 {error}
               </div>
             )}
 
             <div className="space-y-2">
               <Label htmlFor="name">Name *</Label>
-              <Input id="name" name="name" required placeholder="z.B. Catan" />
+              <Input id="name" name="name" required placeholder="z.B. Catan" data-testid="game-name" />
             </div>
 
             <div className="space-y-2">
@@ -123,6 +123,7 @@ export default function NewGamePage() {
               <textarea
                 id="description"
                 name="description"
+                data-testid="game-description"
                 className="flex min-h-20 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                 placeholder="Kurze Beschreibung des Spiels..."
               />
@@ -131,35 +132,35 @@ export default function NewGamePage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="minPlayers">Min. Spieler</Label>
-                <Input id="minPlayers" name="minPlayers" type="number" min="1" defaultValue="1" />
+                <Input id="minPlayers" name="minPlayers" type="number" min="1" defaultValue="1" data-testid="game-min-players" />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="maxPlayers">Max. Spieler</Label>
-                <Input id="maxPlayers" name="maxPlayers" type="number" min="1" defaultValue="4" />
+                <Input id="maxPlayers" name="maxPlayers" type="number" min="1" defaultValue="4" data-testid="game-max-players" />
               </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="playTimeMinutes">Spielzeit (Min.)</Label>
-                <Input id="playTimeMinutes" name="playTimeMinutes" type="number" min="1" placeholder="60" />
+                <Input id="playTimeMinutes" name="playTimeMinutes" type="number" min="1" placeholder="60" data-testid="game-play-time" />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="complexity">Komplexität (1-5)</Label>
-                <Input id="complexity" name="complexity" type="number" min="1" max="5" placeholder="3" />
+                <Input id="complexity" name="complexity" type="number" min="1" max="5" placeholder="3" data-testid="game-complexity" />
               </div>
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="bggId">BoardGameGeek ID</Label>
-              <Input id="bggId" name="bggId" placeholder="z.B. 13" />
+              <Input id="bggId" name="bggId" placeholder="z.B. 13" data-testid="game-bgg-id" />
               <p className="text-xs text-muted-foreground">
                 Optional: Die ID findest du in der BGG-URL des Spiels
               </p>
             </div>
 
             <div className="flex gap-4 pt-4">
-              <Button type="submit" disabled={isLoading}>
+              <Button type="submit" disabled={isLoading} data-testid="game-submit">
                 {isLoading ? "Speichern..." : "Spiel speichern"}
               </Button>
               <Link href="/dashboard/games">

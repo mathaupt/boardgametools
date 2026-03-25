@@ -117,10 +117,10 @@ export default function RegisterPage() {
             </CardDescription>
           </CardHeader>
           
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} data-testid="register-form">
             <CardContent className="space-y-4">
               {error && (
-                <div className="p-3 text-sm text-destructive bg-destructive/10 rounded-md border border-destructive/20">
+                <div data-testid="register-error" className="p-3 text-sm text-destructive bg-destructive/10 rounded-md border border-destructive/20">
                   {error}
                 </div>
               )}
@@ -140,6 +140,7 @@ export default function RegisterPage() {
                   onChange={handleInputChange}
                   required
                   autoComplete="name"
+                  data-testid="register-name"
                   className="transition-colors focus:border-primary"
                 />
               </div>
@@ -159,6 +160,7 @@ export default function RegisterPage() {
                   onChange={handleInputChange}
                   required
                   autoComplete="email"
+                  data-testid="register-email"
                   className="transition-colors focus:border-primary"
                 />
               </div>
@@ -180,6 +182,7 @@ export default function RegisterPage() {
                     required
                     autoComplete="new-password"
                     minLength={8}
+                    data-testid="register-password"
                     className="pr-10 transition-colors focus:border-primary"
                   />
                   <Button
@@ -245,6 +248,7 @@ export default function RegisterPage() {
                     onChange={handleInputChange}
                     required
                     autoComplete="new-password"
+                    data-testid="register-confirm-password"
                     className="pr-10 transition-colors focus:border-primary"
                   />
                   <Button
@@ -317,6 +321,7 @@ export default function RegisterPage() {
                 type="submit" 
                 className="w-full" 
                 disabled={isLoading || passwordStrength < 2}
+                data-testid="register-submit"
               >
                 {isLoading ? "Registrieren..." : "Konto erstellen"}
               </Button>

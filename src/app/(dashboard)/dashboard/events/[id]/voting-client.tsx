@@ -129,11 +129,11 @@ export default function VotingClient({
   const hasVoted = (proposalId: string) => localUserVoteIds.has(proposalId);
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-3" data-testid="voting-proposals">
       {localProposals
         .sort((a, b) => b._count.votes - a._count.votes)
         .map((proposal, index) => (
-          <div key={proposal.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 border border-border rounded-lg hover:bg-accent/50 focus-within:ring-2 focus-within:ring-ring transition-colors bg-card gap-4 sm:gap-0">
+          <div key={proposal.id} data-testid={`proposal-${proposal.id}`} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 border border-border rounded-lg hover:bg-accent/50 focus-within:ring-2 focus-within:ring-ring transition-colors bg-card gap-4 sm:gap-0">
             <div className="flex items-start sm:items-center gap-3 flex-1">
               {index === 0 && (selectedGameId || winningProposalId) && (
                 <Trophy className="h-5 w-5 text-warning flex-shrink-0 mt-0.5 sm:mt-0" aria-label="Trophy für führendes Spiel" />
@@ -186,7 +186,7 @@ export default function VotingClient({
             <div className="flex items-center gap-3 sm:gap-3">
               {/* Vote Count */}
               <div className="text-center min-w-[60px]">
-                <div className="text-2xl font-bold text-foreground">{proposal._count.votes}</div>
+                <div className="text-2xl font-bold text-foreground" data-testid={`vote-count-${proposal.id}`}>{proposal._count.votes}</div>
                 <div className="text-xs text-muted-foreground">Votes</div>
               </div>
               
@@ -201,6 +201,7 @@ export default function VotingClient({
                       size="sm"
                       className="flex items-center gap-1 border-border bg-card hover:bg-accent"
                       aria-label={`Vote für ${proposal.game.name} entfernen`}
+                      data-testid={`remove-vote-${proposal.id}`}
                     >
                       <ThumbsDown className="h-4 w-4" />
                       <span className="hidden sm:inline">{voting === proposal.id ? 'Wird entfernt...' : 'Entfernen'}</span>
@@ -213,6 +214,7 @@ export default function VotingClient({
                       size="sm"
                       className="flex items-center gap-1 bg-primary text-primary-foreground hover:bg-primary/90"
                       aria-label={`Für ${proposal.game.name} stimmen`}
+                      data-testid={`vote-${proposal.id}`}
                     >
                       <ThumbsUp className="h-4 w-4" />
                       <span className="hidden sm:inline">{voting === proposal.id ? 'Wird abgestimmt...' : 'Vote'}</span>

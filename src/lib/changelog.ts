@@ -11,6 +11,23 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.20.2",
+    date: "2026-03-24",
+    title: "Frontend-Komponententests und erweiterte Lib-Coverage",
+    description: "47 neue Tests: P0-Komponententests (Login, Register, Games/New), P1-Komponententests (Guest Registration, Date Voting, Voting Client) sowie erweiterte Lib-Tests. Alle Tests nutzen data-testid Attribute. Coverage: 264 Tests, 26 Dateien.",
+    changes: [
+      { type: "feature", text: "Login-Komponententest: 6 Tests (Formular-Rendering, Anmeldung, Fehlerbehandlung, Ladeanimation)" },
+      { type: "feature", text: "Register-Komponententest: 8 Tests (Formular, Passwort-Validierung, Stärkeprüfung, API-Fehler)" },
+      { type: "feature", text: "Neues-Spiel-Komponententest: 6 Tests (Formular, Spieleranzahl-Defaults, Fehlerbehandlung)" },
+      { type: "feature", text: "Gast-Registrierung-Komponententest: 8 Tests (Nickname-Validierung, API-Aufruf, Gästeliste)" },
+      { type: "feature", text: "Termin-Abstimmung-Komponententest: 9 Tests (Benutzer-/Gast-Voting, API-Aufrufe, Fehlertoasts)" },
+      { type: "feature", text: "Voting-Client-Komponententest: 10 Tests (Vote/Remove-Vote, Sortierung, Fehlerbehandlung)" },
+      { type: "improvement", text: "data-testid Attribute für alle getesteten Komponenten hinzugefügt (Login, Register, Games/New, Date Voting, Voting Client)" },
+      { type: "internal", text: "@testing-library/user-event als devDependency installiert" },
+      { type: "internal", text: "Test-Suite auf 264 Tests in 26 Dateien erweitert (von 198 Tests in 19 Dateien)" },
+    ],
+  },
+  {
     version: "0.20.1",
     date: "2026-03-24",
     title: "Coverage-Infrastruktur und Frontend-Test-Strategie",

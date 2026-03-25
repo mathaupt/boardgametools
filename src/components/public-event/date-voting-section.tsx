@@ -117,7 +117,7 @@ export function DateVotingSection({
   if (dateProposals.length === 0) return null;
 
   return (
-    <section>
+    <section data-testid="date-voting-section">
       <Card className="border-border/60 bg-background/60">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-lg text-foreground">
@@ -176,6 +176,7 @@ export function DateVotingSection({
                   return (
                     <tr
                       key={dp.id}
+                      data-testid={`date-row-${dp.id}`}
                       className={cn(
                         "border-b border-border/50 hover:bg-muted",
                         isSelected && "bg-success/20"
@@ -229,6 +230,7 @@ export function DateVotingSection({
                                 return (
                                   <button
                                     key={avail}
+                                    data-testid={`date-vote-${avail}-${dp.id}`}
                                     onClick={() => handleDateVote(dp.id, avail)}
                                     className={cn(
                                       "w-8 h-8 rounded-full border-2 flex items-center justify-center transition-colors",

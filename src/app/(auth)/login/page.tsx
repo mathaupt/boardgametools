@@ -56,10 +56,10 @@ export default function LoginPage() {
           <CardTitle className="text-2xl tracking-tight">BoardGameTools</CardTitle>
           <CardDescription>Melde dich an, um fortzufahren</CardDescription>
         </CardHeader>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} data-testid="login-form">
           <CardContent className="space-y-4">
             {error && (
-              <div className="p-3 text-sm text-destructive bg-destructive/10 rounded-lg">
+              <div data-testid="login-error" className="p-3 text-sm text-destructive bg-destructive/10 rounded-lg">
                 {error}
               </div>
             )}
@@ -72,6 +72,7 @@ export default function LoginPage() {
                 placeholder="name@example.com"
                 required
                 autoComplete="email"
+                data-testid="login-email"
               />
             </div>
             <div className="space-y-2">
@@ -91,11 +92,12 @@ export default function LoginPage() {
                 type="password"
                 required
                 autoComplete="current-password"
+                data-testid="login-password"
               />
             </div>
           </CardContent>
           <CardFooter className="flex flex-col gap-4">
-            <Button type="submit" className="w-full" disabled={isLoading}>
+            <Button type="submit" className="w-full" disabled={isLoading} data-testid="login-submit">
               {isLoading ? "Anmelden..." : "Anmelden"}
             </Button>
             <p className="text-sm text-muted-foreground text-center">

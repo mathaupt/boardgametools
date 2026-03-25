@@ -29,5 +29,10 @@ describe("storage", () => {
       const name = generateFileName("photo.PNG");
       expect(name).toMatch(/\.png$/);
     });
+
+    it("returns hash.ext format", () => {
+      const name = generateFileName("document.pdf");
+      expect(name).toMatch(/^[0-9a-f]{32}\.pdf$/);
+    });
   });
 });
