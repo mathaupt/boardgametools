@@ -27,79 +27,30 @@ metadata:
 
 ---
 
-## Produktions-Dependencies
+## Tech-Stack Zusammenfassung
 
-| Package | Version | Zweck | Lizenz |
-|---------|---------|-------|--------|
-| `@prisma/client` | ^5.22.0 | Database ORM Client | Apache-2.0 |
-| `@radix-ui/react-dialog` | ^1.1.15 | Barrierefreie Dialog/Modal-Primitives | MIT |
-| `@radix-ui/react-hover-card` | ^1.1.15 | Hover-Card-Komponente | MIT |
-| `@radix-ui/react-toast` | ^1.2.15 | Toast-Benachrichtigungen | MIT |
-| `@radix-ui/react-tooltip` | ^1.2.8 | Tooltip-Komponente | MIT |
-| `@upstash/ratelimit` | ^2.0.8 | Redis-basiertes Rate Limiting | MIT |
-| `@upstash/redis` | ^1.37.0 | Redis-Client (HTTP-basiert, Serverless) | MIT |
-| `@vercel/blob` | ^2.3.1 | Cloud-Dateispeicher fuer Uploads | Apache-2.0 |
-| `@vercel/speed-insights` | ^2.0.0 | Performance-Monitoring | Apache-2.0 |
-| `bcryptjs` | ^3.0.3 | Passwort-Hashing (Bcrypt) | MIT |
-| `class-variance-authority` | ^0.7.1 | Komponenten-Varianten (cva) | Apache-2.0 |
-| `clsx` | ^2.1.1 | Bedingte CSS-Klassen (<1KB) | MIT |
-| `html5-qrcode` | ^2.3.8 | Barcode/QR-Code-Scanner | Apache-2.0 |
-| `lucide-react` | ^0.563.0 | Icon-Library (1000+ SVG-Icons) | ISC |
-| `next` | ^16.2.1 | React-Framework (App Router) | MIT |
-| `next-auth` | ^5.0.0-beta.30 | Authentifizierung (Credentials Provider) | ISC |
-| `nodemailer` | ^7.0.13 | E-Mail-Versand (SMTP) | MIT |
-| `pg` | ^8.13.1 | PostgreSQL-Treiber | MIT |
-| `pino` | ^10.3.1 | Strukturiertes JSON-Logging | MIT |
-| `prisma` | ^5.22.0 | Database ORM CLI und Engine | Apache-2.0 |
-| `radix-ui` | ^1.4.3 | UI-Primitives-Sammlung | MIT |
-| `react` | 19.2.3 | UI-Library (React 19) | MIT |
-| `react-dom` | 19.2.3 | React DOM Renderer | MIT |
-| `react-is` | ^19.2.4 | React Type-Checking (Peer-Dep recharts) | MIT |
-| `recharts` | ^3.8.0 | Chart-Visualisierung | MIT |
-| `tailwind-merge` | ^3.5.0 | Tailwind-Klassen-Zusammenfuehrung | MIT |
-| `tesseract.js` | ^7.0.0 | OCR-Engine (WebAssembly) | Apache-2.0 |
+| Gruppe | Kern-Packages | Weitere | Lizenzen |
+|--------|--------------|---------|----------|
+| Framework | `next` ^16, `react` 19, `react-dom` 19 | -- | MIT |
+| Datenbank | `@prisma/client` ^5, `prisma` ^5, `pg` ^8 | -- | Apache-2.0, MIT |
+| Auth & Sicherheit | `next-auth` ^5-beta, `bcryptjs` ^3 | `@upstash/ratelimit` | ISC, MIT |
+| UI-Komponenten | `@radix-ui/*`, `lucide-react` | `clsx`, `cva`, `tailwind-merge` | MIT, ISC |
+| Infrastruktur | `@upstash/redis`, `@vercel/blob`, `pino` | `nodemailer`, `@vercel/speed-insights` | MIT, Apache-2.0 |
+| Spezial-Features | `recharts` ^3, `tesseract.js` ^7 | `html5-qrcode` | MIT, Apache-2.0 |
+| Styling | `tailwindcss` ^4, `shadcn` | `tw-animate-css` | MIT |
+| Testing | `vitest` ^4, `playwright` ^1 | `codeceptjs`, `@testing-library/*` | MIT, Apache-2.0 |
+| Build & Lint | `typescript` ^5, `eslint` ^9 | `husky`, `@next/bundle-analyzer` | Apache-2.0, MIT |
 
-### Abhaengigkeits-Gruppen
+> **27 Prod- + 26 Dev-Dependencies.** Vollstaendige Liste mit Versionen: `docs/bill-of-materials/`
 
-**Kern-Framework:** `next`, `react`, `react-dom`
-**Datenbank:** `@prisma/client`, `prisma`, `pg`
-**Auth & Sicherheit:** `next-auth`, `bcryptjs`, `@upstash/ratelimit`
-**UI-Komponenten:** `@radix-ui/*`, `radix-ui`, `lucide-react`, `class-variance-authority`, `clsx`, `tailwind-merge`
-**Infrastruktur:** `@upstash/redis`, `@vercel/blob`, `@vercel/speed-insights`, `nodemailer`, `pino`
-**Spezial-Features:** `html5-qrcode`, `tesseract.js`, `recharts`
+### Risiko-Dependencies
 
----
-
-## Entwicklungs-Dependencies
-
-| Package | Version | Zweck | Lizenz |
-|---------|---------|-------|--------|
-| `@codeceptjs/configure` | ^1.0.6 | CodeceptJS E2E-Konfiguration | MIT |
-| `@next/bundle-analyzer` | ^16.2.1 | Bundle-Groessen-Analyse | MIT |
-| `@tailwindcss/postcss` | ^4 | Tailwind PostCSS-Plugin | MIT |
-| `@testing-library/jest-dom` | ^6.9.1 | DOM-Testing-Matcher | MIT |
-| `@testing-library/react` | ^16.3.2 | React-Komponenten-Tests | MIT |
-| `@types/bcryptjs` | ^2.4.6 | TypeScript-Typen fuer bcryptjs | MIT |
-| `@types/node` | ^20 | TypeScript-Typen fuer Node.js | MIT |
-| `@types/nodemailer` | ^7.0.11 | TypeScript-Typen fuer nodemailer | MIT |
-| `@types/react` | ^19 | TypeScript-Typen fuer React | MIT |
-| `@types/react-dom` | ^19 | TypeScript-Typen fuer React DOM | MIT |
-| `@vitejs/plugin-react` | ^5.1.4 | Vite React-Plugin (Vitest) | MIT |
-| `ajv` | ^8.17.1 | JSON-Schema-Validierung | MIT |
-| `axios` | ^1.7.9 | HTTP-Client (E2E-Tests) | MIT |
-| `codeceptjs` | ^3.5.4 | E2E-Test-Framework | MIT |
-| `diff` | ^5.2.0 | Text-Diffing-Utility | BSD-3-Clause |
-| `eslint` | ^9.18.0 | Statische Code-Analyse | MIT |
-| `eslint-config-next` | 16.1.6 | Next.js ESLint-Konfiguration | MIT |
-| `husky` | ^9.1.7 | Git-Hooks | MIT |
-| `jsdom` | ^28.0.0 | DOM-Emulation (Unit-Tests) | MIT |
-| `mocha` | ^10.8.2 | Test-Framework (CodeceptJS) | MIT |
-| `playwright` | ^1.58.2 | Browser-Automatisierung (E2E) | Apache-2.0 |
-| `shadcn` | ^3.8.5 | UI-Komponenten-Generator | MIT |
-| `tailwindcss` | ^4.2.0 | Utility-First CSS-Framework | MIT |
-| `tw-animate-css` | ^1.4.0 | Tailwind-Animations | MIT |
-| `typescript` | ^5 | TypeScript-Compiler | Apache-2.0 |
-| `vitest` | ^4.0.18 | Unit-Test-Framework | MIT |
+| Package | Risiko | Begruendung |
+|---------|--------|-------------|
+| `next-auth` ^5.0.0-beta.30 | Beta | Kein Stable Release, bewusstes Risiko |
+| `tesseract.js` ^7 | Bundle-Groesse | ~5 MB WASM, nur per `await import()` |
+| `html5-qrcode` ^2 | Bundle-Groesse | ~300 KB, nur per `await import()` |
+| `recharts` ^3 | Bundle-Groesse | ~180 KB, nur per `next/dynamic` |
 
 ---
 
