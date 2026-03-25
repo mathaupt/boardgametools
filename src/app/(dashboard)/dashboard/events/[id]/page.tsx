@@ -37,8 +37,8 @@ export default async function EventDetailPage({
   const userId = session?.user?.id;
   const { id } = await params;
 
-  const event = await prisma.event.findUnique({
-    where: { id },
+  const event = await prisma.event.findFirst({
+    where: { id, deletedAt: null },
     include: {
       createdBy: { select: { id: true, name: true, email: true } },
       invites: {
@@ -47,7 +47,7 @@ export default async function EventDetailPage({
       proposals: {
         include: {
           game: true,
-          proposedBy: true,
+          proposedBy: { select: { id: true, name: true, email: true } },
           guest: { select: { id: true, nickname: true } },
           _count: { select: { votes: true, guestVotes: true } }
         }

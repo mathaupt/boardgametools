@@ -18,6 +18,7 @@ export default async function GroupDetailPage({
   const group = await prisma.group.findFirst({
     where: {
       id,
+      deletedAt: null,
       OR: [
         { ownerId: userId },
         { members: { some: { userId } } },
@@ -72,9 +73,11 @@ export default async function GroupDetailPage({
   const isOwner = group.ownerId === userId;
   const publicUrl = group.shareToken ? `${await getPublicBaseUrl()}/public/group/${group.shareToken}` : null;
 
-  // Serialize dates for client component
+  // Serialize dates for client component — strip password hash for security
+  const { password: _pw, deletedAt: _da, ...safeGroup } = group;
   const serializedGroup = {
-    ...group,
+    ...safeGroup,
+    password: null,
     createdAt: group.createdAt.toISOString(),
     updatedAt: group.updatedAt.toISOString(),
     members: group.members.map((m) => ({

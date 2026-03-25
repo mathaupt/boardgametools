@@ -3,6 +3,9 @@ import { invalidateTag } from "@/lib/cache";
 import { CacheTags } from "@/lib/cache-tags";
 import { ApiError } from "@/lib/require-auth";
 import { validateString, firstError } from "@/lib/validation";
+import { sendEventInviteEmail } from "@/lib/mailer";
+import { getPublicBaseUrl } from "@/lib/public-link";
+import { encryptId } from "@/lib/crypto";
 import { NOT_DELETED, SAFE_USER_SELECT, buildPagination, paginatedResponse } from "./shared";
 
 // ── Types ────────────────────────────────────────────────────────
@@ -133,8 +136,41 @@ export const EventService = {
         createdById: userId,
         invites: { create: [organizerInvite, ...additionalInvites] },
       },
-      include: eventListInclude,
+      include: {
+        ...eventListInclude,
+        invites: {
+          include: { user: { select: SAFE_USER_SELECT } },
+        },
+      },
     });
+
+    // Send invitation emails to all invitees (not the organizer)
+    const base = await getPublicBaseUrl();
+    const creator = await prisma.user.findUnique({ where: { id: userId }, select: SAFE_USER_SELECT });
+    const inviterName = creator?.name || creator?.email || "Jemand";
+
+    for (const invite of newEvent.invites) {
+      if (invite.userId === userId) continue;
+      const recipientEmail = invite.user?.email || invite.email;
+      if (!recipientEmail) continue;
+
+      const eventUrl = invite.userId
+        ? `${base}/dashboard/events/${newEvent.id}`
+        : `${base}/public/invite/${encryptId(invite.id)}`;
+
+      try {
+        await sendEventInviteEmail({
+          to: recipientEmail,
+          eventTitle: input.title,
+          eventDate: new Date(input.eventDate),
+          location: input.location || null,
+          inviterName,
+          eventUrl,
+        });
+      } catch (mailErr) {
+        console.error("Failed to send invite email:", mailErr);
+      }
+    }
 
     invalidateTag(CacheTags.userEvents(userId));
     invalidateTag(CacheTags.userDashboard(userId));
