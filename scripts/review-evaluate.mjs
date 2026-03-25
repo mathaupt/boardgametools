@@ -20,7 +20,7 @@
  *   node scripts/review-evaluate.mjs --strict     # Exit 1 if score < 5
  */
 
-import { readFileSync, writeFileSync, existsSync } from "fs";
+import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync } from "fs";
 import { execSync } from "child_process";
 import { join, resolve } from "path";
 import { fileURLToPath } from "url";
@@ -33,17 +33,21 @@ const ROOT = resolve(__dirname, "..");
 const SKILL_PATH = join(ROOT, "skills/code-review/SKILL.md");
 const EVAL_PATH = join(ROOT, "review-evaluation.json");
 const SRC = join(ROOT, "src");
+const HISTORY_DIR = join(ROOT, "docs/code-reviews/history");
+const REGRESSIONS_PATH = join(ROOT, "docs/code-reviews/regressions.md");
 
 // ── CLI Args ──────────────────────────────────────────────────────
 const args = process.argv.slice(2);
 const APPLY = args.includes("--apply");
 const JSON_ONLY = args.includes("--json");
 const STRICT = args.includes("--strict");
+const FAIL_ON_REGRESSION = args.includes("--fail-on-regression");
 if (args.includes("--help") || args.includes("-h")) {
-  console.log(`Usage: node scripts/review-evaluate.mjs [--apply] [--json] [--strict]
-  --apply   Update SKILL.md with feedback
-  --json    Output JSON only
-  --strict  Exit 1 if overall score < 5/10`);
+  console.log(`Usage: node scripts/review-evaluate.mjs [--apply] [--json] [--strict] [--fail-on-regression]
+  --apply              Update SKILL.md with feedback
+  --json               Output JSON only
+  --strict             Exit 1 if overall score < 5/10
+  --fail-on-regression Exit 1 if any resolved finding regressed to open`);
   process.exit(0);
 }
 
@@ -121,6 +125,128 @@ function findLargeFiles(minLines, glob = "*.tsx") {
   } catch {
     return [];
   }
+}
+
+// ── Regression Detection ──────────────────────────────────────────
+
+/**
+ * Loads the most recent history snapshot and compares finding statuses.
+ * Returns an array of regressions (findings that went resolved/partial → open).
+ */
+function detectRegressions(verifications) {
+  if (!existsSync(HISTORY_DIR)) return [];
+
+  const files = readdirSync(HISTORY_DIR)
+    .filter((f) => f.endsWith(".json"))
+    .sort()
+    .reverse();
+
+  if (files.length === 0) return [];
+
+  let lastSnapshot;
+  try {
+    lastSnapshot = JSON.parse(readFileSync(join(HISTORY_DIR, files[0]), "utf8"));
+  } catch {
+    return [];
+  }
+
+  if (!lastSnapshot.findings || !Array.isArray(lastSnapshot.findings)) return [];
+
+  const regressions = [];
+  for (const v of verifications) {
+    const prev = lastSnapshot.findings.find((f) => f.id === v.id);
+    if (!prev) continue;
+
+    const wasResolved = prev.status === "resolved" || prev.status === "partially_resolved";
+    const isNowOpen = v.result.status === "open";
+    const wasFullyResolved = prev.status === "resolved";
+    const isNowPartial = v.result.status === "partially_resolved";
+
+    if ((wasResolved && isNowOpen) || (wasFullyResolved && isNowPartial)) {
+      regressions.push({
+        id: v.id,
+        priority: v.priority,
+        category: v.category,
+        title: v.title,
+        previousStatus: prev.status,
+        currentStatus: v.result.status,
+        detail: v.result.detail,
+        snapshotFile: files[0],
+        snapshotDate: lastSnapshot.date,
+      });
+    }
+  }
+
+  return regressions;
+}
+
+/**
+ * Archives the current evaluation result as a timestamped JSON file
+ * in docs/code-reviews/history/ for future regression comparison.
+ */
+function archiveHistory(verifications, scores) {
+  if (!existsSync(HISTORY_DIR)) {
+    mkdirSync(HISTORY_DIR, { recursive: true });
+  }
+
+  const now = new Date();
+  const pad = (n) => String(n).padStart(2, "0");
+  const ts = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}_${pad(now.getHours())}${pad(now.getMinutes())}`;
+  const filePath = join(HISTORY_DIR, `${ts}.json`);
+
+  const data = {
+    date: now.toISOString(),
+    overall: scores.overall,
+    findings: verifications.map((v) => ({
+      id: v.id,
+      priority: v.priority,
+      category: v.category,
+      title: v.title,
+      status: v.result.status,
+      detail: v.result.detail,
+    })),
+    findingsSummary: {
+      total: verifications.length,
+      resolved: verifications.filter((v) => v.result.status === "resolved").length,
+      partial: verifications.filter((v) => v.result.status === "partially_resolved").length,
+      open: verifications.filter((v) => v.result.status === "open").length,
+    },
+  };
+
+  writeFileSync(filePath, JSON.stringify(data, null, 2) + "\n");
+  return filePath;
+}
+
+/**
+ * Appends detected regressions to the regressions log.
+ * Creates the file with a header if it doesn't exist.
+ */
+function logRegressions(regressions) {
+  if (regressions.length === 0) return;
+
+  let content = "";
+  if (existsSync(REGRESSIONS_PATH)) {
+    content = readFileSync(REGRESSIONS_PATH, "utf8");
+  } else {
+    content =
+      "# Regressions-Log\n\n" +
+      "Chronologisches Protokoll aller erkannten Regressions im Review-Prozess.\n" +
+      "Jeder Eintrag enthält Felder für Root-Cause-Analyse und Gegenmaßnahmen (manuell auszufüllen).\n\n---\n";
+  }
+
+  const now = new Date().toISOString().replace("T", " ").substring(0, 19);
+  let entry = `\n## ${now}\n\n`;
+  entry += `| Finding | Priorität | Vorher | Jetzt | Detail |\n`;
+  entry += `|---------|-----------|--------|-------|--------|\n`;
+  for (const r of regressions) {
+    entry += `| ${r.id}: ${r.title} | ${r.priority} | ${r.previousStatus} | ${r.currentStatus} | ${r.detail} |\n`;
+  }
+  entry += `\n**Root-Cause:** <!-- Manuell ausfüllen: Warum ist das Finding zurückgekehrt? -->\n`;
+  entry += `**Gegenmaßnahme:** <!-- Manuell ausfüllen: Wie wird verhindert, dass es erneut passiert? -->\n`;
+  entry += `**Verantwortlich:** <!-- Manuell ausfüllen -->\n\n---\n`;
+
+  content += entry;
+  writeFileSync(REGRESSIONS_PATH, content);
 }
 
 // ══════════════════════════════════════════════════════════════════
@@ -201,11 +327,12 @@ const FINDINGS = [
     category: "security",
     title: "Kein Rate Limiting + keine middleware.ts",
     verify() {
-      const hasMiddleware = fileExists("src/middleware.ts");
+      // Next.js 16: middleware.ts wurde zu proxy.ts migriert
+      const hasMiddleware = fileExists("src/middleware.ts") || fileExists("src/proxy.ts");
       const hasRateLimit = fileExists("src/lib/rate-limit.ts");
-      if (hasMiddleware && hasRateLimit) return { status: "resolved", detail: "Middleware + Rate Limiting vorhanden" };
-      if (hasMiddleware) return { status: "partially_resolved", detail: "Middleware vorhanden, Rate Limiting fehlt" };
-      return { status: "open", detail: "Weder Middleware noch Rate Limiting" };
+      if (hasMiddleware && hasRateLimit) return { status: "resolved", detail: "Proxy/Middleware + Rate Limiting vorhanden" };
+      if (hasMiddleware) return { status: "partially_resolved", detail: "Proxy/Middleware vorhanden, Rate Limiting fehlt" };
+      return { status: "open", detail: "Weder Middleware/Proxy noch Rate Limiting" };
     },
     hasFixSuggestion: true,
   },
@@ -387,15 +514,19 @@ const FINDINGS = [
     category: "api",
     title: "Admin-Endpoints: 401 statt 403",
     verify() {
-      const middleware = readSafe("src/middleware.ts");
-      if (!middleware) return { status: "open", detail: "Keine middleware.ts" };
+      // Next.js 16: middleware.ts wurde zu proxy.ts migriert
+      const middleware = readSafe("src/proxy.ts") || readSafe("src/middleware.ts");
+      if (!middleware) return { status: "open", detail: "Weder proxy.ts noch middleware.ts vorhanden" };
       const has403 = middleware.includes("403");
-      return has403
-        ? { status: "resolved", detail: "Middleware gibt 403 für Non-Admins" }
-        : { status: "open", detail: "Kein 403 in Middleware" };
+      // Prüfe zusätzlich die Admin-Route-Handler direkt
+      const adminUsersRoute = readSafe("src/app/api/admin/users/route.ts");
+      const routeHas403 = adminUsersRoute && adminUsersRoute.includes("403");
+      return (has403 || routeHas403)
+        ? { status: "resolved", detail: "Proxy/Admin-Routes geben 403 für Non-Admins" }
+        : { status: "open", detail: "Kein 403 in Proxy oder Admin-Routes" };
     },
     hasFixSuggestion: true,
-    fixSuggestion: "Prüfe session.user.role in middleware.ts und gib 403 statt 401 für Non-Admins zurück.",
+    fixSuggestion: "Prüfe session.user.role in proxy.ts/Route-Handlern und gib 403 statt 401 für Non-Admins zurück.",
   },
 
   // ── P2 Improvement ───────────────────────────────────────────
@@ -866,9 +997,9 @@ const FINDINGS = [
       const deps = Object.keys(parsed.dependencies || {});
       const unusedCandidates = [];
       for (const dep of deps) {
-        // Skip Next.js ecosystem, React, types, and known runtime-only deps
+        // Skip Next.js ecosystem, React, types, and known runtime-only/peer deps
         if (dep.startsWith("@types/") || dep.startsWith("@next/") ||
-          ["react", "react-dom", "next", "typescript", "prisma", "@prisma/client", "postcss", "tailwindcss", "autoprefixer"].includes(dep))
+          ["react", "react-dom", "react-is", "next", "typescript", "prisma", "@prisma/client", "postcss", "tailwindcss", "autoprefixer"].includes(dep))
           continue;
         const importCount = grepCount(dep.replace("/", "\\/"), "*.ts", "src") +
           grepCount(dep.replace("/", "\\/"), "*.tsx", "src") +
@@ -1317,8 +1448,19 @@ function computeScores(verifications, coverageResults) {
 // RECOMMENDATION ENGINE
 // ══════════════════════════════════════════════════════════════════
 
-function generateRecommendations(verifications, coverageResults, scores) {
+function generateRecommendations(verifications, coverageResults, scores, regressions = []) {
   const recommendations = [];
+
+  // 0. Regressions → highest priority warnings
+  for (const r of regressions) {
+    recommendations.push({
+      type: "regression",
+      findingId: r.id,
+      priority: r.priority,
+      category: r.category,
+      message: `REGRESSION: ${r.id} "${r.title}" war ${r.previousStatus}, ist jetzt ${r.currentStatus}. ${r.detail}`,
+    });
+  }
 
   // 1. Resolved findings → recommend marking as done in SKILL.md
   for (const v of verifications) {
@@ -1453,14 +1595,23 @@ function updateSkillMd(scores, recommendations, verifications) {
     }
   }
 
+  // Regressions
+  const regressionRecs = recommendations.filter((r) => r.type === "regression");
+  if (regressionRecs.length > 0) {
+    feedback += `\n### REGRESSIONEN (${regressionRecs.length})\n\n`;
+    for (const r of regressionRecs) {
+      feedback += `- 🔄 **${r.findingId}** ${r.message}\n`;
+    }
+  }
+
   // Recommendations
   const actionable = recommendations.filter((r) =>
-    ["add", "improve_coverage", "improve_actionability", "escalate", "urgent"].includes(r.type)
+    ["add", "improve_coverage", "improve_actionability", "escalate", "urgent", "regression"].includes(r.type)
   );
   if (actionable.length > 0) {
     feedback += `\n### Empfohlene Reviewer-Anpassungen\n\n`;
     for (const r of actionable) {
-      const icon = r.type === "urgent" ? "🚨" : r.type === "add" ? "➕" : r.type === "escalate" ? "⬆️" : "📝";
+      const icon = r.type === "regression" ? "🔄" : r.type === "urgent" ? "🚨" : r.type === "add" ? "➕" : r.type === "escalate" ? "⬆️" : "📝";
       feedback += `- ${icon} ${r.message}\n`;
     }
   }
@@ -1507,12 +1658,21 @@ function printReport(scores, recommendations, verifications, coverageResults) {
   }
 
   // Recommendations summary
+  const regressionRecs = recommendations.filter((r) => r.type === "regression");
   const urgent = recommendations.filter((r) => r.type === "urgent");
   const adds = recommendations.filter((r) => r.type === "add");
   const resolved = recommendations.filter((r) => r.type === "resolve");
   const improvements = recommendations.filter((r) =>
     ["improve_coverage", "improve_actionability", "escalate"].includes(r.type)
   );
+
+  if (regressionRecs.length > 0) {
+    console.log(`\n${C.R}${"!".repeat(65)}${C.X}`);
+    console.log(`${C.R}  REGRESSIONEN ERKANNT (${regressionRecs.length})${C.X}`);
+    console.log(`${C.R}${"!".repeat(65)}${C.X}`);
+    regressionRecs.forEach((r) => console.log(`  ${C.R}${r.message}${C.X}`));
+    console.log(`${C.R}${"!".repeat(65)}${C.X}`);
+  }
 
   if (urgent.length > 0) {
     console.log(`\n${C.R}🚨 Dringend (${urgent.length})${C.X}`);
@@ -1559,13 +1719,16 @@ function main() {
     result: s.scan(),
   }));
 
-  // 3. Compute scores
+  // 3. Detect regressions (compare with previous history snapshot)
+  const regressions = detectRegressions(verifications);
+
+  // 4. Compute scores
   const scores = computeScores(verifications, coverageResults);
 
-  // 4. Generate recommendations
-  const recommendations = generateRecommendations(verifications, coverageResults, scores);
+  // 5. Generate recommendations (now includes regression warnings)
+  const recommendations = generateRecommendations(verifications, coverageResults, scores, regressions);
 
-  // 5. Output
+  // 6. Output
   if (JSON_ONLY) {
     const report = {
       date: new Date().toISOString(),
@@ -1588,6 +1751,15 @@ function main() {
         overThreshold: c.result.found > c.threshold,
         detail: c.result.detail,
       })),
+      regressions: regressions.map((r) => ({
+        id: r.id,
+        priority: r.priority,
+        category: r.category,
+        title: r.title,
+        previousStatus: r.previousStatus,
+        currentStatus: r.currentStatus,
+        detail: r.detail,
+      })),
       recommendations: recommendations.map((r) => ({
         type: r.type,
         findingId: r.findingId || null,
@@ -1600,7 +1772,7 @@ function main() {
     printReport(scores, recommendations, verifications, coverageResults);
   }
 
-  // 6. Save evaluation
+  // 7. Save evaluation (flat file, overwritten each run)
   const evalData = {
     date: new Date().toISOString(),
     overall: scores.overall,
@@ -1613,11 +1785,26 @@ function main() {
       partial: verifications.filter((v) => v.result.status === "partially_resolved").length,
       open: verifications.filter((v) => v.result.status === "open").length,
     },
+    regressions: regressions.length,
     coverageIssues: coverageResults.filter((c) => c.result.found > c.threshold).length,
   };
   writeFileSync(EVAL_PATH, JSON.stringify(evalData, null, 2) + "\n");
 
-  // 7. Apply feedback to SKILL.md
+  // 8. Archive history snapshot for future regression comparison
+  const archivePath = archiveHistory(verifications, scores);
+  if (!JSON_ONLY && !regressions.length) {
+    console.log(`${C.D}History-Snapshot: ${archivePath.replace(ROOT + "/", "")}${C.X}`);
+  }
+
+  // 9. Log regressions to persistent regressions.md
+  if (regressions.length > 0) {
+    logRegressions(regressions);
+    if (!JSON_ONLY) {
+      console.log(`${C.R}Regressions-Log aktualisiert: docs/code-reviews/regressions.md${C.X}\n`);
+    }
+  }
+
+  // 10. Apply feedback to SKILL.md
   if (APPLY) {
     updateSkillMd(scores, recommendations, verifications);
     if (!JSON_ONLY) {
@@ -1625,10 +1812,19 @@ function main() {
     }
   }
 
-  // 8. Strict mode check
+  // 11. Strict mode check
   if (STRICT && scores.overall < 5) {
     if (!JSON_ONLY) {
       console.log(`${C.R}❌ Score ${scores.overall}/10 unter Schwelle 5/10 (--strict)${C.X}\n`);
+    }
+    process.exit(1);
+  }
+
+  // 12. Fail on regression check (for pre-commit hook)
+  if (FAIL_ON_REGRESSION && regressions.length > 0) {
+    if (!JSON_ONLY) {
+      console.log(`${C.R}❌ ${regressions.length} Regression(en) erkannt – Commit blockiert (--fail-on-regression)${C.X}`);
+      console.log(`${C.R}   Behebe die Regressionen oder entferne --fail-on-regression aus dem Hook.${C.X}\n`);
     }
     process.exit(1);
   }

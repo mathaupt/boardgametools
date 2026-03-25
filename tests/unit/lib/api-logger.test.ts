@@ -94,9 +94,9 @@ describe("api-logger", () => {
       const wrapped = withApiLogging(handler);
 
       const req = new NextRequest("http://localhost:3000/api/games");
-      const response = await wrapped(req);
+      const response = await wrapped(req, {});
 
-      expect(handler).toHaveBeenCalledWith(req, undefined);
+      expect(handler).toHaveBeenCalledWith(req, {});
       expect(response.status).toBe(200);
     });
 
@@ -105,7 +105,7 @@ describe("api-logger", () => {
       const wrapped = withApiLogging(handler);
 
       const req = new NextRequest("http://localhost:3000/api/games");
-      const response = await wrapped(req);
+      const response = await wrapped(req, {});
 
       expect(response.status).toBe(500);
       const body = await response.json();
@@ -117,7 +117,7 @@ describe("api-logger", () => {
       const wrapped = withApiLogging(handler);
 
       const req = new NextRequest("http://localhost:3000/api/games");
-      await wrapped(req);
+      await wrapped(req, {});
 
       expect(auth).toHaveBeenCalled();
     });
@@ -127,7 +127,7 @@ describe("api-logger", () => {
       const wrapped = withApiLogging(handler);
 
       const req = new NextRequest("http://localhost:3000/api/games", { method: "POST" });
-      await wrapped(req);
+      await wrapped(req, {});
 
       // logApiRequest is fire-and-forget, so prisma.apiLog.create may have been called
       // We just verify the response was returned correctly

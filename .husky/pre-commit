@@ -4,5 +4,5 @@ npm run test
 echo "🔐 Running OWASP security check..."
 npm run security-check
 
-echo "📊 Running review evaluator..."
-npm run review-evaluate
+echo "📊 Running review evaluator (with regression check)..."
+npm run review-evaluate:regression

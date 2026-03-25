@@ -78,7 +78,7 @@ interface PublicEventRaw {
   }>;
 }
 
-export const buildPublicEventInclude = (userId?: string | null): Prisma.EventInclude => ({
+export const buildPublicEventInclude = (userId?: string | null) => ({
   createdBy: {
     select: { id: true, name: true },
   },
@@ -89,7 +89,7 @@ export const buildPublicEventInclude = (userId?: string | null): Prisma.EventInc
       email: true,
       user: { select: { name: true } },
     },
-    orderBy: { invitedAt: "asc" },
+    orderBy: { invitedAt: "asc" as const },
   },
   selectedGame: {
     select: {
@@ -141,13 +141,13 @@ export const buildPublicEventInclude = (userId?: string | null): Prisma.EventInc
         select: { votes: true, guestVotes: true },
       },
     },
-    orderBy: { createdAt: "asc" },
+    orderBy: { createdAt: "asc" as const },
   },
   guestParticipants: {
     include: {
       _count: { select: { votes: true } },
     },
-    orderBy: { createdAt: "asc" },
+    orderBy: { createdAt: "asc" as const },
   },
   dateProposals: {
     include: {
@@ -158,9 +158,9 @@ export const buildPublicEventInclude = (userId?: string | null): Prisma.EventInc
         include: { guest: { select: { id: true, nickname: true } } },
       },
     },
-    orderBy: { date: "asc" },
+    orderBy: { date: "asc" as const },
   },
-});
+}) satisfies Prisma.EventInclude;
 
 export interface SerializedPublicEvent {
   id: string;
@@ -228,9 +228,8 @@ export interface SerializedPublicEvent {
   currentUserId: string | null;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function serializePublicEvent(
-  event: any,
+  event: PublicEventRaw,
   currentUserId: string | null
 ): SerializedPublicEvent {
   return {

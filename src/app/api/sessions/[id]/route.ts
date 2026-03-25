@@ -27,14 +27,14 @@ const includeRelations = {
 
 export const GET = withApiLogging(async function GET(
   request: NextRequest,
-  context?: RouteContext
+  { params }: RouteContext
 ) {
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { id } = await context!.params;
+  const { id } = await params;
 
   try {
     const gameSession = await prisma.gameSession.findUnique({
@@ -59,14 +59,14 @@ export const GET = withApiLogging(async function GET(
 
 export const PUT = withApiLogging(async function PUT(
   request: NextRequest,
-  context?: RouteContext
+  { params }: RouteContext
 ) {
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { id } = await context!.params;
+  const { id } = await params;
 
   try {
     const existing = await prisma.gameSession.findUnique({ where: { id } });
@@ -133,14 +133,14 @@ export const PUT = withApiLogging(async function PUT(
 
 export const DELETE = withApiLogging(async function DELETE(
   request: NextRequest,
-  context?: RouteContext
+  { params }: RouteContext
 ) {
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { id } = await context!.params;
+  const { id } = await params;
 
   try {
     const existing = await prisma.gameSession.findUnique({ where: { id } });

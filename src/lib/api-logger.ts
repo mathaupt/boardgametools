@@ -42,12 +42,12 @@ export async function logApiRequest(entry: LogEntry) {
  * Usage:
  *   export const GET = withApiLogging(async (req) => { ... return NextResponse.json(...) })
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function withApiLogging(
-  handler: (req: NextRequest, context?: any) => Promise<NextResponse>
-): (req: NextRequest, context: any) => Promise<NextResponse> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return async (req: NextRequest, context: any): Promise<NextResponse> => {
+type RouteHandlerContext = Record<string, unknown>;
+
+export function withApiLogging<C extends RouteHandlerContext = RouteHandlerContext>(
+  handler: (req: NextRequest, context: C) => Promise<NextResponse>
+): (req: NextRequest, context: C) => Promise<NextResponse> {
+  return async (req: NextRequest, context: C): Promise<NextResponse> => {
     const start = Date.now();
     const path = new URL(req.url).pathname;
     let session: { user?: { id?: string } } | null = null;

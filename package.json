@@ -31,6 +31,7 @@
     "review-evaluate:json": "node scripts/review-evaluate.mjs --json",
     "review-evaluate:strict": "node scripts/review-evaluate.mjs --apply --strict",
     "review-evaluate:report": "node scripts/review-evaluate.mjs",
+    "review-evaluate:regression": "node scripts/review-evaluate.mjs --apply --fail-on-regression",
     "backup:prod": "bash scripts/backup-prod-db.sh"
   },
   "dependencies": {

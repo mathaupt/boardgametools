@@ -40,6 +40,9 @@ security-report.md
 # review evaluation (generated per commit)
 review-evaluation.json
 
+# code review documentation (local snapshots)
+/docs/code-reviews/
+
 # database backups & dumps
 *.bak
 *.sql

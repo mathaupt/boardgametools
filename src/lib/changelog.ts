@@ -11,6 +11,49 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.19.0",
+    date: "2026-03-25",
+    title: "Automatische Regressionserkennung im Review-Prozess",
+    description: "Der Review-Evaluator erkennt jetzt automatisch Regressions: Wenn ein zuvor gelöstes Finding wieder offen ist, wird eine prominente Warnung ausgegeben, der Commit blockiert und ein Eintrag im Regressions-Log erstellt. History-Snapshots werden für zukünftige Vergleiche archiviert.",
+    changes: [
+      { type: "feature", text: "Automatische Regressionserkennung: Evaluator vergleicht mit dem letzten History-Snapshot und warnt bei Rückfällen" },
+      { type: "feature", text: "History-Archivierung: Jeder Evaluator-Lauf speichert einen Snapshot in docs/code-reviews/history/ (JSON mit Timestamp)" },
+      { type: "feature", text: "Regressions-Log: docs/code-reviews/regressions.md wird automatisch bei Regressions befüllt (mit Root-Cause-Feldern)" },
+      { type: "feature", text: "Neues npm-Script: review-evaluate:regression – prüft auf Regressions und blockiert bei Fund (Exit 1)" },
+      { type: "improvement", text: "Pre-Commit-Hook nutzt jetzt --fail-on-regression: Commits mit Regressions werden blockiert" },
+      { type: "improvement", text: "AGENTS.md: Neue Pflicht-Regel 3 (Regressions-Vermeidung) mit Impact-Analyse-Checkliste" },
+      { type: "internal", text: "Evaluator: Neuer Recommendation-Typ 'regression' in Engine, Report, SKILL.md-Feedback und JSON-Output" },
+    ],
+  },
+  {
+    version: "0.18.1",
+    date: "2026-03-25",
+    title: "Review-Dokumentation als Pflichtschritt verankert",
+    description: "Review-Workflow in AGENTS.md um Pflicht-Schritt 6 erweitert: Nach jedem Review müssen die Dokumente in docs/code-reviews/ (Snapshot, Bewertung, Prozessanpassungen) aktualisiert werden. Alle drei Review-Docs auf den aktuellen 10/10-Stand gebracht.",
+    changes: [
+      { type: "improvement", text: "Review-Workflow: Neuer Pflichtschritt 6 – docs/code-reviews/ nach jedem Review aktualisieren" },
+      { type: "improvement", text: "Review-Snapshot auf 10/10 aktualisiert (50/50 Findings, alle Kategorien 10.0)" },
+      { type: "improvement", text: "Review-Bewertung aktualisiert: Reviewer-Gesamtnote 8.5 → 9.0, False-Positive-Rate 0 %" },
+      { type: "improvement", text: "Prozessanpassungen: Neue Maßnahme MA-6, Erfolgsmessung mit Vorher/Aktuell/Ziel-Spalten" },
+      { type: "internal", text: "AGENTS.md: docs/code-reviews/ in Projektstruktur aufgenommen" },
+    ],
+  },
+  {
+    version: "0.18.0",
+    date: "2026-03-25",
+    title: "Perfekter Review-Score 10/10 – alle 50 Findings gelöst",
+    description: "Alle drei verbleibenden Review-Findings (P0-5, P1-16, P2-18) behoben. Evaluator auf Next.js 16 aktualisiert, Admin-403-Logik verifiziert, letzte any-Types durch typisierte Generics ersetzt. Neue docs/code-reviews/ Dokumentation mit Review-Snapshots, Meta-Bewertung und Prozessanpassungen.",
+    changes: [
+      { type: "fix", text: "P0-5: Review-Evaluator erkennt jetzt proxy.ts als Next.js 16 Nachfolger von middleware.ts" },
+      { type: "fix", text: "P1-16: Evaluator prüft 403-Status in proxy.ts und Admin-Route-Handlern (alle 7 Endpoints korrekt)" },
+      { type: "fix", text: "P2-18: Alle 4 verbleibenden any-Types durch typisierte Interfaces ersetzt (PublicEventRaw, generischer RouteHandlerContext)" },
+      { type: "improvement", text: "withApiLogging ist jetzt generisch typisiert – akzeptiert alle RouteContext-Shapes ohne any" },
+      { type: "feature", text: "Neue docs/code-reviews/ Dokumentation: Review-Snapshot, Meta-Bewertung und 5 Prozessanpassungen" },
+      { type: "internal", text: "docs/code-reviews/ in .gitignore aufgenommen (lokale Snapshots, nicht versioniert)" },
+      { type: "internal", text: "Review-Score: 10/10 – alle 50 Findings in 10 Kategorien gelöst" },
+    ],
+  },
+  {
     version: "0.17.5",
     date: "2026-03-21",
     title: "Unicode-Kodierung korrigiert",

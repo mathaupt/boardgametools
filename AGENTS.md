@@ -43,12 +43,34 @@ BoardGameTools ist eine Next.js 16 Webanwendung zur Verwaltung von Brettspielen,
 ### 2. Review-Workflow nach jeder Umsetzung
 
 1. Änderungen committen
-2. `npm run review-evaluate` ausführen
+2. `npm run review-evaluate` ausführen (oder `npm run review-evaluate:regression` im Pre-Commit-Hook)
 3. Ergebnis in `skills/code-review/SKILL.md` prüfen
 4. Behobene Findings mit ~~Strikethrough~~ ✅ markieren
 5. Score-Entwicklung verfolgen – Ziel: steigend!
+6. **Regressions-Check:** Wurden Findings erkannt, die vorher gelöst waren und jetzt wieder offen sind?
+   - Falls ja: **Sofort beheben** – Commit wird blockiert (`--fail-on-regression`)
+   - Root-Cause in `docs/code-reviews/regressions.md` dokumentieren (wird automatisch befüllt)
+7. **Review-Dokumentation in `docs/code-reviews/` aktualisieren:**
+   - `YYYY-MM-DD_review-snapshot.md` – Scores, Findings-Status und Score-Verlauf aktualisieren
+   - `YYYY-MM-DD_review-bewertung.md` – Meta-Bewertung und Vergleichstabelle aktualisieren
+   - `YYYY-MM-DD_prozessanpassungen.md` – Maßnahmen-Status und Erfolgsmessung aktualisieren
 
-### 3. Prisma-Queries: NIEMALS `user: true` oder `createdBy: true`
+### 3. Regressions-Vermeidung (KRITISCH!)
+
+**Vor jeder größeren Änderung (Refactoring, Migration, Dependency-Update):**
+
+1. **Impact-Analyse:** Prüfe, welche Review-Findings von der Änderung betroffen sein könnten
+2. **Evaluator-Vorlauf:** `npm run review-evaluate:report` ausführen, um den aktuellen Stand zu sichern
+3. **Nach der Änderung:** Erneut `npm run review-evaluate:regression` ausführen und prüfen, ob Regressions aufgetreten sind
+4. **Bei Regression:** Root-Cause in `docs/code-reviews/regressions.md` dokumentieren (Felder ausfüllen!)
+
+**Typische Regressions-Ursachen:**
+- Framework-Migrationen (z.B. Next.js 15 → 16: `middleware.ts` → `proxy.ts`)
+- Dependency-Updates die APIs ändern
+- Refactorings die Security-Patterns entfernen (z.B. `include: { user: true }` wieder einführen)
+- Komponentenaufteilung die Error Boundaries vergisst
+
+### 4. Prisma-Queries: NIEMALS `user: true` oder `createdBy: true`
 
 ```typescript
 // VERBOTEN – leakt passwordHash:
@@ -60,7 +82,7 @@ include: { user: { select: { id: true, name: true, email: true } } }
 include: { createdBy: { select: { id: true, name: true, email: true } } }
 ```
 
-### 4. Komponenten-Größe
+### 5. Komponenten-Größe
 
 - Maximum ~300 Zeilen pro Datei
 - Große Komponenten in Subkomponenten aufteilen
@@ -73,6 +95,8 @@ boardgametools/
 ├── AGENTS.md              # Diese Datei (IMMER aktuell halten!)
 ├── CONCEPT.md             # Detailliertes Konzept
 ├── skills/                # AgentSkills (siehe unten)
+├── docs/
+│   └── code-reviews/      # Review-Snapshots, Bewertungen, Prozessanpassungen (gitignored)
 ├── prisma/
 │   └── schema.prisma      # Datenbank-Schema
 ├── src/
@@ -136,15 +160,16 @@ HEADLESS=true npm run test:e2e  # E2E Tests headless
 ### Review & Qualitätssicherung
 
 ```bash
-npm run review-evaluate          # Bewertet Findings, aktualisiert SKILL.md
-npm run review-evaluate:report   # Nur Report (ohne SKILL.md Update)
-npm run review-evaluate:json     # JSON-Output (für CI/CD)
-npm run review-evaluate:strict   # Exit 1 bei Score < 5/10
-npm run security-check           # OWASP Security Check
+npm run review-evaluate              # Bewertet Findings, aktualisiert SKILL.md
+npm run review-evaluate:report       # Nur Report (ohne SKILL.md Update)
+npm run review-evaluate:json         # JSON-Output (für CI/CD)
+npm run review-evaluate:strict       # Exit 1 bei Score < 5/10
+npm run review-evaluate:regression   # Exit 1 bei Regressions (Pre-Commit-Hook)
+npm run security-check               # OWASP Security Check
 npm run backup:prod              # Manuelles Prod-DB-Backup
 ```
 
-**Pre-Commit Hook**: Unit Tests → Security Check → Review Evaluator
+**Pre-Commit Hook**: Unit Tests → Security Check → Review Evaluator (mit Regressions-Blockade)
 **Pre-Push Hook**: Prod-DB-Backup (automatisch)
 
 ## Code-Konventionen
@@ -192,6 +217,9 @@ export async function GET() {
 | `src/lib/validation.ts` | Input-Validierung |
 | `src/lib/rate-limit.ts` | Rate Limiting |
 | `src/lib/changelog.ts` | **Changelog (PFLICHT bei jeder Änderung!)** |
+| `scripts/review-evaluate.mjs` | Review-Evaluator (50 Findings + Regressionserkennung) |
+| `docs/code-reviews/regressions.md` | **Regressions-Log** (automatisch + manuell) |
+| `docs/code-reviews/history/` | Historische Review-Snapshots (JSON, für Regression-Diff) |
 | `prisma/schema.prisma` | Datenbank-Schema |
 | `.env` | Lokale Umgebungsvariablen |
 | `.env.prod` | Prod-DB-Credentials (NIEMALS committen!) |
