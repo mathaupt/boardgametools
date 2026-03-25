@@ -18,34 +18,7 @@ import {
   Trophy,
   ChevronRight,
 } from "lucide-react";
-
-interface GameData {
-  id: string;
-  name: string;
-  description?: string | null;
-  imageUrl: string | null;
-  minPlayers: number;
-  maxPlayers: number;
-  playTimeMinutes: number | null;
-  complexity: number | null;
-  bggId: string | null;
-}
-
-interface SeriesEntry {
-  id: string;
-  seriesId: string;
-  gameId: string;
-  sortOrder: number;
-  played: boolean;
-  playedAt: string | null;
-  rating: number | null;
-  difficulty: string | null;
-  playTimeMinutes: number | null;
-  successful: boolean | null;
-  playerCount: number | null;
-  score: number | null;
-  game: GameData;
-}
+import type { GameData, SeriesEntry } from "./types";
 
 const DIFFICULTY_CONFIG: Record<string, { label: string; className: string }> = {
   einsteiger: { label: "Einsteiger", className: "bg-success/10 text-success border-success" },

@@ -8,10 +8,7 @@ import {
   Filter,
   X,
 } from "lucide-react";
-
-type PlayedFilter = "alle" | "gespielt" | "offen";
-type DifficultyFilter = "alle" | "einsteiger" | "fortgeschritten" | "profi";
-type EntrySortOption = "sortOrder" | "name_asc" | "name_desc" | "rating_desc" | "difficulty";
+import type { PlayedFilter, DifficultyFilter, EntrySortOption } from "./types";
 
 const PLAYED_OPTIONS: { value: PlayedFilter; label: string }[] = [
   { value: "alle", label: "Alle" },

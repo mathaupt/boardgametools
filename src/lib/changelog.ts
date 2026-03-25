@@ -11,6 +11,18 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.22.1",
+    date: "2026-03-24",
+    title: "Spielreihen-Detailseite aufgeteilt",
+    description: "Die Spielreihen-Detailseite (591 Zeilen) wurde in 8 fokussierte Subkomponenten und einen Custom Hook aufgeteilt. Seite ist jetzt ~105 Zeilen.",
+    changes: [
+      { type: "improvement", text: "Spielreihen-Detailseite von 591 auf ~105 Zeilen reduziert durch Aufteilung in Subkomponenten" },
+      { type: "internal", text: "Neue Dateien: types.ts, use-series-handlers.ts, series-detail-header.tsx, series-progress-card.tsx, series-entry-list.tsx, series-delete-dialogs.tsx, series-loading-skeleton.tsx, series-not-found.tsx" },
+      { type: "internal", text: "Handler-Logik in useSeriesHandlers Custom Hook extrahiert" },
+      { type: "internal", text: "Filter/Sort-State in SeriesEntryList gekapselt (Single Responsibility)" },
+    ],
+  },
+  {
     version: "0.22.0",
     date: "2026-03-24",
     title: "Architektur-Refactoring: Service Layer, API v1, Soft Delete, SWR & Health Check",
