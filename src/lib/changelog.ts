@@ -11,6 +11,24 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.20.0",
+    date: "2026-03-24",
+    title: "6 neue Skills und umfassende Projekt-Dokumentation",
+    description: "Sechs neue Agent-Skills erstellt (Security, Performance, Best Practices, Architecture, Testing, Bill of Materials) sowie vollständige Projekt-Dokumentation mit Snapshots, Bewertungen und Prozess-Dokumentation in docs/.",
+    changes: [
+      { type: "feature", text: "Neuer Security-Skill: OWASP Top 10, Auth-Härtung, Rate Limiting, CSP, Token-Sicherheit mit Checklisten" },
+      { type: "feature", text: "Neuer Performance-Skill: Bundle-Optimierung, Caching-Strategie, DB-Query-Optimierung, Core Web Vitals Zielwerte" },
+      { type: "feature", text: "Neuer Best-Practices-Skill: Coding-Standards, TypeScript-Regeln, Komponenten-Richtlinien, API-Design-Muster" },
+      { type: "feature", text: "Neuer Architecture-Skill: 4-Schichten-Architektur, Datenfluss, 27 Prisma-Modelle, Deployment-Architektur" },
+      { type: "feature", text: "Neuer Testing-Skill: Unit-Test-Strategie (Vitest), E2E-Tests (CodeceptJS/Playwright), Mocking-Patterns" },
+      { type: "feature", text: "Neuer Bill-of-Materials-Skill: 53 Dependencies dokumentiert, Lizenz-Compliance, Update-Policy, Bewertungsmatrix" },
+      { type: "feature", text: "Projekt-Dokumentation: Snapshots und Bewertungen für alle 6 Bereiche in docs/" },
+      { type: "feature", text: "Prozess-Dokumentation: 8 Prozesse (Entwicklung, QA, Review, Security, Deployment, Doku, Backup, Monitoring)" },
+      { type: "improvement", text: "AGENTS.md: Skills-Tabelle von 7 auf 13 Skills erweitert, docs/-Struktur dokumentiert" },
+      { type: "internal", text: "Alle Skills basieren auf tatsächlicher Codebase-Analyse (keine Vermutungen)" },
+    ],
+  },
+  {
     version: "0.19.0",
     date: "2026-03-25",
     title: "Automatische Regressionserkennung im Review-Prozess",

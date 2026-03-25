@@ -95,8 +95,15 @@ boardgametools/
 ├── AGENTS.md              # Diese Datei (IMMER aktuell halten!)
 ├── CONCEPT.md             # Detailliertes Konzept
 ├── skills/                # AgentSkills (siehe unten)
-├── docs/
-│   └── code-reviews/      # Review-Snapshots, Bewertungen, Prozessanpassungen (gitignored)
+├── docs/                  # Projekt-Dokumentation (gitignored)
+│   ├── architecture/      # Architektur-Snapshots und Bewertungen
+│   ├── best-practices/    # Best-Practices-Snapshots und Bewertungen
+│   ├── bill-of-materials/ # BOM-Snapshots und Bewertungen
+│   ├── code-reviews/      # Review-Snapshots, Bewertungen, Prozessanpassungen
+│   ├── performance/       # Performance-Snapshots und Bewertungen
+│   ├── processes/         # Prozess-Dokumentation (README.md)
+│   ├── security/          # Security-Snapshots und Bewertungen
+│   └── testing/           # Testing-Snapshots und Bewertungen
 ├── prisma/
 │   └── schema.prisma      # Datenbank-Schema
 ├── src/
@@ -127,6 +134,12 @@ boardgametools/
 | `statistics` | Statistiken und Auswertungen |
 | `accessibility` | Verbindliche Regeln für Farbkontrast, Schriftgrößen und Fokuszustände |
 | `code-review` | Senior Dev Code Reviewer – Prüft Code-Qualität, Architektur, Sicherheit und Konzept-Konformität |
+| `security` | OWASP Top 10, Auth-Härtung, Rate Limiting, CSP, Token-Sicherheit |
+| `performance` | Bundle-Optimierung, Caching, DB-Queries, Core Web Vitals, Loading States |
+| `best-practices` | Coding-Standards, TypeScript-Regeln, Komponenten-Richtlinien, API-Design |
+| `architecture` | Schichtenarchitektur, Datenfluss, 27 Prisma-Modelle, Deployment, State Management |
+| `testing` | Unit Tests (Vitest), E2E Tests (CodeceptJS/Playwright), Test-Strategie |
+| `bill-of-materials` | Technologie-Inventar (53 Dependencies), Lizenz-Compliance, Update-Policy |
 
 **Lies den relevanten Skill bevor du an einem Feature arbeitest!**
 
