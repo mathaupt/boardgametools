@@ -11,6 +11,18 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.23.4",
+    date: "2026-03-26",
+    title: "Refactoring: Grosse Komponenten in Subkomponenten aufgeteilt",
+    description: "Drei uebergrosse Komponenten (>300 Zeilen) wurden in kleinere, fokussierte Subkomponenten aufgeteilt. Bessere Wartbarkeit, Uebersichtlichkeit und Wiederverwendbarkeit.",
+    changes: [
+      { type: "internal", text: "invite/page.tsx (439 Zeilen) aufgeteilt in AddInviteForm + InviteList + InviteStatusSummary (282 + 109 + 136 Zeilen)" },
+      { type: "internal", text: "group-detail-client.tsx (396 Zeilen) aufgeteilt in GroupMembersSection + GroupPollsSection + GroupCommentsSection (267 + 96 + 71 + 75 Zeilen)" },
+      { type: "internal", text: "series-entry-card.tsx (358 Zeilen) aufgeteilt in StarRating + EntryPlayDetails (242 + 43 + 89 Zeilen)" },
+      { type: "improvement", text: "Alle Dateien jetzt unter 300 Zeilen – konform mit Projekt-Richtlinien" },
+    ],
+  },
+  {
     version: "0.23.3",
     date: "2026-03-26",
     title: "UX: alert/confirm durch Toast-Benachrichtigungen und AlertDialog ersetzt",

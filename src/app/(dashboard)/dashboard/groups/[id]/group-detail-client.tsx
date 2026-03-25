@@ -4,26 +4,14 @@ import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Users,
-  Vote,
-  MessageSquare,
-  Share2,
-  Copy,
-  Check,
-  Plus,
-  Lock,
-  X,
-  UserPlus,
-  Settings,
-} from "lucide-react";
-import { SerializedGroup, SerializedGroupComment, SerializedGroupMember } from "@/types/group";
+import { Share2, Copy, Check, Lock, Settings } from "lucide-react";
+import { SerializedGroup } from "@/types/group";
 import { getClientBaseUrl } from "@/lib/public-link";
-import { CreatePollForm } from "./create-poll-form";
-import { PollCard } from "./poll-card";
+import { GroupMembersSection } from "./group-members-section";
+import { GroupPollsSection } from "./group-polls-section";
+import { GroupCommentsSection } from "./group-comments-section";
 
 interface GroupDetailClientProps {
   group: SerializedGroup;
@@ -241,156 +229,39 @@ export function GroupDetailClient({ group, userId, isOwner, initialPublicUrl }: 
           </CardContent>
         </Card>
 
-        {/* Members Card */}
-        <Card>
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle className="flex items-center gap-2">
-                <Users className="h-5 w-5" />
-                Mitglieder ({group.members.length})
-              </CardTitle>
-              {isOwner && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setShowAddMember(!showAddMember)}
-                >
-                  <UserPlus className="h-4 w-4 mr-1" />
-                  Hinzufügen
-                </Button>
-              )}
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            {showAddMember && (
-              <form onSubmit={handleAddMember} className="flex gap-2 mb-3">
-                <Input
-                  placeholder="E-Mail-Adresse"
-                  value={memberEmail}
-                  onChange={(e) => setMemberEmail(e.target.value)}
-                  className="flex-1"
-                />
-                <Button size="sm" type="submit" disabled={loading === "member"}>
-                  {loading === "member" ? "..." : "Einladen"}
-                </Button>
-              </form>
-            )}
-            {memberError && <p className="text-sm text-destructive">{memberError}</p>}
-            {group.members.map((member: SerializedGroupMember) => (
-              <div key={member.id} className="flex items-center justify-between p-2 border rounded">
-                <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 bg-muted rounded-full flex items-center justify-center text-xs">
-                    {member.user.name?.[0] ?? "?"}
-                  </div>
-                  <span className="text-sm">{member.user.name}</span>
-                  {member.role === "owner" && (
-                    <Badge variant="secondary" className="text-xs">Owner</Badge>
-                  )}
-                </div>
-                {isOwner && member.role !== "owner" && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleRemoveMember(member.user.id)}
-                    disabled={loading === `remove-${member.user.id}`}
-                  >
-                    <X className="h-3 w-3" />
-                  </Button>
-                )}
-              </div>
-            ))}
-          </CardContent>
-        </Card>
+        <GroupMembersSection
+          members={group.members}
+          isOwner={isOwner}
+          showAddMember={showAddMember}
+          onToggleAddMember={() => setShowAddMember(!showAddMember)}
+          memberEmail={memberEmail}
+          onMemberEmailChange={setMemberEmail}
+          memberError={memberError}
+          onAddMember={handleAddMember}
+          onRemoveMember={handleRemoveMember}
+          loading={loading}
+        />
       </div>
 
-      {/* Polls Section */}
-      <Card>
-        <CardHeader>
-          <div className="flex flex-col sm:flex-row items-start sm:items-center sm:justify-between gap-3">
-            <div>
-              <CardTitle className="flex items-center gap-2">
-                <Vote className="h-5 w-5" />
-                Abstimmungen ({group.polls.length})
-              </CardTitle>
-              <CardDescription>Erstelle Umfragen und stimme ab</CardDescription>
-            </div>
-            <Button onClick={() => setShowCreatePoll(!showCreatePoll)}>
-              <Plus className="h-4 w-4 mr-2" />
-              Neue Abstimmung
-            </Button>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {/* Create Poll Form */}
-          {showCreatePoll && <CreatePollForm groupId={group.id} loading={loading} setLoading={setLoading} onCreated={() => { setShowCreatePoll(false); refresh(); }} onCancel={() => setShowCreatePoll(false)} />}
+      <GroupPollsSection
+        group={group}
+        userId={userId}
+        isOwner={isOwner}
+        showCreatePoll={showCreatePoll}
+        onToggleCreatePoll={() => setShowCreatePoll(!showCreatePoll)}
+        loading={loading}
+        setLoading={setLoading}
+        onPollCreated={() => { setShowCreatePoll(false); refresh(); }}
+        onRefresh={refresh}
+      />
 
-          {/* Poll List */}
-          {group.polls.length === 0 && !showCreatePoll ? (
-            <div className="text-center py-8">
-              <div className="text-4xl mb-4">🗳️</div>
-              <h3 className="font-semibold mb-2">Noch keine Abstimmungen</h3>
-              <p className="text-muted-foreground mb-4">
-                Erstelle eine Abstimmung, um die Meinung der Gruppe einzuholen.
-              </p>
-            </div>
-          ) : (
-            group.polls.map((poll) => (
-              <PollCard key={poll.id} poll={poll} groupId={group.id} userId={userId} isOwner={isOwner} onRefresh={refresh} />
-            ))
-          )}
-        </CardContent>
-      </Card>
-
-      {/* General Comments */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <MessageSquare className="h-5 w-5" />
-            Diskussion
-          </CardTitle>
-          <CardDescription>Allgemeine Kommentare zur Gruppe</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <div className="flex gap-2">
-            <Input
-              placeholder="Schreibe einen Kommentar..."
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleComment()}
-            />
-            <Button
-              onClick={() => handleComment()}
-              disabled={loading === "comment" || !comment.trim()}
-            >
-              Senden
-            </Button>
-          </div>
-          {group.comments.length === 0 ? (
-            <p className="text-sm text-muted-foreground text-center py-4">
-              Noch keine Kommentare. Starte die Diskussion!
-            </p>
-          ) : (
-            <div className="space-y-2">
-              {group.comments.map((c: SerializedGroupComment) => (
-                <div key={c.id} className="p-3 rounded-lg border bg-muted/20">
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-sm font-medium">{c.authorName}</span>
-                    <span className="text-xs text-muted-foreground">
-                      {new Date(c.createdAt).toLocaleDateString("de-DE", {
-                        day: "2-digit",
-                        month: "2-digit",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
-                    </span>
-                  </div>
-                  <p className="text-sm text-muted-foreground">{c.content}</p>
-                </div>
-              ))}
-            </div>
-          )}
-        </CardContent>
-      </Card>
+      <GroupCommentsSection
+        comments={group.comments}
+        comment={comment}
+        onCommentChange={setComment}
+        onSubmitComment={handleComment}
+        loading={loading}
+      />
     </>
   );
 }

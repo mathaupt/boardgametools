@@ -1,9 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -11,61 +9,21 @@ import {
   ChevronDown,
   Users,
   Clock,
-  Star,
   ImageIcon,
   Check,
   Trash2,
   Trophy,
   ChevronRight,
 } from "lucide-react";
-import type { GameData, SeriesEntry } from "./types";
+import type { SeriesEntry } from "./types";
+import { StarRating } from "./star-rating";
+import { EntryPlayDetails } from "./entry-play-details";
 
 const DIFFICULTY_CONFIG: Record<string, { label: string; className: string }> = {
   einsteiger: { label: "Einsteiger", className: "bg-success/10 text-success border-success" },
   fortgeschritten: { label: "Fortgeschritten", className: "bg-warning/10 text-warning border-warning" },
   profi: { label: "Profi", className: "bg-destructive/10 text-destructive border-destructive" },
 };
-
-function StarRating({
-  value,
-  onChange,
-  readonly = false,
-}: {
-  value: number | null;
-  onChange?: (rating: number | null) => void;
-  readonly?: boolean;
-}) {
-  const [hover, setHover] = useState<number | null>(null);
-
-  return (
-    <div className="flex gap-0.5" role="group" aria-label="Bewertung">
-      {[1, 2, 3, 4, 5].map((star) => (
-        <button
-          key={star}
-          type="button"
-          disabled={readonly}
-          className={`p-0 h-5 w-5 transition-colors ${readonly ? "cursor-default" : "cursor-pointer hover:scale-110"}`}
-          onMouseEnter={() => !readonly && setHover(star)}
-          onMouseLeave={() => !readonly && setHover(null)}
-          onClick={() => {
-            if (!readonly && onChange) {
-              onChange(value === star ? null : star);
-            }
-          }}
-          aria-label={`${star} Stern${star > 1 ? "e" : ""}`}
-        >
-          <Star
-            className={`h-5 w-5 transition-colors ${
-              (hover !== null ? star <= hover : star <= (value ?? 0))
-                ? "fill-warning text-warning"
-                : "text-muted-foreground/30"
-            }`}
-          />
-        </button>
-      ))}
-    </div>
-  );
-}
 
 interface SeriesEntryCardProps {
   entry: SeriesEntry;
@@ -276,81 +234,7 @@ export function SeriesEntryCard({
 
                 {/* Expanded play details */}
                 {entry.played && isExpanded && (
-                  <div className="mt-3 pt-3 border-t ml-[52px] sm:ml-[68px]">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      {/* Play time */}
-                      <div>
-                        <label className="text-xs font-medium text-muted-foreground mb-1 block">
-                          Spielzeit (Minuten)
-                        </label>
-                        <Input
-                          type="number"
-                          min={0}
-                          max={9999}
-                          placeholder="z.B. 90"
-                          defaultValue={entry.playTimeMinutes ?? ""}
-                          onBlur={(e) => {
-                            const val = e.target.value === "" ? null : parseInt(e.target.value, 10);
-                            if (val !== entry.playTimeMinutes) onPlayDetailChange(entry, "playTimeMinutes", val);
-                          }}
-                          className="h-8 text-sm"
-                        />
-                      </div>
-
-                      {/* Player count */}
-                      <div>
-                        <label className="text-xs font-medium text-muted-foreground mb-1 block">
-                          Anzahl Spieler
-                        </label>
-                        <Input
-                          type="number"
-                          min={1}
-                          max={99}
-                          placeholder="z.B. 4"
-                          defaultValue={entry.playerCount ?? ""}
-                          onBlur={(e) => {
-                            const val = e.target.value === "" ? null : parseInt(e.target.value, 10);
-                            if (val !== entry.playerCount) onPlayDetailChange(entry, "playerCount", val);
-                          }}
-                          className="h-8 text-sm"
-                        />
-                      </div>
-
-                      {/* Score */}
-                      <div>
-                        <label className="text-xs font-medium text-muted-foreground mb-1 block">
-                          Punkte
-                        </label>
-                        <Input
-                          type="number"
-                          min={0}
-                          max={999999}
-                          placeholder="z.B. 120"
-                          defaultValue={entry.score ?? ""}
-                          onBlur={(e) => {
-                            const val = e.target.value === "" ? null : parseInt(e.target.value, 10);
-                            if (val !== entry.score) onPlayDetailChange(entry, "score", val);
-                          }}
-                          className="h-8 text-sm"
-                        />
-                      </div>
-
-                      {/* Successful checkbox */}
-                      <div className="flex items-end pb-1">
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={entry.successful === true}
-                            onChange={(e) => {
-                              onPlayDetailChange(entry, "successful", e.target.checked ? true : null);
-                            }}
-                            className="h-4 w-4 rounded border-input accent-success"
-                          />
-                          <span className="text-sm">Erfolgreich abgeschlossen</span>
-                        </label>
-                      </div>
-                    </div>
-                  </div>
+                  <EntryPlayDetails entry={entry} onPlayDetailChange={onPlayDetailChange} />
                 )}
               </CardContent>
             </Card>
