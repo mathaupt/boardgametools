@@ -11,6 +11,24 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.23.2",
+    date: "2026-03-25",
+    title: "Rate-Limiting, Server Components, Logging & Architecture Hardening",
+    description: "Umfassende Sicherheits- und Architekturverbesserungen: Rate-Limiting auf allen oeffentlichen Endpunkten, Server-Component-Migration fuer Spiele/Reihen, strukturiertes Logging statt console.log, EventService.update(), und begrenzte Query-Ergebnisse.",
+    changes: [
+      { type: "feature", text: "Rate-Limiting auf Login (10/min), Health-Check und allen 9 oeffentlichen Endpunkten (Voting, Propose, Join, etc.)" },
+      { type: "feature", text: "EventService.update() mit Validierung fuer v1-API PUT /events/:id" },
+      { type: "improvement", text: "Spiele-Seite und Spielereihen-Seite zu Server Components migriert (schnellerer Seitenaufbau, kein Client-Side Fetch)" },
+      { type: "improvement", text: "Alle console.log/error-Aufrufe in 7 Dateien durch strukturiertes pino-Logging ersetzt (bgg.ts, barcode, admin-create, 4 BGG-API-Routes)" },
+      { type: "fix", text: "Statistik-Query auf max. 1000 Sessions begrenzt (verhindert unbegrenzte DB-Abfragen)" },
+      { type: "fix", text: "Admin-Nutzerliste auf max. 200 Eintraege begrenzt" },
+      { type: "fix", text: "password-reset.ts: passwordHash aus User-Select entfernt" },
+      { type: "fix", text: "password-reset Test an korrigierte Select-Projektion angepasst" },
+      { type: "internal", text: "v1 Events-Route um PUT und DELETE Handler erweitert" },
+      { type: "internal", text: "UpdateEventInput-Interface und Export in Services hinzugefuegt" },
+    ],
+  },
+  {
     version: "0.23.1",
     date: "2026-03-25",
     title: "Kritische Security-Fixes: Password-Leaks in SSR, Dead Code Cleanup",

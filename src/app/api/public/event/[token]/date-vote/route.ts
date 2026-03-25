@@ -3,6 +3,7 @@ import prisma from "@/lib/db";
 import { findPublicEventByToken } from "@/lib/event-share";
 import { withApiLogging } from "@/lib/api-logger";
 import { validateString } from "@/lib/validation";
+import { checkRateLimit, rateLimitResponse } from "@/lib/rate-limit";
 
 type RouteContext = { params: Promise<{ token: string }> };
 
@@ -12,6 +13,10 @@ export const POST = withApiLogging(async function POST(
   request: NextRequest,
   { params }: RouteContext
 ) {
+  const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+  const { allowed, retryAfterMs } = checkRateLimit(`pub-date-vote:${ip}`, 20, 60_000);
+  if (!allowed) return rateLimitResponse(retryAfterMs);
+
   const { token } = await params;
 
   try {

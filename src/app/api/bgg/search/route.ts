@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { searchBGGGames } from "@/lib/bgg";
 import { withApiLogging } from "@/lib/api-logger";
+import logger from "@/lib/logger";
 
 export const GET = withApiLogging(async function GET(request: NextRequest) {
   const session = await auth();
@@ -21,7 +22,7 @@ export const GET = withApiLogging(async function GET(request: NextRequest) {
     const results = await searchBGGGames(query);
     return NextResponse.json(results);
   } catch (error) {
-    console.error("BGG search error:", error);
+    logger.error({ err: error }, "BGG search error");
     return NextResponse.json({ error: "Search failed" }, { status: 500 });
   }
 });

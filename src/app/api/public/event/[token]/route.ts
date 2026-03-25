@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth";
 import { findPublicEventByToken } from "@/lib/event-share";
 import { buildPublicEventInclude, serializePublicEvent } from "@/lib/public-event";
 import { withApiLogging } from "@/lib/api-logger";
+import { checkRateLimit, rateLimitResponse } from "@/lib/rate-limit";
 
 type RouteContext = { params: Promise<{ token: string }> };
 
@@ -10,6 +11,10 @@ export const GET = withApiLogging(async function GET(
   request: NextRequest,
   { params }: RouteContext
 ) {
+  const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+  const { allowed, retryAfterMs } = checkRateLimit(`pub-event:${ip}`, 30, 60_000);
+  if (!allowed) return rateLimitResponse(retryAfterMs);
+
   const session = await auth();
   const { token } = await params;
 

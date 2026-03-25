@@ -526,7 +526,7 @@ const isValid = await compare(inputPassword, group.password);
 
 ## Evaluator-Feedback (automatisch generiert)
 
-> Letzter Lauf: 2026-03-25 22:38:02
+> Letzter Lauf: 2026-03-25 22:52:10
 > Gesamt-Score: **9.9/10**
 
 ### Kategorie-Scores
@@ -599,5 +599,5 @@ const isValid = await compare(inputPassword, group.password);
 
 ### Empfohlene Reviewer-Anpassungen
 
-- ➕ NEU: "Test Coverage Lücken" – 18 von 33 lib-Dateien getestet (Schwelle: 5)
+- ➕ NEU: "Test Coverage Lücken" – 18 von 32 lib-Dateien getestet (Schwelle: 5)
 - 📝 Abdeckung in "Testing" niedrig (0/10) – weitere Prüfpunkte hinzufügen

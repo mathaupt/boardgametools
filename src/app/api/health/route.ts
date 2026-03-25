@@ -1,6 +1,7 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/db";
 import { withApiLogging } from "@/lib/api-logger";
+import { checkRateLimit, rateLimitResponse } from "@/lib/rate-limit";
 
 interface ComponentHealth {
   status: "healthy" | "degraded" | "unhealthy";
@@ -33,7 +34,11 @@ interface HealthResponse {
 // Read version once at module load
 const APP_VERSION = process.env.npm_package_version || "unknown";
 
-export const GET = withApiLogging(async function GET() {
+export const GET = withApiLogging(async function GET(request: NextRequest) {
+  const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+  const { allowed, retryAfterMs } = checkRateLimit(`health:${ip}`, 30, 60_000);
+  if (!allowed) return rateLimitResponse(retryAfterMs);
+
   const mem = process.memoryUsage();
   const response: HealthResponse = {
     status: "healthy",

@@ -18,3 +18,32 @@ export const GET = withApiLogging(async function GET(
     return handleApiError(error);
   }
 });
+
+export const PUT = withApiLogging(async function PUT(
+  request: NextRequest,
+  { params }: RouteContext
+) {
+  try {
+    const { userId } = await requireAuth();
+    const { id } = await params;
+    const body = await request.json();
+    const result = await EventService.update(userId, id, body);
+    return NextResponse.json(result, { headers: { "X-API-Version": "1" } });
+  } catch (error) {
+    return handleApiError(error);
+  }
+});
+
+export const DELETE = withApiLogging(async function DELETE(
+  _request: NextRequest,
+  { params }: RouteContext
+) {
+  try {
+    const { userId } = await requireAuth();
+    const { id } = await params;
+    const result = await EventService.delete(userId, id);
+    return NextResponse.json(result, { headers: { "X-API-Version": "1" } });
+  } catch (error) {
+    return handleApiError(error);
+  }
+});

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { fetchBGGCollection } from "@/lib/bgg";
 import { withApiLogging } from "@/lib/api-logger";
+import logger from "@/lib/logger";
 
 export const GET = withApiLogging(async function GET(request: NextRequest) {
   const session = await auth();
@@ -20,7 +21,7 @@ export const GET = withApiLogging(async function GET(request: NextRequest) {
     return NextResponse.json({ collection, total: collection.length });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Collection fetch failed";
-    console.error("BGG collection error:", message);
+    logger.error({ message }, "BGG collection error");
     return NextResponse.json({ error: message }, { status: 502 });
   }
 });

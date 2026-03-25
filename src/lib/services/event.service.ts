@@ -19,6 +19,15 @@ export interface CreateEventInput {
   inviteEmails?: string[];
 }
 
+export interface UpdateEventInput {
+  title?: string;
+  description?: string;
+  eventDate?: string;
+  location?: string;
+  groupId?: string;
+  status?: string;
+}
+
 // ── Service ──────────────────────────────────────────────────────
 
 const eventListInclude = {
@@ -192,6 +201,38 @@ export const EventService = {
         ...(selectedGameId && { selectedGameId }),
         ...(winningProposalId && { winningProposalId }),
       },
+    });
+
+    invalidateTag(CacheTags.userEvents(userId));
+    invalidateTag(CacheTags.userDashboard(userId));
+    return updated;
+  },
+
+  /** Update an existing event */
+  async update(userId: string, eventId: string, input: UpdateEventInput) {
+    const existing = await prisma.event.findFirst({
+      where: { id: eventId, createdById: userId, ...NOT_DELETED },
+    });
+    if (!existing) throw new ApiError(404, "Event not found");
+
+    const validationError = firstError(
+      input.title ? validateString(input.title, "Titel", { max: 200 }) : null,
+      validateString(input.description, "Beschreibung", { required: false, max: 2000 }),
+      validateString(input.location, "Ort", { required: false, max: 500 }),
+    );
+    if (validationError) throw new ApiError(400, validationError);
+
+    const updated = await prisma.event.update({
+      where: { id: eventId },
+      data: {
+        ...(input.title !== undefined && { title: input.title }),
+        ...(input.description !== undefined && { description: input.description }),
+        ...(input.eventDate !== undefined && { eventDate: new Date(input.eventDate) }),
+        ...(input.location !== undefined && { location: input.location }),
+        ...(input.groupId !== undefined && { groupId: input.groupId || null }),
+        ...(input.status !== undefined && { status: input.status }),
+      },
+      include: eventListInclude,
     });
 
     invalidateTag(CacheTags.userEvents(userId));

@@ -1,5 +1,6 @@
 import { hash } from "bcryptjs";
 import prisma from "./db";
+import logger from "./logger";
 
 export async function createAdminUser() {
   const adminEmail = process.env.ADMIN_EMAIL;
@@ -15,7 +16,7 @@ export async function createAdminUser() {
     });
     
     if (existingAdmin) {
-      console.log("Admin user already exists");
+      logger.info("Admin user already exists");
       return existingAdmin;
     }
     
@@ -31,11 +32,11 @@ export async function createAdminUser() {
       }
     });
     
-    console.log("Admin user created successfully");
+    logger.info("Admin user created successfully");
     return admin;
     
   } catch (error) {
-    console.error("Error creating admin user:", error);
+    logger.error({ err: error }, "Error creating admin user");
     throw error;
   }
 }

@@ -34,6 +34,7 @@ export default async function AdminUsersPage() {
       },
     },
     orderBy: { createdAt: "desc" },
+    take: 200,
   });
 
   return (

@@ -144,7 +144,7 @@ describe("verifyResetToken", () => {
     await verifyResetToken("my-token");
     expect(prisma.passwordResetToken.findUnique).toHaveBeenCalledWith({
       where: { tokenHash: hashResetToken("my-token") },
-      include: { user: { select: { id: true, name: true, email: true, passwordHash: true } } },
+      include: { user: { select: { id: true, name: true, email: true } } },
     });
   });
 });

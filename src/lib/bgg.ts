@@ -1,3 +1,5 @@
+import logger from "./logger";
+
 const BGG_API_URL = "https://boardgamegeek.com/xmlapi2";
 const BGG_AUTH_TOKEN = process.env.BGG_AUTH_TOKEN;
 
@@ -84,7 +86,7 @@ export async function fetchBGGGame(bggId: string): Promise<BGGGameData | null> {
     );
 
     if (!response.ok) {
-      console.error(`BGG API error: ${response.status}`);
+      logger.error({ status: response.status }, "BGG API error");
       return null;
     }
 
@@ -152,17 +154,17 @@ export async function fetchBGGGame(bggId: string): Promise<BGGGameData | null> {
       numRatings,
     };
   } catch (error) {
-    console.error("Error fetching BGG data:", error);
+    logger.error({ err: error }, "Error fetching BGG data");
     return null;
   }
 }
 
 export async function searchBGGGames(query: string): Promise<Array<{ bggId: string; name: string; yearPublished: number | null }>> {
-  console.log(`Searching BGG for: "${query}"`);
+  logger.debug({ query }, `Searching BGG for: "${query}"`);
   
   try {
     const url = `${BGG_API_URL}/search?query=${encodeURIComponent(query)}&type=boardgame`;
-    console.log("BGG URL:", url);
+    logger.debug({ url }, "BGG search URL");
     
     // Wait 2 seconds to respect BGG rate limits
     await new Promise(resolve => setTimeout(resolve, 2000));
@@ -179,11 +181,11 @@ export async function searchBGGGames(query: string): Promise<Array<{ bggId: stri
 
     const response = await fetch(url, { headers });
 
-    console.log("BGG response status:", response.status);
+    logger.debug({ status: response.status }, "BGG response status");
     
     // Handle different response codes
     if (response.status === 202) {
-      console.log("BGG processing request (202), waiting 3 seconds...");
+      logger.info("BGG processing request (202), waiting 3 seconds...");
       await new Promise(resolve => setTimeout(resolve, 3000));
       
       const retryHeaders: Record<string, string> = {
@@ -197,12 +199,12 @@ export async function searchBGGGames(query: string): Promise<Array<{ bggId: stri
 
       const retryResponse = await fetch(url, { headers: retryHeaders });
       
-      console.log("BGG retry response status:", retryResponse.status);
+      logger.debug({ status: retryResponse.status }, "BGG retry response status");
       
       if (retryResponse.ok) {
         return parseBGGSearchResponse(await retryResponse.text());
       } else if (retryResponse.status === 202) {
-        console.log("BGG still processing, waiting 5 more seconds...");
+        logger.info("BGG still processing, waiting 5 more seconds...");
         await new Promise(resolve => setTimeout(resolve, 5000));
         
         const finalHeaders: Record<string, string> = {
@@ -216,19 +218,19 @@ export async function searchBGGGames(query: string): Promise<Array<{ bggId: stri
 
           const finalResponse = await fetch(url, { headers: finalHeaders });
         
-        console.log("BGG final response status:", finalResponse.status);
+        logger.debug({ status: finalResponse.status }, "BGG final response status");
         
         if (finalResponse.ok) {
           return parseBGGSearchResponse(await finalResponse.text());
         }
       }
       
-      console.error("BGG search failed after retries with status:", retryResponse.status);
+      logger.error({ status: retryResponse.status }, "BGG search failed after retries");
       return [];
     }
     
     if (response.status === 429) {
-      console.log("BGG rate limited (429), waiting 10 seconds...");
+      logger.info("BGG rate limited (429), waiting 10 seconds...");
       await new Promise(resolve => setTimeout(resolve, 10000));
       
       const rateLimitHeaders: Record<string, string> = {
@@ -242,21 +244,21 @@ export async function searchBGGGames(query: string): Promise<Array<{ bggId: stri
 
       const retryResponse = await fetch(url, { headers: rateLimitHeaders });
       
-      console.log("BGG retry after rate limit status:", retryResponse.status);
+      logger.debug({ status: retryResponse.status }, "BGG retry after rate limit status");
       
       if (retryResponse.ok) {
         return parseBGGSearchResponse(await retryResponse.text());
       }
       
-      console.error("BGG search failed after rate limit retry with status:", retryResponse.status);
+      logger.error({ status: retryResponse.status }, "BGG search failed after rate limit retry");
       return [];
     }
     
     if (!response.ok) {
-      console.error("BGG search failed with status:", response.status);
+      logger.error({ status: response.status }, "BGG search failed");
       // Try with a different approach - maybe the API is temporarily down
       if (response.status === 401 || response.status >= 500) {
-        console.log("BGG API might be temporarily unavailable, using fallback...");
+        logger.info("BGG API might be temporarily unavailable, using fallback");
         // Return mock data for testing
         return [
           { bggId: "13", name: "Catan", yearPublished: 1995 },
@@ -269,7 +271,7 @@ export async function searchBGGGames(query: string): Promise<Array<{ bggId: stri
     
     return parseBGGSearchResponse(await response.text());
   } catch (error) {
-    console.error("Error searching BGG:", error);
+    logger.error({ err: error }, "Error searching BGG");
     return [];
   }
 }
@@ -307,18 +309,18 @@ export async function fetchBGGCollection(username: string): Promise<BGGCollectio
     const response = await fetch(url, { headers });
 
     if (response.status === 202) {
-      console.log(`BGG collection queued (202), attempt ${attempt + 1}/3...`);
+      logger.info(`BGG collection queued (202), attempt ${attempt + 1}/3`);
       continue;
     }
 
     if (response.status === 429) {
-      console.log("BGG rate limited (429), waiting 10s...");
+      logger.info("BGG rate limited (429), waiting 10s");
       await new Promise((resolve) => setTimeout(resolve, 10000));
       continue;
     }
 
     if (!response.ok) {
-      console.error(`BGG collection API error: ${response.status}`);
+      logger.error({ status: response.status }, "BGG collection API error");
       throw new Error(`BGG API returned ${response.status}`);
     }
 
@@ -379,8 +381,8 @@ function parseBGGCollectionResponse(xml: string): BGGCollectionItem[] {
 }
 
 function parseBGGSearchResponse(xml: string): Array<{ bggId: string; name: string; yearPublished: number | null }> {
-  console.log("BGG XML response length:", xml.length);
-  console.log("BGG XML preview:", xml.substring(0, 200) + "...");
+  logger.debug({ length: xml.length }, "BGG XML response");
+  logger.debug({ preview: xml.substring(0, 200) }, "BGG XML preview");
   
   const results: Array<{ bggId: string; name: string; yearPublished: number | null }> = [];
 
@@ -403,6 +405,6 @@ function parseBGGSearchResponse(xml: string): Array<{ bggId: string; name: strin
     }
   }
 
-  console.log("Parsed", results.length, "games from BGG");
+  logger.info({ count: results.length }, "Parsed games from BGG");
   return results.slice(0, 20);
 }

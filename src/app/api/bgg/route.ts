@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { withApiLogging } from "@/lib/api-logger";
+import logger from "@/lib/logger";
 
 interface BGGGameDetail {
   name: string;
@@ -40,7 +41,7 @@ export const GET = withApiLogging(async function GET(request: NextRequest) {
       });
       
       if (!response.ok) {
-        console.error('BGG API Error:', response.status, response.statusText);
+        logger.error({ status: response.status, statusText: response.statusText }, "BGG API Error");
         throw new Error('BGG API Error');
       }
 
@@ -95,7 +96,7 @@ export const GET = withApiLogging(async function GET(request: NextRequest) {
       });
       
       if (!response.ok) {
-        console.error('BGG API Error:', response.status, response.statusText);
+        logger.error({ status: response.status, statusText: response.statusText }, "BGG API Error");
         throw new Error('BGG API Error');
       }
 
@@ -176,7 +177,7 @@ export const GET = withApiLogging(async function GET(request: NextRequest) {
           }
         } catch (thumbErr) {
           // Thumbnails are optional – don't fail the search
-          console.warn("Failed to fetch BGG thumbnails:", thumbErr);
+          logger.warn({ err: thumbErr }, "Failed to fetch BGG thumbnails");
         }
       }
 
@@ -185,10 +186,10 @@ export const GET = withApiLogging(async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Missing query parameter" }, { status: 400 });
     }
   } catch (error) {
-    console.error("BGG API Error:", error);
+    logger.error({ err: error }, "BGG API Error");
     
     // Fallback zu Mock-Daten bei BGG API Problemen
-    console.log("Falling back to mock data due to BGG API issues");
+    logger.info("Falling back to mock data due to BGG API issues");
     
     if (query) {
       const mockGames = [

@@ -36,6 +36,7 @@ export const GET = withApiLogging(async function GET(_request: NextRequest) {
                 },
               },
               orderBy: { playedAt: "desc" },
+              take: 1000,
             }),
           ]);
 

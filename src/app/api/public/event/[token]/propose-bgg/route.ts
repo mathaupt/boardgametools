@@ -5,6 +5,7 @@ import { resolveEventIdFromToken } from "@/lib/event-share";
 import { withApiLogging } from "@/lib/api-logger";
 import { validateString, firstError } from "@/lib/validation";
 import { fetchBGGGame } from "@/lib/bgg";
+import { checkRateLimit, rateLimitResponse } from "@/lib/rate-limit";
 
 type RouteContext = { params: Promise<{ token: string }> };
 
@@ -12,6 +13,10 @@ export const POST = withApiLogging(async function POST(
   request: NextRequest,
   { params }: RouteContext
 ) {
+  const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+  const { allowed, retryAfterMs } = checkRateLimit(`pub-propose-bgg:${ip}`, 10, 60_000);
+  if (!allowed) return rateLimitResponse(retryAfterMs);
+
   const session = await auth();
   const { token } = await params;
   const eventId = await resolveEventIdFromToken(token);

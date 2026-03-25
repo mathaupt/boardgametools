@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
 import { searchBGGGames, fetchBGGGame } from "@/lib/bgg";
 import { withApiLogging } from "@/lib/api-logger";
+import logger from "@/lib/logger";
 
 interface UPCItemDBResponse {
   code: string;
@@ -141,7 +142,7 @@ export const GET = withApiLogging(async function GET(request: NextRequest) {
 
     // Step 3: Clean product name and search BGG
     const cleanedName = cleanProductName(productName, productBrand);
-    console.log(`Barcode ${ean}: raw="${productName}" brand="${productBrand}" cleaned="${cleanedName}"`);
+    logger.debug({ ean, productName, productBrand, cleanedName }, "Barcode lookup result");
 
     const bggResults = await searchBGGGames(cleanedName);
 
@@ -155,7 +156,7 @@ export const GET = withApiLogging(async function GET(request: NextRequest) {
       bggResults: bggResults.slice(0, 10),
     });
   } catch (error) {
-    console.error("Barcode lookup error:", error);
+    logger.error({ err: error }, "Barcode lookup error");
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 });

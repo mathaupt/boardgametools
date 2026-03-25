@@ -31,7 +31,7 @@ export async function verifyResetToken(token: string) {
   const tokenHash = hashResetToken(token);
   const record = await prisma.passwordResetToken.findUnique({
     where: { tokenHash },
-    include: { user: { select: { id: true, name: true, email: true, passwordHash: true } } },
+    include: { user: { select: { id: true, name: true, email: true } } },
   });
 
   if (!record || record.usedAt || record.expiresAt < new Date()) {
