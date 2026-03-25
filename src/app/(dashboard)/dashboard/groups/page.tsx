@@ -1,5 +1,7 @@
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
+import { cachedQuery } from "@/lib/cache";
+import { CacheTags } from "@/lib/cache-tags";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -10,24 +12,28 @@ export default async function GroupsPage() {
   const session = await auth();
   const userId = session?.user?.id;
 
-  const groups = await prisma.group.findMany({
-    where: {
-      OR: [
-        { ownerId: userId },
-        { members: { some: { userId } } },
-      ],
-    },
-    include: {
-      owner: { select: { id: true, name: true } },
-      members: {
-        include: { user: { select: { id: true, name: true } } },
-        orderBy: { joinedAt: "asc" },
-        take: 5,
+  const groups = await cachedQuery(
+    () => prisma.group.findMany({
+      where: {
+        OR: [
+          { ownerId: userId },
+          { members: { some: { userId } } },
+        ],
       },
-      _count: { select: { members: true, polls: true, comments: true } },
-    },
-    orderBy: { updatedAt: "desc" },
-  });
+      include: {
+        owner: { select: { id: true, name: true } },
+        members: {
+          include: { user: { select: { id: true, name: true } } },
+          orderBy: { joinedAt: "asc" },
+          take: 5,
+        },
+        _count: { select: { members: true, polls: true, comments: true } },
+      },
+      orderBy: { updatedAt: "desc" },
+    }),
+    ["user-groups-list", userId!],
+    { revalidate: 60, tags: [CacheTags.userGroups(userId!)] }
+  );
 
   return (
     <div className="space-y-6">

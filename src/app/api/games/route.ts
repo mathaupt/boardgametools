@@ -3,6 +3,8 @@ import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
 import { withApiLogging } from "@/lib/api-logger";
 import { validateString, validateNumber, firstError } from "@/lib/validation";
+import { cachedQuery, invalidateTag } from "@/lib/cache";
+import { CacheTags } from "@/lib/cache-tags";
 
 export const GET = withApiLogging(async function GET(request: NextRequest) {
   const session = await auth();
@@ -34,15 +36,19 @@ export const GET = withApiLogging(async function GET(request: NextRequest) {
     return NextResponse.json({ data: games, total, page, limit, totalPages: Math.ceil(total / limit) });
   }
 
-  const games = await prisma.game.findMany({
-    where,
-    orderBy: { name: "asc" },
-    include: {
-      _count: { select: { sessions: true } },
-      tags: { include: { tag: true } },
-      ...(include === "sessions" ? { sessions: { orderBy: { playedAt: "desc" as const }, take: 5 } } : {}),
-    },
-  });
+  const games = await cachedQuery(
+    () => prisma.game.findMany({
+      where,
+      orderBy: { name: "asc" },
+      include: {
+        _count: { select: { sessions: true } },
+        tags: { include: { tag: true } },
+        ...(include === "sessions" ? { sessions: { orderBy: { playedAt: "desc" as const }, take: 5 } } : {}),
+      },
+    }),
+    ["user-games", session.user.id, include ?? ""],
+    { revalidate: 60, tags: [CacheTags.userGames(session.user.id)] }
+  );
 
   return NextResponse.json(games);
 });
@@ -103,6 +109,10 @@ export const POST = withApiLogging(async function POST(request: NextRequest) {
       where: { id: game.id },
       include: { tags: { include: { tag: true } } },
     });
+
+    invalidateTag(CacheTags.userGames(session.user.id));
+    invalidateTag(CacheTags.userTags(session.user.id));
+    invalidateTag(CacheTags.userDashboard(session.user.id));
 
     return NextResponse.json(result, { status: 201 });
   } catch (error) {

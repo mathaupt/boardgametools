@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
+import { invalidateTag } from "@/lib/cache";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
 import { fetchBGGGame } from "@/lib/bgg";
 import { withApiLogging } from "@/lib/api-logger";
+import { CacheTags } from "@/lib/cache-tags";
 
 export const POST = withApiLogging(async function POST(request: NextRequest) {
   const session = await auth();
@@ -66,6 +68,10 @@ export const POST = withApiLogging(async function POST(request: NextRequest) {
         });
       }
     }
+
+    invalidateTag(CacheTags.userGames(session.user.id));
+    invalidateTag(CacheTags.userTags(session.user.id));
+    invalidateTag(CacheTags.userDashboard(session.user.id));
 
     return NextResponse.json(
       {

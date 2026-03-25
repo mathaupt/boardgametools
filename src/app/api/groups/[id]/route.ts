@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
+import { invalidateTag } from "@/lib/cache";
 import { auth } from "@/lib/auth";
 import { hash } from "bcryptjs";
 import prisma from "@/lib/db";
 import { withApiLogging } from "@/lib/api-logger";
 import { validateString, firstError } from "@/lib/validation";
+import { CacheTags } from "@/lib/cache-tags";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -116,6 +118,9 @@ export const PUT = withApiLogging(async function PUT(
       },
     });
 
+    invalidateTag(CacheTags.userGroups(session.user.id));
+    invalidateTag(CacheTags.userDashboard(session.user.id));
+
     return NextResponse.json(updated);
   } catch (error) {
     console.error("Error updating group:", error);
@@ -144,6 +149,10 @@ export const DELETE = withApiLogging(async function DELETE(
     }
 
     await prisma.group.delete({ where: { id } });
+
+    invalidateTag(CacheTags.userGroups(session.user.id));
+    invalidateTag(CacheTags.userDashboard(session.user.id));
+
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Error deleting group:", error);

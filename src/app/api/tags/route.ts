@@ -3,6 +3,8 @@ import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
 import { withApiLogging } from "@/lib/api-logger";
 import { validateString } from "@/lib/validation";
+import { cachedQuery, invalidateTag } from "@/lib/cache";
+import { CacheTags } from "@/lib/cache-tags";
 
 export const GET = withApiLogging(async function GET() {
   const session = await auth();
@@ -10,11 +12,15 @@ export const GET = withApiLogging(async function GET() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const tags = await prisma.tag.findMany({
-    where: { ownerId: session.user.id },
-    include: { _count: { select: { games: true } } },
-    orderBy: { name: "asc" },
-  });
+  const tags = await cachedQuery(
+    () => prisma.tag.findMany({
+      where: { ownerId: session.user.id },
+      include: { _count: { select: { games: true } } },
+      orderBy: { name: "asc" },
+    }),
+    ["user-tags", session.user.id],
+    { revalidate: 300, tags: [CacheTags.userTags(session.user.id)] }
+  );
 
   return NextResponse.json(tags);
 });
@@ -47,6 +53,8 @@ export const POST = withApiLogging(async function POST(request: NextRequest) {
       data: { name: trimmed, ownerId: session.user.id, source: "manual" },
     });
 
+    invalidateTag(CacheTags.userTags(session.user.id));
+
     return NextResponse.json(tag, { status: 201 });
   } catch (error) {
     console.error("Error creating tag:", error);
@@ -74,6 +82,8 @@ export const DELETE = withApiLogging(async function DELETE(request: NextRequest)
   }
 
   await prisma.tag.delete({ where: { id } });
+
+  invalidateTag(CacheTags.userTags(session.user.id));
 
   return NextResponse.json({ message: "Tag deleted" });
 });

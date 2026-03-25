@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
+import { invalidateTag } from "@/lib/cache";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
 import { withApiLogging } from "@/lib/api-logger";
+import { CacheTags } from "@/lib/cache-tags";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -76,6 +78,8 @@ export const POST = withApiLogging(async function POST(
         winningProposal: true,
       },
     });
+
+    invalidateTag(CacheTags.userEvents(session.user.id));
 
     return NextResponse.json(updatedEvent);
   } catch (error) {

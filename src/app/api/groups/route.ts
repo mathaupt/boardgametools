@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
+import { invalidateTag } from "@/lib/cache";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
 import { withApiLogging } from "@/lib/api-logger";
 import { validateString, firstError } from "@/lib/validation";
+import { CacheTags } from "@/lib/cache-tags";
 
 export const GET = withApiLogging(async function GET() {
   const session = await auth();
@@ -68,6 +70,9 @@ export const POST = withApiLogging(async function POST(request: NextRequest) {
         _count: { select: { members: true, polls: true, events: true } },
       },
     });
+
+    invalidateTag(CacheTags.userGroups(session.user.id));
+    invalidateTag(CacheTags.userDashboard(session.user.id));
 
     return NextResponse.json(group, { status: 201 });
   } catch (error) {

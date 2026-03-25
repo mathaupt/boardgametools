@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
+import { invalidateTag } from "@/lib/cache";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
 import { withApiLogging } from "@/lib/api-logger";
 import { validateString } from "@/lib/validation";
+import { CacheTags } from "@/lib/cache-tags";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -124,6 +126,10 @@ export const PUT = withApiLogging(async function PUT(
       });
     });
 
+    invalidateTag(CacheTags.userSessions(session.user.id));
+    invalidateTag(CacheTags.userStats(session.user.id));
+    invalidateTag(CacheTags.userDashboard(session.user.id));
+
     return NextResponse.json(updated);
   } catch (error) {
     console.error("Error updating session:", error);
@@ -154,6 +160,10 @@ export const DELETE = withApiLogging(async function DELETE(
     }
 
     await prisma.gameSession.delete({ where: { id } });
+
+    invalidateTag(CacheTags.userSessions(session.user.id));
+    invalidateTag(CacheTags.userStats(session.user.id));
+    invalidateTag(CacheTags.userDashboard(session.user.id));
 
     return NextResponse.json({ message: "Session deleted" });
   } catch (error) {

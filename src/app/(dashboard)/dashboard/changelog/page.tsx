@@ -4,6 +4,8 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Sparkles, Wrench, TrendingUp, Settings } from "lucide-react";
 import Link from "next/link";
 
+export const revalidate = 3600; // ISR: 1 hour – data from static TS file, only changes on deploy
+
 const typeConfig = {
   feature: { label: "Neu", icon: Sparkles, variant: "default" as const },
   fix: { label: "Fix", icon: Wrench, variant: "destructive" as const },

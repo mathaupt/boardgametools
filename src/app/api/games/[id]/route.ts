@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
+import { invalidateTag } from "@/lib/cache";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
 import { withApiLogging } from "@/lib/api-logger";
 import { validateString, validateNumber, firstError } from "@/lib/validation";
+import { CacheTags } from "@/lib/cache-tags";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -109,6 +111,9 @@ export const PUT = withApiLogging(async function PUT(
       include: { tags: { include: { tag: true } } },
     });
 
+    invalidateTag(CacheTags.userGames(session.user.id));
+    invalidateTag(CacheTags.userDashboard(session.user.id));
+
     return NextResponse.json(result);
   } catch (error) {
     console.error("Error updating game:", error);
@@ -136,6 +141,9 @@ export const DELETE = withApiLogging(async function DELETE(
   }
 
   await prisma.game.delete({ where: { id } });
+
+  invalidateTag(CacheTags.userGames(session.user.id));
+  invalidateTag(CacheTags.userDashboard(session.user.id));
 
   return NextResponse.json({ message: "Game deleted" });
 });

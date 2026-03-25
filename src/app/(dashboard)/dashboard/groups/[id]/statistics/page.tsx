@@ -18,6 +18,8 @@ import {
   Vote,
   BarChart3,
 } from "lucide-react";
+import { cachedQuery } from "@/lib/cache";
+import { CacheTags } from "@/lib/cache-tags";
 import { GroupStatisticsCharts } from "./group-statistics-charts";
 
 export default async function GroupStatisticsPage({
@@ -73,33 +75,37 @@ export default async function GroupStatisticsPage({
     eventCount,
     topCommenters,
     monthlyActivity,
-  ] = await Promise.all([
-    prisma.groupMember.count({ where: { groupId: id } }),
-    prisma.groupPoll.findMany({
-      where: { groupId: id },
-      include: {
-        options: { include: { _count: { select: { votes: true } } } },
-      },
-    }),
-    prisma.groupComment.count({ where: { groupId: id } }),
-    prisma.event.count({ where: { groupId: id } }),
-    prisma.groupComment.groupBy({
-      by: ["authorName"],
-      where: { groupId: id },
-      _count: { id: true },
-      orderBy: { _count: { id: "desc" } },
-      take: 10,
-    }),
-    prisma.groupComment.findMany({
-      where: {
-        groupId: id,
-        createdAt: {
-          gte: new Date(Date.now() - 365 * 24 * 60 * 60 * 1000),
+  ] = await cachedQuery(
+    () => Promise.all([
+      prisma.groupMember.count({ where: { groupId: id } }),
+      prisma.groupPoll.findMany({
+        where: { groupId: id },
+        include: {
+          options: { include: { _count: { select: { votes: true } } } },
         },
-      },
-      select: { createdAt: true },
-    }),
-  ]);
+      }),
+      prisma.groupComment.count({ where: { groupId: id } }),
+      prisma.event.count({ where: { groupId: id } }),
+      prisma.groupComment.groupBy({
+        by: ["authorName"],
+        where: { groupId: id },
+        _count: { id: true },
+        orderBy: { _count: { id: "desc" } },
+        take: 10,
+      }),
+      prisma.groupComment.findMany({
+        where: {
+          groupId: id,
+          createdAt: {
+            gte: new Date(Date.now() - 365 * 24 * 60 * 60 * 1000),
+          },
+        },
+        select: { createdAt: true },
+      }),
+    ]),
+    ["group-statistics", id],
+    { revalidate: 120, tags: [CacheTags.groupStats(id)] }
+  );
 
   // Calculate poll stats
   const openPolls = polls.filter((p) => p.status === "open").length;

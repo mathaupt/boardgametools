@@ -14,6 +14,8 @@ import {
 import Link from "next/link";
 import { FaqAccordion } from "./faq-accordion";
 
+export const revalidate = 3600; // ISR: 1 hour – data from static TS file, only changes on deploy
+
 const iconMap: Record<string, React.ElementType> = {
   rocket: Rocket,
   gamepad: Gamepad2,

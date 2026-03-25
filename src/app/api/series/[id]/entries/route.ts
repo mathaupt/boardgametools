@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
+import { invalidateTag } from "@/lib/cache";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
 import { fetchBGGGame } from "@/lib/bgg";
 import { withApiLogging } from "@/lib/api-logger";
+import { CacheTags } from "@/lib/cache-tags";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -119,6 +121,8 @@ export const POST = withApiLogging(async function POST(
         },
       },
     });
+
+    invalidateTag(CacheTags.userSeries(session.user.id));
 
     return NextResponse.json(entry, { status: 201 });
   } catch (error) {

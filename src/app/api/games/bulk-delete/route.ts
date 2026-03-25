@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
+import { invalidateTag } from "@/lib/cache";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
 import { withApiLogging } from "@/lib/api-logger";
+import { CacheTags } from "@/lib/cache-tags";
 
 export const DELETE = withApiLogging(async function DELETE(request: NextRequest) {
   const session = await auth();
@@ -20,6 +22,9 @@ export const DELETE = withApiLogging(async function DELETE(request: NextRequest)
     const result = await prisma.game.deleteMany({
       where: { id: { in: ids }, ownerId: session.user.id },
     });
+
+    invalidateTag(CacheTags.userGames(session.user.id));
+    invalidateTag(CacheTags.userDashboard(session.user.id));
 
     return NextResponse.json({ deleted: result.count });
   } catch (error) {

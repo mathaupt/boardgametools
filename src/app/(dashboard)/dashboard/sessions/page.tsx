@@ -1,5 +1,7 @@
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
+import { cachedQuery } from "@/lib/cache";
+import { CacheTags } from "@/lib/cache-tags";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Plus, Calendar, Users, Clock, Trophy } from "lucide-react";
@@ -9,17 +11,21 @@ export default async function SessionsPage() {
   const session = await auth();
   const userId = session?.user?.id;
 
-  const sessions = await prisma.gameSession.findMany({
-    where: { createdById: userId },
-    include: {
-      game: true,
-      players: {
-        include: { user: { select: { id: true, name: true, email: true } } }
-      }
-    },
-    orderBy: { playedAt: "desc" },
-    take: 20
-  });
+  const sessions = await cachedQuery(
+    () => prisma.gameSession.findMany({
+      where: { createdById: userId },
+      include: {
+        game: true,
+        players: {
+          include: { user: { select: { id: true, name: true, email: true } } }
+        }
+      },
+      orderBy: { playedAt: "desc" },
+      take: 20
+    }),
+    ["user-sessions-list", userId!],
+    { revalidate: 60, tags: [CacheTags.userSessions(userId!)] }
+  );
 
   return (
     <div className="space-y-6">

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { invalidateTag } from "@/lib/cache";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
 import { sendEventInviteEmail, sendInviteResponseEmail } from "@/lib/mailer";
@@ -6,6 +7,7 @@ import { getPublicBaseUrl } from "@/lib/public-link";
 import { encryptId } from "@/lib/crypto";
 import { withApiLogging } from "@/lib/api-logger";
 import { validateString, firstError } from "@/lib/validation";
+import { CacheTags } from "@/lib/cache-tags";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -107,6 +109,8 @@ export const POST = withApiLogging(async function POST(
         console.error("Failed to send invite email:", mailErr);
       }
     }
+
+    invalidateTag(CacheTags.userEvents(session.user.id));
 
     return NextResponse.json(invite, { status: 201 });
   } catch (error) {

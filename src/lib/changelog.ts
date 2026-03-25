@@ -11,6 +11,24 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.21.0",
+    date: "2026-03-24",
+    title: "Performance: Caching-Infrastruktur und Cache-Invalidierung",
+    description: "Umfassende Performance-Optimierung durch ISR für statische Seiten, cachedQuery-Wrapper für DB-Abfragen mit tagbasierter Invalidierung und revalidateTag in allen Mutations-Endpoints. Reduziert Datenbankbelastung und verbessert Ladezeiten.",
+    changes: [
+      { type: "feature", text: "ISR für statische Seiten: Privacy und AGB vollständig statisch, Changelog und FAQ mit stündlicher Revalidierung" },
+      { type: "feature", text: "Zentralisierte Cache-Tags (src/lib/cache-tags.ts) für typsichere, userId-basierte Tag-Verwaltung" },
+      { type: "feature", text: "cachedQuery-Wrapper für Dashboard (Counts, Sessions, Events), Statistiken, Spielesammlung, Tags, Spielereihen und ausstehende Einladungen" },
+      { type: "feature", text: "cachedQuery für Listenseiten: Events, Sessions und Gruppen mit 60s Revalidierung" },
+      { type: "feature", text: "cachedQuery für Gruppen-Statistiken mit 120s Revalidierung" },
+      { type: "feature", text: "invalidateTag-Helper (Next.js 16 kompatibel) für Cache-Invalidierung bei Datenänderungen" },
+      { type: "improvement", text: "Automatische Cache-Invalidierung in allen 16 Mutations-Endpoints (Spiele, Sessions, Events, Gruppen, Tags, Serien, Einladungen)" },
+      { type: "improvement", text: "Öffentliche Einladungs-Antworten invalidieren Caches sowohl für den antwortenden Nutzer als auch den Event-Ersteller" },
+      { type: "internal", text: "Statistics API Route mit cachedQuery gewrappt (120s, user-stats Tag)" },
+      { type: "internal", text: "Alle Cache-Keys enthalten userId/entityId zur Vermeidung von Cross-User-Leaks" },
+    ],
+  },
+  {
     version: "0.20.2",
     date: "2026-03-24",
     title: "Frontend-Komponententests und erweiterte Lib-Coverage",

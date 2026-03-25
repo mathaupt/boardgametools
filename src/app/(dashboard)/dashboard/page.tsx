@@ -1,6 +1,8 @@
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
 import { getPendingInvites } from "@/lib/queries/pending-invites";
+import { cachedQuery } from "@/lib/cache";
+import { CacheTags } from "@/lib/cache-tags";
 import Link from "next/link";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -18,49 +20,61 @@ export default async function DashboardPage() {
   const session = await auth();
   const userId = session?.user?.id;
 
-  const [gamesCount, sessionsCount, groupsCount, eventsCount] = await Promise.all([
-    prisma.game.count({ where: { ownerId: userId } }),
-    prisma.gameSession.count({ where: { createdById: userId } }),
-    prisma.groupMember.count({ where: { userId } }),
-    prisma.event.count({
+  const [gamesCount, sessionsCount, groupsCount, eventsCount] = await cachedQuery(
+    () => Promise.all([
+      prisma.game.count({ where: { ownerId: userId } }),
+      prisma.gameSession.count({ where: { createdById: userId } }),
+      prisma.groupMember.count({ where: { userId } }),
+      prisma.event.count({
+        where: {
+          OR: [
+            { createdById: userId },
+            { invites: { some: { userId } } },
+          ],
+        },
+      }),
+    ]),
+    ["dashboard-counts", userId!],
+    { revalidate: 60, tags: [CacheTags.userDashboard(userId!)] }
+  );
+
+  const recentSessions = await cachedQuery(
+    () => prisma.gameSession.findMany({
+      where: { createdById: userId },
+      include: { game: true },
+      orderBy: { playedAt: "desc" },
+      take: 5,
+    }),
+    ["dashboard-recent-sessions", userId!],
+    { revalidate: 60, tags: [CacheTags.userSessions(userId!), CacheTags.userDashboard(userId!)] }
+  );
+
+  const upcomingEvents: UpcomingEvent[] = await cachedQuery(
+    () => prisma.event.findMany({
       where: {
+        eventDate: { gte: new Date() },
         OR: [
           { createdById: userId },
-          { invites: { some: { userId } } },
+          { invites: { some: { userId, status: "accepted" } } },
         ],
       },
-    }),
-  ]);
-
-  const recentSessions = await prisma.gameSession.findMany({
-    where: { createdById: userId },
-    include: { game: true },
-    orderBy: { playedAt: "desc" },
-    take: 5,
-  });
-
-  const upcomingEvents: UpcomingEvent[] = await prisma.event.findMany({
-    where: {
-      eventDate: { gte: new Date() },
-      OR: [
-        { createdById: userId },
-        { invites: { some: { userId, status: "accepted" } } },
-      ],
-    },
-    include: {
-      selectedGame: true,
-      winningProposal: true,
-      proposals: {
-        include: {
-          game: true,
+      include: {
+        selectedGame: true,
+        winningProposal: true,
+        proposals: {
+          include: {
+            game: true,
+          },
+          orderBy: { createdAt: "desc" },
+          take: 3,
         },
-        orderBy: { createdAt: "desc" },
-        take: 3,
       },
-    },
-    orderBy: { eventDate: "asc" },
-    take: 5,
-  });
+      orderBy: { eventDate: "asc" },
+      take: 5,
+    }),
+    ["dashboard-upcoming-events", userId!],
+    { revalidate: 60, tags: [CacheTags.userEvents(userId!), CacheTags.userDashboard(userId!)] }
+  );
 
   // Offene Einladungen laden
   const pendingInvites = await getPendingInvites(userId!);

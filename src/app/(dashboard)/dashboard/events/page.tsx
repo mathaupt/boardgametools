@@ -1,5 +1,7 @@
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
+import { cachedQuery } from "@/lib/cache";
+import { CacheTags } from "@/lib/cache-tags";
 import { getPendingInvites } from "@/lib/queries/pending-invites";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -14,40 +16,44 @@ export default async function EventsPage() {
   const session = await auth();
   const userId = session?.user?.id;
 
-  const events = await prisma.event.findMany({
-    where: { createdById: userId },
-    include: {
-      invites: {
-        include: { user: { select: { id: true, name: true, email: true } } }
-      },
-      proposals: {
-        include: {
-          game: true,
-          _count: { 
-            select: { 
-              votes: true 
-            } 
-          },
-          votes: {
-            include: {
-              user: {
-                select: {
-                  id: true,
-                  name: true,
-                  email: true
+  const events = await cachedQuery(
+    () => prisma.event.findMany({
+      where: { createdById: userId },
+      include: {
+        invites: {
+          include: { user: { select: { id: true, name: true, email: true } } }
+        },
+        proposals: {
+          include: {
+            game: true,
+            _count: { 
+              select: { 
+                votes: true 
+              } 
+            },
+            votes: {
+              include: {
+                user: {
+                  select: {
+                    id: true,
+                    name: true,
+                    email: true
+                  }
                 }
               }
             }
           }
-        }
+        },
+        selectedGame: true,
+        winningProposal: true,
+        _count: { select: { proposals: true, invites: true } }
       },
-      selectedGame: true,
-      winningProposal: true,
-      _count: { select: { proposals: true, invites: true } }
-    },
-    orderBy: { eventDate: "desc" },
-    take: 20
-  });
+      orderBy: { eventDate: "desc" },
+      take: 20
+    }),
+    ["user-events-list", userId!],
+    { revalidate: 60, tags: [CacheTags.userEvents(userId!)] }
+  );
 
   // Offene Einladungen laden
   const pendingInvites = await getPendingInvites(userId!);

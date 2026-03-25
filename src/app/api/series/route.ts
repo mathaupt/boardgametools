@@ -3,6 +3,8 @@ import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
 import { withApiLogging } from "@/lib/api-logger";
 import { validateString, firstError } from "@/lib/validation";
+import { cachedQuery, invalidateTag } from "@/lib/cache";
+import { CacheTags } from "@/lib/cache-tags";
 
 export const GET = withApiLogging(async function GET() {
   const session = await auth();
@@ -10,24 +12,29 @@ export const GET = withApiLogging(async function GET() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const series = await prisma.gameSeries.findMany({
-    where: { ownerId: session.user.id },
-    orderBy: { name: "asc" },
-    include: {
-      entries: {
-        include: { game: { select: { imageUrl: true } } },
-        orderBy: { sortOrder: "asc" },
-      },
+  const result = await cachedQuery(
+    async () => {
+      const series = await prisma.gameSeries.findMany({
+        where: { ownerId: session.user.id },
+        orderBy: { name: "asc" },
+        include: {
+          entries: {
+            include: { game: { select: { imageUrl: true } } },
+            orderBy: { sortOrder: "asc" },
+          },
+        },
+      });
+      return series.map((s) => ({
+        ...s,
+        _count: {
+          entries: s.entries.length,
+          played: s.entries.filter((e) => e.played).length,
+        },
+      }));
     },
-  });
-
-  const result = series.map((s) => ({
-    ...s,
-    _count: {
-      entries: s.entries.length,
-      played: s.entries.filter((e) => e.played).length,
-    },
-  }));
+    ["user-series", session.user.id],
+    { revalidate: 120, tags: [CacheTags.userSeries(session.user.id)] }
+  );
 
   return NextResponse.json(result);
 });
@@ -61,6 +68,8 @@ export const POST = withApiLogging(async function POST(request: NextRequest) {
         ownerId: session.user.id,
       },
     });
+
+    invalidateTag(CacheTags.userSeries(session.user.id));
 
     return NextResponse.json(gameSeries, { status: 201 });
   } catch (error) {

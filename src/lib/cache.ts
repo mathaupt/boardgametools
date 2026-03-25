@@ -1,4 +1,4 @@
-import { unstable_cache } from "next/cache";
+import { unstable_cache, revalidateTag as nextRevalidateTag } from "next/cache";
 
 export function cachedQuery<T>(
   queryFn: () => Promise<T>,
@@ -9,4 +9,12 @@ export function cachedQuery<T>(
     revalidate: options?.revalidate ?? 60,
     tags: options?.tags,
   })();
+}
+
+/**
+ * Invalidate a cache tag immediately.
+ * Wraps Next.js 16 revalidateTag which requires a profile parameter.
+ */
+export function invalidateTag(tag: string): void {
+  nextRevalidateTag(tag, "default");
 }

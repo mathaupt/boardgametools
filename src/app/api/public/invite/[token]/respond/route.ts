@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
+import { invalidateTag } from "@/lib/cache";
 import prisma from "@/lib/db";
 import { decryptId } from "@/lib/crypto";
 import { sendInviteResponseEmail } from "@/lib/mailer";
 import { getPublicBaseUrl } from "@/lib/public-link";
 import { withApiLogging } from "@/lib/api-logger";
 import { validateString } from "@/lib/validation";
+import { CacheTags } from "@/lib/cache-tags";
 
 type RouteContext = { params: Promise<{ token: string }> };
 
@@ -80,6 +82,14 @@ export const POST = withApiLogging(async function POST(
     } catch (mailErr) {
       console.error("Failed to send invite response email:", mailErr);
     }
+
+    // Invalidate caches for the responding user (if registered)
+    if (invite.userId) {
+      invalidateTag(CacheTags.pendingInvites(invite.userId));
+      invalidateTag(CacheTags.userEvents(invite.userId));
+    }
+    // Also invalidate the event creator's events
+    invalidateTag(CacheTags.userEvents(invite.event.createdById));
 
     return NextResponse.json({
       message: status === "accepted" ? "Einladung angenommen!" : "Einladung abgelehnt.",

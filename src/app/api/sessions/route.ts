@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
+import { invalidateTag } from "@/lib/cache";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
 import { withApiLogging } from "@/lib/api-logger";
 import { validateString } from "@/lib/validation";
+import { CacheTags } from "@/lib/cache-tags";
 
 interface SessionPlayerInput {
   userId: string;
@@ -114,6 +116,10 @@ export const POST = withApiLogging(async function POST(request: NextRequest) {
         }
       }
     });
+
+    invalidateTag(CacheTags.userSessions(session.user.id));
+    invalidateTag(CacheTags.userStats(session.user.id));
+    invalidateTag(CacheTags.userDashboard(session.user.id));
 
     return NextResponse.json(newSession, { status: 201 });
   } catch (error) {
