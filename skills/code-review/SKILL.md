@@ -327,7 +327,7 @@ Erstelle einen Report mit folgendem Format:
 2. ~~**DB-Init ohne Auth**~~ ✅ Behoben: Auth-Check vorhanden.
 3. ~~**Hardcoded Admin-Credentials**~~ ✅ Behoben: Credentials externalisiert.
 4. ~~**Gruppen-Passwörter im Klartext**~~ ✅ Behoben: bcrypt wird verwendet.
-5. ~~**Kein Rate Limiting + keine middleware.ts**~~ ✅ Behoben: Middleware + Rate Limiting vorhanden.
+5. ~~**Kein Rate Limiting + keine proxy.ts**~~ ✅ Behoben: proxy.ts (Next.js 16) + Rate Limiting vorhanden.
 6. ~~**passwordHash in API-Responses**~~ ✅ Behoben: 0 Treffer für `createdBy: true` / `user: true` ohne `select` – alle Prisma-Queries nutzen `select`.
 37. ~~**Session-Voting schreibt Session-ID als ProposalId**~~ ✅ Behoben: Eigenes `SessionRating`-Modell mit korrekter FK auf `GameSession` erstellt (v0.14.4).
 38. ~~**Close-Voting verliert BGG-Ergebnis**~~ ✅ Behoben: `winningProposalId` auf Event gespeichert, Frontend nutzt `|| winningProposal?.bggName` Fallback.
@@ -346,8 +346,8 @@ Erstelle einen Report mit folgendem Format:
 39. ~~**Score=0 Bug (falsy check)**~~ ✅ Behoben: `sessions/route.ts` Zeile 104 nutzt `player.score ?? null` (Nullish Coalescing).
 40. ~~**Close-Voting erlaubt Draft→Closed**~~ ✅ Behoben: `close/route.ts` Zeile 52 prüft `event.status !== "voting"` und lehnt Draft ab.
 41. ~~**Rate-Limit unwirksam auf Serverless**~~ ✅ Verbessert: MAX_MAP_SIZE=10.000, LRU-Eviction, Serverless-Limitierungen dokumentiert (v0.14.5).
-44. **Fehlende Security Headers**: Keine CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy in middleware.ts oder next.config.ts.
-    **Fix**: Ergänze Security Headers in middleware.ts oder next.config headers(): CSP, X-Frame-Options: DENY, X-Content-Type-Options: nosniff.
+44. **Fehlende Security Headers**: Keine CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy in proxy.ts oder next.config.ts.
+    **Fix**: Ergänze Security Headers in proxy.ts oder next.config headers(): CSP, X-Frame-Options: DENY, X-Content-Type-Options: nosniff.
 60. **DB Connection Pooling nicht konfiguriert**: Prisma nutzt Default-Pool ohne explizite Limits. Production-Singleton nicht auf globalThis gesetzt.
     **Fix**: Ergänze `?connection_limit=10&pool_timeout=20` in DATABASE_URL oder nutze PgBouncer.
 
@@ -478,34 +478,37 @@ include: { createdBy: true }
 include: { createdBy: { select: { id: true, name: true, email: true } } }
 ```
 
-### middleware.ts erstellen (P0)
+### proxy.ts (Next.js 16, ersetzt middleware.ts)
 ```typescript
-// src/middleware.ts
+// src/proxy.ts
 import { auth } from "@/lib/auth";
-import { NextResponse } from "next/server";
 
-const PUBLIC_PATHS = [
-  "/api/auth",
-  "/api/public",
-  "/api/health",
-  "/api/bgg",       // ggf. einschränken
-  "/login",
-  "/register",
-  "/passwort-vergessen",
-  "/reset-password",
-  "/public",
-];
-
-export default auth((req) => {
+export const proxy = auth((req) => {
   const { pathname } = req.nextUrl;
-  const isPublic = PUBLIC_PATHS.some((p) => pathname.startsWith(p));
-  if (!isPublic && !req.auth) {
-    return NextResponse.redirect(new URL("/login", req.url));
+  const isLoggedIn = !!req.auth;
+
+  if (pathname.startsWith("/dashboard") && !isLoggedIn) {
+    return Response.redirect(new URL("/login", req.nextUrl));
+  }
+
+  if (
+    pathname.startsWith("/api/") &&
+    !pathname.startsWith("/api/auth/") &&
+    !pathname.startsWith("/api/public/") &&
+    !pathname.startsWith("/api/bgg")
+  ) {
+    if (pathname.startsWith("/api/admin")) {
+      if (!isLoggedIn) return Response.json({ error: "Unauthorized" }, { status: 401 });
+      if (req.auth?.user?.role !== "ADMIN") return Response.json({ error: "Forbidden" }, { status: 403 });
+    }
+    if (!pathname.startsWith("/api/debug") && !pathname.startsWith("/api/db/") && !isLoggedIn) {
+      return Response.json({ error: "Unauthorized" }, { status: 401 });
+    }
   }
 });
 
 export const config = {
-  matcher: ["/((?!_next|favicon.ico|.*\\..*).*)"],
+  matcher: ["/dashboard/:path*", "/api/((?!auth|_next).*)"],
 };
 ```
 
@@ -523,7 +526,7 @@ const isValid = await compare(inputPassword, group.password);
 
 ## Evaluator-Feedback (automatisch generiert)
 
-> Letzter Lauf: 2026-03-25 10:52:57
+> Letzter Lauf: 2026-03-25 20:46:08
 > Gesamt-Score: **10/10**
 
 ### Kategorie-Scores
@@ -547,7 +550,7 @@ const isValid = await compare(inputPassword, group.password);
 - ✅ **P0-2** DB-Init ohne Auth: Auth-Check vorhanden
 - ✅ **P0-3** Hardcoded Admin-Credentials: Credentials externalisiert
 - ✅ **P0-4** Gruppen-Passwörter im Klartext: bcrypt wird verwendet
-- ✅ **P0-5** Kein Rate Limiting + keine middleware.ts: Proxy/Middleware + Rate Limiting vorhanden
+- ✅ **P0-5** Kein Rate Limiting + keine proxy.ts: proxy.ts (Next.js 16) + Rate Limiting vorhanden
 - ✅ **P0-6** passwordHash in API-Responses: passwordHash wird nicht exponiert
 - ✅ **P1-7** PII in Logs: Keine PII in API-Logs
 - ✅ **P1-8** Fehlende Input-Validierung: validation.ts in 26 Routes importiert
@@ -564,7 +567,7 @@ const isValid = await compare(inputPassword, group.password);
 - ✅ **P2-19** Duplikat: Prisma-Client-Dateien: Duplikat entfernt
 - ✅ **P2-20** Duplikat: BGG-Logik: Kein dupliziertes XML-Parsing
 - ✅ **P2-21** next/image statt <img>: Keine <img> Tags
-- ✅ **P2-22** Fehlende Unit Tests: 20 Test-Dateien
+- ✅ **P2-22** Fehlende Unit Tests: 26 Test-Dateien
 - ✅ **P2-23** Inkonsistente Error-Responses: Konsistent: 395 error, 14 message
 - ✅ **P2-24** CONCEPT.md aktualisieren: Tech-Stack aktuell
 - ✅ **P2-25** Pendende Invites dupliziert: Shared Query extrahiert
@@ -577,7 +580,7 @@ const isValid = await compare(inputPassword, group.password);
 - ✅ **P3-33** Links zu /terms und /privacy fehlen: Beide Seiten vorhanden
 - ✅ **P3-35** Fehlende DB-Indices: 17 @@index Definitionen
 - ✅ **SEC-44** Fehlende Security Headers: CSP, X-Frame-Options, X-Content-Type-Options vorhanden
-- ✅ **SEC-45** npm audit: Bekannte Vulnerabilities: Keine Prod-Vulnerabilities (4 high nur in devDeps, 0 moderate)
+- ✅ **SEC-45** npm audit: Bekannte Vulnerabilities: Keine Prod-Vulnerabilities (4 high nur in devDeps, 1 moderate)
 - ✅ **SEC-46** XSS: dangerouslySetInnerHTML ohne Sanitization: Kein dangerouslySetInnerHTML verwendet
 - ✅ **PERF-47** Schwere Libraries ohne Dynamic Import: 2 dynamic() + 7 await import() Lazy-Loads
 - ✅ **PERF-48** Keine Bundle-Analyse konfiguriert: @next/bundle-analyzer konfiguriert

@@ -325,10 +325,10 @@ const FINDINGS = [
     id: "P0-5",
     priority: "P0",
     category: "security",
-    title: "Kein Rate Limiting + keine middleware.ts",
+    title: "Kein Rate Limiting + keine proxy.ts",
     verify() {
       // Next.js 16: middleware.ts wurde zu proxy.ts migriert
-      const hasMiddleware = fileExists("src/middleware.ts") || fileExists("src/proxy.ts");
+      const hasMiddleware = fileExists("src/proxy.ts") || fileExists("src/middleware.ts");
       const hasRateLimit = fileExists("src/lib/rate-limit.ts");
       if (hasMiddleware && hasRateLimit) return { status: "resolved", detail: "Proxy/Middleware + Rate Limiting vorhanden" };
       if (hasMiddleware) return { status: "partially_resolved", detail: "Proxy/Middleware vorhanden, Rate Limiting fehlt" };
@@ -817,7 +817,7 @@ const FINDINGS = [
     category: "security",
     title: "Fehlende Security Headers",
     verify() {
-      const middleware = readSafe("src/middleware.ts");
+      const middleware = readSafe("src/proxy.ts") || readSafe("src/middleware.ts");
       const nextConfig = readSafe("next.config.ts") || readSafe("next.config.js") || readSafe("next.config.mjs");
       const hasCSP = (middleware && middleware.includes("Content-Security-Policy")) ||
         (nextConfig && nextConfig.includes("Content-Security-Policy"));
@@ -831,7 +831,7 @@ const FINDINGS = [
       return { status: "open", detail: "Keine Security Headers konfiguriert" };
     },
     hasFixSuggestion: true,
-    fixSuggestion: "Ergänze Security Headers in middleware.ts oder next.config headers(): CSP, X-Frame-Options: DENY, X-Content-Type-Options: nosniff, Referrer-Policy: strict-origin-when-cross-origin.",
+    fixSuggestion: "Ergänze Security Headers in proxy.ts oder next.config headers(): CSP, X-Frame-Options: DENY, X-Content-Type-Options: nosniff, Referrer-Policy: strict-origin-when-cross-origin.",
   },
   {
     id: "SEC-45",
