@@ -17,7 +17,7 @@ export const PUT = withApiLogging(async function PUT(
   const { id: seriesId } = await params;
 
   const series = await prisma.gameSeries.findFirst({
-    where: { id: seriesId, ownerId: session.user.id },
+    where: { id: seriesId, ownerId: session.user.id, deletedAt: null },
   });
 
   if (!series) {

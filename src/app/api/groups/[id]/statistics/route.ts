@@ -21,6 +21,7 @@ export const GET = withApiLogging(async function GET(
     const group = await prisma.group.findFirst({
       where: {
         id,
+        deletedAt: null,
         OR: [
           { ownerId: session.user.id },
           { members: { some: { userId: session.user.id } } },
@@ -51,7 +52,7 @@ export const GET = withApiLogging(async function GET(
         },
       }),
       prisma.groupComment.count({ where: { groupId: id } }),
-      prisma.event.count({ where: { groupId: id } }),
+      prisma.event.count({ where: { groupId: id, deletedAt: null } }),
       prisma.groupMember.findMany({
         where: { groupId: id },
         include: {

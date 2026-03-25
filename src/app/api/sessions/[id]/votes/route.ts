@@ -17,8 +17,8 @@ export const GET = withApiLogging(async function GET(
   const { id } = await params;
 
   try {
-    const sessionData = await prisma.gameSession.findUnique({
-      where: { id },
+    const sessionData = await prisma.gameSession.findFirst({
+      where: { id, deletedAt: null },
       include: {
         game: true,
         createdBy: { select: { id: true, name: true, email: true } },
@@ -73,8 +73,8 @@ export const POST = withApiLogging(async function POST(
     }
 
     // Prüfe ob Session existiert und User Berechtigung hat
-    const sessionData = await prisma.gameSession.findUnique({
-      where: { id },
+    const sessionData = await prisma.gameSession.findFirst({
+      where: { id, deletedAt: null },
       include: { players: true }
     });
 

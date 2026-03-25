@@ -43,7 +43,7 @@ describe("event-share", () => {
       const result = await findPublicEventByToken("valid-token");
       expect(decryptId).toHaveBeenCalledWith("valid-token");
       expect(prisma.event.findFirst).toHaveBeenCalledWith({
-        where: { id: "event-123", shareToken: "valid-token", isPublic: true },
+        where: { id: "event-123", shareToken: "valid-token", isPublic: true, deletedAt: null },
         include: undefined,
       });
       expect(result).toEqual(expect.objectContaining({ id: "event-123", title: "Spieleabend" }));
@@ -98,7 +98,7 @@ describe("event-share", () => {
 
       await resolveEventIdFromToken("token");
       expect(prisma.event.findFirst).toHaveBeenCalledWith({
-        where: { id: "event-123", shareToken: "token", isPublic: true },
+        where: { id: "event-123", shareToken: "token", isPublic: true, deletedAt: null },
         select: { id: true },
       });
     });

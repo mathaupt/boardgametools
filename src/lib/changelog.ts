@@ -11,6 +11,22 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.23.0",
+    date: "2026-03-24",
+    title: "Sicherheit & Datenintegritat: Soft-Delete-Filter, Password-Leak-Fixes",
+    description: "Kritische Sicherheitsfixes und vollstandige Soft-Delete-Absicherung aller API-Routes. Verhindert Zugriff auf geloschte Daten und behebt Password-Hash-Leaks in Event-Proposals.",
+    changes: [
+      { type: "fix", text: "proposedBy: true in 4 Event-Routes durch sichere select-Projektion ersetzt (verhindert Password-Hash-Leak)" },
+      { type: "fix", text: "Fabricated passwordHash in Guest-Objekt aus Event-Detail-Response entfernt" },
+      { type: "fix", text: "Soft-Delete-Filter (deletedAt: null) in allen ~40 betroffenen API-Routes nachgeruestet" },
+      { type: "fix", text: "Group-Loeschung von Hard-Delete auf Soft-Delete umgestellt" },
+      { type: "fix", text: "SeriesService.reorderEntries() prueft nun, ob alle Entry-IDs zur Serie gehoeren" },
+      { type: "improvement", text: "Event-Share und Group-Share Utilities filtern jetzt geloschte Eintraege aus" },
+      { type: "internal", text: "findUnique durch findFirst ersetzt wo deletedAt-Filter noetig (Prisma-Constraint)" },
+      { type: "internal", text: "Tests fuer group-share und event-share an neue deletedAt-Filter angepasst" },
+    ],
+  },
+  {
     version: "0.22.1",
     date: "2026-03-24",
     title: "Spielreihen-Detailseite aufgeteilt",

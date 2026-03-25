@@ -30,7 +30,7 @@ export const POST = withApiLogging(async function POST(
 
     // Prüfe ob Event existiert und User Berechtigung hat
     const event = await prisma.event.findFirst({
-      where: { id, createdById: session.user.id }
+      where: { id, createdById: session.user.id, deletedAt: null }
     });
 
     if (!event) {

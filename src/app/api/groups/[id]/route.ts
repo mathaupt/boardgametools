@@ -24,6 +24,7 @@ export const GET = withApiLogging(async function GET(
     const group = await prisma.group.findFirst({
       where: {
         id,
+        deletedAt: null,
         OR: [
           { ownerId: session.user.id },
           { members: { some: { userId: session.user.id } } },
@@ -83,7 +84,7 @@ export const PUT = withApiLogging(async function PUT(
 
   try {
     const group = await prisma.group.findFirst({
-      where: { id, ownerId: session.user.id },
+      where: { id, ownerId: session.user.id, deletedAt: null },
     });
 
     if (!group) {
@@ -141,14 +142,14 @@ export const DELETE = withApiLogging(async function DELETE(
 
   try {
     const group = await prisma.group.findFirst({
-      where: { id, ownerId: session.user.id },
+      where: { id, ownerId: session.user.id, deletedAt: null },
     });
 
     if (!group) {
       return NextResponse.json({ error: "Group not found or not owner" }, { status: 404 });
     }
 
-    await prisma.group.delete({ where: { id } });
+    await prisma.group.update({ where: { id }, data: { deletedAt: new Date() } });
 
     invalidateTag(CacheTags.userGroups(session.user.id));
     invalidateTag(CacheTags.userDashboard(session.user.id));

@@ -19,7 +19,7 @@ export const POST = withApiLogging(async function POST(
   const { id } = await params;
 
   try {
-    const event = await prisma.event.findUnique({ where: { id } });
+    const event = await prisma.event.findFirst({ where: { id, deletedAt: null } });
 
     if (!event) {
       return NextResponse.json({ error: "Event not found" }, { status: 404 });

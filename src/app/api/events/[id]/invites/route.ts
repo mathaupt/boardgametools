@@ -50,7 +50,7 @@ export const POST = withApiLogging(async function POST(
 
     // Prüfe ob Event existiert und User Berechtigung hat
     const event = await prisma.event.findFirst({
-      where: { id, createdById: session.user.id }
+      where: { id, createdById: session.user.id, deletedAt: null }
     });
 
     if (!event) {
@@ -161,8 +161,8 @@ export const PUT = withApiLogging(async function PUT(
     });
 
     // Benachrichtige Organisator per Mail
-    const event = await prisma.event.findUnique({
-      where: { id },
+    const event = await prisma.event.findFirst({
+      where: { id, deletedAt: null },
       include: { createdBy: { select: { email: true, name: true } } },
     });
 
@@ -210,7 +210,7 @@ export const DELETE = withApiLogging(async function DELETE(
   try {
     // Prüfe ob Event existiert und User Berechtigung hat
     const event = await prisma.event.findFirst({
-      where: { id, createdById: session.user.id }
+      where: { id, createdById: session.user.id, deletedAt: null }
     });
 
     if (!event) {

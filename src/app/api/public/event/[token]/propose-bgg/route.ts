@@ -40,8 +40,8 @@ export const POST = withApiLogging(async function POST(
       );
     }
 
-    const event = await prisma.event.findUnique({
-      where: { id: eventId },
+    const event = await prisma.event.findFirst({
+      where: { id: eventId, deletedAt: null },
     });
 
     if (!event || !event.isPublic) {

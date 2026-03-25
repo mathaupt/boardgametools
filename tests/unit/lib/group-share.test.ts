@@ -43,7 +43,7 @@ describe("group-share", () => {
       const result = await findPublicGroupByToken("valid-token");
       expect(decryptId).toHaveBeenCalledWith("valid-token");
       expect(prisma.group.findFirst).toHaveBeenCalledWith({
-        where: { id: "group-123", shareToken: "valid-token", isPublic: true },
+        where: { id: "group-123", shareToken: "valid-token", isPublic: true, deletedAt: null },
         include: undefined,
       });
       expect(result).toEqual(expect.objectContaining({ id: "group-123", name: "Spielegruppe" }));
@@ -98,7 +98,7 @@ describe("group-share", () => {
 
       await resolveGroupIdFromToken("token");
       expect(prisma.group.findFirst).toHaveBeenCalledWith({
-        where: { id: "group-123", shareToken: "token", isPublic: true },
+        where: { id: "group-123", shareToken: "token", isPublic: true, deletedAt: null },
         select: { id: true },
       });
     });

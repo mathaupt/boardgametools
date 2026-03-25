@@ -25,8 +25,8 @@ export const GET = withApiLogging(async function GET(request: NextRequest) {
     
     if (eventId) {
       // Spezifisches Event mit Voting-Details
-      events = await prisma.event.findUnique({
-        where: { id: eventId },
+      events = await prisma.event.findFirst({
+        where: { id: eventId, deletedAt: null },
         include: {
           createdBy: { select: { id: true, name: true, email: true } },
           invites: {
@@ -35,7 +35,7 @@ export const GET = withApiLogging(async function GET(request: NextRequest) {
           proposals: {
             include: {
               game: true,
-              proposedBy: true,
+              proposedBy: { select: { id: true, name: true, email: true } },
               _count: { select: { votes: true } }
             }
           },
@@ -43,7 +43,7 @@ export const GET = withApiLogging(async function GET(request: NextRequest) {
         }
       });
     } else {
-      const where = { createdById: session.user.id };
+      const where = { createdById: session.user.id, deletedAt: null as null };
       const includeRelations = {
         invites: {
           include: { user: { select: { id: true, name: true, email: true } } }

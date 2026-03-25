@@ -94,7 +94,7 @@ export const GET = withApiLogging(async function GET(request: NextRequest) {
   try {
     // Step 1: Check local DB for a game with this EAN
     const localGame = await prisma.game.findFirst({
-      where: { ean, ownerId: session.user.id },
+      where: { ean, ownerId: session.user.id, deletedAt: null },
     });
 
     if (localGame) {

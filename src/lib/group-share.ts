@@ -23,6 +23,7 @@ export async function findPublicGroupByToken<T extends Prisma.GroupInclude | und
       id: groupId,
       shareToken: token,
       isPublic: true,
+      deletedAt: null,
     },
     include,
   }) as Promise<GroupWithInclude<T> | null>;
@@ -42,6 +43,7 @@ export async function resolveGroupIdFromToken(token: string) {
       id: groupId,
       shareToken: token,
       isPublic: true,
+      deletedAt: null,
     },
     select: { id: true },
   });

@@ -23,6 +23,7 @@ export async function findPublicEventByToken<T extends Prisma.EventInclude | und
       id: eventId,
       shareToken: token,
       isPublic: true,
+      deletedAt: null,
     },
     include,
   }) as Promise<EventWithInclude<T> | null>;
@@ -42,6 +43,7 @@ export async function resolveEventIdFromToken(token: string) {
       id: eventId,
       shareToken: token,
       isPublic: true,
+      deletedAt: null,
     },
     select: { id: true },
   });

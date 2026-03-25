@@ -20,7 +20,7 @@ export const POST = withApiLogging(async function POST(
   const { id: seriesId } = await params;
 
   const series = await prisma.gameSeries.findFirst({
-    where: { id: seriesId, ownerId: session.user.id },
+    where: { id: seriesId, ownerId: session.user.id, deletedAt: null },
   });
 
   if (!series) {
@@ -36,7 +36,7 @@ export const POST = withApiLogging(async function POST(
     // If bggId provided, import or find the game first
     if (!resolvedGameId && bggId) {
       let game = await prisma.game.findFirst({
-        where: { bggId: bggId.toString(), ownerId: session.user.id },
+        where: { bggId: bggId.toString(), ownerId: session.user.id, deletedAt: null },
       });
 
       if (!game) {
@@ -72,7 +72,7 @@ export const POST = withApiLogging(async function POST(
 
     // Check game exists and belongs to user
     const game = await prisma.game.findFirst({
-      where: { id: resolvedGameId, ownerId: session.user.id },
+      where: { id: resolvedGameId, ownerId: session.user.id, deletedAt: null },
     });
 
     if (!game) {

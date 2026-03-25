@@ -52,7 +52,7 @@ export const POST = withApiLogging(async function POST(
 
     // Prüfe ob Event existiert und User der Organisator ist
     const event = await prisma.event.findFirst({
-      where: { id, createdById: session.user.id },
+      where: { id, createdById: session.user.id, deletedAt: null },
       include: {
         invites: { include: { user: { select: { id: true, name: true, email: true } } } },
       },

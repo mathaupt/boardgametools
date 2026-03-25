@@ -20,7 +20,7 @@ export const POST = withApiLogging(async function POST(request: NextRequest) {
     }
 
     const existingGame = await prisma.game.findFirst({
-      where: { bggId: bggId.toString(), ownerId: session.user.id },
+      where: { bggId: bggId.toString(), ownerId: session.user.id, deletedAt: null },
     });
 
     if (existingGame) {

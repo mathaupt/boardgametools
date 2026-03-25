@@ -37,8 +37,8 @@ export const POST = withApiLogging(async function POST(
     }
 
     // Prüfe ob Event existiert und User Zugang hat
-    const event = await prisma.event.findUnique({
-      where: { id },
+    const event = await prisma.event.findFirst({
+      where: { id, deletedAt: null },
       include: { invites: { select: { userId: true } } },
     });
 
@@ -116,8 +116,8 @@ export const PUT = withApiLogging(async function PUT(
     }
 
     // Prüfe ob Event existiert und User Zugang hat
-    const event = await prisma.event.findUnique({
-      where: { id },
+    const event = await prisma.event.findFirst({
+      where: { id, deletedAt: null },
       include: { invites: { select: { userId: true } } },
     });
 

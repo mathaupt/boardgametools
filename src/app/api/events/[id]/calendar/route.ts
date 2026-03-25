@@ -18,8 +18,8 @@ export const GET = withApiLogging(async function GET(
 
   try {
     // Event mit allen Details laden
-    const event = await prisma.event.findUnique({
-      where: { id },
+    const event = await prisma.event.findFirst({
+      where: { id, deletedAt: null },
       include: {
         createdBy: { select: { id: true, name: true, email: true } },
         invites: {

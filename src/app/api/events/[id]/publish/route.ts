@@ -23,6 +23,7 @@ export const POST = withApiLogging(async function POST(
       where: {
         id,
         createdById: session.user.id,
+        deletedAt: null,
       },
       select: {
         id: true,

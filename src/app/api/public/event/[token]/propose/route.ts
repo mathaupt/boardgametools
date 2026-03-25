@@ -30,8 +30,8 @@ export const POST = withApiLogging(async function POST(
     const validationError = validateString(gameId, "gameId", { min: 1, max: 100 });
     if (validationError) return NextResponse.json({ error: validationError }, { status: 400 });
 
-    const event = await prisma.event.findUnique({
-      where: { id: eventId },
+    const event = await prisma.event.findFirst({
+      where: { id: eventId, deletedAt: null },
       include: {
         invites: {
           select: { userId: true },
@@ -51,7 +51,7 @@ export const POST = withApiLogging(async function POST(
     }
 
     const game = await prisma.game.findFirst({
-      where: { id: gameId, ownerId: session.user.id },
+      where: { id: gameId, ownerId: session.user.id, deletedAt: null },
     });
 
     if (!game) {
@@ -74,7 +74,7 @@ export const POST = withApiLogging(async function POST(
       },
       include: {
         game: true,
-        proposedBy: true,
+        proposedBy: { select: { id: true, name: true, email: true } },
         _count: { select: { votes: true, guestVotes: true } },
       },
     });

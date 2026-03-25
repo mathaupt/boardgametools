@@ -27,8 +27,8 @@ export const POST = withApiLogging(async function POST(
     }
 
     // Prüfe ob Event existiert und User Berechtigung hat
-    const event = await prisma.event.findUnique({
-      where: { id },
+    const event = await prisma.event.findFirst({
+      where: { id, deletedAt: null },
       include: {
         invites: {
           select: { userId: true }
@@ -49,7 +49,7 @@ export const POST = withApiLogging(async function POST(
 
     // Prüfe ob Spiel dem User gehört
     const game = await prisma.game.findFirst({
-      where: { id: gameId, ownerId: session.user.id }
+      where: { id: gameId, ownerId: session.user.id, deletedAt: null }
     });
 
     if (!game) {
@@ -76,7 +76,7 @@ export const POST = withApiLogging(async function POST(
       },
       include: {
         game: true,
-        proposedBy: true,
+        proposedBy: { select: { id: true, name: true, email: true } },
         _count: { select: { votes: true, guestVotes: true } }
       }
     });

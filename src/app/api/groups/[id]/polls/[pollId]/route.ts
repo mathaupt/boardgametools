@@ -74,7 +74,7 @@ export const PUT = withApiLogging(async function PUT(
     }
 
     // Only poll creator or group owner can close
-    const group = await prisma.group.findUnique({ where: { id } });
+    const group = await prisma.group.findFirst({ where: { id, deletedAt: null } });
     if (poll.createdById !== session.user.id && group?.ownerId !== session.user.id) {
       return NextResponse.json({ error: "Not authorized" }, { status: 403 });
     }
@@ -124,7 +124,7 @@ export const DELETE = withApiLogging(async function DELETE(
       return NextResponse.json({ error: "Poll not found" }, { status: 404 });
     }
 
-    const group = await prisma.group.findUnique({ where: { id } });
+    const group = await prisma.group.findFirst({ where: { id, deletedAt: null } });
     if (poll.createdById !== session.user.id && group?.ownerId !== session.user.id) {
       return NextResponse.json({ error: "Not authorized" }, { status: 403 });
     }

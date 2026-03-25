@@ -526,8 +526,8 @@ const isValid = await compare(inputPassword, group.password);
 
 ## Evaluator-Feedback (automatisch generiert)
 
-> Letzter Lauf: 2026-03-25 20:46:08
-> Gesamt-Score: **10/10**
+> Letzter Lauf: 2026-03-25 21:59:00
+> Gesamt-Score: **9.9/10**
 
 ### Kategorie-Scores
 
@@ -538,7 +538,7 @@ const isValid = await compare(inputPassword, group.password);
 | Architektur | **10/10** | 10 | 10 | 10 | 10 | 10 |
 | Performance | **10/10** | 10 | 10 | 10 | 10 | 10 |
 | API Design | **10/10** | 10 | 10 | 10 | 10 | 10 |
-| Testing | **10/10** | 10 | 10 | 10 | 10 | 10 |
+| Testing | **8/10** | 10 | 10 | 0 | 10 | 10 |
 | Datenbank | **10/10** | 10 | 10 | 10 | 10 | 10 |
 | Konzept-Konformität | **10/10** | 10 | 10 | 10 | 10 | 10 |
 | Best Practices | **10/10** | 10 | 10 | 10 | 10 | 10 |
@@ -550,10 +550,10 @@ const isValid = await compare(inputPassword, group.password);
 - ✅ **P0-2** DB-Init ohne Auth: Auth-Check vorhanden
 - ✅ **P0-3** Hardcoded Admin-Credentials: Credentials externalisiert
 - ✅ **P0-4** Gruppen-Passwörter im Klartext: bcrypt wird verwendet
-- ✅ **P0-5** Kein Rate Limiting + keine proxy.ts: proxy.ts (Next.js 16) + Rate Limiting vorhanden
+- ✅ **P0-5** Kein Rate Limiting + keine proxy.ts: Proxy/Middleware + Rate Limiting vorhanden
 - ✅ **P0-6** passwordHash in API-Responses: passwordHash wird nicht exponiert
 - ✅ **P1-7** PII in Logs: Keine PII in API-Logs
-- ✅ **P1-8** Fehlende Input-Validierung: validation.ts in 26 Routes importiert
+- ✅ **P1-8** Fehlende Input-Validierung: validation.ts in 18 Routes importiert
 - ✅ **P1-9** Keine Pagination: Pagination auf allen Listen-Endpoints
 - ✅ **P1-10** Statistiken komplett fehlend: Statistiken-Seite + API vorhanden
 - ✅ **P1-11** Session-Detailseite fehlt: Session-Detailseite vorhanden
@@ -568,7 +568,7 @@ const isValid = await compare(inputPassword, group.password);
 - ✅ **P2-20** Duplikat: BGG-Logik: Kein dupliziertes XML-Parsing
 - ✅ **P2-21** next/image statt <img>: Keine <img> Tags
 - ✅ **P2-22** Fehlende Unit Tests: 26 Test-Dateien
-- ✅ **P2-23** Inkonsistente Error-Responses: Konsistent: 395 error, 14 message
+- ✅ **P2-23** Inkonsistente Error-Responses: Konsistent: 339 error, 10 message
 - ✅ **P2-24** CONCEPT.md aktualisieren: Tech-Stack aktuell
 - ✅ **P2-25** Pendende Invites dupliziert: Shared Query extrahiert
 - ✅ **P2-27** Prisma Transactions fehlen: $transaction wird verwendet
@@ -578,13 +578,13 @@ const isValid = await compare(inputPassword, group.password);
 - ✅ **P3-31** accessibility Skill fehlt: Accessibility Skill vorhanden
 - ✅ **P3-32** DB-Dumps in Git: Git-Check nicht möglich
 - ✅ **P3-33** Links zu /terms und /privacy fehlen: Beide Seiten vorhanden
-- ✅ **P3-35** Fehlende DB-Indices: 17 @@index Definitionen
+- ✅ **P3-35** Fehlende DB-Indices: 22 @@index Definitionen
 - ✅ **SEC-44** Fehlende Security Headers: CSP, X-Frame-Options, X-Content-Type-Options vorhanden
-- ✅ **SEC-45** npm audit: Bekannte Vulnerabilities: Keine Prod-Vulnerabilities (4 high nur in devDeps, 1 moderate)
+- ✅ **SEC-45** npm audit: Bekannte Vulnerabilities: Keine Prod-Vulnerabilities (5 high nur in devDeps, 1 moderate)
 - ✅ **SEC-46** XSS: dangerouslySetInnerHTML ohne Sanitization: Kein dangerouslySetInnerHTML verwendet
 - ✅ **PERF-47** Schwere Libraries ohne Dynamic Import: 2 dynamic() + 7 await import() Lazy-Loads
 - ✅ **PERF-48** Keine Bundle-Analyse konfiguriert: @next/bundle-analyzer konfiguriert
-- ✅ **PERF-49** Keine API Caching Headers: 3 Caching-Konfigurationen gefunden
+- ✅ **PERF-49** Keine API Caching Headers: 17 Caching-Konfigurationen gefunden
 - ✅ **BP-50** ESLint Warnings/Errors: ESLint clean
 - ✅ **BP-51** Ungenutzte Dependencies in package.json: Alle Dependencies werden verwendet
 - ✅ **BP-52** Fehlende Error Boundaries: 10 Error Boundaries vorhanden
@@ -596,3 +596,8 @@ const isValid = await compare(inputPassword, group.password);
 - ✅ **SCALE-58** Kein Caching-Layer: Redis Cache vorhanden
 - ✅ **SCALE-59** Kein strukturiertes Logging: Strukturiertes Logging-Framework vorhanden
 - ✅ **SCALE-60** DB Connection Pooling nicht konfiguriert: Connection Pool konfiguriert
+
+### Empfohlene Reviewer-Anpassungen
+
+- ➕ NEU: "Test Coverage Lücken" – 18 von 33 lib-Dateien getestet (Schwelle: 5)
+- 📝 Abdeckung in "Testing" niedrig (0/10) – weitere Prüfpunkte hinzufügen

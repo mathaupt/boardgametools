@@ -237,6 +237,14 @@ export const SeriesService = {
     });
     if (!series) throw new ApiError(404, "Series not found");
 
+    // Validate that all provided entry IDs belong to this series
+    const validCount = await prisma.gameSeriesEntry.count({
+      where: { id: { in: entryIds }, seriesId },
+    });
+    if (validCount !== entryIds.length) {
+      throw new ApiError(400, "Invalid entry IDs - entries must belong to this series");
+    }
+
     await prisma.$transaction(
       entryIds.map((id, index) =>
         prisma.gameSeriesEntry.update({

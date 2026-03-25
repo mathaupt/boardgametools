@@ -18,8 +18,8 @@ export const GET = withApiLogging(async function GET(
 
   try {
     // Event mit allen Details laden
-    const event = await prisma.event.findUnique({
-      where: { id },
+    const event = await prisma.event.findFirst({
+      where: { id, deletedAt: null },
       include: {
         createdBy: { select: { id: true, name: true, email: true } },
         invites: {
@@ -28,7 +28,7 @@ export const GET = withApiLogging(async function GET(
         proposals: {
           include: {
             game: true,
-            proposedBy: true,
+            proposedBy: { select: { id: true, name: true, email: true } },
             guest: { select: { id: true, nickname: true } },
             _count: { select: { votes: true, guestVotes: true } },
             votes: {
@@ -81,7 +81,7 @@ export const GET = withApiLogging(async function GET(
 
         // Merge proposedBy: prefer DB user, fallback to guest
         const proposedByData = proposal.proposedBy ?? (proposal.guest
-          ? { id: proposal.guest.id, name: proposal.guest.nickname, email: "", passwordHash: "", role: "GUEST", isActive: true, createdAt: proposal.createdAt, updatedAt: proposal.createdAt }
+          ? { id: proposal.guest.id, name: proposal.guest.nickname, email: "" }
           : null);
 
         return {

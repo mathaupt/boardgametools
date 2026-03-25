@@ -19,8 +19,8 @@ export const POST = withApiLogging(async function POST(
   const { id } = await params;
 
   try {
-    const event = await prisma.event.findUnique({
-      where: { id },
+    const event = await prisma.event.findFirst({
+      where: { id, deletedAt: null },
       include: {
         proposals: {
           include: {

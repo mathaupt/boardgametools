@@ -20,7 +20,7 @@ export const POST = withApiLogging(async function POST(
 
   try {
     const group = await prisma.group.findFirst({
-      where: { id, ownerId: session.user.id },
+      where: { id, ownerId: session.user.id, deletedAt: null },
       select: { id: true, shareToken: true },
     });
 
