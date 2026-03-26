@@ -3,7 +3,7 @@ import { requireAuth, handleApiError } from "@/lib/require-auth";
 import prisma from "@/lib/db";
 import { withApiLogging } from "@/lib/api-logger";
 
-export const GET = withApiLogging(async function GET(request: NextRequest) {
+export const GET = withApiLogging(async function GET(_request: NextRequest) {
   const { userId } = await requireAuth();
 
   try {

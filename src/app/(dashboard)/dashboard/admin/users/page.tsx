@@ -2,10 +2,8 @@ import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
 import { redirect } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Shield, Mail, User, Lock, Trash2, Eye, EyeOff, Plus } from "lucide-react";
+import { Shield, Mail, User } from "lucide-react";
 import { CreateUserModal } from "@/components/admin/create-user-modal";
 import { UserActions } from "@/components/admin/user-actions";
 

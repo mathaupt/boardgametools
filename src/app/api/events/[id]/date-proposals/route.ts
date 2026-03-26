@@ -141,7 +141,7 @@ export const POST = withApiLogging(async function POST(
     });
 
     // Erstelle Proposals – überspringe bereits existierende
-    const created = await prisma.$transaction(
+    const _created = await prisma.$transaction(
       normalizedDates.map((date) =>
         prisma.dateProposal.upsert({
           where: {

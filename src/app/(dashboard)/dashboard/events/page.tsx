@@ -3,13 +3,11 @@ import prisma from "@/lib/db";
 import { cachedQuery } from "@/lib/cache";
 import { CacheTags } from "@/lib/cache-tags";
 import { getPendingInvites } from "@/lib/queries/pending-invites";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Plus, Calendar, MapPin, Users, Vote, Trophy } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { GameTooltip } from "@/components/ui/game-tooltip";
 import { PendingInvites } from "@/components/pending-invites";
 
 export default async function EventsPage() {

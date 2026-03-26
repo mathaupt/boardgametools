@@ -33,7 +33,7 @@ export function PollCard({ poll, groupId, userId, isOwner, onRefresh }: PollCard
     return null;
   };
 
-  async function handleVote(pollId: string, optionId: string, pollType: string) {
+  async function handleVote(pollId: string, optionId: string, _pollType: string) {
     setLoading(`vote-${pollId}`);
     try {
       await fetch(`/api/groups/${groupId}/polls/${pollId}/vote`, {

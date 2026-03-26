@@ -1,10 +1,10 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { requireAuth, handleApiError } from "@/lib/require-auth";
 import prisma from "@/lib/db";
 import { withApiLogging } from "@/lib/api-logger";
 
 export const GET = withApiLogging(async function GET() {
-  const { userId } = await requireAuth();
+  const { userId: _userId } = await requireAuth();
 
   try {
     // Alle Users für Session-Einträge (für Multiplayer-Sessions)

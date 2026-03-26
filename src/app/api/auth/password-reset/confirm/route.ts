@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { hash } from "bcryptjs";
 import prisma from "@/lib/db";
-import { verifyResetToken, markResetTokenUsed } from "@/lib/password-reset";
+import { verifyResetToken } from "@/lib/password-reset";
 import { withApiLogging } from "@/lib/api-logger";
 import { checkRateLimit, rateLimitResponse } from "@/lib/rate-limit";
 import logger from "@/lib/logger";

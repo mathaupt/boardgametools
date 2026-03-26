@@ -48,6 +48,7 @@ export default function PublicGroupPage({ params }: PublicGroupPageProps) {
       setToken(t);
       fetchGroup(t, "");
     });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params]);
 
   async function fetchGroup(t: string, pw: string) {

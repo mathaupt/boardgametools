@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import prisma from "@/lib/db";
 import { createPasswordResetToken } from "@/lib/password-reset";
 import { sendPasswordResetEmail } from "@/lib/mailer";

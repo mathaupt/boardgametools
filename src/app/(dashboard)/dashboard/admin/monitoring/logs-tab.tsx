@@ -98,7 +98,7 @@ const formatTime = (iso: string) => {
 // ── Component ───────────────────────────────────────────────────
 
 export function LogsTab({
-  period,
+  period: _period,
   onRefreshAll,
 }: {
   period: string;

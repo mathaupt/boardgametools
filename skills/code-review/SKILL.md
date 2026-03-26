@@ -508,7 +508,7 @@ const isValid = await compare(inputPassword, group.password);
 
 ## Evaluator-Feedback (automatisch generiert)
 
-> Letzter Lauf: 2026-03-26 09:53:17
+> Letzter Lauf: 2026-03-26 10:08:23
 > Gesamt-Score: **10/10**
 
 ### Kategorie-Scores
@@ -571,7 +571,7 @@ const isValid = await compare(inputPassword, group.password);
 - ✅ **BP-51** Ungenutzte Dependencies in package.json: Alle Dependencies werden verwendet
 - ✅ **BP-52** Fehlende Error Boundaries: 10 Error Boundaries vorhanden
 - ✅ **BP-53** ENV-Validierung beim Start: ENV-Validierung vorhanden
-- ✅ **BP-54** Fehlende Loading States (loading.tsx): 13 loading.tsx für 41 pages (32%)
+- ✅ **BP-54** Fehlende Loading States (loading.tsx): 14 loading.tsx für 41 pages (34%)
 - ✅ **SCALE-55** Kein Health-Check Endpoint: Health-Check Endpoint vorhanden
 - ✅ **SCALE-56** File-Uploads auf lokalem Dateisystem: Storage-Abstraktion mit Cloud + Local Fallback
 - ✅ **SCALE-57** In-Memory Rate Limiting nicht skalierbar: Redis-basiertes Rate Limiting

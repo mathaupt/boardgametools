@@ -17,7 +17,6 @@ import {
   CalendarDays,
   ArrowLeft,
   Vote,
-  BarChart3,
 } from "lucide-react";
 import { cachedQuery } from "@/lib/cache";
 import { CacheTags } from "@/lib/cache-tags";

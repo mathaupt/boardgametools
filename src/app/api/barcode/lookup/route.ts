@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requireAuth, handleApiError } from "@/lib/require-auth";
+import { requireAuth } from "@/lib/require-auth";
 import prisma from "@/lib/db";
-import { searchBGGGames, fetchBGGGame } from "@/lib/bgg";
+import { searchBGGGames } from "@/lib/bgg";
 import { withApiLogging } from "@/lib/api-logger";
 import logger from "@/lib/logger";
 

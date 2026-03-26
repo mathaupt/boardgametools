@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAuth, handleApiError } from "@/lib/require-auth";
 import prisma from "@/lib/db";
 import { withApiLogging } from "@/lib/api-logger";
-import { cachedQuery, invalidateTag } from "@/lib/cache";
+import { cachedQuery } from "@/lib/cache";
 import { CacheTags } from "@/lib/cache-tags";
 
 export const GET = withApiLogging(async function GET(_request: NextRequest) {

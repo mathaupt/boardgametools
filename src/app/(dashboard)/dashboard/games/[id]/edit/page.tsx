@@ -30,7 +30,7 @@ export default function EditGamePage() {
         
         const gameData = await response.json();
         setGame(gameData);
-      } catch (err) {
+      } catch (_err) {
         setError("Netzwerkfehler beim Laden des Spiels");
       } finally {
         setLoading(false);

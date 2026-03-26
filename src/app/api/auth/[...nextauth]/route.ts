@@ -6,7 +6,7 @@ const { GET: authGET, POST: authPOST } = handlers;
 
 export const GET = authGET;
 
-export async function POST(request: NextRequest, context: unknown) {
+export async function POST(request: NextRequest, _context: unknown) {
   const { pathname } = new URL(request.url);
   if (pathname.endsWith("/callback/credentials")) {
     const ip =

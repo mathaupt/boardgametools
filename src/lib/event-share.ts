@@ -14,7 +14,7 @@ export async function findPublicEventByToken<T extends Prisma.EventInclude | und
 
   try {
     eventId = decryptId(token);
-  } catch (error) {
+  } catch (_error) {
     return null;
   }
 
@@ -34,7 +34,7 @@ export async function resolveEventIdFromToken(token: string) {
 
   try {
     eventId = decryptId(token);
-  } catch (error) {
+  } catch (_error) {
     return null;
   }
 

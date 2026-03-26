@@ -137,7 +137,7 @@ export const SessionService = {
 
     // Use transaction for atomic update with players
     const updated = await prisma.$transaction(async (tx) => {
-      const session = await tx.gameSession.update({
+      const _session = await tx.gameSession.update({
         where: { id: sessionId },
         data: {
           ...(input.playedAt !== undefined && { playedAt: new Date(input.playedAt) }),

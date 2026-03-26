@@ -190,7 +190,8 @@ export function BarcodeScanner({
       <DialogContent className="max-w-lg max-h-[85vh] flex flex-col">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            {tab === "barcode" ? <ScanBarcode className="h-5 w-5" /> : <Image className="h-5 w-5" />}
+            {/* eslint-disable-next-line jsx-a11y/alt-text */}
+            {tab === "barcode" ? <ScanBarcode className="h-5 w-5" /> : <Image aria-hidden className="h-5 w-5" />}
             Spiel scannen
           </DialogTitle>
           <DialogDescription>
@@ -222,7 +223,8 @@ export function BarcodeScanner({
             onClick={() => { setTab("cover"); stopScanner(); }}
           >
             <span className="flex items-center justify-center gap-1.5">
-              <Image className="h-3.5 w-3.5" />
+              {/* eslint-disable-next-line jsx-a11y/alt-text */}
+              <Image aria-hidden className="h-3.5 w-3.5" />
               Cover-Foto
             </span>
           </button>

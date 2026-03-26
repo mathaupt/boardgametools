@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requireAdmin, handleApiError } from "@/lib/require-auth";
+import { requireAdmin } from "@/lib/require-auth";
 import prisma from "@/lib/db";
 import { Prisma } from "@prisma/client";
 import logger from "@/lib/logger";
@@ -30,7 +30,7 @@ interface Anomaly {
 // GET /api/admin/monitoring/anomalies — Detect anomalies in API logs
 export async function GET(request: NextRequest) {
   try {
-    const { userId } = await requireAdmin()
+    const { userId: _userId } = await requireAdmin()
 
     const { searchParams } = new URL(request.url);
     const periodParam = searchParams.get("period") || "24h";

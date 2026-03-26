@@ -58,7 +58,7 @@ export function DeactivateUserModal({
         // Page reload to show updated status
         window.location.reload();
       }
-    } catch (err) {
+    } catch (_err) {
       setError("Ein Fehler ist aufgetreten");
     } finally {
       setIsLoading(false);

@@ -73,7 +73,7 @@ export function ChangePasswordModal({
         setNewPassword("");
         setConfirmPassword("");
       }
-    } catch (err) {
+    } catch (_err) {
       setError("Ein Fehler ist aufgetreten");
     } finally {
       setIsLoading(false);

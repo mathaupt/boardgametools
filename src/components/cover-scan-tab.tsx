@@ -167,7 +167,8 @@ export function CoverScanTab({ onGameSelected }: CoverScanTabProps) {
                   Kamera
                 </Button>
                 <Button className="flex-1" variant="outline" onClick={() => coverInputRef.current?.click()}>
-                  <Image className="h-4 w-4 mr-2" />
+                  {/* eslint-disable-next-line jsx-a11y/alt-text */}
+                  <Image aria-hidden className="h-4 w-4 mr-2" />
                   Foto wählen
                 </Button>
                 <input
@@ -213,6 +214,7 @@ export function CoverScanTab({ onGameSelected }: CoverScanTabProps) {
           {coverImage && (
             <div className="space-y-3">
               <div className="relative rounded-lg overflow-hidden bg-muted aspect-[4/3]">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={coverImage}
                   alt="Cover-Foto"

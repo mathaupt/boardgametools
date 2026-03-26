@@ -3,8 +3,8 @@
 - Status: BESTANDEN
 - Fehler: 0
 - Warnungen: 4
-- Datum: 2026-03-26 10:52:51
+- Datum: 2026-03-26 11:06:01
 - Branch: main
-- Commit: 0f208b0
+- Commit: 991a659
 
 Geprüfte Kategorien: A01, A02, A03, A04, A05, A06, A07, A08, A09, A10, PII (Datenschutz).

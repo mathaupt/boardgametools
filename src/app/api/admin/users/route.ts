@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { requireAdmin, handleApiError } from "@/lib/require-auth";
 import { hash } from "bcryptjs";
 import prisma from "@/lib/db";
@@ -7,7 +7,7 @@ import { validateString, firstError } from "@/lib/validation";
 
 export const POST = withApiLogging(async function POST(request: Request) {
   try {
-    const { userId } = await requireAdmin();
+    const { userId: _userId } = await requireAdmin();
 
     const { name, email, password, role } = await request.json();
 

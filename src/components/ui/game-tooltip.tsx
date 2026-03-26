@@ -26,7 +26,7 @@ export function GameTooltip({ children, votes, className }: GameTooltipProps) {
               Abgestimmt von:
             </div>
             <div className="space-y-1">
-              {votes.map((vote, index) => (
+              {votes.map((vote, _index) => (
                 <div key={vote.user.id} className="text-xs text-muted-foreground flex items-center gap-2">
                   <div className="w-2 h-2 bg-primary rounded-full" />
                   {vote.user.name || vote.user.email || 'Unbekannt'}

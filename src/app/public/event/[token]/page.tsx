@@ -4,7 +4,7 @@ import { findPublicEventByToken } from "@/lib/event-share";
 import { buildPublicEventInclude, serializePublicEvent } from "@/lib/public-event";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, MapPin, Share2, Vote, Users, UserCircle, Check, X, Clock } from "lucide-react";
+import { Calendar, MapPin, Share2, Users, UserCircle, Check, X, Clock } from "lucide-react";
 import { PublicEventClient } from "@/components/public-event/public-event-client";
 
 export const revalidate = 0;

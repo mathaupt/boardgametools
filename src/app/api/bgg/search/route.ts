@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requireAuth, handleApiError } from "@/lib/require-auth";
+import { requireAuth } from "@/lib/require-auth";
 import { searchBGGGames } from "@/lib/bgg";
 import { withApiLogging } from "@/lib/api-logger";
 import logger from "@/lib/logger";
 
 export const GET = withApiLogging(async function GET(request: NextRequest) {
-  const { userId } = await requireAuth()
+  const { userId: _userId } = await requireAuth()
 
   const searchParams = request.nextUrl.searchParams;
   const query = searchParams.get("q");

@@ -95,7 +95,7 @@ export const DELETE = withApiLogging(async function DELETE(
 ) {
   const { userId } = await requireAuth();
 
-  const { id } = await params;
+  const { id: _id } = await params;
   const { searchParams } = new URL(request.url);
   const proposalId = searchParams.get("proposalId");
 

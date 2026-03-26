@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requireAdmin, handleApiError } from "@/lib/require-auth";
+import { requireAdmin } from "@/lib/require-auth";
 import prisma from "@/lib/db";
 import logger from "@/lib/logger";
 
 // GET /api/admin/monitoring/logs — Paginated API logs with optional filters
 export async function GET(request: NextRequest) {
   try {
-    const { userId } = await requireAdmin()
+    const { userId: _userId } = await requireAdmin()
 
     const { searchParams } = new URL(request.url);
 
@@ -100,7 +100,7 @@ export async function GET(request: NextRequest) {
 // DELETE /api/admin/monitoring/logs — Purge old logs
 export async function DELETE(request: NextRequest) {
   try {
-    const { userId } = await requireAdmin()
+    const { userId: _userId } = await requireAdmin()
 
     const body = await request.json();
     const { olderThanDays } = body;

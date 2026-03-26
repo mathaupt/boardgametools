@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requireAuth, handleApiError } from "@/lib/require-auth";
+import { requireAuth } from "@/lib/require-auth";
 import { fetchBGGGame } from "@/lib/bgg";
 import { withApiLogging } from "@/lib/api-logger";
 import logger from "@/lib/logger";
@@ -10,7 +10,7 @@ export const GET = withApiLogging(async function GET(
   request: NextRequest,
   { params }: RouteContext
 ) {
-  const { userId } = await requireAuth()
+  const { userId: _userId } = await requireAuth()
 
   const { id } = await params;
 

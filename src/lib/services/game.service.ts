@@ -159,7 +159,7 @@ export const GameService = {
     );
     if (validationError) throw new ApiError(400, validationError);
 
-    const updated = await prisma.game.update({
+    const _updated = await prisma.game.update({
       where: { id: gameId },
       data: {
         ...(input.name !== undefined && { name: input.name }),
