@@ -11,6 +11,18 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.31.2",
+    date: "2026-03-26",
+    title: "Deep-Dive Review: Detaillierte Berichte in docs/ aktualisiert",
+    description: "4 parallele Deep-Dive-Analysen (Security, Architektur/Performance, API/Testing, Best Practices/DB/Konzept/Skalierung) mit ~48 neuen Findings. Alle docs/-Berichte mit aktuellen Ergebnissen erstellt, SKILL.md mit granularen Findings ersetzt.",
+    changes: [
+      { type: "internal", text: "Deep-Dive Review: ~48 neue Findings (1 P0, 12 P1, ~20 P2, ~15 P3), Gesamtscore 8.3/10" },
+      { type: "internal", text: "19 neue docs/-Berichte erstellt: Security, Architektur, Performance, Testing, Best Practices, BOM, Code-Reviews, Management Summary" },
+      { type: "internal", text: "SKILL.md: 10 oberflaechliche Findings durch ~48 granulare Deep-Dive-Findings ersetzt" },
+      { type: "internal", text: "Management Summary 2026-03-26 mit priorisierter Massnahmen-Roadmap (P0-P3)" },
+    ],
+  },
+  {
     version: "0.31.1",
     date: "2026-03-26",
     title: "Umfassendes Code-Review ueber alle Kategorien",

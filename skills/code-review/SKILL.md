@@ -327,22 +327,25 @@ Erstelle einen Report mit folgendem Format:
 
 ---
 
-## Neues Review – 2026-03-26
+## Deep-Dive Review – 2026-03-26
+
+> Methodik: 4 parallele Deep-Dive-Analysen (Security, Architektur/Performance, API/Testing, Best Practices/DB/Konzept/Skalierung)
+> Alle Findings manuell verifiziert gegen den aktuellen Code-Stand.
 
 ### Zusammenfassung
 
 | Kategorie | Neue Findings | Schweregrad |
 |-----------|--------------|-------------|
-| Sicherheit | 0 neue P0/P1 | Stabil |
-| Architektur | 2 (P2, P3) | Akzeptabel |
-| Performance | 1 (P3) | Gut |
-| API Design | 2 (P2, P3) | Akzeptabel |
-| Testing | 1 (P3) | Gut |
-| Datenbank | 1 (P3) | Stabil |
-| Konzept-Konformität | 1 (P3) | Gut |
-| Best Practices | 2 (P2, P3) | Gut |
-| Skalierung | 0 | Stabil |
-| **Gesamt** | **10 neue Findings** | **Keine kritischen/wichtigen** |
+| Sicherheit | 9 (5 P2, 4 P3) | Input-Validierung + Rate Limiting |
+| Architektur | 8 (3 P1, 4 P2, 1 P3) | Client/Server-Boundaries, DRY |
+| Performance | 5 (2 P1, 2 P2, 1 P3) | N+1, Statistics, Missing Indices |
+| API Design | 8 (2 P1, 4 P2, 2 P3) | Response-Formate, PATCH, Sprache |
+| Testing | 6 (1 P0, 3 P1, 1 P2, 1 P3) | Keine API-Tests, E2E flach |
+| Datenbank | 6 (1 P1, 4 P2, 1 P3) | Fehlende FK-Indices, Upload FK |
+| Konzept-Konformität | 2 (2 P3) | Tags "geplant", Doku-Drift |
+| Best Practices | 7 (2 P1, 3 P2, 2 P3) | Pre-Commit, Dead Code, API-Sprache |
+| Skalierung | 4 (2 P1, 1 P2, 1 P3) | Upstash params, Local Storage |
+| **Gesamt** | **~48 neue Findings** | **1 P0, 12 P1, ~20 P2, ~15 P3** |
 
 ### Bewertungsskala
 
@@ -355,202 +358,391 @@ Erstelle einen Report mit folgendem Format:
 
 ---
 
-### Sicherheit – 10/10
+### Sicherheit – 9.4/10
 
 **Positiv:**
+- Alle 67 geschützten API-Routes verifiziert: Auth-Check überall vorhanden
 - 0 Treffer für `user: true` / `createdBy: true` ohne `select` – kein passwordHash-Leak
 - 0 `dangerouslySetInnerHTML` – kein XSS-Risiko
-- Alle `$queryRaw` nutzen Tagged Template Literals (9 Stellen)
+- Alle 9 `$queryRaw` nutzen Tagged Template Literals (parameterisiert, sicher)
 - npm audit production: **0 Vulnerabilities**
-- Security Headers komplett: CSP, X-Frame-Options, HSTS, Referrer-Policy, Permissions-Policy
-- Debug-Routes mit NODE_ENV Guard gesichert
-- bcrypt für Passwort-Hashing (User + Gruppen)
-- Rate Limiting auf allen public Endpoints (nur `/api/public/group/[token]/route.ts` fehlt – aber GET-only, nicht missbrauchbar)
-- next/font statt externe Google-Fonts-Requests (kein Tracking-Leak)
-
-**Keine neuen Findings.**
-
----
-
-### Architektur – 9/10
-
-**Positiv:**
-- Konsistente Server/Client-Component-Trennung (109 "use client" Dateien, alle mit Interaktivität/Hooks)
-- Service-Layer komplett: 7 Service-Dateien + shared.ts
-- Saubere Ordnerstruktur: API Routes, Components, Lib getrennt
-- Dynamic Imports für schwere Libs: 3× `dynamic()`, 7× `await import()`
+- Security Headers komplett: CSP, X-Frame-Options, HSTS (2 Jahre), Referrer-Policy, Permissions-Policy
+- CSRF-Schutz: Origin/Referer-Prüfung in proxy.ts für POST/PUT/DELETE/PATCH
+- bcrypt (cost 12) für Passwort-Hashing überall (User + Gruppen + Reset)
+- SHA-256 für Password-Reset-Tokens
+- Cookie-Sicherheit: NextAuth v5 Default (Secure, HttpOnly, SameSite=lax)
+- File-Upload: Auth + MIME-Whitelist + 5MB-Limit + Random-Filenames
+- Keine hardcoded Secrets, .env in .gitignore
 
 **Neue Findings:**
 
-#### N-ARCH-61: Dateien >300 Zeilen mit Business-Logik (P2)
-13 Dateien überschreiten die 300-Zeilen-Grenze (ohne changelog.ts als reine Datendatei):
+#### DD-SEC-01: Bulk Date-Vote ohne availability-Enum-Validierung (P2)
+**Datei:** `events/[id]/date-proposals/vote/route.ts:128-146`
+PUT-Handler akzeptiert votes-Array ohne zu prüfen ob availability ∈ ["yes","maybe","no"]. Der POST-Handler (Zeile 29) validiert korrekt.
+
+#### DD-SEC-02: Guest Date-Vote ohne availability-Enum-Validierung (P2)
+**Datei:** `public/event/[token]/date-vote/route.ts:60-76`
+availability wird direkt an prisma.guestDateVote.upsert() übergeben ohne Validierung.
+
+#### DD-SEC-03: Poll-Status akzeptiert beliebige Werte (P2)
+**Datei:** `groups/[id]/polls/[pollId]/route.ts:81`
+`status: status || "closed"` — User-Input wird direkt ohne Enum-Prüfung übernommen.
+
+#### DD-SEC-04: Poll-Option-Text ohne Längenvalidierung (P2)
+**Datei:** `groups/[id]/polls/route.ts:89`
+options-Array-Items werden ohne Längenprüfung an DB übergeben. `title` (Zeile 76) wird validiert, aber die einzelnen Optionen nicht.
+
+#### DD-SEC-05: Auth Poll-Vote ohne optionIds-Array-Limit (P3)
+**Datei:** `groups/[id]/polls/[pollId]/vote/route.ts:38`
+Kein Obergrenze für optionIds. Die Public-Route hat `optionIds.length > 50` — hier fehlt es.
+
+#### DD-SEC-06: Public Group GET ohne Rate Limiting (P2)
+**Datei:** `public/group/[token]/route.ts:9-72`
+Alle anderen Public-Endpoints haben `checkRateLimit()`, dieser GET-Endpoint nicht. Ermöglicht Token-Enumeration.
+
+#### DD-SEC-07: Public Event Vote DELETE ohne Rate Limiting (P3)
+**Datei:** `public/event/[token]/vote/route.ts:93-162`
+POST hat Rate Limiting (Zeile 15-16), DELETE nicht.
+
+#### DD-SEC-08: Admin Change-Password ohne Max-Länge (P3)
+**Datei:** `admin/users/change-password/route.ts:21`
+Nur `min 8` geprüft, kein Obergrenze. bcrypt truncated bei 72 Bytes, aber extrem langes Passwort verursacht CPU-Last.
+
+#### DD-SEC-09: Upload MIME-Validierung nur client-seitig (P3)
+**Datei:** `upload/route.ts:21`
+`file.type` kommt vom Browser und kann gespooft werden. Keine Magic-Bytes-Validierung.
+
+---
+
+### Architektur – 7.8/10
+
+**Positiv:**
+- Service-Layer komplett: 7 Services + shared.ts mit konsistenten Patterns
+- Saubere Ordnerstruktur: API Routes, Components, Lib getrennt
+- Dynamic Imports für schwere Libs: 3× `dynamic()`, 7× `await import()`
+- Gute Server-Component-Patterns in: events/[id]/page.tsx, groups/[id]/page.tsx, games/page.tsx, profile/page.tsx
+
+**Neue Findings:**
+
+#### DD-ARCH-01: 8 Pages als "use client" mit useEffect+fetch statt Server Components (P1)
+Diese Seiten verwenden das Client-Side-Fetch-Pattern obwohl sie als Server Components mit Prisma-Queries implementiert werden könnten (wie es events/[id]/page.tsx und groups/[id]/page.tsx bereits korrekt tun):
+- `games/[id]/page.tsx` (267 Zeilen) — fetch waterfall in useEffect
+- `games/[id]/edit/page.tsx` (120 Zeilen)
+- `sessions/[id]/page.tsx` (343 Zeilen)
+- `sessions/new/page.tsx` (331 Zeilen)
+- `sessions/[id]/edit/page.tsx`
+- `events/[id]/voting/page.tsx` (394 Zeilen)
+- `events/[id]/invite/page.tsx`
+- `series/[id]/page.tsx` (117 Zeilen)
+
+**Fix:** Zu async Server Components konvertieren, Daten per Prisma/Service laden, als Props an Client-Wrapper übergeben.
+
+#### DD-ARCH-02: Duplicated useEffect+fetch+loading/error Boilerplate (P2)
+6+ Client-Pages teilen das identische Pattern: useEffect → fetch → setLoading → setError → Render Loading/Error States. Betrifft alle DD-ARCH-01-Dateien.
+
+**Fix:** Shared `useAsyncData(url)` Hook erstellen oder (besser) zu Server Components migrieren.
+
+#### DD-ARCH-03: 13 Dateien >300 Zeilen (P2)
 - `voting/page.tsx` (394), `date-poll-client.tsx` (378), `statistics/page.tsx` (371)
 - `overview-tab.tsx` (363), `register/page.tsx` (356), `public-event-client.tsx` (354)
 - `add-game-dialog.tsx` (354), `series-list-client.tsx` (352), `games-list-client.tsx` (349)
 - `share/page.tsx` (347), `barcode-scanner.tsx` (341), `bgg-game-search.tsx` (340)
 - `sessions/new/page.tsx` (331)
 
-**Bewertung:** Akzeptabel – alle unter 400 Zeilen, die Überschreitungen sind moderat.
-Kein sofortiger Handlungsbedarf, aber bei nächster Erweiterung aufteilen.
+Alle unter 400 Zeilen — moderat, aber eigene 300-Zeilen-Regel wird verletzt.
 
-#### N-ARCH-62: Loading States Coverage 34% (P3)
-14 von 41 Pages haben eine `loading.tsx`. Fehlend u.a.: series/[id], groups/[id], sessions/[id], events/[id], admin/monitoring, bgg.
-Error Boundaries (10 Stück) decken alle Routen-Gruppen ab.
+#### DD-ARCH-04: Direct Prisma in Server Pages statt Service Layer (P3)
+5+ Server-Pages umgehen die Service-Schicht: events/[id]/page.tsx, groups/[id]/page.tsx, profile/page.tsx, admin/users/page.tsx, groups/[id]/statistics/page.tsx, statistics/route.ts
 
-**Bewertung:** Akzeptabel – Haupt-Listenansichten haben loading.tsx, Detailseiten fehlen noch.
+#### DD-ARCH-05: Tag-Upsert-Loop dupliziert (P2)
+game.service.ts:118-133 und import-bgg/route.ts:53-66 haben identische For-Loop-Patterns für Tag-Upserts.
+
+**Fix:** Extrahieren in `TagService.syncTags(userId, gameId, tagNames)`.
+
+#### DD-ARCH-06: N+1 in import-bgg/route.ts (P1)
+`import-bgg/route.ts:53-66` — Sequenzielle DB-Calls pro Kategorie (2 Calls × N Kategorien). Bei 5 Kategorien = 10 DB Round-Trips.
+
+**Fix:** In `prisma.$transaction()` wrappen (wie game.service.ts es bereits tut).
+
+#### DD-ARCH-07: Statistics lädt 1000 Sessions in Memory (P1)
+`statistics/route.ts:23` — Lädt bis zu 1000 Sessions mit Game + Player Includes in den Speicher und berechnet Statistiken in JavaScript.
+
+**Fix:** DB-Aggregation nutzen (`groupBy`, `_count`, `_sum`) statt alle Records laden.
+
+#### DD-ARCH-08: Event-Invite User-Lookups nicht gebatcht (P2)
+`event.service.ts:131-141` — N einzelne `prisma.user.findUnique()` Calls statt `prisma.user.findMany({ where: { email: { in: emails } } })`.
 
 ---
 
-### Performance – 10/10
+### Performance – 8.6/10
 
 **Positiv:**
-- Dynamic Imports: tesseract.js, html5-qrcode, recharts, @upstash/*, @vercel/blob alle lazy-loaded
+- Dynamic Imports: tesseract.js, html5-qrcode, recharts alle lazy-loaded
 - Bundle Analyzer konfiguriert (`ANALYZE=true next build`)
 - 22 @@index Definitionen im Prisma-Schema
-- next/image für externe BGG-Bilder mit `remotePatterns`
-- next/font/google für Geist-Schriften (kein Layout Shift)
-- Pagination auf allen Listen-Endpoints
+- next/image für alle externen Bilder + remotePatterns
+- next/font/google für Geist-Schriften (self-hosted, kein Layout Shift)
+- Umfassende Caching-Strategie: cachedQuery() + tag-based invalidation + ISR
+- ISR korrekt konfiguriert: terms/privacy static, faq/changelog 3600s
+- Kein unnötiger Client-JS: Server Components als Default
 
 **Neue Findings:**
 
-#### N-PERF-63: Kein `@vercel/analytics` integriert (P3)
-`@vercel/speed-insights` ist in layout.tsx eingebunden, aber `@vercel/analytics` ist weder installiert noch verwendet. Für Production-Monitoring wäre Real-User-Metrics hilfreich.
+#### DD-PERF-01: Fehlender @@index auf GameSession.gameId (P1)
+Queries die Sessions nach Game filtern machen Full Table Scan. Kritisch bei wachsender Datenmenge.
 
-**Bewertung:** Nice-to-have, kein Performance-Problem.
+**Fix:** `@@index([gameId])` zum GameSession-Model hinzufügen.
+
+#### DD-PERF-02: 7 weitere fehlende FK-Indices (P2)
+SessionPlayer.userId, GroupPoll.groupId, GroupPollOption.pollId, GroupComment.groupId, Event.groupId, GameSeries.ownerId, Group.ownerId — alle ohne @@index.
+
+#### DD-PERF-03: Keine Pagination auf Groups und Series (P2)
+GET /api/groups und GET /api/series haben kein `buildPagination()` — alle Records werden geladen.
+
+**Fix:** `buildPagination()` in GroupService.list() und SeriesService.list() integrieren.
+
+#### DD-PERF-04: Client-Fetch-Waterfall auf 8 Pages (P1)
+Referenziert DD-ARCH-01 — useEffect+fetch statt Server-Side Data Loading verursacht Waterfall (erst JS laden, dann fetch, dann rendern).
+
+#### DD-PERF-05: Kein @vercel/analytics (P3)
+@vercel/speed-insights eingebunden, aber @vercel/analytics für Real-User-Metrics fehlt.
 
 ---
 
-### API Design – 9/10
+### API Design – 7.0/10
 
 **Positiv:**
-- 218× `{ error: ... }` Format für Fehler – konsistent
-- Auth-Prüfung in allen geschützten Routes via `requireAuth()` / `requireAdmin()`
+- 218× `{ error: ... }` Format für Fehler – weitgehend konsistent
+- Auth-Prüfung in allen geschützten Routes via requireAuth()/requireAdmin()
 - Tagged Template Literals für alle Raw SQL Queries
-- RESTful Endpoint-Naming durchgängig
+- Korrekte HTTP Status Codes (400/401/403/404/409/429/500/502)
 
 **Neue Findings:**
 
-#### N-API-64: 10× `{ message: ... }` statt `{ error: ... }` (P2)
-Erfolgreiche Operationen nutzen teilweise `{ message: ... }` – inkonsistent mit dem Rest der API, der das Ergebnis direkt zurückgibt oder `{ success: true }` nutzt.
-Betroffene Routes: reorder, entryId/DELETE, register, users/me, votes/DELETE, date-proposals/reset, date-proposals/DELETE, invites/DELETE, invites/resend, proposals/DELETE.
+#### DD-API-01: 3 inkompatible Success-Response-Formate (P2)
+| Format | Anzahl | Wo |
+|--------|--------|----|
+| `{ message: "..." }` | 10 | DELETE-Responses, invites, votes |
+| `{ success: true }` | 8 | members, deactivate, change-password |
+| Entity direkt | Meiste | games, events, sessions |
 
-**Bewertung:** Funktional korrekt, rein kosmetisch. Standardisierung auf einheitliches Success-Format bei Gelegenheit.
+**Fix:** Standardisieren: DELETE → `{ message: string }`, Mutationen → Entity, Actions → Updated Entity.
 
-#### N-API-65: Input-Validierung in 22 von 51 POST/PUT-Routes (P3)
-29 Routes mit Mutationen importieren keine Validierungsfunktionen aus `validation.ts`. Viele davon validieren inline (z.B. `if (!body.name)`) oder sind reine Status-Updates (publish, close, share) die kaum Nutzereingaben verarbeiten.
+#### DD-API-02: Gemischte Sprache in Fehlermeldungen (P1)
+Deutsch und Englisch gemischt, sogar innerhalb derselben Datei:
+- `admin/users/route.ts:21` "Ungültige Rolle" vs. Zeile 26 "Missing required fields"
+- `admin/users/change-password/route.ts:18` Deutsch vs. Zeile 22 Englisch
+- `validation.ts` komplett Deutsch, aber viele Route-Handler Englisch
 
-**Bewertung:** Die kritischen Eingabe-Routes (Register, Games CRUD, Events, Sessions) nutzen alle validation.ts. Die fehlenden sind überwiegend einfache Toggle-/Status-Endpoints.
+**Fix:** Eine Sprache wählen (Empfehlung: Deutsch, da validation.ts Deutsch ist) oder Error-Codes einführen.
+
+#### DD-API-03: PATCH wird nie verwendet (P1)
+Null PATCH-Handler im gesamten Projekt. Alle partiellen Updates nutzen PUT mit `!== undefined`-Checks. REST-Konvention: PUT = vollständiges Ersetzen, PATCH = partielles Update.
+
+**Fix:** PUT-Handler die partielle Payloads akzeptieren zu PATCH umbenennen.
+
+#### DD-API-04: request.json() ohne Validierung in 5 Routes (P2)
+- `events/[id]/share/route.ts:20-21` — `{ userIds }` nur Array.isArray-Check
+- `groups/[id]/members/route.ts:26-27` — `{ email }` nur !email Check
+- `admin/users/change-password/route.ts:11` — Kein validateString
+- `admin/users/deactivate/route.ts:10` — Typ-Checks aber keine String-Validierung
+- `events/[id]/invites/route.ts:129-130` (PUT) — Enum-Validierung aber nicht validateString
+
+#### DD-API-05: Admin User Create gibt 200 statt 201 zurück (P2)
+`admin/users/route.ts:62` — `NextResponse.json(user)` ohne `{ status: 201 }`. Alle anderen Create-Endpoints geben korrekt 201 zurück.
+
+#### DD-API-06: Action-Verb-Routes statt REST-konform (P2)
+`/close`, `/publish`, `/reset`, `/select` — 10+ Endpoints nutzen Verben in der URL statt HTTP-Methoden auf der übergeordneten Ressource.
+
+#### DD-API-07: requireAuth() außerhalb try/catch in ~30 Routes (P3)
+Inkonsistent: Manche Routes haben requireAuth() innerhalb try/catch, die meisten außerhalb. withApiLogging fängt Fehler auf, aber das Pattern ist uneinheitlich.
+
+#### DD-API-08: /api/db/init Endpoint existiert (P3)
+Hat NODE_ENV/Admin-Guard, aber allein die Existenz einer DB-Init-Route in der API ist ein Risiko bei fehlkonfigurierter Umgebung.
 
 ---
 
-### Testing – 9/10
+### Testing – 6.6/10
 
 **Positiv:**
-- 35 Test-Dateien, 369 Tests, alle grün
-- Alle 7 Service-Dateien haben Tests
-- Accessibility-Tests mit axe-core (WCAG)
-- Security-Check-Tests vorhanden
-- E2E-Tests für Auth, Events, Games, Groups, Series, Sessions
+- 35 Test-Dateien, **369 Tests**, alle grün
+- Alle 7 Service-Dateien mit umfassenden Tests (Happy + Error Paths, Cache-Invalidierung, Pagination)
+- 10 Komponenten-Tests (date-voting, guest-registration, login, register, new-game, voting-client, 4× WCAG)
+- Accessibility-Tests mit axe-core
+- Pre-Commit führt Tests automatisch aus
+- Timer-Mocking korrekt (vi.useFakeTimers in rate-limit.test.ts)
 
 **Neue Findings:**
 
-#### N-TEST-66: Keine API-Route-Integrationstests (P3)
-Es gibt Unit-Tests für Services und Komponenten, aber keine Tests die API-Routes direkt aufrufen (z.B. mit `fetch` gegen die Route-Handler). Die Service-Layer-Tests decken die Geschäftslogik ab, aber Auth-/Validation-/Error-Handling-Logik der Routes bleibt ungetestet.
+#### DD-TEST-01: Null API-Route-Integrationstests (P0)
+**Kein einziger Test** für die 67+ API-Route-Handler. Route-Level-Validierung, Auth-Middleware-Integration, Request-Parsing und Error-Handling bleiben komplett ungetestet.
 
-**Bewertung:** Die E2E-Tests decken die kritischen Flows ab. API-Route-Tests wären eine Verbesserung, aber kein Blocker.
+**Fix:** `tests/integration/` Verzeichnis erstellen, mindestens Public-Event-Flow und Admin-Endpoints testen.
+
+#### DD-TEST-02: Keine Public-Event-Voting-Flow-Tests (P1)
+7 Public-Endpoints mit komplexem Flow (join → propose → vote → date-vote). Keiner getestet.
+
+#### DD-TEST-03: Keine Admin-Operations-Tests (P1)
+Admin-Routes (users, monitoring) komplett ungetestet — hohes Sicherheitsrisiko.
+
+#### DD-TEST-04: Keine Auth-Flow-Tests (P1)
+NextAuth Credential Provider, Session Callback, JWT Callback ungetestet.
+
+#### DD-TEST-05: E2E-Tests nur Smoke-Level (P2)
+6 E2E-Dateien testen primär "Redirect to Login" und "Page loads". games_test.ts hat auskommentierte Test-Bodies. Kein E2E-Test loggt sich ein, erstellt Daten oder testet CRUD-Flows.
+
+#### DD-TEST-06: Coverage-Schwellen zu niedrig (P3)
+vitest.config.ts: 20% global, 40% lib. src/app/api/** nicht in Coverage-Config enthalten.
 
 ---
 
-### Datenbank – 10/10
+### Datenbank – 8.0/10
 
 **Positiv:**
-- 22 @@index Definitionen (alle FKs und Filter-Felder indexiert)
-- Alle Relationen mit explizitem `onDelete` (Cascade, SetNull)
-- SessionRating-Modell mit @@unique([sessionId, userId])
-- Connection Pooling konfiguriert
-- 12 Migrations sauber und inkrementell
+- 22 @@index Definitionen
+- Alle Relationen mit explizitem onDelete (Cascade, SetNull) — korrekt und konsistent
+- SessionRating mit @@unique([sessionId, userId])
+- Connection Pooling: connection_limit=10, pool_timeout=20
+- Prisma Singleton Pattern (kein Multi-Instance in Dev)
+- 13 Migrations sauber und inkrementell
 
 **Neue Findings:**
 
-#### N-DB-67: 7 Relationen ohne explizites onDelete auf der Array-Seite (P3)
-Die folgenden `@relation`-Definitionen auf der "many"-Seite (Array-Felder) haben kein onDelete, was in Prisma für Array-Relationen aber normal ist – das onDelete wird auf der FK-Seite definiert (und dort ist es überall korrekt gesetzt).
-Betrifft: `createdPolls`, `groupPollVotes`, `groupComments`, `apiLogs`, `sessionRatings`, `selectedEvents`, `wonEvent`.
+#### DD-DB-01: Upload-Model ohne FK-Relation zu User (P1)
+`Upload.ownerId` hat einen Index aber **keine Foreign-Key-Relation** in Prisma. Keine `owner User @relation(...)` — Orphan-Uploads möglich bei User-Löschung.
 
-**Bewertung:** Kein echtes Problem – Prisma definiert onDelete auf der FK-Seite, nicht auf der Array-Seite. Alle FK-Seiten haben korrekte onDelete-Definitionen.
+**Fix:** `owner User @relation(fields: [ownerId], references: [id], onDelete: Cascade)` hinzufügen.
+
+#### DD-DB-02: 8+ fehlende FK-Indices (P2)
+| Model | FK-Feld | Abfrage-Relevanz |
+|-------|---------|-----------------|
+| GameSession | gameId | Sessions per Game |
+| SessionPlayer | userId (standalone) | Sessions per User |
+| GroupPoll | groupId | Polls per Group |
+| GroupPollOption | pollId | Options per Poll |
+| GroupComment | groupId | Comments per Group |
+| Event | groupId | Events per Group |
+| GameSeries | ownerId | Series per User |
+| Group | ownerId | Groups per User |
+
+**Hinweis:** PostgreSQL erstellt KEINEN automatischen Index auf @@unique Composite-Spalten für einzelne Spalten-Lookups.
+
+#### DD-DB-03: GameProposal kann ohne Game-Referenz existieren (P2)
+Sowohl `gameId=null` als auch `bggId=null` möglich — ein Proposal ohne jede Spiel-Referenz.
+
+#### DD-DB-04: EventInvite kann ohne Target existieren (P2)
+Sowohl `userId=null` als auch `email=null` möglich — eine Einladung ohne Empfänger.
+
+#### DD-DB-05: String-Typen statt Prisma Enums (P2)
+`User.role`, `Event.status`, `GroupPoll.type/status`, `DateVote.availability` — alle als String, beliebige Werte möglich. Prisma Enums würden Datenintegrität auf DB-Ebene sicherstellen.
+
+#### DD-DB-06: 7 Array-Relationen ohne explizites onDelete (P3)
+Betrifft Array-Seite: createdPolls, groupPollVotes, groupComments, etc. Normal für Prisma — onDelete wird auf FK-Seite definiert und ist dort überall korrekt.
 
 ---
 
-### Konzept-Konformität – 10/10
+### Konzept-Konformität – 9.5/10
 
 **Positiv:**
-- Tech-Stack in CONCEPT.md aktuell (Next.js 16, PostgreSQL)
-- Alle Kern-Features implementiert: Spielesammlung, Sessions, Gruppen, Events, Statistiken, BGG-Integration
-- Über-Konzept-Features: Public Events, Date Polling, EAN-Scanner, Admin Monitoring, Kalender-Export
-- Tags/Kategorien implementiert (CONCEPT.md sagt noch "geplant")
+- Alle 16 Kern-Features aus CONCEPT.md implementiert
+- Tech-Stack in CONCEPT.md akkurat und aktuell
+- Über-Konzept: Public Events, Date Polling, EAN-Scanner, Admin Monitoring, Email, Kalender-Export, Passwort-Reset
 
 **Neue Findings:**
 
-#### N-KONZ-68: CONCEPT.md sagt "Tags/Kategorien (geplant)" – aber bereits implementiert (P3)
-Zeile 13 in CONCEPT.md: `Tags/Kategorien (geplant)` – Tatsächlich existiert ein vollständiges Tag-System (Tag-Modell, GameTag-Relation, /api/tags, Tag-Filter-Chips auf der Spieleliste).
+#### DD-KONZ-01: Tags "geplant" aber implementiert (P3)
+CONCEPT.md Zeile 13: "Tags/Kategorien (geplant)" — tatsächlich vollständig implementiert (Tag-Modell, GameTag, /api/tags, Filter-Chips).
 
-**Bewertung:** Reine Doku-Aktualisierung, kein Code-Problem.
+#### DD-KONZ-02: Nicht dokumentierte Features (P3)
+Folgende im Code vorhandene Features fehlen in CONCEPT.md: pino (Logging), @upstash/ratelimit, @upstash/redis, @vercel/blob, @vercel/speed-insights, Soft-Delete.
 
 ---
 
-### Best Practices – 9/10
+### Best Practices – 8.4/10
 
 **Positiv:**
-- ESLint: 0 Errors/Warnings in src/
-- TypeScript: 0 Errors (`tsc --noEmit` clean)
-- Husky Pre-Commit: Tests + Security + Review-Evaluator
+- ESLint: **0 Errors, 0 Warnings** in src/ (Cleanup v0.31.0 abgeschlossen)
+- TypeScript: **0 Errors**, strict mode, 0 any
+- Husky Pre-Commit: Tests + Security + Review-Evaluator + Regression
 - ENV-Validierung beim Start (src/lib/env.ts)
-- Consistent Naming: camelCase/PascalCase/kebab-case durchgängig
+- Changelog als TypeScript mit 31+ Versionen
 - @vercel/speed-insights eingebunden
 
 **Neue Findings:**
 
-#### N-BP-69: 54× console.log/error/warn in src/ (P2)
-Trotz pino-Logger existieren noch 54 `console.*`-Aufrufe in Produktionscode. Die meisten sind `console.error` in Client-Komponenten (Error-Boundaries, Catch-Blöcke) und `console.error` in Dashboard-Seiten.
-Server-seitig ist die Migration zu pino abgeschlossen. Client-seitig ist console.error akzeptabel (pino läuft nur server-side), aber einige Stellen könnten durch den Toast-Mechanismus ersetzt werden.
+#### DD-BP-01: Pre-Commit Hook zu langsam (P1)
+Führt **komplette Test-Suite** (369 Tests) + Security-Check + Review-Evaluator aus. Sollte lint-staged für geänderte Dateien nutzen, schwere Checks zu pre-push oder CI verschieben.
 
-**Bewertung:** Client-seitige console.error sind akzeptabel (kein Logger-Framework im Browser). Server-seitige sind alle auf pino migriert. Kein Handlungsbedarf.
+#### DD-BP-02: admin-create.ts ist Dead Code (P1)
+Wird nirgends importiert. `require.main`-Pattern funktioniert nicht in ESM.
 
-#### N-BP-70: package.json Version "0.1.0" (P3)
-Die package.json zeigt Version 0.1.0 obwohl der Changelog bereits bei v0.31.0 steht. Die Versionen sollten synchron gehalten werden.
+**Fix:** Datei entfernen oder in einen funktionierenden CLI-Script migrieren.
 
-**Bewertung:** Kosmetisch, kein funktionales Problem.
+#### DD-BP-03: 54× console.* in Client-Komponenten (P2)
+Server-seitig auf pino migriert. Client-seitige console.error sind akzeptabel (kein Browser-Logger), aber einige Stellen könnten Toast nutzen.
+
+#### DD-BP-04: Gemischte API-Fehlersprache (P2)
+Referenziert DD-API-02 — Deutsch in validation.ts, Englisch in vielen Route-Handlers.
+
+#### DD-BP-05: SMTP_PORT nicht als Zahl validiert (P2)
+`env.ts` liest SMTP_PORT als String, keine parseInt-Validierung.
+
+#### DD-BP-06: package.json Version "0.1.0" vs Changelog v0.31.1 (P3)
+Versionen nicht synchronisiert.
+
+#### DD-BP-07: Kein .env.local Template (P3)
+Keine Validierung gegen .env.example beim Start.
 
 ---
 
-### Skalierung – 10/10
+### Skalierung – 9.0/10
 
 **Positiv:**
-- Redis-basiertes Rate Limiting (@upstash/ratelimit) mit In-Memory-Fallback
+- Redis-basiertes Rate Limiting (@upstash/ratelimit) mit In-Memory-Fallback (MAX_MAP_SIZE=10.000, LRU-Eviction)
 - Cloud Storage via @vercel/blob mit Local Fallback
-- Redis Cache Layer (src/lib/cache.ts)
-- Health-Check Endpoint (/api/health) mit DB-Ping
-- Strukturiertes JSON-Logging (pino)
-- Connection Pooling konfiguriert
+- Redis Cache Layer (src/lib/cache.ts, cachedQuery + tag-based invalidation)
+- Health-Check: DB-Ping, Memory, Uptime, Version, DB-Counts, Migration-Status
+- Strukturiertes JSON-Logging (pino), API-Logging in DB
+- Connection Pooling: connection_limit=10, pool_timeout=20
 - Automatisierte DB-Backups (pre-push Hook)
 
-**Keine neuen Findings.**
+**Neue Findings:**
+
+#### DD-SCALE-01: Upstash Rate Limit ignoriert Custom-Parameter (P1)
+`rate-limit.ts:24` — `slidingWindow(10, "60 s")` ist hardcoded. Wenn Upstash aktiv ist, werden die pro-Endpoint-Parameter `maxRequests`/`windowMs` aus `checkRateLimitAsync()` ignoriert.
+
+**Fix:** Pro-Endpoint Ratelimit-Instanzen erstellen oder Parameter durchreichen.
+
+#### DD-SCALE-02: Local File Storage ephemeral auf Serverless (P1)
+`storage.ts:15-24` — Schreibt in `public/uploads/` das bei jedem Vercel-Deployment gelöscht wird. Produktion MUSS Vercel Blob nutzen.
+
+**Fix:** Warning loggen wenn Production ohne BLOB_READ_WRITE_TOKEN läuft.
+
+#### DD-SCALE-03: unstable_cache API (P2)
+`cache.ts` nutzt `unstable_cache` — Next.js 16 hat möglicherweise `use cache` Directive als Nachfolger.
+
+#### DD-SCALE-04: Client-seitiges Error-Reporting fehlt (P3)
+Kein Sentry/Datadog/etc. für Client-Fehler. Nur console.error im Browser.
 
 ---
 
-### Gesamtbewertung
+### Gesamtbewertung (Deep-Dive)
 
 | Kategorie | Score | Begründung |
 |-----------|-------|-----------|
-| Sicherheit | **10/10** | 0 Vulnerabilities, alle Header, kein Leak, Rate Limiting |
-| Architektur | **9/10** | 13 Dateien >300 Zeilen, Loading-Coverage 34% |
-| Performance | **10/10** | Dynamic Imports, Indices, next/image, Pagination |
-| API Design | **9/10** | 10× inkonsistentes Message-Format, Validation 43% |
-| Testing | **9/10** | 369 Tests, aber keine API-Route-Integrationstests |
-| Datenbank | **10/10** | Vollständig indexiert, onDelete korrekt |
-| Konzept-Konformität | **10/10** | CONCEPT.md minimal outdated |
-| Best Practices | **9/10** | 54× console.*, Version mismatch |
-| Skalierung | **10/10** | Redis, Cloud Storage, Logging, Health Check |
-| **GESAMT** | **9.6/10** | |
+| Sicherheit | **9.4/10** | 5 Input-Validierungs-Lücken, 2 Rate-Limiting-Gaps |
+| Architektur | **7.8/10** | 8 Pages Client statt Server, N+1, DRY-Violations |
+| Performance | **8.6/10** | Caching excellent, aber N+1 und Client-Fetch-Waterfall |
+| API Design | **7.0/10** | 3 Response-Formate, gemischte Sprache, kein PATCH |
+| Testing | **6.6/10** | 369 Tests, aber P0: 0 API-Route-Tests, E2E flach |
+| Datenbank | **8.0/10** | 22 Indices, aber 8+ fehlende FK-Indices, Upload FK fehlt |
+| Konzept | **9.5/10** | Alle Features umgesetzt, minimaler Doku-Drift |
+| Best Practices | **8.4/10** | ESLint 0 Warnings, aber API-Inkonsistenz und DRY |
+| Skalierung | **9.0/10** | Redis, Blob, Health, aber Upstash-Params ignoriert |
+| **GESAMT** | **8.3/10** | **Manueller Deep-Dive, deutlich strengere Kriterien als Evaluator** |
+
+> **Vergleich:** Evaluator-Score bleibt 10/10 (alle 50 historischen Findings resolved).
+> Der manuelle Deep-Dive deckt ~48 zusätzliche, granulare Findings auf die der Evaluator nicht prüft.
 
 ---
 
@@ -740,7 +932,7 @@ const isValid = await compare(inputPassword, group.password);
 
 ## Evaluator-Feedback (automatisch generiert)
 
-> Letzter Lauf: 2026-03-26 10:15:50
+> Letzter Lauf: 2026-03-26 10:16:26
 > Gesamt-Score: **10/10**
 
 ### Kategorie-Scores
