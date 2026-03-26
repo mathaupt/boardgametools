@@ -167,7 +167,8 @@ export const GET = withApiLogging(async function GET() {
       overallScore: 9.1,
       previousScore: 8.3,
       evaluatorScore: latestSnapshot?.overall ?? 10,
-      version: "0.35.0",
+      version: "0.36.0",
+      lastReviewDate: latestSnapshot?.date ?? null,
 
       // Category scores
       categoryScores: CATEGORY_SCORES,

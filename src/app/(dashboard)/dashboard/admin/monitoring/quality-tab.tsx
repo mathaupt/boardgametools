@@ -41,6 +41,7 @@ export interface QualityData {
   previousScore: number;
   evaluatorScore: number;
   version: string;
+  lastReviewDate: string | null;
   categoryScores: CategoryScore[];
   tests: { total: number; files: number; allPassing: boolean; apiRouteTests: number };
   codeQuality: {
@@ -181,6 +182,11 @@ export function QualityTab({ data, loading }: { data: QualityData | null; loadin
               <TrendingUp className="h-3 w-3 text-green-500" />
               <span className="text-xs text-green-500 font-medium">+{delta.toFixed(1)} seit Review</span>
             </div>
+            {data.lastReviewDate && (
+              <p className="text-[10px] text-muted-foreground mt-1">
+                Letztes Review: {new Date(data.lastReviewDate).toLocaleDateString("de-DE", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })}
+              </p>
+            )}
           </CardContent>
         </Card>
         <StatCard icon={TestTube} label="Tests" value={data.tests.total} sub={`${data.tests.files} Dateien, ${data.tests.apiRouteTests} API-Route-Tests`} />
