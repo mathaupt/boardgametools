@@ -17,9 +17,14 @@ import { Label } from "@/components/ui/label";
 
 import dynamic from "next/dynamic";
 import type { StatsData } from "./overview-tab";
+import type { QualityData } from "./quality-tab";
 
 const OverviewTab = dynamic(
   () => import("./overview-tab").then((mod) => mod.OverviewTab),
+  { ssr: false }
+);
+const QualityTab = dynamic(
+  () => import("./quality-tab").then((mod) => mod.QualityTab),
   { ssr: false }
 );
 import { LogsTab } from "./logs-tab";
@@ -52,6 +57,10 @@ export function MonitoringDashboard() {
   const [anomalies, setAnomalies] = useState<AnomaliesData | null>(null);
   const [anomaliesLoading, setAnomaliesLoading] = useState(true);
 
+  // Quality
+  const [quality, setQuality] = useState<QualityData | null>(null);
+  const [qualityLoading, setQualityLoading] = useState(true);
+
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const fetchStats = useCallback(async () => {
@@ -73,17 +82,28 @@ export function MonitoringDashboard() {
     setAnomaliesLoading(false);
   }, [period]);
 
+  const fetchQuality = useCallback(async () => {
+    setQualityLoading(true);
+    try {
+      const res = await fetch("/api/admin/monitoring/quality");
+      if (res.ok) setQuality(await res.json());
+    } catch { /* ignore */ }
+    setQualityLoading(false);
+  }, []);
+
   const refreshAll = useCallback(() => {
     fetchStats();
     fetchAnomalies();
-  }, [fetchStats, fetchAnomalies]);
+    fetchQuality();
+  }, [fetchStats, fetchAnomalies, fetchQuality]);
 
   // Initial fetch & period change
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchStats();
     fetchAnomalies();
-  }, [fetchStats, fetchAnomalies]);
+    fetchQuality();
+  }, [fetchStats, fetchAnomalies, fetchQuality]);
 
   // Auto-refresh
   useEffect(() => {
@@ -140,11 +160,20 @@ export function MonitoringDashboard() {
               </Badge>
             )}
           </TabsTrigger>
+          <TabsTrigger value="quality">
+            Qualitaet
+            {quality && (
+              <Badge variant="outline" className="ml-2 text-xs">
+                {quality.overallScore.toFixed(1)}
+              </Badge>
+            )}
+          </TabsTrigger>
         </TabsList>
 
         <OverviewTab stats={stats} statsLoading={statsLoading} />
         <LogsTab period={period} onRefreshAll={refreshAll} />
         <AnomaliesTab anomalies={anomalies} anomaliesLoading={anomaliesLoading} />
+        <QualityTab data={quality} loading={qualityLoading} />
       </Tabs>
     </div>
   );

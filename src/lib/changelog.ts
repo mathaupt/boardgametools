@@ -11,6 +11,20 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.36.0",
+    date: "2026-03-26",
+    title: "Qualitaets-Dashboard: Neuer Monitoring-Tab mit Review-Ergebnissen",
+    description: "Neuer 'Qualitaet'-Tab im Admin-Monitoring-Dashboard zeigt Management Summary, Kategorie-Scores (Radar-Chart), Finding-Status, Test-Ergebnisse, Code-Coverage und Score-Verlauf. API-Route /api/admin/monitoring/quality liefert alle Daten.",
+    changes: [
+      { type: "feature", text: "Neuer Quality-Tab im Monitoring-Dashboard: Management Summary als Entry-Point mit Drill-Down in Kategorie-Details" },
+      { type: "feature", text: "Radar-Chart fuer 10 Kategorie-Scores (Security, Architecture, Performance, Testing, API Design, Database, Konzept, Best Practices, Scaling, BOM)" },
+      { type: "feature", text: "Finding-Liste mit Filter nach Kategorie und Status (offen/behoben), Prioritaets-Badges (P0-P3)" },
+      { type: "feature", text: "Code-Qualitaets-Kacheln: TypeScript Errors, ESLint, npm audit, Error Boundaries, Coverage-Balken" },
+      { type: "feature", text: "Score-Verlauf als Line-Chart (Evaluator-History)" },
+      { type: "internal", text: "API-Route /api/admin/monitoring/quality mit Deep-Dive-Findings, Kategorie-Scores und Evaluator-Snapshots" },
+    ],
+  },
+  {
     version: "0.35.0",
     date: "2026-03-26",
     title: "P2-Fixes: Pagination, API-Konsistenz, Validierung, TagService, Console-Cleanup",
