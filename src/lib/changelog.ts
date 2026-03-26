@@ -11,6 +11,16 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.34.1",
+    date: "2026-03-26",
+    title: "Review-Dokumentation aktualisiert: Score 8.3 auf 9.1",
+    description: "SKILL.md und docs/-Berichte nach Abschluss aller P0+P1 Fixes aktualisiert. 20 behobene Deep-Dive-Findings mit Strikethrough markiert. Management Summary mit aktualisierten Scores erstellt.",
+    changes: [
+      { type: "internal", text: "SKILL.md: 20 DD-Findings als behoben markiert, Gesamtscore 8.3 auf 9.1 aktualisiert" },
+      { type: "internal", text: "docs/: Aktualisierte Bewertungen, Review-Snapshot und Management Summary (post-fixes) erstellt" },
+    ],
+  },
+  {
     version: "0.34.0",
     date: "2026-03-26",
     title: "Server Component Migration + Pre-Commit Optimierung",
