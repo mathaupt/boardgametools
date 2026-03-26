@@ -4,6 +4,7 @@ import prisma from "@/lib/db";
 import { verifyResetToken, markResetTokenUsed } from "@/lib/password-reset";
 import { withApiLogging } from "@/lib/api-logger";
 import { checkRateLimit, rateLimitResponse } from "@/lib/rate-limit";
+import logger from "@/lib/logger";
 
 export const POST = withApiLogging(async function POST(request: Request) {
   try {
@@ -49,7 +50,7 @@ export const POST = withApiLogging(async function POST(request: Request) {
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Password reset confirm failed:", error);
+    logger.error({ err: error }, "Password reset confirm failed");
     return NextResponse.json({ error: "Passwort konnte nicht zurückgesetzt werden" }, { status: 500 });
   }
 });

@@ -6,6 +6,7 @@ import { withApiLogging } from "@/lib/api-logger";
 import { validateString, firstError } from "@/lib/validation";
 import { fetchBGGGame } from "@/lib/bgg";
 import { checkRateLimit, rateLimitResponse } from "@/lib/rate-limit";
+import logger from "@/lib/logger";
 
 type RouteContext = { params: Promise<{ token: string }> };
 
@@ -158,7 +159,7 @@ export const POST = withApiLogging(async function POST(
       { status: 201 }
     );
   } catch (error) {
-    console.error("Error proposing BGG game via public link:", error);
+    logger.error({ err: error }, "Error proposing BGG game via public link");
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

@@ -5,6 +5,7 @@ import { sendPasswordResetEmail } from "@/lib/mailer";
 import { getPublicBaseUrl } from "@/lib/public-link";
 import { withApiLogging } from "@/lib/api-logger";
 import { checkRateLimit, rateLimitResponse } from "@/lib/rate-limit";
+import logger from "@/lib/logger";
 
 export const POST = withApiLogging(async function POST(request: Request) {
   try {
@@ -34,7 +35,7 @@ export const POST = withApiLogging(async function POST(request: Request) {
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Password reset request failed:", error);
+    logger.error({ err: error }, "Password reset request failed");
     return NextResponse.json({ error: "Passwort-Reset derzeit nicht möglich" }, { status: 500 });
   }
 });

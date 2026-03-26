@@ -8,6 +8,7 @@ import { withApiLogging } from "@/lib/api-logger";
 import { validateString } from "@/lib/validation";
 import { CacheTags } from "@/lib/cache-tags";
 import { checkRateLimit, rateLimitResponse } from "@/lib/rate-limit";
+import logger from "@/lib/logger";
 
 type RouteContext = { params: Promise<{ token: string }> };
 
@@ -85,7 +86,7 @@ export const POST = withApiLogging(async function POST(
         eventUrl,
       });
     } catch (mailErr) {
-      console.error("Failed to send invite response email:", mailErr);
+      logger.error({ err: mailErr }, "Failed to send invite response email");
     }
 
     // Invalidate caches for the responding user (if registered)
@@ -101,7 +102,7 @@ export const POST = withApiLogging(async function POST(
       status: updatedInvite.status,
     });
   } catch (error) {
-    console.error("Error responding to invite:", error);
+    logger.error({ err: error }, "Error responding to invite");
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 });

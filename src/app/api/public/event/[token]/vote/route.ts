@@ -4,6 +4,7 @@ import { resolveEventIdFromToken } from "@/lib/event-share";
 import { withApiLogging } from "@/lib/api-logger";
 import { validateString, firstError } from "@/lib/validation";
 import { checkRateLimit, rateLimitResponse } from "@/lib/rate-limit";
+import logger from "@/lib/logger";
 
 type RouteContext = { params: Promise<{ token: string }> };
 
@@ -84,7 +85,7 @@ export const POST = withApiLogging(async function POST(
       voteCounts: counts?._count ?? { votes: 0, guestVotes: 0 },
     });
   } catch (error) {
-    console.error("Error creating guest vote:", error);
+    logger.error({ err: error }, "Error creating guest vote");
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 });
@@ -155,7 +156,7 @@ export const DELETE = withApiLogging(async function DELETE(
       voteCounts: counts?._count ?? { votes: 0, guestVotes: 0 },
     });
   } catch (error) {
-    console.error("Error removing guest vote:", error);
+    logger.error({ err: error }, "Error removing guest vote");
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 });

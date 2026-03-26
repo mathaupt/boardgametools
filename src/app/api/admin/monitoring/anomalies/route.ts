@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin, handleApiError } from "@/lib/require-auth";
 import prisma from "@/lib/db";
 import { Prisma } from "@prisma/client";
+import logger from "@/lib/logger";
 
 type ValidPeriod = "1h" | "6h" | "24h" | "7d";
 
@@ -280,7 +281,7 @@ export async function GET(request: NextRequest) {
       checkedAt: detectedAt,
     });
   } catch (error) {
-    console.error("Error detecting anomalies:", error);
+    logger.error({ err: error }, "Error detecting anomalies");
     return NextResponse.json(
       { error: "Interner Serverfehler bei der Anomalie-Erkennung" },
       { status: 500 }

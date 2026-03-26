@@ -7,6 +7,7 @@ import { sendEventInviteEmail } from "@/lib/mailer";
 import { getPublicBaseUrl } from "@/lib/public-link";
 import { encryptId } from "@/lib/crypto";
 import { NOT_DELETED, SAFE_USER_SELECT, buildPagination, paginatedResponse } from "./shared";
+import logger from "@/lib/logger";
 
 // ── Types ────────────────────────────────────────────────────────
 
@@ -177,7 +178,7 @@ export const EventService = {
           eventUrl,
         });
       } catch (mailErr) {
-        console.error("Failed to send invite email:", mailErr);
+        logger.error({ err: mailErr }, "Failed to send invite email");
       }
     }
 

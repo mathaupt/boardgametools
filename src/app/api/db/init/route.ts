@@ -3,6 +3,7 @@ import prisma from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { withApiLogging } from "@/lib/api-logger";
 import { env } from "@/lib/env";
+import logger from "@/lib/logger";
 
 export const POST = withApiLogging(async function POST() {
   // Only allow in development or for authenticated admins
@@ -28,7 +29,7 @@ export const POST = withApiLogging(async function POST() {
     });
 
   } catch (error) {
-    console.error("Database check failed:", error);
+    logger.error({ err: error }, "Database check failed");
     return NextResponse.json(
       { 
         error: error instanceof Error ? error.message : "Unknown error",

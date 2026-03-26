@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { compare } from "bcryptjs";
 import { findPublicGroupByToken } from "@/lib/group-share";
 import { withApiLogging } from "@/lib/api-logger";
+import logger from "@/lib/logger";
 
 type RouteContext = { params: Promise<{ token: string }> };
 
@@ -65,7 +66,7 @@ export const GET = withApiLogging(async function GET(
       requiresPassword: false,
     });
   } catch (error) {
-    console.error("Error fetching public group:", error);
+    logger.error({ err: error }, "Error fetching public group");
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 });

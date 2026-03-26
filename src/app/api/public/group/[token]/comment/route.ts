@@ -5,6 +5,7 @@ import prisma from "@/lib/db";
 import { withApiLogging } from "@/lib/api-logger";
 import { validateString, firstError } from "@/lib/validation";
 import { checkRateLimit, rateLimitResponse } from "@/lib/rate-limit";
+import logger from "@/lib/logger";
 
 type RouteContext = { params: Promise<{ token: string }> };
 
@@ -54,7 +55,7 @@ export const POST = withApiLogging(async function POST(
 
     return NextResponse.json(comment, { status: 201 });
   } catch (error) {
-    console.error("Error creating comment:", error);
+    logger.error({ err: error }, "Error creating comment");
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 });

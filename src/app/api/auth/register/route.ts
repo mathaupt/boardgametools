@@ -4,6 +4,7 @@ import prisma from "@/lib/db";
 import { withApiLogging } from "@/lib/api-logger";
 import { checkRateLimit, rateLimitResponse } from "@/lib/rate-limit";
 import { validateString, validateEmail, firstError } from "@/lib/validation";
+import logger from "@/lib/logger";
 
 export const POST = withApiLogging(async function POST(request: NextRequest) {
   try {
@@ -49,7 +50,7 @@ export const POST = withApiLogging(async function POST(request: NextRequest) {
       { status: 201 }
     );
   } catch (error) {
-    console.error("Registration error:", error);
+    logger.error({ err: error }, "Registration error");
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

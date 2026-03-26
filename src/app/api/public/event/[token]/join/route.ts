@@ -47,7 +47,7 @@ export const POST = withApiLogging(async function POST(
 
     return NextResponse.json(participant, { status: 201 });
   } catch (error) {
-    console.error("Error joining public event:", error);
+    logger.error({ err: error }, "Error joining public event");
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 });

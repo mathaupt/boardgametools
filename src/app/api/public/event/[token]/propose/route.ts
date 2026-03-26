@@ -5,6 +5,7 @@ import { resolveEventIdFromToken } from "@/lib/event-share";
 import { withApiLogging } from "@/lib/api-logger";
 import { validateString } from "@/lib/validation";
 import { checkRateLimit, rateLimitResponse } from "@/lib/rate-limit";
+import logger from "@/lib/logger";
 
 type RouteContext = { params: Promise<{ token: string }> };
 
@@ -89,7 +90,7 @@ export const POST = withApiLogging(async function POST(
       totalVotes: proposal._count.votes + proposal._count.guestVotes,
     }, { status: 201 });
   } catch (error) {
-    console.error("Error proposing game via public link:", error);
+    logger.error({ err: error }, "Error proposing game via public link");
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 });

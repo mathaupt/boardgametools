@@ -1,5 +1,6 @@
 import nodemailer from "nodemailer";
 import { env } from "@/lib/env";
+import logger from "@/lib/logger";
 
 const smtpHost = env.SMTP_HOST;
 const smtpPort = Number(env.SMTP_PORT);
@@ -11,7 +12,7 @@ const defaultSender =
   env.PASSWORD_RESET_SENDER;
 
 if (!smtpHost) {
-  console.warn("[mailer] SMTP_HOST is not configured. Emails will fail.");
+  logger.warn("[mailer] SMTP_HOST is not configured. Emails will fail.");
 }
 
 const transporter = smtpHost

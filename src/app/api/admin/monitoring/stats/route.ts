@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin, handleApiError } from "@/lib/require-auth";
 import prisma from "@/lib/db";
 import { Prisma } from "@prisma/client";
+import logger from "@/lib/logger";
 
 type ValidPeriod = "1h" | "6h" | "24h" | "7d" | "30d";
 
@@ -182,7 +183,7 @@ export async function GET(request: NextRequest) {
       methodDistribution,
     });
   } catch (error) {
-    console.error("Error fetching monitoring stats:", error);
+    logger.error({ err: error }, "Error fetching monitoring stats");
     return NextResponse.json(
       { error: "Interner Serverfehler beim Abrufen der Statistiken" },
       { status: 500 }

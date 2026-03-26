@@ -4,6 +4,10 @@ vi.mock("@/lib/auth", () => ({
   auth: vi.fn(),
 }));
 
+vi.mock("@/lib/logger", () => ({
+  default: { error: vi.fn(), warn: vi.fn(), info: vi.fn(), debug: vi.fn() },
+}));
+
 vi.mock("next/server", () => ({
   NextResponse: {
     json: vi.fn((body: unknown, init?: { status?: number }) => ({
@@ -133,14 +137,13 @@ describe("require-auth", () => {
       expect(response).toEqual(expect.objectContaining({ status: 500 }));
     });
 
-    it("logs unexpected errors to console.error", () => {
-      const spy = vi.spyOn(console, "error").mockImplementation(() => {});
+    it("logs unexpected errors via logger.error", async () => {
+      const logger = vi.mocked((await import("@/lib/logger")).default);
       const error = new Error("unexpected");
 
       handleApiError(error);
 
-      expect(spy).toHaveBeenCalledWith("Unexpected error:", error);
-      spy.mockRestore();
+      expect(logger.error).toHaveBeenCalledWith({ err: error }, "Unexpected error");
     });
   });
 });

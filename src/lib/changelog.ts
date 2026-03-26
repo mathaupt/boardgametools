@@ -11,6 +11,18 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.26.0",
+    date: "2026-03-24",
+    title: "Service-Tests & Structured Logging (Review P1-P2)",
+    description: "36 neue Service-Tests fuer EventService und SeriesService. console.error/warn in 22 Server-Dateien durch strukturierten pino-Logger ersetzt.",
+    changes: [
+      { type: "feature", text: "EventService-Tests: 15 Tests fuer list, getById (inkl. Auth-Pruefung), create, close, update, delete" },
+      { type: "feature", text: "SeriesService-Tests: 21 Tests fuer list, getById, create, update, delete, addEntry, updateEntry, deleteEntry, reorderEntries" },
+      { type: "improvement", text: "22 Server-Dateien von console.error/warn auf strukturierten pino-Logger (logger.error/warn) migriert" },
+      { type: "internal", text: "require-auth.test.ts an neuen Logger-Mock angepasst" },
+    ],
+  },
+  {
     version: "0.25.0",
     date: "2026-03-24",
     title: "Security Hardening & Code-Quality (Review P0-P1)",

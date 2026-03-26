@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin, handleApiError } from "@/lib/require-auth";
 import prisma from "@/lib/db";
+import logger from "@/lib/logger";
 
 // GET /api/admin/monitoring/logs — Paginated API logs with optional filters
 export async function GET(request: NextRequest) {
@@ -88,7 +89,7 @@ export async function GET(request: NextRequest) {
       totalPages,
     });
   } catch (error) {
-    console.error("Error fetching API logs:", error);
+    logger.error({ err: error }, "Error fetching API logs");
     return NextResponse.json(
       { error: "Interner Serverfehler beim Abrufen der Logs" },
       { status: 500 }
@@ -122,7 +123,7 @@ export async function DELETE(request: NextRequest) {
 
     return NextResponse.json({ deleted: result.count });
   } catch (error) {
-    console.error("Error purging API logs:", error);
+    logger.error({ err: error }, "Error purging API logs");
     return NextResponse.json(
       { error: "Interner Serverfehler beim Löschen der Logs" },
       { status: 500 }

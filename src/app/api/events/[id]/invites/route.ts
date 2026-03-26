@@ -8,6 +8,7 @@ import { encryptId } from "@/lib/crypto";
 import { withApiLogging } from "@/lib/api-logger";
 import { validateString, firstError } from "@/lib/validation";
 import { CacheTags } from "@/lib/cache-tags";
+import logger from "@/lib/logger";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -103,7 +104,7 @@ export const POST = withApiLogging(async function POST(
           eventUrl,
         });
       } catch (mailErr) {
-        console.error("Failed to send invite email:", mailErr);
+        logger.error({ err: mailErr }, "Failed to send invite email");
       }
     }
 
@@ -170,7 +171,7 @@ export const PUT = withApiLogging(async function PUT(
           eventUrl,
         });
       } catch (mailErr) {
-        console.error("Failed to send invite response email:", mailErr);
+        logger.error({ err: mailErr }, "Failed to send invite response email");
       }
     }
 

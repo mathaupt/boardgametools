@@ -1,5 +1,6 @@
 import { auth } from "@/lib/auth";
 import { NextResponse } from "next/server";
+import logger from "@/lib/logger";
 
 /**
  * Typed API error with HTTP status code.
@@ -61,6 +62,6 @@ export function handleApiError(error: unknown): NextResponse {
   if (error instanceof ApiError) {
     return NextResponse.json({ error: error.message }, { status: error.statusCode });
   }
-  console.error("Unexpected error:", error);
+  logger.error({ err: error }, "Unexpected error");
   return NextResponse.json({ error: "Internal server error" }, { status: 500 });
 }

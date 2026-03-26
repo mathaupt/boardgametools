@@ -6,6 +6,7 @@ import { getPublicBaseUrl } from "@/lib/public-link";
 import { encryptId } from "@/lib/crypto";
 import { withApiLogging } from "@/lib/api-logger";
 import { validateString, firstError } from "@/lib/validation";
+import logger from "@/lib/logger";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -100,7 +101,7 @@ export const POST = withApiLogging(async function POST(
         sentCount++;
       } catch (mailErr) {
         const errMsg = mailErr instanceof Error ? mailErr.message : String(mailErr);
-        console.error("Failed to send mail:", errMsg);
+        logger.error({ errMsg }, "Failed to send mail");
         errors.push(`${recipientEmail}: ${errMsg}`);
         failedCount++;
       }

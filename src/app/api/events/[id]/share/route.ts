@@ -4,6 +4,7 @@ import prisma from "@/lib/db";
 import { sendEventInviteEmail } from "@/lib/mailer";
 import { getPublicBaseUrl } from "@/lib/public-link";
 import { withApiLogging } from "@/lib/api-logger";
+import logger from "@/lib/logger";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -84,7 +85,7 @@ export const POST = withApiLogging(async function POST(
             eventUrl,
           });
         } catch (mailErr) {
-          console.error("Failed to send invite email:", mailErr);
+          logger.error({ err: mailErr }, "Failed to send invite email");
         }
 
         return invite;
