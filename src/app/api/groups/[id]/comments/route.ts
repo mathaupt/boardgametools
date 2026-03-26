@@ -3,6 +3,7 @@ import { requireAuth, handleApiError } from "@/lib/require-auth";
 import prisma from "@/lib/db";
 import { withApiLogging } from "@/lib/api-logger";
 import { validateString } from "@/lib/validation";
+import { Errors } from "@/lib/error-messages";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -20,7 +21,7 @@ export const GET = withApiLogging(async function GET(
     });
 
     if (!membership) {
-      return NextResponse.json({ error: "Not a member" }, { status: 403 });
+      return NextResponse.json({ error: Errors.NOT_A_MEMBER }, { status: 403 });
     }
 
     const { searchParams } = new URL(request.url);
@@ -54,7 +55,7 @@ export const POST = withApiLogging(async function POST(
     });
 
     if (!membership) {
-      return NextResponse.json({ error: "Not a member" }, { status: 403 });
+      return NextResponse.json({ error: Errors.NOT_A_MEMBER }, { status: 403 });
     }
 
     const body = await request.json();

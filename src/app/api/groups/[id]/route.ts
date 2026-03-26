@@ -6,6 +6,7 @@ import prisma from "@/lib/db";
 import { withApiLogging } from "@/lib/api-logger";
 import { validateString, firstError } from "@/lib/validation";
 import { CacheTags } from "@/lib/cache-tags";
+import { Errors } from "@/lib/error-messages";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -56,7 +57,7 @@ export const GET = withApiLogging(async function GET(
     });
 
     if (!group) {
-      return NextResponse.json({ error: "Group not found" }, { status: 404 });
+      return NextResponse.json({ error: Errors.GROUP_NOT_FOUND }, { status: 404 });
     }
 
     // Strip password hash from response
@@ -81,7 +82,7 @@ export const PUT = withApiLogging(async function PUT(
     });
 
     if (!group) {
-      return NextResponse.json({ error: "Group not found or not owner" }, { status: 404 });
+      return NextResponse.json({ error: Errors.GROUP_NOT_FOUND_OR_NOT_OWNER }, { status: 404 });
     }
 
     const body = await request.json();
@@ -135,7 +136,7 @@ export const DELETE = withApiLogging(async function DELETE(
     });
 
     if (!group) {
-      return NextResponse.json({ error: "Group not found or not owner" }, { status: 404 });
+      return NextResponse.json({ error: Errors.GROUP_NOT_FOUND_OR_NOT_OWNER }, { status: 404 });
     }
 
     await prisma.group.update({ where: { id }, data: { deletedAt: new Date() } });

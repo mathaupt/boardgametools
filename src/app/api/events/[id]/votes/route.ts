@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAuth, handleApiError } from "@/lib/require-auth";
 import prisma from "@/lib/db";
 import { withApiLogging } from "@/lib/api-logger";
+import { Errors } from "@/lib/error-messages";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -19,7 +20,7 @@ export const POST = withApiLogging(async function POST(
 
     if (!proposalId) {
       return NextResponse.json({ 
-        error: "Missing required field: proposalId" 
+        error: Errors.MISSING_PROPOSAL_ID 
       }, { status: 400 });
     }
 
@@ -34,14 +35,14 @@ export const POST = withApiLogging(async function POST(
     });
 
     if (!event) {
-      return NextResponse.json({ error: "Event not found" }, { status: 404 });
+      return NextResponse.json({ error: Errors.EVENT_NOT_FOUND }, { status: 404 });
     }
 
     const isInvited = event.invites.some((invite) => invite.userId === userId);
     const hasAccess = event.createdById === userId || isInvited || event.isPublic;
 
     if (!hasAccess) {
-      return NextResponse.json({ error: "Access denied" }, { status: 403 });
+      return NextResponse.json({ error: Errors.ACCESS_DENIED }, { status: 403 });
     }
 
     // Prüfe ob Proposal existiert
@@ -50,7 +51,7 @@ export const POST = withApiLogging(async function POST(
     });
 
     if (!proposal) {
-      return NextResponse.json({ error: "Proposal not found" }, { status: 404 });
+      return NextResponse.json({ error: Errors.PROPOSAL_NOT_FOUND }, { status: 404 });
     }
 
     // Prüfe ob User bereits gevotet hat
@@ -63,7 +64,7 @@ export const POST = withApiLogging(async function POST(
 
     if (existingVote) {
       return NextResponse.json({ 
-        error: "User has already voted for this proposal" 
+        error: Errors.ALREADY_VOTED 
       }, { status: 400 });
     }
 
@@ -101,7 +102,7 @@ export const DELETE = withApiLogging(async function DELETE(
 
   if (!proposalId) {
     return NextResponse.json({ 
-      error: "Missing required parameter: proposalId" 
+      error: Errors.MISSING_PROPOSAL_ID 
     }, { status: 400 });
   }
 
@@ -115,10 +116,10 @@ export const DELETE = withApiLogging(async function DELETE(
     });
 
     if (deletedVote.count === 0) {
-      return NextResponse.json({ error: "Vote not found" }, { status: 404 });
+      return NextResponse.json({ error: Errors.VOTE_NOT_FOUND }, { status: 404 });
     }
 
-    return NextResponse.json({ message: "Vote removed" });
+    return NextResponse.json({ message: Errors.VOTE_REMOVED });
   } catch (error) {
     return handleApiError(error);
   }

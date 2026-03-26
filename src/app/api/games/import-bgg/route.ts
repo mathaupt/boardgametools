@@ -5,6 +5,7 @@ import prisma from "@/lib/db";
 import { fetchBGGGame } from "@/lib/bgg";
 import { withApiLogging } from "@/lib/api-logger";
 import { CacheTags } from "@/lib/cache-tags";
+import { Errors } from "@/lib/error-messages";
 
 export const POST = withApiLogging(async function POST(request: NextRequest) {
   const { userId } = await requireAuth();
@@ -13,7 +14,7 @@ export const POST = withApiLogging(async function POST(request: NextRequest) {
     const { bggId, ean } = await request.json();
 
     if (!bggId) {
-      return NextResponse.json({ error: "BGG ID is required" }, { status: 400 });
+      return NextResponse.json({ error: Errors.BGG_ID_REQUIRED }, { status: 400 });
     }
 
     const existingGame = await prisma.game.findFirst({
@@ -22,7 +23,7 @@ export const POST = withApiLogging(async function POST(request: NextRequest) {
 
     if (existingGame) {
       return NextResponse.json(
-        { error: "Game already exists in your collection", game: existingGame },
+        { error: Errors.GAME_ALREADY_EXISTS, game: existingGame },
         { status: 409 }
       );
     }
@@ -30,7 +31,7 @@ export const POST = withApiLogging(async function POST(request: NextRequest) {
     const bggData = await fetchBGGGame(bggId.toString());
 
     if (!bggData) {
-      return NextResponse.json({ error: "Game not found on BGG" }, { status: 404 });
+      return NextResponse.json({ error: Errors.GAME_NOT_FOUND_BGG }, { status: 404 });
     }
 
     const game = await prisma.game.create({
@@ -74,7 +75,7 @@ export const POST = withApiLogging(async function POST(request: NextRequest) {
 
     return NextResponse.json(
       {
-        message: "Game imported successfully",
+        message: Errors.GAME_IMPORTED,
         game,
         bggData: {
           categories: bggData.categories,

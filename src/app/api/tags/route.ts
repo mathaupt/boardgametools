@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { withApiLogging } from "@/lib/api-logger";
 import { requireAuth, handleApiError } from "@/lib/require-auth";
 import { TagService } from "@/lib/services";
+import { Errors } from "@/lib/error-messages";
 
 export const GET = withApiLogging(async function GET() {
   try {
@@ -29,7 +30,7 @@ export const DELETE = withApiLogging(async function DELETE(request: NextRequest)
     const { userId } = await requireAuth();
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
-    if (!id) return NextResponse.json({ error: "Tag ID required" }, { status: 400 });
+    if (!id) return NextResponse.json({ error: Errors.TAG_ID_REQUIRED }, { status: 400 });
     const result = await TagService.delete(userId, id);
     return NextResponse.json(result);
   } catch (error) {

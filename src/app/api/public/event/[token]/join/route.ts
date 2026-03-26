@@ -5,6 +5,7 @@ import { withApiLogging } from "@/lib/api-logger";
 import { validateString } from "@/lib/validation";
 import { checkRateLimit, rateLimitResponse } from "@/lib/rate-limit";
 import logger from "@/lib/logger";
+import { Errors } from "@/lib/error-messages";
 
 type RouteContext = { params: Promise<{ token: string }> };
 
@@ -20,7 +21,7 @@ export const POST = withApiLogging(async function POST(
   const eventId = await resolveEventIdFromToken(token);
 
   if (!eventId) {
-    return NextResponse.json({ error: "Event not found" }, { status: 404 });
+    return NextResponse.json({ error: Errors.EVENT_NOT_FOUND }, { status: 404 });
   }
 
   try {
@@ -49,6 +50,6 @@ export const POST = withApiLogging(async function POST(
     return NextResponse.json(participant, { status: 201 });
   } catch (error) {
     logger.error({ err: error }, "Error joining public event");
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json({ error: Errors.INTERNAL_SERVER_ERROR }, { status: 500 });
   }
 });

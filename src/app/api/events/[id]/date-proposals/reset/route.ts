@@ -2,10 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAuth, handleApiError } from "@/lib/require-auth";
 import prisma from "@/lib/db";
 import { withApiLogging } from "@/lib/api-logger";
+import { Errors } from "@/lib/error-messages";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
-// POST: Reset a date poll (clear proposals and reopen voting)
 export const POST = withApiLogging(async function POST(
   _request: NextRequest,
   { params }: RouteContext
@@ -18,12 +18,12 @@ export const POST = withApiLogging(async function POST(
     const event = await prisma.event.findFirst({ where: { id, deletedAt: null } });
 
     if (!event) {
-      return NextResponse.json({ error: "Event not found" }, { status: 404 });
+      return NextResponse.json({ error: Errors.EVENT_NOT_FOUND }, { status: 404 });
     }
 
     if (event.createdById !== userId) {
       return NextResponse.json(
-        { error: "Only the event creator can reset the date poll" },
+        { error: Errors.ONLY_CREATOR_CAN_RESET },
         { status: 403 }
       );
     }
@@ -36,7 +36,7 @@ export const POST = withApiLogging(async function POST(
       }),
     ]);
 
-    return NextResponse.json({ message: "Date poll reset" });
+    return NextResponse.json({ message: Errors.DATE_POLL_RESET });
   } catch (error) {
     return handleApiError(error);
   }

@@ -3,6 +3,7 @@ import { requireAdmin, handleApiError } from "@/lib/require-auth";
 import { hash } from "bcryptjs";
 import prisma from "@/lib/db";
 import { withApiLogging } from "@/lib/api-logger";
+import { Errors } from "@/lib/error-messages";
 
 export const POST = withApiLogging(async function POST(request: NextRequest) {
   try {
@@ -11,7 +12,7 @@ export const POST = withApiLogging(async function POST(request: NextRequest) {
     const { userId: targetUserId, newPassword } = await request.json();
 
     if (!targetUserId || !newPassword) {
-      return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+      return NextResponse.json({ error: Errors.MISSING_REQUIRED_FIELDS }, { status: 400 });
     }
 
     if (targetUserId === adminUserId) {
@@ -19,7 +20,7 @@ export const POST = withApiLogging(async function POST(request: NextRequest) {
     }
 
     if (newPassword.length < 8) {
-      return NextResponse.json({ error: "Password must be at least 8 characters long" }, { status: 400 });
+      return NextResponse.json({ error: Errors.PASSWORD_MIN_LENGTH }, { status: 400 });
     }
 
     // Hash the new password

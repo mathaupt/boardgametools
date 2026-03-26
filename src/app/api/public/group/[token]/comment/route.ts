@@ -6,6 +6,7 @@ import { withApiLogging } from "@/lib/api-logger";
 import { validateString, firstError } from "@/lib/validation";
 import { checkRateLimit, rateLimitResponse } from "@/lib/rate-limit";
 import logger from "@/lib/logger";
+import { Errors } from "@/lib/error-messages";
 
 type RouteContext = { params: Promise<{ token: string }> };
 
@@ -23,7 +24,7 @@ export const POST = withApiLogging(async function POST(
     const group = await findPublicGroupByToken(token, {});
 
     if (!group) {
-      return NextResponse.json({ error: "Group not found" }, { status: 404 });
+      return NextResponse.json({ error: Errors.GROUP_NOT_FOUND }, { status: 404 });
     }
 
     const body = await request.json();
@@ -41,7 +42,7 @@ export const POST = withApiLogging(async function POST(
 
     // Check password if set
     if (group.password && (!password || !(await compare(password, group.password)))) {
-      return NextResponse.json({ error: "Invalid password" }, { status: 403 });
+      return NextResponse.json({ error: Errors.INVALID_PASSWORD }, { status: 403 });
     }
 
     const comment = await prisma.groupComment.create({
@@ -56,6 +57,6 @@ export const POST = withApiLogging(async function POST(
     return NextResponse.json(comment, { status: 201 });
   } catch (error) {
     logger.error({ err: error }, "Error creating comment");
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json({ error: Errors.INTERNAL_SERVER_ERROR }, { status: 500 });
   }
 });

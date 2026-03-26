@@ -5,6 +5,7 @@ import { withApiLogging } from "@/lib/api-logger";
 import { validateString } from "@/lib/validation";
 import { checkRateLimit, rateLimitResponse } from "@/lib/rate-limit";
 import logger from "@/lib/logger";
+import { Errors } from "@/lib/error-messages";
 
 type RouteContext = { params: Promise<{ token: string }> };
 
@@ -24,7 +25,7 @@ export const POST = withApiLogging(async function POST(
     const event = await findPublicEventByToken(token);
 
     if (!event) {
-      return NextResponse.json({ error: "Event not found" }, { status: 404 });
+      return NextResponse.json({ error: Errors.EVENT_NOT_FOUND }, { status: 404 });
     }
 
     const body = await request.json();
@@ -35,7 +36,7 @@ export const POST = withApiLogging(async function POST(
 
     if (!guestId || !votes || !Array.isArray(votes) || votes.length === 0) {
       return NextResponse.json(
-        { error: "Missing required fields: guestId, votes" },
+        { error: Errors.MISSING_GUEST_VOTES },
         { status: 400 }
       );
     }
@@ -61,7 +62,7 @@ export const POST = withApiLogging(async function POST(
 
     if (!guest) {
       return NextResponse.json(
-        { error: "Guest not found for this event" },
+        { error: Errors.GUEST_NOT_FOUND_FOR_EVENT },
         { status: 404 }
       );
     }
@@ -89,6 +90,6 @@ export const POST = withApiLogging(async function POST(
     return NextResponse.json(results);
   } catch (error) {
     logger.error({ err: error }, "Error guest date voting");
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json({ error: Errors.INTERNAL_SERVER_ERROR }, { status: 500 });
   }
 });

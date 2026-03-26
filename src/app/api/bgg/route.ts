@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAuth, handleApiError } from "@/lib/require-auth";
 import { withApiLogging } from "@/lib/api-logger";
 import logger from "@/lib/logger";
+import { Errors } from "@/lib/error-messages";
 
 interface BGGGameDetail {
   name: string;
@@ -36,7 +37,7 @@ export const GET = withApiLogging(async function GET(request: NextRequest) {
     if (bggId) {
       // Validiere bggId (nur Ziffern erlaubt → SSRF-Schutz)
       if (!/^\d+$/.test(bggId)) {
-        return NextResponse.json({ error: "Invalid BGG ID" }, { status: 400 });
+        return NextResponse.json({ error: Errors.INVALID_BGG_ID }, { status: 400 });
       }
 
       // Spezifisches Spiel von BGG abrufen
@@ -88,7 +89,7 @@ export const GET = withApiLogging(async function GET(request: NextRequest) {
       game.bggId = bggId;
 
       if (!game.name) {
-        return NextResponse.json({ error: "Game not found on BGG" }, { status: 404 });
+        return NextResponse.json({ error: Errors.GAME_NOT_FOUND_BGG }, { status: 404 });
       }
 
       return NextResponse.json(game);

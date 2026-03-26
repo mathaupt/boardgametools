@@ -5,6 +5,7 @@ import { sendEventInviteEmail } from "@/lib/mailer";
 import { getPublicBaseUrl } from "@/lib/public-link";
 import { withApiLogging } from "@/lib/api-logger";
 import logger from "@/lib/logger";
+import { Errors } from "@/lib/error-messages";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -22,7 +23,7 @@ export const POST = withApiLogging(async function POST(
 
     if (!userIds || !Array.isArray(userIds) || userIds.length === 0) {
       return NextResponse.json({ 
-        error: "Missing or invalid userIds array" 
+        error: Errors.MISSING_USER_IDS 
       }, { status: 400 });
     }
 
@@ -32,7 +33,7 @@ export const POST = withApiLogging(async function POST(
     });
 
     if (!event) {
-      return NextResponse.json({ error: "Event not found" }, { status: 404 });
+      return NextResponse.json({ error: Errors.EVENT_NOT_FOUND }, { status: 404 });
     }
 
     const eventUrl = `${await getPublicBaseUrl()}/dashboard/events/${id}`;

@@ -5,6 +5,7 @@ import { withApiLogging } from "@/lib/api-logger";
 import { validateString, firstError } from "@/lib/validation";
 import { checkRateLimit, rateLimitResponse } from "@/lib/rate-limit";
 import logger from "@/lib/logger";
+import { Errors } from "@/lib/error-messages";
 
 type RouteContext = { params: Promise<{ token: string }> };
 
@@ -20,7 +21,7 @@ export const POST = withApiLogging(async function POST(
   const eventId = await resolveEventIdFromToken(token);
 
   if (!eventId) {
-    return NextResponse.json({ error: "Event not found" }, { status: 404 });
+    return NextResponse.json({ error: Errors.EVENT_NOT_FOUND }, { status: 404 });
   }
 
   try {
@@ -37,7 +38,7 @@ export const POST = withApiLogging(async function POST(
     }
 
     if (!guestId || !proposalId) {
-      return NextResponse.json({ error: "guestId and proposalId are required" }, { status: 400 });
+      return NextResponse.json({ error: Errors.GUEST_ID_AND_PROPOSAL_REQUIRED }, { status: 400 });
     }
 
     const participant = await prisma.guestParticipant.findFirst({
@@ -45,7 +46,7 @@ export const POST = withApiLogging(async function POST(
     });
 
     if (!participant) {
-      return NextResponse.json({ error: "Guest not found" }, { status: 404 });
+      return NextResponse.json({ error: Errors.GUEST_NOT_FOUND }, { status: 404 });
     }
 
     const proposal = await prisma.gameProposal.findFirst({
@@ -54,7 +55,7 @@ export const POST = withApiLogging(async function POST(
     });
 
     if (!proposal) {
-      return NextResponse.json({ error: "Proposal not found" }, { status: 404 });
+      return NextResponse.json({ error: Errors.PROPOSAL_NOT_FOUND }, { status: 404 });
     }
 
     const existingVote = await prisma.guestVote.findFirst({
@@ -62,7 +63,7 @@ export const POST = withApiLogging(async function POST(
     });
 
     if (existingVote) {
-      return NextResponse.json({ error: "Guest already voted" }, { status: 400 });
+      return NextResponse.json({ error: Errors.GUEST_ALREADY_VOTED }, { status: 400 });
     }
 
     await prisma.guestVote.create({
@@ -80,13 +81,13 @@ export const POST = withApiLogging(async function POST(
     });
 
     return NextResponse.json({
-      message: "Vote recorded",
+      message: Errors.VOTE_RECORDED,
       totalVotes: (counts?._count.votes ?? 0) + (counts?._count.guestVotes ?? 0),
       voteCounts: counts?._count ?? { votes: 0, guestVotes: 0 },
     });
   } catch (error) {
     logger.error({ err: error }, "Error creating guest vote");
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json({ error: Errors.INTERNAL_SERVER_ERROR }, { status: 500 });
   }
 });
 
@@ -102,7 +103,7 @@ export const DELETE = withApiLogging(async function DELETE(
   const eventId = await resolveEventIdFromToken(token);
 
   if (!eventId) {
-    return NextResponse.json({ error: "Event not found" }, { status: 404 });
+    return NextResponse.json({ error: Errors.EVENT_NOT_FOUND }, { status: 404 });
   }
 
   try {
@@ -119,7 +120,7 @@ export const DELETE = withApiLogging(async function DELETE(
     }
 
     if (!guestId || !proposalId) {
-      return NextResponse.json({ error: "guestId and proposalId are required" }, { status: 400 });
+      return NextResponse.json({ error: Errors.GUEST_ID_AND_PROPOSAL_REQUIRED }, { status: 400 });
     }
 
     const participant = await prisma.guestParticipant.findFirst({
@@ -127,7 +128,7 @@ export const DELETE = withApiLogging(async function DELETE(
     });
 
     if (!participant) {
-      return NextResponse.json({ error: "Guest not found" }, { status: 404 });
+      return NextResponse.json({ error: Errors.GUEST_NOT_FOUND }, { status: 404 });
     }
 
     const proposal = await prisma.gameProposal.findFirst({
@@ -136,7 +137,7 @@ export const DELETE = withApiLogging(async function DELETE(
     });
 
     if (!proposal) {
-      return NextResponse.json({ error: "Proposal not found" }, { status: 404 });
+      return NextResponse.json({ error: Errors.PROPOSAL_NOT_FOUND }, { status: 404 });
     }
 
     const deleted = await prisma.guestVote.deleteMany({
@@ -144,7 +145,7 @@ export const DELETE = withApiLogging(async function DELETE(
     });
 
     if (deleted.count === 0) {
-      return NextResponse.json({ error: "Vote not found" }, { status: 404 });
+      return NextResponse.json({ error: Errors.VOTE_NOT_FOUND }, { status: 404 });
     }
 
     const counts = await prisma.gameProposal.findUnique({
@@ -155,12 +156,12 @@ export const DELETE = withApiLogging(async function DELETE(
     });
 
     return NextResponse.json({
-      message: "Vote removed",
+      message: Errors.VOTE_REMOVED,
       totalVotes: (counts?._count.votes ?? 0) + (counts?._count.guestVotes ?? 0),
       voteCounts: counts?._count ?? { votes: 0, guestVotes: 0 },
     });
   } catch (error) {
     logger.error({ err: error }, "Error removing guest vote");
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json({ error: Errors.INTERNAL_SERVER_ERROR }, { status: 500 });
   }
 });

@@ -4,6 +4,7 @@ import { findPublicEventByToken } from "@/lib/event-share";
 import { buildPublicEventInclude, serializePublicEvent } from "@/lib/public-event";
 import { withApiLogging } from "@/lib/api-logger";
 import { checkRateLimit, rateLimitResponse } from "@/lib/rate-limit";
+import { Errors } from "@/lib/error-messages";
 
 type RouteContext = { params: Promise<{ token: string }> };
 
@@ -24,7 +25,7 @@ export const GET = withApiLogging(async function GET(
   );
 
   if (!event) {
-    return NextResponse.json({ error: "Event not found" }, { status: 404 });
+    return NextResponse.json({ error: Errors.EVENT_NOT_FOUND }, { status: 404 });
   }
 
   const serialized = serializePublicEvent(event, session?.user?.id ?? null);

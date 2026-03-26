@@ -5,6 +5,7 @@ import prisma from "@/lib/db";
 import { fetchBGGGame } from "@/lib/bgg";
 import { withApiLogging } from "@/lib/api-logger";
 import { CacheTags } from "@/lib/cache-tags";
+import { Errors } from "@/lib/error-messages";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -21,7 +22,7 @@ export const POST = withApiLogging(async function POST(
   });
 
   if (!series) {
-    return NextResponse.json({ error: "Series not found" }, { status: 404 });
+    return NextResponse.json({ error: Errors.SERIES_NOT_FOUND }, { status: 404 });
   }
 
   try {
@@ -39,7 +40,7 @@ export const POST = withApiLogging(async function POST(
       if (!game) {
         const bggData = await fetchBGGGame(bggId.toString());
         if (!bggData) {
-          return NextResponse.json({ error: "Game not found on BGG" }, { status: 404 });
+          return NextResponse.json({ error: Errors.GAME_NOT_FOUND_BGG }, { status: 404 });
         }
 
         game = await prisma.game.create({
@@ -62,7 +63,7 @@ export const POST = withApiLogging(async function POST(
 
     if (!resolvedGameId) {
       return NextResponse.json(
-        { error: "Either gameId or bggId is required" },
+        { error: Errors.GAME_ID_OR_BGG_ID_REQUIRED },
         { status: 400 }
       );
     }
@@ -73,7 +74,7 @@ export const POST = withApiLogging(async function POST(
     });
 
     if (!game) {
-      return NextResponse.json({ error: "Game not found" }, { status: 404 });
+      return NextResponse.json({ error: Errors.GAME_NOT_FOUND }, { status: 404 });
     }
 
     // Check if already in series

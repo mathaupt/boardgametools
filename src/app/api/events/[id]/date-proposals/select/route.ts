@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAuth, handleApiError } from "@/lib/require-auth";
 import prisma from "@/lib/db";
 import { withApiLogging } from "@/lib/api-logger";
+import { Errors } from "@/lib/error-messages";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -19,12 +20,12 @@ export const POST = withApiLogging(async function POST(
     const event = await prisma.event.findFirst({ where: { id, deletedAt: null } });
 
     if (!event) {
-      return NextResponse.json({ error: "Event not found" }, { status: 404 });
+      return NextResponse.json({ error: Errors.EVENT_NOT_FOUND }, { status: 404 });
     }
 
     if (event.createdById !== userId) {
       return NextResponse.json(
-        { error: "Only the event creator can select a date" },
+        { error: Errors.ONLY_CREATOR_CAN_SELECT },
         { status: 403 }
       );
     }
@@ -34,7 +35,7 @@ export const POST = withApiLogging(async function POST(
 
     if (!dateProposalId) {
       return NextResponse.json(
-        { error: "Missing required field: dateProposalId" },
+        { error: Errors.MISSING_DATE_PROPOSAL_ID },
         { status: 400 }
       );
     }
@@ -45,7 +46,7 @@ export const POST = withApiLogging(async function POST(
 
     if (!proposal) {
       return NextResponse.json(
-        { error: "Date proposal not found for this event" },
+        { error: Errors.DATE_PROPOSAL_NOT_FOUND },
         { status: 404 }
       );
     }
@@ -60,7 +61,7 @@ export const POST = withApiLogging(async function POST(
     });
 
     return NextResponse.json({
-      message: "Date selected",
+      message: Errors.DATE_SELECTED,
       selectedDate: updatedEvent.selectedDate,
       eventDate: updatedEvent.eventDate,
     });

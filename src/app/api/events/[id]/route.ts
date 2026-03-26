@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAuth, handleApiError } from "@/lib/require-auth";
 import prisma from "@/lib/db";
 import { withApiLogging } from "@/lib/api-logger";
+import { Errors } from "@/lib/error-messages";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -45,7 +46,7 @@ export const GET = withApiLogging(async function GET(
     });
 
     if (!event) {
-      return NextResponse.json({ error: "Event not found" }, { status: 404 });
+      return NextResponse.json({ error: Errors.EVENT_NOT_FOUND }, { status: 404 });
     }
 
     // Prüfe ob User Berechtigung hat (Ersteller oder eingeladen)
@@ -53,7 +54,7 @@ export const GET = withApiLogging(async function GET(
     const isInvited = event.invites.some(invite => invite.userId === userId);
 
     if (!isCreator && !isInvited) {
-      return NextResponse.json({ error: "Access denied" }, { status: 403 });
+      return NextResponse.json({ error: Errors.ACCESS_DENIED }, { status: 403 });
     }
 
     const eventResponse = {

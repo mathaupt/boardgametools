@@ -5,6 +5,7 @@ import { withApiLogging } from "@/lib/api-logger";
 import { checkRateLimit, rateLimitResponse } from "@/lib/rate-limit";
 import { validateString, validateEmail, firstError } from "@/lib/validation";
 import logger from "@/lib/logger";
+import { Errors } from "@/lib/error-messages";
 
 export const POST = withApiLogging(async function POST(request: NextRequest) {
   try {
@@ -46,13 +47,13 @@ export const POST = withApiLogging(async function POST(request: NextRequest) {
     });
 
     return NextResponse.json(
-      { message: "User created successfully", userId: user.id },
+      { message: Errors.USER_CREATED, userId: user.id },
       { status: 201 }
     );
   } catch (error) {
     logger.error({ err: error }, "Registration error");
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: Errors.INTERNAL_SERVER_ERROR },
       { status: 500 }
     );
   }

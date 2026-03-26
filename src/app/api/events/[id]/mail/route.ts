@@ -7,6 +7,7 @@ import { encryptId } from "@/lib/crypto";
 import { withApiLogging } from "@/lib/api-logger";
 import { validateString, firstError } from "@/lib/validation";
 import logger from "@/lib/logger";
+import { Errors } from "@/lib/error-messages";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -38,13 +39,13 @@ export const POST = withApiLogging(async function POST(
 
     if (!type || !["custom", "reminder"].includes(type)) {
       return NextResponse.json({
-        error: "Invalid type. Must be 'custom' or 'reminder'.",
+        error: Errors.INVALID_MAIL_TYPE,
       }, { status: 400 });
     }
 
     if (type === "custom" && (!message || !message.trim())) {
       return NextResponse.json({
-        error: "Message is required for custom emails.",
+        error: Errors.MESSAGE_REQUIRED_FOR_CUSTOM,
       }, { status: 400 });
     }
 
@@ -57,7 +58,7 @@ export const POST = withApiLogging(async function POST(
     });
 
     if (!event) {
-      return NextResponse.json({ error: "Event not found" }, { status: 404 });
+      return NextResponse.json({ error: Errors.EVENT_NOT_FOUND }, { status: 404 });
     }
 
     const senderName = name || email || "Der Organisator";

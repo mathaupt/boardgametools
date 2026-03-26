@@ -4,6 +4,7 @@ import { findPublicGroupByToken } from "@/lib/group-share";
 import { withApiLogging } from "@/lib/api-logger";
 import { checkRateLimit, rateLimitResponse } from "@/lib/rate-limit";
 import logger from "@/lib/logger";
+import { Errors } from "@/lib/error-messages";
 
 type RouteContext = { params: Promise<{ token: string }> };
 
@@ -49,7 +50,7 @@ export const GET = withApiLogging(async function GET(
     });
 
     if (!group) {
-      return NextResponse.json({ error: "Group not found" }, { status: 404 });
+      return NextResponse.json({ error: Errors.GROUP_NOT_FOUND }, { status: 404 });
     }
 
     // Check password if set (accept from header or query param)
@@ -72,6 +73,6 @@ export const GET = withApiLogging(async function GET(
     });
   } catch (error) {
     logger.error({ err: error }, "Error fetching public group");
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json({ error: Errors.INTERNAL_SERVER_ERROR }, { status: 500 });
   }
 });

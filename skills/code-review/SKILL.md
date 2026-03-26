@@ -932,15 +932,15 @@ const isValid = await compare(inputPassword, group.password);
 
 ## Evaluator-Feedback (automatisch generiert)
 
-> Letzter Lauf: 2026-03-26 13:29:24
-> Gesamt-Score: **9.9/10**
+> Letzter Lauf: 2026-03-26 13:31:29
+> Gesamt-Score: **10/10**
 
 ### Kategorie-Scores
 
 | Kategorie | Score | Treffsicherheit | Aktualität | Abdeckung | Umsetzung | Handlung |
 |-----------|-------|-----------------|------------|-----------|-----------|----------|
 | Sicherheit | **10/10** | 10 | 10 | 10 | 10 | 10 |
-| TypeScript | **8.3/10** | 10 | 10 | 10 | 5 | 10 |
+| TypeScript | **10/10** | 10 | 10 | 10 | 10 | 10 |
 | Architektur | **10/10** | 10 | 10 | 10 | 10 | 10 |
 | Performance | **10/10** | 10 | 10 | 10 | 10 | 10 |
 | API Design | **10/10** | 10 | 10 | 10 | 10 | 10 |
@@ -950,7 +950,7 @@ const isValid = await compare(inputPassword, group.password);
 | Best Practices | **10/10** | 10 | 10 | 10 | 10 | 10 |
 | Skalierung | **10/10** | 10 | 10 | 10 | 10 | 10 |
 
-### Erledigte Findings (49)
+### Erledigte Findings (50)
 
 - ✅ **P0-1** Debug-Routes in Produktion: NODE_ENV Guard vorhanden
 - ✅ **P0-2** DB-Init ohne Auth: Auth-Check vorhanden
@@ -969,6 +969,7 @@ const isValid = await compare(inputPassword, group.password);
 - ✅ **P1-15** Admin kann sich selbst deaktivieren: Self-Protection in deactivate + change-password vorhanden
 - ✅ **P1-16** Admin-Endpoints: 401 statt 403: Proxy/Admin-Routes geben 403 für Non-Admins
 - ✅ **P2-17** Mega-Komponenten aufteilen: Alle Mega-Komponenten aufgeteilt
+- ✅ **P2-18** any-Types im Code: Keine any-Types
 - ✅ **P2-19** Duplikat: Prisma-Client-Dateien: Duplikat entfernt
 - ✅ **P2-20** Duplikat: BGG-Logik: Kein dupliziertes XML-Parsing
 - ✅ **P2-21** next/image statt <img>: Keine <img> Tags
@@ -1001,15 +1002,3 @@ const isValid = await compare(inputPassword, group.password);
 - ✅ **SCALE-58** Kein Caching-Layer: Redis Cache vorhanden
 - ✅ **SCALE-59** Kein strukturiertes Logging: Strukturiertes Logging-Framework vorhanden
 - ✅ **SCALE-60** DB Connection Pooling nicht konfiguriert: Connection Pool konfiguriert
-
-### Teilweise gelöst (1)
-
-- 🔶 **P2-18** any-Types im Code: 1 any-Types verbleibend
-
-### REGRESSIONEN (1)
-
-- 🔄 **P2-18** REGRESSION: P2-18 "any-Types im Code" war resolved, ist jetzt partially_resolved. 1 any-Types verbleibend
-
-### Empfohlene Reviewer-Anpassungen
-
-- 🔄 REGRESSION: P2-18 "any-Types im Code" war resolved, ist jetzt partially_resolved. 1 any-Types verbleibend

@@ -4,6 +4,7 @@ import prisma from "@/lib/db";
 import { hash, compare } from "bcryptjs";
 import { withApiLogging } from "@/lib/api-logger";
 import { validateString, firstError } from "@/lib/validation";
+import { Errors } from "@/lib/error-messages";
 
 export const GET = withApiLogging(async function GET() {
   const { userId } = await requireAuth();
@@ -21,7 +22,7 @@ export const GET = withApiLogging(async function GET() {
   });
 
   if (!user) {
-    return NextResponse.json({ error: "User not found" }, { status: 404 });
+    return NextResponse.json({ error: Errors.USER_NOT_FOUND }, { status: 404 });
   }
 
   return NextResponse.json(user);
@@ -46,7 +47,7 @@ export const PUT = withApiLogging(async function PUT(request: NextRequest) {
     });
 
     if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+      return NextResponse.json({ error: Errors.USER_NOT_FOUND }, { status: 404 });
     }
 
     // Build update data

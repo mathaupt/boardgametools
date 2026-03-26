@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAuth, handleApiError } from "@/lib/require-auth";
 import prisma from "@/lib/db";
 import { withApiLogging } from "@/lib/api-logger";
+import { Errors } from "@/lib/error-messages";
 
 type RouteContext = { params: Promise<{ id: string; pollId: string }> };
 
@@ -19,7 +20,7 @@ export const GET = withApiLogging(async function GET(
     });
 
     if (!membership) {
-      return NextResponse.json({ error: "Not a member" }, { status: 403 });
+      return NextResponse.json({ error: Errors.NOT_A_MEMBER }, { status: 403 });
     }
 
     const poll = await prisma.groupPoll.findFirst({
@@ -40,7 +41,7 @@ export const GET = withApiLogging(async function GET(
     });
 
     if (!poll) {
-      return NextResponse.json({ error: "Poll not found" }, { status: 404 });
+      return NextResponse.json({ error: Errors.POLL_NOT_FOUND }, { status: 404 });
     }
 
     return NextResponse.json(poll);
@@ -63,13 +64,13 @@ export const PUT = withApiLogging(async function PUT(
     });
 
     if (!poll) {
-      return NextResponse.json({ error: "Poll not found" }, { status: 404 });
+      return NextResponse.json({ error: Errors.POLL_NOT_FOUND }, { status: 404 });
     }
 
     // Only poll creator or group owner can close
     const group = await prisma.group.findFirst({ where: { id, deletedAt: null } });
     if (poll.createdById !== userId && group?.ownerId !== userId) {
-      return NextResponse.json({ error: "Not authorized" }, { status: 403 });
+      return NextResponse.json({ error: Errors.NOT_AUTHORIZED }, { status: 403 });
     }
 
     const body = await request.json();
@@ -114,12 +115,12 @@ export const DELETE = withApiLogging(async function DELETE(
     });
 
     if (!poll) {
-      return NextResponse.json({ error: "Poll not found" }, { status: 404 });
+      return NextResponse.json({ error: Errors.POLL_NOT_FOUND }, { status: 404 });
     }
 
     const group = await prisma.group.findFirst({ where: { id, deletedAt: null } });
     if (poll.createdById !== userId && group?.ownerId !== userId) {
-      return NextResponse.json({ error: "Not authorized" }, { status: 403 });
+      return NextResponse.json({ error: Errors.NOT_AUTHORIZED }, { status: 403 });
     }
 
     await prisma.groupPoll.delete({ where: { id: pollId } });

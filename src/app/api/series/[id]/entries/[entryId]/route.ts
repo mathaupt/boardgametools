@@ -3,6 +3,7 @@ import { requireAuth, handleApiError } from "@/lib/require-auth";
 import prisma from "@/lib/db";
 import { withApiLogging } from "@/lib/api-logger";
 import { validateString, validateNumber, firstError } from "@/lib/validation";
+import { Errors } from "@/lib/error-messages";
 
 type RouteContext = { params: Promise<{ id: string; entryId: string }> };
 
@@ -23,7 +24,7 @@ export const PUT = withApiLogging(async function PUT(
   });
 
   if (!entry) {
-    return NextResponse.json({ error: "Entry not found" }, { status: 404 });
+    return NextResponse.json({ error: Errors.ENTRY_NOT_FOUND }, { status: 404 });
   }
 
   try {
@@ -63,7 +64,7 @@ export const PUT = withApiLogging(async function PUT(
 
     if (rating !== undefined) {
       if (rating !== null && (rating < 1 || rating > 5)) {
-        return NextResponse.json({ error: "Rating must be between 1 and 5" }, { status: 400 });
+        return NextResponse.json({ error: Errors.RATING_RANGE }, { status: 400 });
       }
       data.rating = rating;
     }
@@ -133,10 +134,10 @@ export const DELETE = withApiLogging(async function DELETE(
   });
 
   if (!entry) {
-    return NextResponse.json({ error: "Entry not found" }, { status: 404 });
+    return NextResponse.json({ error: Errors.ENTRY_NOT_FOUND }, { status: 404 });
   }
 
   await prisma.gameSeriesEntry.delete({ where: { id: entryId } });
 
-  return NextResponse.json({ message: "Entry removed from series" });
+  return NextResponse.json({ message: Errors.ENTRY_REMOVED });
 });

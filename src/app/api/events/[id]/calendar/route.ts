@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAuth, handleApiError } from "@/lib/require-auth";
 import prisma from "@/lib/db";
 import { withApiLogging } from "@/lib/api-logger";
+import { Errors } from "@/lib/error-messages";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -14,7 +15,6 @@ export const GET = withApiLogging(async function GET(
   const { id } = await params;
 
   try {
-    // Event mit allen Details laden
     const event = await prisma.event.findFirst({
       where: { id, deletedAt: null },
       include: {
@@ -29,44 +29,40 @@ export const GET = withApiLogging(async function GET(
     });
 
     if (!event) {
-      return NextResponse.json({ error: "Event not found" }, { status: 404 });
+      return NextResponse.json({ error: Errors.EVENT_NOT_FOUND }, { status: 404 });
     }
 
-    // Prüfe ob User Berechtigung hat (Ersteller oder eingeladen)
     const isCreator = event.createdById === userId;
     const isInvited = event.invites.some(invite => invite.userId === userId);
 
     if (!isCreator && !isInvited) {
-      return NextResponse.json({ error: "Access denied" }, { status: 403 });
+      return NextResponse.json({ error: Errors.ACCESS_DENIED }, { status: 403 });
     }
 
-    // Kalender-Details vorbereiten
     const startDate = new Date(event.eventDate);
-    const endDate = new Date(startDate.getTime() + 3 * 60 * 60 * 1000); // 3 Stunden Default
+    const endDate = new Date(startDate.getTime() + 3 * 60 * 60 * 1000);
 
-    // Beschreibung mit Spielvorschlägen und Teilnehmern
     let description = event.description || "";
     
     if (event.proposals.length > 0) {
-      description += "\n\n🎲 Spielvorschläge:\n";
+      description += "\n\n\uD83C\uDFB2 Spielvorschlaege:\n";
       event.proposals.forEach((proposal, index) => {
         description += `${index + 1}. ${proposal.game?.name ?? proposal.bggName ?? "Unbekannt"}\n`;
       });
     }
 
     if (event.invites.length > 0) {
-      description += "\n\n👥 Eingeladene Spieler:\n";
+      description += "\n\n\uD83D\uDC65 Eingeladene Spieler:\n";
       event.invites.forEach((invite) => {
-        const status = invite.status === "accepted" ? "✅" : 
-                      invite.status === "declined" ? "❌" : "⏳";
+        const status = invite.status === "accepted" ? "\u2705" : 
+                      invite.status === "declined" ? "\u274C" : "\u23F3";
         description += `${status} ${invite.user?.name ?? "Unbekannt"}\n`;
       });
     }
 
-    description += `\n\n📍 Ort: ${event.location || "TBD"}`;
-    description += `\n👤 Organisator: ${event.createdBy.name}`;
+    description += `\n\n\uD83D\uDCCD Ort: ${event.location || "TBD"}`;
+    description += `\n\uD83D\uDC64 Organisator: ${event.createdBy.name}`;
 
-    // ICS Kalender-Datei erstellen
     const icsContent = [
       'BEGIN:VCALENDAR',
       'VERSION:2.0',
@@ -85,7 +81,6 @@ export const GET = withApiLogging(async function GET(
       'END:VCALENDAR'
     ].join('\r\n');
 
-    // Response mit ICS Datei
     return new NextResponse(icsContent, {
       status: 200,
       headers: {
@@ -110,6 +105,5 @@ function formatDateForICS(date: Date): string {
   const minutes = String(date.getMinutes()).padStart(2, '0');
   const seconds = String(date.getSeconds()).padStart(2, '0');
   
-  // Format: YYYYMMDDTHHMMSSZ (UTC)
   return `${year}${month}${day}T${hours}${minutes}${seconds}Z`;
 }

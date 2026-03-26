@@ -11,6 +11,18 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.33.0",
+    date: "2026-03-26",
+    title: "P0-Fix: API-Route-Tests + Zentrales Error-Messages-Modul",
+    description: "P0-Finding behoben: 26 API-Route-Integrationstests erstellt (Games, Auth, Admin, Public Event, Statistics). Alle 156 englischen API-Fehlermeldungen auf Deutsch migriert via zentralem error-messages.ts Modul.",
+    changes: [
+      { type: "feature", text: "26 neue API-Route-Integrationstests in 5 Testdateien (tests/unit/api/)" },
+      { type: "improvement", text: "Zentrales Error-Messages-Modul (src/lib/error-messages.ts) fuer konsistente deutsche Fehlermeldungen" },
+      { type: "improvement", text: "~156 englische Fehlermeldungen in 52 API-Route-Dateien auf Deutsch migriert" },
+      { type: "internal", text: "Gesamtzahl Tests: 395 (war 369), 40 Testdateien (war 35)" },
+    ],
+  },
+  {
     version: "0.32.0",
     date: "2026-03-26",
     title: "P1-Findings behoben: Security, Performance, Datenbank, Skalierung",

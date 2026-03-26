@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
 import { env } from "@/lib/env";
+import { Errors } from "@/lib/error-messages";
 
 export async function GET() {
   if (env.NODE_ENV !== "development") {
-    return NextResponse.json({ error: "Not available" }, { status: 404 });
+    return NextResponse.json({ error: Errors.NOT_AVAILABLE }, { status: 404 });
   }
 
   const envVars = {

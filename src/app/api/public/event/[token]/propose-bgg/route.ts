@@ -7,6 +7,7 @@ import { validateString, firstError } from "@/lib/validation";
 import { fetchBGGGame } from "@/lib/bgg";
 import { checkRateLimit, rateLimitResponse } from "@/lib/rate-limit";
 import logger from "@/lib/logger";
+import { Errors } from "@/lib/error-messages";
 
 type RouteContext = { params: Promise<{ token: string }> };
 
@@ -23,7 +24,7 @@ export const POST = withApiLogging(async function POST(
   const eventId = await resolveEventIdFromToken(token);
 
   if (!eventId) {
-    return NextResponse.json({ error: "Event not found" }, { status: 404 });
+    return NextResponse.json({ error: Errors.EVENT_NOT_FOUND }, { status: 404 });
   }
 
   try {
@@ -51,7 +52,7 @@ export const POST = withApiLogging(async function POST(
     });
 
     if (!event || !event.isPublic) {
-      return NextResponse.json({ error: "Event not found" }, { status: 404 });
+      return NextResponse.json({ error: Errors.EVENT_NOT_FOUND }, { status: 404 });
     }
 
     if (event.status === "closed") {
@@ -161,7 +162,7 @@ export const POST = withApiLogging(async function POST(
   } catch (error) {
     logger.error({ err: error }, "Error proposing BGG game via public link");
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: Errors.INTERNAL_SERVER_ERROR },
       { status: 500 }
     );
   }

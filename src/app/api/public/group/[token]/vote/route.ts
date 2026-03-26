@@ -6,6 +6,7 @@ import { withApiLogging } from "@/lib/api-logger";
 import { validateString, firstError } from "@/lib/validation";
 import { checkRateLimit, rateLimitResponse } from "@/lib/rate-limit";
 import logger from "@/lib/logger";
+import { Errors } from "@/lib/error-messages";
 
 type RouteContext = { params: Promise<{ token: string }> };
 
@@ -23,7 +24,7 @@ export const POST = withApiLogging(async function POST(
     const group = await findPublicGroupByToken(token, {});
 
     if (!group) {
-      return NextResponse.json({ error: "Group not found" }, { status: 404 });
+      return NextResponse.json({ error: Errors.GROUP_NOT_FOUND }, { status: 404 });
     }
 
     const body = await request.json();
@@ -40,12 +41,12 @@ export const POST = withApiLogging(async function POST(
 
     // Check password if set
     if (group.password && (!password || !(await compare(password, group.password)))) {
-      return NextResponse.json({ error: "Invalid password" }, { status: 403 });
+      return NextResponse.json({ error: Errors.INVALID_PASSWORD }, { status: 403 });
     }
 
     if (!pollId || !optionIds || !Array.isArray(optionIds) || optionIds.length === 0 || !voterName) {
       return NextResponse.json({ 
-        error: "pollId, optionIds, and voterName are required" 
+        error: Errors.POLL_VOTE_FIELDS_REQUIRED 
       }, { status: 400 });
     }
 
@@ -59,12 +60,12 @@ export const POST = withApiLogging(async function POST(
     });
 
     if (!poll) {
-      return NextResponse.json({ error: "Poll not found or closed" }, { status: 404 });
+      return NextResponse.json({ error: Errors.POLL_NOT_FOUND_OR_CLOSED }, { status: 404 });
     }
 
     // For single-choice, only one option
     if (poll.type === "single" && optionIds.length > 1) {
-      return NextResponse.json({ error: "Single-choice poll: only one option allowed" }, { status: 400 });
+      return NextResponse.json({ error: Errors.SINGLE_CHOICE_ONLY_ONE }, { status: 400 });
     }
 
     const trimmedVoterName = voterName.trim();
@@ -96,6 +97,6 @@ export const POST = withApiLogging(async function POST(
     return NextResponse.json(votes, { status: 201 });
   } catch (error) {
     logger.error({ err: error }, "Error voting");
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json({ error: Errors.INTERNAL_SERVER_ERROR }, { status: 500 });
   }
 });

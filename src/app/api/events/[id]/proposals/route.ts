@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAuth, handleApiError } from "@/lib/require-auth";
 import prisma from "@/lib/db";
 import { withApiLogging } from "@/lib/api-logger";
+import { Errors } from "@/lib/error-messages";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -19,7 +20,7 @@ export const POST = withApiLogging(async function POST(
 
     if (!gameId) {
       return NextResponse.json({ 
-        error: "Missing required field: gameId" 
+        error: Errors.MISSING_GAME_ID 
       }, { status: 400 });
     }
 
@@ -34,14 +35,14 @@ export const POST = withApiLogging(async function POST(
     });
 
     if (!event) {
-      return NextResponse.json({ error: "Event not found" }, { status: 404 });
+      return NextResponse.json({ error: Errors.EVENT_NOT_FOUND }, { status: 404 });
     }
 
     const isInvited = event.invites.some((invite) => invite.userId === userId);
     const hasAccess = event.createdById === userId || isInvited || event.isPublic;
 
     if (!hasAccess) {
-      return NextResponse.json({ error: "Access denied" }, { status: 403 });
+      return NextResponse.json({ error: Errors.ACCESS_DENIED }, { status: 403 });
     }
 
     // Prüfe ob Spiel dem User gehört
@@ -50,7 +51,7 @@ export const POST = withApiLogging(async function POST(
     });
 
     if (!game) {
-      return NextResponse.json({ error: "Game not found" }, { status: 404 });
+      return NextResponse.json({ error: Errors.GAME_NOT_FOUND }, { status: 404 });
     }
 
     // Prüfe ob Spiel bereits vorgeschlagen wurde
@@ -60,7 +61,7 @@ export const POST = withApiLogging(async function POST(
 
     if (existingProposal) {
       return NextResponse.json({ 
-        error: "Game already proposed for this event" 
+        error: Errors.GAME_ALREADY_PROPOSED 
       }, { status: 400 });
     }
 
@@ -99,7 +100,7 @@ export const DELETE = withApiLogging(async function DELETE(
 
   if (!proposalId) {
     return NextResponse.json({ 
-      error: "Missing required parameter: proposalId" 
+      error: Errors.MISSING_PROPOSAL_ID 
     }, { status: 400 });
   }
 
@@ -114,7 +115,7 @@ export const DELETE = withApiLogging(async function DELETE(
     });
 
     if (!proposal) {
-      return NextResponse.json({ error: "Proposal not found" }, { status: 404 });
+      return NextResponse.json({ error: Errors.PROPOSAL_NOT_FOUND }, { status: 404 });
     }
 
     // Lösche Proposal und dazugehörige Votes
@@ -122,7 +123,7 @@ export const DELETE = withApiLogging(async function DELETE(
       where: { id: proposalId }
     });
 
-    return NextResponse.json({ message: "Proposal deleted" });
+    return NextResponse.json({ message: Errors.PROPOSAL_DELETED });
   } catch (error) {
     return handleApiError(error);
   }

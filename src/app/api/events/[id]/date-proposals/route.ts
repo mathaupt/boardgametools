@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAuth, handleApiError } from "@/lib/require-auth";
 import prisma from "@/lib/db";
 import { withApiLogging } from "@/lib/api-logger";
+import { Errors } from "@/lib/error-messages";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -23,14 +24,14 @@ export const GET = withApiLogging(async function GET(
     });
 
     if (!event) {
-      return NextResponse.json({ error: "Event not found" }, { status: 404 });
+      return NextResponse.json({ error: Errors.EVENT_NOT_FOUND }, { status: 404 });
     }
 
     const isInvited = event.invites.some((i) => i.userId === userId);
     const hasAccess = event.createdById === userId || isInvited;
 
     if (!hasAccess) {
-      return NextResponse.json({ error: "Access denied" }, { status: 403 });
+      return NextResponse.json({ error: Errors.ACCESS_DENIED }, { status: 403 });
     }
 
     const proposals = await prisma.dateProposal.findMany({
@@ -67,19 +68,19 @@ export const POST = withApiLogging(async function POST(
     const event = await prisma.event.findFirst({ where: { id, deletedAt: null } });
 
     if (!event) {
-      return NextResponse.json({ error: "Event not found" }, { status: 404 });
+      return NextResponse.json({ error: Errors.EVENT_NOT_FOUND }, { status: 404 });
     }
 
     if (event.createdById !== userId) {
       return NextResponse.json(
-        { error: "Only the event creator can create date proposals" },
+        { error: Errors.ONLY_CREATOR_CAN_CREATE_DATES },
         { status: 403 }
       );
     }
 
     if (event.selectedDate) {
       return NextResponse.json(
-        { error: "Date poll already finalized. Reset before creating new proposals." },
+        { error: Errors.DATE_POLL_ALREADY_FINALIZED },
         { status: 400 }
       );
     }
@@ -98,7 +99,7 @@ export const POST = withApiLogging(async function POST(
 
       if (start > end) {
         return NextResponse.json(
-          { error: "startDate must be before endDate" },
+          { error: Errors.START_BEFORE_END },
           { status: 400 }
         );
       }
@@ -107,7 +108,7 @@ export const POST = withApiLogging(async function POST(
       const diffDays = (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24);
       if (diffDays > 365) {
         return NextResponse.json(
-          { error: "Date range must be within 365 days" },
+          { error: Errors.DATE_RANGE_MAX_365 },
           { status: 400 }
         );
       }
@@ -128,7 +129,7 @@ export const POST = withApiLogging(async function POST(
 
     if (dates.length === 0) {
       return NextResponse.json(
-        { error: "No valid dates provided" },
+        { error: Errors.NO_VALID_DATES },
         { status: 400 }
       );
     }
@@ -189,19 +190,19 @@ export const DELETE = withApiLogging(async function DELETE(
     const event = await prisma.event.findFirst({ where: { id, deletedAt: null } });
 
     if (!event) {
-      return NextResponse.json({ error: "Event not found" }, { status: 404 });
+      return NextResponse.json({ error: Errors.EVENT_NOT_FOUND }, { status: 404 });
     }
 
     if (event.createdById !== userId) {
       return NextResponse.json(
-        { error: "Only the event creator can delete date proposals" },
+        { error: Errors.ONLY_CREATOR_CAN_DELETE_DATES },
         { status: 403 }
       );
     }
 
     await prisma.dateProposal.deleteMany({ where: { eventId: id } });
 
-    return NextResponse.json({ message: "Date proposals deleted" });
+    return NextResponse.json({ message: Errors.DATE_PROPOSALS_DELETED });
   } catch (error) {
     return handleApiError(error);
   }

@@ -4,6 +4,7 @@ import prisma from "@/lib/db";
 import { encryptId } from "@/lib/crypto";
 import { getPublicBaseUrl } from "@/lib/public-link";
 import { withApiLogging } from "@/lib/api-logger";
+import { Errors } from "@/lib/error-messages";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -22,7 +23,7 @@ export const POST = withApiLogging(async function POST(
     });
 
     if (!group) {
-      return NextResponse.json({ error: "Group not found" }, { status: 404 });
+      return NextResponse.json({ error: Errors.GROUP_NOT_FOUND }, { status: 404 });
     }
 
     const shareToken = group.shareToken ?? encryptId(group.id);

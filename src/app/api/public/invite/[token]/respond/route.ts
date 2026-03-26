@@ -9,6 +9,7 @@ import { validateString } from "@/lib/validation";
 import { CacheTags } from "@/lib/cache-tags";
 import { checkRateLimit, rateLimitResponse } from "@/lib/rate-limit";
 import logger from "@/lib/logger";
+import { Errors } from "@/lib/error-messages";
 
 type RouteContext = { params: Promise<{ token: string }> };
 
@@ -26,7 +27,7 @@ export const POST = withApiLogging(async function POST(
   try {
     inviteId = decryptId(token);
   } catch {
-    return NextResponse.json({ error: "Invalid invite token" }, { status: 400 });
+    return NextResponse.json({ error: Errors.INVALID_INVITE_TOKEN }, { status: 400 });
   }
 
   try {
@@ -38,7 +39,7 @@ export const POST = withApiLogging(async function POST(
 
     if (!status || !["accepted", "declined"].includes(status)) {
       return NextResponse.json({
-        error: "Invalid status. Must be 'accepted' or 'declined'."
+        error: Errors.INVALID_INVITE_STATUS
       }, { status: 400 });
     }
 
@@ -53,7 +54,7 @@ export const POST = withApiLogging(async function POST(
     });
 
     if (!invite) {
-      return NextResponse.json({ error: "Invite not found" }, { status: 404 });
+      return NextResponse.json({ error: Errors.INVITE_NOT_FOUND }, { status: 404 });
     }
 
     if (invite.status !== "pending") {
@@ -103,7 +104,7 @@ export const POST = withApiLogging(async function POST(
     });
   } catch (error) {
     logger.error({ err: error }, "Error responding to invite");
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json({ error: Errors.INTERNAL_SERVER_ERROR }, { status: 500 });
   }
 });
 
@@ -118,7 +119,7 @@ export const GET = withApiLogging(async function GET(
   try {
     inviteId = decryptId(token);
   } catch {
-    return NextResponse.json({ error: "Invalid invite token" }, { status: 400 });
+    return NextResponse.json({ error: Errors.INVALID_INVITE_TOKEN }, { status: 400 });
   }
 
   const invite = await prisma.eventInvite.findUnique({
@@ -142,7 +143,7 @@ export const GET = withApiLogging(async function GET(
   });
 
   if (!invite) {
-    return NextResponse.json({ error: "Invite not found" }, { status: 404 });
+    return NextResponse.json({ error: Errors.INVITE_NOT_FOUND }, { status: 404 });
   }
 
   return NextResponse.json({

@@ -3,6 +3,7 @@ import { requireAuth } from "@/lib/require-auth";
 import { searchBGGGames } from "@/lib/bgg";
 import { withApiLogging } from "@/lib/api-logger";
 import logger from "@/lib/logger";
+import { Errors } from "@/lib/error-messages";
 
 export const GET = withApiLogging(async function GET(request: NextRequest) {
   const { userId: _userId } = await requireAuth()
@@ -11,7 +12,7 @@ export const GET = withApiLogging(async function GET(request: NextRequest) {
   const query = searchParams.get("q");
 
   if (!query || query.length < 2) {
-    return NextResponse.json({ error: "Query must be at least 2 characters" }, { status: 400 });
+    return NextResponse.json({ error: Errors.QUERY_MIN_LENGTH }, { status: 400 });
   }
 
   try {
@@ -19,6 +20,6 @@ export const GET = withApiLogging(async function GET(request: NextRequest) {
     return NextResponse.json(results);
   } catch (error) {
     logger.error({ err: error }, "BGG search error");
-    return NextResponse.json({ error: "Search failed" }, { status: 500 });
+    return NextResponse.json({ error: Errors.SEARCH_FAILED }, { status: 500 });
   }
 });

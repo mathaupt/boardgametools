@@ -9,6 +9,7 @@ import { withApiLogging } from "@/lib/api-logger";
 import { validateString, firstError } from "@/lib/validation";
 import { CacheTags } from "@/lib/cache-tags";
 import logger from "@/lib/logger";
+import { Errors } from "@/lib/error-messages";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -42,7 +43,7 @@ export const POST = withApiLogging(async function POST(
 
     if (!targetEmail && !targetUserId) {
       return NextResponse.json({ 
-        error: "Either email or userId is required" 
+        error: Errors.EMAIL_OR_USERID_REQUIRED 
       }, { status: 400 });
     }
 
@@ -52,7 +53,7 @@ export const POST = withApiLogging(async function POST(
     });
 
     if (!event) {
-      return NextResponse.json({ error: "Event not found" }, { status: 404 });
+      return NextResponse.json({ error: Errors.EVENT_NOT_FOUND }, { status: 404 });
     }
 
     // Ziel-User ermitteln (falls vorhanden)
@@ -68,14 +69,14 @@ export const POST = withApiLogging(async function POST(
         where: { eventId: id, userId: targetUser.id },
       });
       if (existing) {
-        return NextResponse.json({ error: "User already invited" }, { status: 400 });
+        return NextResponse.json({ error: Errors.USER_ALREADY_INVITED }, { status: 400 });
       }
     } else if (targetEmail) {
       const existing = await prisma.eventInvite.findFirst({
         where: { eventId: id, email: targetEmail },
       });
       if (existing) {
-        return NextResponse.json({ error: "Email already invited" }, { status: 400 });
+        return NextResponse.json({ error: Errors.EMAIL_ALREADY_INVITED }, { status: 400 });
       }
     }
 
@@ -131,7 +132,7 @@ export const PUT = withApiLogging(async function PUT(
 
     if (!status || !["accepted", "declined"].includes(status)) {
       return NextResponse.json({
-        error: "Invalid status. Must be 'accepted' or 'declined'."
+        error: Errors.INVALID_INVITE_STATUS
       }, { status: 400 });
     }
 
@@ -141,7 +142,7 @@ export const PUT = withApiLogging(async function PUT(
     });
 
     if (!invite) {
-      return NextResponse.json({ error: "Invite not found" }, { status: 404 });
+      return NextResponse.json({ error: Errors.INVITE_NOT_FOUND }, { status: 404 });
     }
 
     // Update Status
@@ -193,7 +194,7 @@ export const DELETE = withApiLogging(async function DELETE(
 
   if (!inviteId) {
     return NextResponse.json({ 
-      error: "Missing required parameter: inviteId" 
+      error: Errors.MISSING_INVITE_ID 
     }, { status: 400 });
   }
 
@@ -204,7 +205,7 @@ export const DELETE = withApiLogging(async function DELETE(
     });
 
     if (!event) {
-      return NextResponse.json({ error: "Event not found" }, { status: 404 });
+      return NextResponse.json({ error: Errors.EVENT_NOT_FOUND }, { status: 404 });
     }
 
     // Lösche Einladung (nur wenn sie zu diesem Event gehört → IDOR-Schutz)
@@ -213,14 +214,14 @@ export const DELETE = withApiLogging(async function DELETE(
     });
 
     if (!invite) {
-      return NextResponse.json({ error: "Invite not found" }, { status: 404 });
+      return NextResponse.json({ error: Errors.INVITE_NOT_FOUND }, { status: 404 });
     }
 
     await prisma.eventInvite.delete({
       where: { id: invite.id }
     });
 
-    return NextResponse.json({ message: "Invite deleted" });
+    return NextResponse.json({ message: Errors.INVITE_DELETED });
   } catch (error) {
     return handleApiError(error);
   }

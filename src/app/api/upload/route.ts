@@ -3,6 +3,7 @@ import { requireAuth, handleApiError } from "@/lib/require-auth";
 import prisma from "@/lib/db";
 import { withApiLogging } from "@/lib/api-logger";
 import { storage, generateFileName } from "@/lib/storage";
+import { Errors } from "@/lib/error-messages";
 
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 const MAX_SIZE = 5 * 1024 * 1024; // 5 MB
@@ -15,19 +16,19 @@ export const POST = withApiLogging(async function POST(request: NextRequest) {
     const file = formData.get("image") as File | null;
 
     if (!file) {
-      return NextResponse.json({ error: "No image file provided" }, { status: 400 });
+      return NextResponse.json({ error: Errors.NO_IMAGE_FILE }, { status: 400 });
     }
 
     if (!ALLOWED_TYPES.includes(file.type)) {
       return NextResponse.json(
-        { error: `Invalid file type. Allowed: ${ALLOWED_TYPES.join(", ")}` },
+        { error: Errors.INVALID_FILE_TYPE(ALLOWED_TYPES.join(", ")) },
         { status: 400 }
       );
     }
 
     if (file.size > MAX_SIZE) {
       return NextResponse.json(
-        { error: `File too large. Maximum: ${MAX_SIZE / 1024 / 1024} MB` },
+        { error: Errors.FILE_TOO_LARGE(MAX_SIZE / 1024 / 1024) },
         { status: 400 }
       );
     }

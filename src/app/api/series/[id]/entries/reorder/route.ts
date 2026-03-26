@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAuth, handleApiError } from "@/lib/require-auth";
 import prisma from "@/lib/db";
 import { withApiLogging } from "@/lib/api-logger";
+import { Errors } from "@/lib/error-messages";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -18,7 +19,7 @@ export const PUT = withApiLogging(async function PUT(
   });
 
   if (!series) {
-    return NextResponse.json({ error: "Series not found" }, { status: 404 });
+    return NextResponse.json({ error: Errors.SERIES_NOT_FOUND }, { status: 404 });
   }
 
   try {
@@ -27,7 +28,7 @@ export const PUT = withApiLogging(async function PUT(
 
     if (!Array.isArray(entries)) {
       return NextResponse.json(
-        { error: "entries must be an array of { id, sortOrder }" },
+        { error: Errors.ENTRIES_FORMAT },
         { status: 400 }
       );
     }
@@ -41,7 +42,7 @@ export const PUT = withApiLogging(async function PUT(
       )
     );
 
-    return NextResponse.json({ message: "Order updated" });
+    return NextResponse.json({ message: Errors.ORDER_UPDATED });
   } catch (error) {
     return handleApiError(error);
   }

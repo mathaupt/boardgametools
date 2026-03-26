@@ -4,6 +4,7 @@ import prisma from "@/lib/db";
 import { searchBGGGames } from "@/lib/bgg";
 import { withApiLogging } from "@/lib/api-logger";
 import logger from "@/lib/logger";
+import { Errors } from "@/lib/error-messages";
 
 interface UPCItemDBResponse {
   code: string;
@@ -86,7 +87,7 @@ export const GET = withApiLogging(async function GET(request: NextRequest) {
 
   const ean = request.nextUrl.searchParams.get("ean");
   if (!ean || ean.length < 8) {
-    return NextResponse.json({ error: "Valid EAN/UPC barcode required" }, { status: 400 });
+    return NextResponse.json({ error: Errors.VALID_BARCODE_REQUIRED }, { status: 400 });
   }
 
   try {
@@ -154,6 +155,6 @@ export const GET = withApiLogging(async function GET(request: NextRequest) {
     });
   } catch (error) {
     logger.error({ err: error }, "Barcode lookup error");
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json({ error: Errors.INTERNAL_SERVER_ERROR }, { status: 500 });
   }
 });

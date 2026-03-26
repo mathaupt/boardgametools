@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAuth, handleApiError } from "@/lib/require-auth";
 import prisma from "@/lib/db";
 import { withApiLogging } from "@/lib/api-logger";
+import { Errors } from "@/lib/error-messages";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -30,7 +31,7 @@ export const GET = withApiLogging(async function GET(
     });
 
     if (!sessionData) {
-      return NextResponse.json({ error: "Session not found" }, { status: 404 });
+      return NextResponse.json({ error: Errors.SESSION_NOT_FOUND }, { status: 404 });
     }
 
     // Prüfe ob User Berechtigung hat (Teilnehmer oder Ersteller)
@@ -38,7 +39,7 @@ export const GET = withApiLogging(async function GET(
     const isCreator = sessionData.createdById === userId;
 
     if (!isParticipant && !isCreator) {
-      return NextResponse.json({ error: "Access denied" }, { status: 403 });
+      return NextResponse.json({ error: Errors.ACCESS_DENIED }, { status: 403 });
     }
 
     return NextResponse.json(sessionData);
@@ -72,7 +73,7 @@ export const POST = withApiLogging(async function POST(
     });
 
     if (!sessionData) {
-      return NextResponse.json({ error: "Session not found" }, { status: 404 });
+      return NextResponse.json({ error: Errors.SESSION_NOT_FOUND }, { status: 404 });
     }
 
     // Prüfe ob User Teilnehmer oder Ersteller ist
@@ -80,7 +81,7 @@ export const POST = withApiLogging(async function POST(
     const isCreator = sessionData.createdById === userId;
 
     if (!isParticipant && !isCreator) {
-      return NextResponse.json({ error: "Access denied" }, { status: 403 });
+      return NextResponse.json({ error: Errors.ACCESS_DENIED }, { status: 403 });
     }
 
     // Upsert: Bewertung erstellen oder aktualisieren
