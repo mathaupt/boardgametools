@@ -4,6 +4,7 @@ import { CacheTags } from "@/lib/cache-tags";
 import { ApiError } from "@/lib/require-auth";
 import { validateString, validateNumber, firstError } from "@/lib/validation";
 import { NOT_DELETED, SAFE_USER_SELECT, buildPagination, paginatedResponse } from "./shared";
+import { TagService } from "./tag.service";
 
 // ── Types ────────────────────────────────────────────────────────
 
@@ -111,26 +112,9 @@ export const GameService = {
       },
     });
 
-    // Link tags if provided (wrapped in transaction for atomicity)
+    // Link tags if provided
     if (Array.isArray(input.tagNames) && input.tagNames.length > 0) {
-      await prisma.$transaction(async (tx) => {
-        const tagIds: string[] = [];
-        for (const tagName of input.tagNames!) {
-          const trimmed = String(tagName).trim();
-          if (!trimmed) continue;
-          const tag = await tx.tag.upsert({
-            where: { name_ownerId: { name: trimmed, ownerId: userId } },
-            create: { name: trimmed, ownerId: userId, source: "manual" },
-            update: {},
-          });
-          tagIds.push(tag.id);
-        }
-        if (tagIds.length > 0) {
-          await tx.gameTag.createMany({
-            data: tagIds.map((tagId) => ({ gameId: game.id, tagId })),
-          });
-        }
-      });
+      await TagService.syncTags(userId, game.id, input.tagNames, "manual");
     }
 
     const result = await prisma.game.findUnique({

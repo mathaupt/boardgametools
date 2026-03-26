@@ -6,6 +6,7 @@ import { fetchBGGGame } from "@/lib/bgg";
 import { withApiLogging } from "@/lib/api-logger";
 import { CacheTags } from "@/lib/cache-tags";
 import { Errors } from "@/lib/error-messages";
+import { TagService } from "@/lib/services";
 
 export const POST = withApiLogging(async function POST(request: NextRequest) {
   const { userId } = await requireAuth();
@@ -49,24 +50,9 @@ export const POST = withApiLogging(async function POST(request: NextRequest) {
       },
     });
 
-    // Auto-create tags from BGG categories (batched in a single transaction)
+    // Auto-create tags from BGG categories
     if (bggData.categories && bggData.categories.length > 0) {
-      await prisma.$transaction(async (tx) => {
-        for (const categoryName of bggData.categories) {
-          const trimmed = categoryName.trim();
-          if (!trimmed) continue;
-          const tag = await tx.tag.upsert({
-            where: { name_ownerId: { name: trimmed, ownerId: userId } },
-            create: { name: trimmed, ownerId: userId, source: "bgg" },
-            update: {},
-          });
-          await tx.gameTag.upsert({
-            where: { gameId_tagId: { gameId: game.id, tagId: tag.id } },
-            create: { gameId: game.id, tagId: tag.id },
-            update: {},
-          });
-        }
-      });
+      await TagService.syncTags(userId, game.id, bggData.categories);
     }
 
     invalidateTag(CacheTags.userGames(userId));

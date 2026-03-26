@@ -38,7 +38,7 @@ export const env = {
 
   // ── SMTP ──
   get SMTP_HOST() { return optionalEnv("SMTP_HOST", "localhost"); },
-  get SMTP_PORT() { return optionalEnv("SMTP_PORT", "587"); },
+  get SMTP_PORT() { return parseInt(optionalEnv("SMTP_PORT", "587"), 10); },
   get SMTP_SECURE() { return optionalEnv("SMTP_SECURE", "false"); },
   get SMTP_USER() { return optionalEnvOrUndefined("SMTP_USER"); },
   get SMTP_PASS() { return optionalEnvOrUndefined("SMTP_PASS"); },

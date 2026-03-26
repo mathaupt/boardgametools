@@ -124,7 +124,7 @@ export const DELETE = withApiLogging(async function DELETE(
     }
 
     await prisma.groupPoll.delete({ where: { id: pollId } });
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ message: Errors.POLL_DELETED });
   } catch (error) {
     return handleApiError(error);
   }

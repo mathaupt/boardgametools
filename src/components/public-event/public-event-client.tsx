@@ -55,8 +55,8 @@ export function PublicEventClient({ token, event }: PublicEventClientProps) {
       const parsed: StoredGuestState = JSON.parse(raw);
       setActiveGuest(parsed);
       setGuestVotes(new Set(parsed.votes ?? []));
-    } catch (error) {
-      console.warn("Failed to parse stored guest state", error);
+    } catch {
+      // Non-critical: localStorage may be corrupted or unavailable
     }
   }, [storageKey]);
 

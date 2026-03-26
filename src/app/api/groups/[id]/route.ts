@@ -144,7 +144,7 @@ export const DELETE = withApiLogging(async function DELETE(
     invalidateTag(CacheTags.userGroups(userId));
     invalidateTag(CacheTags.userDashboard(userId));
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ message: Errors.GROUP_DELETED });
   } catch (error) {
     return handleApiError(error);
   }

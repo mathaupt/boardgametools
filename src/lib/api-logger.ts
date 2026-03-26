@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { ApiError } from "@/lib/require-auth";
+import logger from "@/lib/logger";
 
 interface LogEntry {
   method: string;
@@ -34,7 +35,7 @@ export async function logApiRequest(entry: LogEntry) {
     });
   } catch {
     // Logging should never break the API
-    console.error("Failed to write API log");
+    logger.error("Failed to write API log");
   }
 }
 

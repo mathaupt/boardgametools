@@ -19,7 +19,7 @@ vi.mock("@/lib/db", () => {
     count: vi.fn(),
   };
   const tagDb = { upsert: vi.fn() };
-  const gameTagDb = { create: vi.fn(), deleteMany: vi.fn(), createMany: vi.fn() };
+  const gameTagDb = { create: vi.fn(), deleteMany: vi.fn(), createMany: vi.fn(), upsert: vi.fn() };
 
   return {
     default: {
@@ -156,7 +156,7 @@ describe("GameService", () => {
 
       vi.mocked(prisma.game.create).mockResolvedValue(createdGame as never);
       vi.mocked(prisma.tag.upsert).mockResolvedValue(tagRecord as never);
-      vi.mocked(prisma.gameTag.createMany).mockResolvedValue({ count: 1 } as never);
+      vi.mocked(prisma.gameTag.upsert).mockResolvedValue({} as never);
       vi.mocked(prisma.game.findUnique).mockResolvedValue(fullGame as never);
 
       const result = await GameService.create(USER_ID, {
@@ -169,9 +169,7 @@ describe("GameService", () => {
       });
       expect(prisma.$transaction).toHaveBeenCalledTimes(1);
       expect(prisma.tag.upsert).toHaveBeenCalledTimes(1);
-      expect(prisma.gameTag.createMany).toHaveBeenCalledWith({
-        data: [{ gameId: GAME_ID, tagId: "tag-1" }],
-      });
+      expect(prisma.gameTag.upsert).toHaveBeenCalledTimes(1);
       expect(prisma.game.findUnique).toHaveBeenCalledWith({
         where: { id: GAME_ID },
         include: { tags: { include: { tag: true } } },

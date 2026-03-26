@@ -442,10 +442,8 @@ Alle unter 400 Zeilen — moderat, aber eigene 300-Zeilen-Regel wird verletzt.
 #### DD-ARCH-04: Direct Prisma in Server Pages statt Service Layer (P3)
 5+ Server-Pages umgehen die Service-Schicht: events/[id]/page.tsx, groups/[id]/page.tsx, profile/page.tsx, admin/users/page.tsx, groups/[id]/statistics/page.tsx, statistics/route.ts
 
-#### DD-ARCH-05: Tag-Upsert-Loop dupliziert (P2)
-game.service.ts:118-133 und import-bgg/route.ts:53-66 haben identische For-Loop-Patterns für Tag-Upserts.
-
-**Fix:** Extrahieren in `TagService.syncTags(userId, gameId, tagNames)`.
+#### ~~DD-ARCH-05: Tag-Upsert-Loop dupliziert (P2)~~ ✅ Behoben (v0.35.0)
+`TagService.syncTags(userId, gameId, tagNames, source)` extrahiert. game.service.ts und import-bgg nutzen jetzt die gemeinsame Methode.
 
 #### ~~DD-ARCH-06: N+1 in import-bgg/route.ts (P1)~~ ✅ Behoben (v0.32.0)
 Tag-Upserts in `prisma.$transaction()` gebuendelt.
@@ -478,10 +476,8 @@ Batch-Query mit `prisma.user.findMany({ where: { email: { in: emails } } })` ers
 #### ~~DD-PERF-02: 7 weitere fehlende FK-Indices (P2)~~ ✅ Behoben (v0.32.0)
 8 neue Indices: SessionPlayer.userId, GroupPoll.groupId, GroupPollOption.pollId, GroupComment.groupId, Event.groupId, GameSeries.ownerId, Group.ownerId. Total: 30 Indices.
 
-#### DD-PERF-03: Keine Pagination auf Groups und Series (P2)
-GET /api/groups und GET /api/series haben kein `buildPagination()` — alle Records werden geladen.
-
-**Fix:** `buildPagination()` in GroupService.list() und SeriesService.list() integrieren.
+#### ~~DD-PERF-03: Keine Pagination auf Groups und Series (P2)~~ ✅ Behoben (v0.35.0)
+buildPagination()/paginatedResponse() in GroupService.list() und SeriesService.list() integriert. API-Routes extrahieren page/limit aus Query-Params.
 
 #### ~~DD-PERF-04: Client-Fetch-Waterfall auf 8 Pages (P1)~~ ✅ Behoben (v0.34.0)
 Alle 8 Pages zu Server Components migriert — kein useEffect+fetch Waterfall mehr.
@@ -501,14 +497,8 @@ Alle 8 Pages zu Server Components migriert — kein useEffect+fetch Waterfall me
 
 **Neue Findings:**
 
-#### DD-API-01: 3 inkompatible Success-Response-Formate (P2)
-| Format | Anzahl | Wo |
-|--------|--------|----|
-| `{ message: "..." }` | 10 | DELETE-Responses, invites, votes |
-| `{ success: true }` | 8 | members, deactivate, change-password |
-| Entity direkt | Meiste | games, events, sessions |
-
-**Fix:** Standardisieren: DELETE → `{ message: string }`, Mutationen → Entity, Actions → Updated Entity.
+#### ~~DD-API-01: 3 inkompatible Success-Response-Formate (P2)~~ ✅ Behoben (v0.35.0)
+`{ success: true }` in 5 Routes durch `{ message: Errors.X }` ersetzt. Nur Password-Reset behaelt `{ success: true }` (Anti-Enumeration).
 
 #### ~~DD-API-02: Gemischte Sprache in Fehlermeldungen (P1)~~ ✅ Behoben (v0.33.0)
 Zentrales `src/lib/error-messages.ts` Modul erstellt. ~156 englische Strings in 52 API-Route-Dateien auf Deutsch migriert.
@@ -518,15 +508,11 @@ Null PATCH-Handler im gesamten Projekt. Alle partiellen Updates nutzen PUT mit `
 
 **Fix:** PUT-Handler die partielle Payloads akzeptieren zu PATCH umbenennen.
 
-#### DD-API-04: request.json() ohne Validierung in 5 Routes (P2)
-- `events/[id]/share/route.ts:20-21` — `{ userIds }` nur Array.isArray-Check
-- `groups/[id]/members/route.ts:26-27` — `{ email }` nur !email Check
-- `admin/users/change-password/route.ts:11` — Kein validateString
-- `admin/users/deactivate/route.ts:10` — Typ-Checks aber keine String-Validierung
-- `events/[id]/invites/route.ts:129-130` (PUT) — Enum-Validierung aber nicht validateString
+#### ~~DD-API-04: request.json() ohne Validierung in 5 Routes (P2)~~ ✅ Behoben (v0.35.0)
+validateString/validateEmail in share, members, change-password, deactivate, invites PUT hinzugefuegt.
 
-#### DD-API-05: Admin User Create gibt 200 statt 201 zurück (P2)
-`admin/users/route.ts:62` — `NextResponse.json(user)` ohne `{ status: 201 }`. Alle anderen Create-Endpoints geben korrekt 201 zurück.
+#### ~~DD-API-05: Admin User Create gibt 200 statt 201 zurück (P2)~~ ✅ Behoben (v0.35.0)
+Korrigiert: gibt jetzt `{ status: 201 }` zurueck.
 
 #### DD-API-06: Action-Verb-Routes statt REST-konform (P2)
 `/close`, `/publish`, `/reset`, `/select` — 10+ Endpoints nutzen Verben in der URL statt HTTP-Methoden auf der übergeordneten Ressource.
@@ -612,8 +598,8 @@ Betrifft Array-Seite: createdPolls, groupPollVotes, groupComments, etc. Normal f
 
 **Neue Findings:**
 
-#### DD-KONZ-01: Tags "geplant" aber implementiert (P3)
-CONCEPT.md Zeile 13: "Tags/Kategorien (geplant)" — tatsächlich vollständig implementiert (Tag-Modell, GameTag, /api/tags, Filter-Chips).
+#### ~~DD-KONZ-01: Tags "geplant" aber implementiert (P3)~~ ✅ Behoben (v0.35.0)
+CONCEPT.md aktualisiert: "Tags/Kategorien (implementiert: Tag-Modell, GameTag-Relation, /api/tags, Filter-Chips)".
 
 #### DD-KONZ-02: Nicht dokumentierte Features (P3)
 Folgende im Code vorhandene Features fehlen in CONCEPT.md: pino (Logging), @upstash/ratelimit, @upstash/redis, @vercel/blob, @vercel/speed-insights, Soft-Delete.
@@ -638,17 +624,17 @@ lint-staged installiert: ESLint + Related Tests auf geaenderte Dateien. Volle Te
 #### ~~DD-BP-02: admin-create.ts ist Dead Code (P1)~~ ✅ Behoben (v0.32.0)
 Datei entfernt.
 
-#### DD-BP-03: 54× console.* in Client-Komponenten (P2)
-Server-seitig auf pino migriert. Client-seitige console.error sind akzeptabel (kein Browser-Logger), aber einige Stellen könnten Toast nutzen.
+#### ~~DD-BP-03: 54x console.* in Client-Komponenten (P2)~~ ✅ Teilweise behoben (v0.35.0)
+api-logger.ts: console.error → logger.error. public-event-client.tsx: console.warn entfernt. Verbleibende ~45 console.error in Client-Catch-Blocks sind akzeptabel (kein Browser-Logger verfuegbar).
 
-#### DD-BP-04: Gemischte API-Fehlersprache (P2)
-Referenziert DD-API-02 — Deutsch in validation.ts, Englisch in vielen Route-Handlers.
+#### ~~DD-BP-04: Gemischte API-Fehlersprache (P2)~~ ✅ Behoben (v0.33.0)
+Bereits via DD-API-02 behoben (zentrales error-messages.ts Modul).
 
-#### DD-BP-05: SMTP_PORT nicht als Zahl validiert (P2)
-`env.ts` liest SMTP_PORT als String, keine parseInt-Validierung.
+#### ~~DD-BP-05: SMTP_PORT nicht als Zahl validiert (P2)~~ ✅ Behoben (v0.35.0)
+`env.ts` SMTP_PORT gibt jetzt parseInt() zurueck.
 
-#### DD-BP-06: package.json Version "0.1.0" vs Changelog v0.31.1 (P3)
-Versionen nicht synchronisiert.
+#### ~~DD-BP-06: package.json Version "0.1.0" vs Changelog v0.31.1 (P3)~~ ✅ Behoben (v0.35.0)
+package.json Version auf 0.35.0 synchronisiert.
 
 #### DD-BP-07: Kein .env.local Template (P3)
 Keine Validierung gegen .env.example beim Start.
@@ -888,7 +874,7 @@ const isValid = await compare(inputPassword, group.password);
 
 ## Evaluator-Feedback (automatisch generiert)
 
-> Letzter Lauf: 2026-03-26 14:47:23
+> Letzter Lauf: 2026-03-26 14:52:02
 > Gesamt-Score: **10/10**
 
 ### Kategorie-Scores

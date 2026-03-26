@@ -19,6 +19,8 @@ export const Errors = {
   PASSWORD_MIN_LENGTH: "Passwort muss mindestens 8 Zeichen lang sein",
   CANNOT_MODIFY_OWN_ACCOUNT: "Eigenes Konto kann nicht geaendert werden",
   INVALID_INVITE_TOKEN: "Ungueltiger Einladungstoken",
+  USER_STATUS_CHANGED: "Benutzer-Status geaendert",
+  PASSWORD_CHANGED: "Passwort geaendert",
 
   // --- Events ---
   EVENT_NOT_FOUND: "Event nicht gefunden",
@@ -72,12 +74,15 @@ export const Errors = {
   USERID_REQUIRED: "Benutzer-ID ist erforderlich",
   ONLY_OWNER_CAN_REMOVE: "Nur der Eigentuemer kann andere entfernen",
   MEMBER_NOT_FOUND: "Mitglied nicht gefunden",
+  MEMBER_REMOVED: "Mitglied entfernt",
   CANNOT_REMOVE_OWNER: "Eigentuemer kann nicht entfernt werden",
   INVALID_PASSWORD: "Ungueltiges Passwort",
+  GROUP_DELETED: "Gruppe geloescht",
 
   // --- Polls ---
   POLL_NOT_FOUND: "Umfrage nicht gefunden",
   POLL_NOT_FOUND_OR_CLOSED: "Umfrage nicht gefunden oder geschlossen",
+  POLL_DELETED: "Umfrage geloescht",
   TITLE_AND_OPTIONS_REQUIRED: "Titel und mindestens 2 Optionen sind erforderlich",
   OPTION_IDS_REQUIRED: "optionIds-Liste ist erforderlich",
   SINGLE_CHOICE_ONLY_ONE: "Einzelauswahl-Umfrage: nur eine Option erlaubt",

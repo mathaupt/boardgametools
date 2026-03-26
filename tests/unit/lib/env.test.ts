@@ -29,7 +29,7 @@ describe("env", () => {
     expect(env.LOG_LEVEL).toBe("info");
     expect(env.BGG_API_URL).toBe("https://boardgamegeek.com/xmlapi2");
     expect(env.SMTP_HOST).toBe("localhost");
-    expect(env.SMTP_PORT).toBe("587");
+    expect(env.SMTP_PORT).toBe(587);
   });
 
   it("reads env vars when all are set", () => {

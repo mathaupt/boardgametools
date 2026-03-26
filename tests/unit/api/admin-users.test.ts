@@ -71,7 +71,7 @@ describe("API /api/admin/users", () => {
     const res = await (POST as Function)(req);
     const { status } = parseResponse(res);
 
-    expect(status).toBe(200);
+    expect(status).toBe(201);
     expect(requireAdmin).toHaveBeenCalledTimes(1);
     expect(prisma.user.create).toHaveBeenCalled();
   });

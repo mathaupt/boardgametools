@@ -3,6 +3,7 @@ import { requireAdmin, handleApiError } from "@/lib/require-auth";
 import prisma from "@/lib/db";
 import { withApiLogging } from "@/lib/api-logger";
 import { Errors } from "@/lib/error-messages";
+import { validateString } from "@/lib/validation";
 
 export const POST = withApiLogging(async function POST(request: NextRequest) {
   try {
@@ -10,7 +11,12 @@ export const POST = withApiLogging(async function POST(request: NextRequest) {
 
     const { userId: targetUserId, isActive } = await request.json();
 
-    if (!targetUserId || typeof isActive !== "boolean") {
+    const userIdError = validateString(targetUserId, "userId", { max: 100 });
+    if (userIdError) {
+      return NextResponse.json({ error: userIdError }, { status: 400 });
+    }
+
+    if (typeof isActive !== "boolean") {
       return NextResponse.json({ error: Errors.MISSING_REQUIRED_FIELDS }, { status: 400 });
     }
 
@@ -25,7 +31,7 @@ export const POST = withApiLogging(async function POST(request: NextRequest) {
       data: { isActive },
     });
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ message: Errors.USER_STATUS_CHANGED });
   } catch (error) {
     return handleApiError(error);
   }

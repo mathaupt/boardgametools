@@ -11,6 +11,22 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.35.0",
+    date: "2026-03-26",
+    title: "P2-Fixes: Pagination, API-Konsistenz, Validierung, TagService, Console-Cleanup",
+    description: "~15 P2-Findings behoben: Pagination fuer Groups/Series, Success-Response-Formate vereinheitlicht, Input-Validierung in 5 Routes, TagService.syncTags extrahiert, console.* bereinigt, SMTP_PORT-Validierung, package.json Version synchronisiert.",
+    changes: [
+      { type: "feature", text: "Pagination fuer Groups und Series (DD-PERF-03): buildPagination() in Services + page/limit in API-Routes" },
+      { type: "fix", text: "Success-Response-Format vereinheitlicht (DD-API-01): { success: true } durch { message: Errors.X } ersetzt" },
+      { type: "fix", text: "Input-Validierung in 5 Routes ergaenzt (DD-API-04): validateString/validateEmail fuer share, members, change-password, deactivate, invites" },
+      { type: "improvement", text: "TagService.syncTags() extrahiert (DD-ARCH-05): Duplizierten Tag-Upsert-Code aus game.service + import-bgg konsolidiert" },
+      { type: "fix", text: "Admin User Create gibt jetzt 201 statt 200 zurueck (DD-API-05)" },
+      { type: "fix", text: "console.error in api-logger.ts durch pino logger ersetzt, console.warn entfernt (DD-BP-03)" },
+      { type: "fix", text: "SMTP_PORT gibt jetzt parseInt() zurueck (DD-BP-05), package.json Version synchronisiert (DD-BP-06)" },
+      { type: "internal", text: "CONCEPT.md Tags-Status aktualisiert (DD-KONZ-01)" },
+    ],
+  },
+  {
     version: "0.34.1",
     date: "2026-03-26",
     title: "Review-Dokumentation aktualisiert: Score 8.3 auf 9.1",

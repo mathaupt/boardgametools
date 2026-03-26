@@ -130,7 +130,12 @@ export const PUT = withApiLogging(async function PUT(
     const body = await request.json();
     const { status } = body;
 
-    if (!status || !["accepted", "declined"].includes(status)) {
+    const statusError = validateString(status, "status", { max: 50 });
+    if (statusError) {
+      return NextResponse.json({ error: statusError }, { status: 400 });
+    }
+
+    if (!["accepted", "declined"].includes(status)) {
       return NextResponse.json({
         error: Errors.INVALID_INVITE_STATUS
       }, { status: 400 });

@@ -3,7 +3,7 @@ import { cachedQuery, invalidateTag } from "@/lib/cache";
 import { CacheTags } from "@/lib/cache-tags";
 import { ApiError } from "@/lib/require-auth";
 import { validateString, firstError } from "@/lib/validation";
-import { NOT_DELETED } from "./shared";
+import { NOT_DELETED, buildPagination, paginatedResponse } from "./shared";
 
 // ── Types ────────────────────────────────────────────────────────
 
@@ -41,22 +41,42 @@ const seriesInclude = {
 };
 
 export const SeriesService = {
-  /** List all series for a user (cached) */
-  async list(userId: string) {
+  /** List all series for a user (optionally paginated, cached when unpaginated) */
+  async list(userId: string, opts?: { page?: number; limit?: number }) {
+    const where = { ownerId: userId, ...NOT_DELETED };
+    const { page, limit, isPaginated, skip } = buildPagination(opts);
+
+    const addCounts = <T extends { entries: { played: boolean }[] }>(series: T[]) =>
+      series.map((s) => ({
+        ...s,
+        _count: {
+          entries: s.entries.length,
+          played: s.entries.filter((e) => e.played).length,
+        },
+      }));
+
+    if (isPaginated) {
+      const [series, total] = await Promise.all([
+        prisma.gameSeries.findMany({
+          where,
+          orderBy: { name: "asc" },
+          include: seriesInclude,
+          skip,
+          take: limit,
+        }),
+        prisma.gameSeries.count({ where }),
+      ]);
+      return paginatedResponse(addCounts(series), total, page, limit);
+    }
+
     return cachedQuery(
       async () => {
         const series = await prisma.gameSeries.findMany({
-          where: { ownerId: userId, ...NOT_DELETED },
+          where,
           orderBy: { name: "asc" },
           include: seriesInclude,
         });
-        return series.map((s) => ({
-          ...s,
-          _count: {
-            entries: s.entries.length,
-            played: s.entries.filter((e) => e.played).length,
-          },
-        }));
+        return addCounts(series);
       },
       ["user-series", userId],
       { revalidate: 120, tags: [CacheTags.userSeries(userId)] }

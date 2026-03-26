@@ -60,7 +60,7 @@ export const POST = withApiLogging(async function POST(request: Request) {
       },
     });
 
-    return NextResponse.json(user);
+    return NextResponse.json(user, { status: 201 });
   } catch (error) {
     return handleApiError(error);
   }

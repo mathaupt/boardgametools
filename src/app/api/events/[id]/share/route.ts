@@ -6,6 +6,7 @@ import { getPublicBaseUrl } from "@/lib/public-link";
 import { withApiLogging } from "@/lib/api-logger";
 import logger from "@/lib/logger";
 import { Errors } from "@/lib/error-messages";
+import { validateString } from "@/lib/validation";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -25,6 +26,12 @@ export const POST = withApiLogging(async function POST(
       return NextResponse.json({ 
         error: Errors.MISSING_USER_IDS 
       }, { status: 400 });
+    }
+
+    // Validate each userId entry
+    for (const uid of userIds) {
+      const err = validateString(uid, "userId", { max: 100 });
+      if (err) return NextResponse.json({ error: err }, { status: 400 });
     }
 
     // Prüfe ob Event existiert und User Berechtigung hat

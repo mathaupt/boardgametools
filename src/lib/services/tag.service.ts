@@ -52,4 +52,24 @@ export const TagService = {
     invalidateTag(CacheTags.userTags(userId));
     return { message: "Tag deleted" };
   },
+
+  /** Sync tags for a game (upsert tags + link to game in a single transaction) */
+  async syncTags(userId: string, gameId: string, tagNames: string[], source: string = "bgg"): Promise<void> {
+    await prisma.$transaction(async (tx) => {
+      for (const name of tagNames) {
+        const trimmed = name.trim();
+        if (!trimmed) continue;
+        const tag = await tx.tag.upsert({
+          where: { name_ownerId: { name: trimmed, ownerId: userId } },
+          create: { name: trimmed, ownerId: userId, source },
+          update: {},
+        });
+        await tx.gameTag.upsert({
+          where: { gameId_tagId: { gameId, tagId: tag.id } },
+          create: { gameId, tagId: tag.id },
+          update: {},
+        });
+      }
+    });
+  },
 };

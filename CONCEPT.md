@@ -10,7 +10,7 @@ BoardGameTools ist eine Next.js Webanwendung zur Verwaltung von Brettspielen, Sp
 - Spiele hinzufügen, bearbeiten, löschen
 - Spieldetails: Name, Beschreibung, Min/Max Spieler, Spieldauer, Komplexität
 - Bilder/Cover per URL
-- Tags/Kategorien (geplant)
+- Tags/Kategorien (implementiert: Tag-Modell, GameTag-Relation, /api/tags, Filter-Chips)
 - BGG-ID für Integration
 - EAN/Barcode für Spiel-Identifikation
 - Bulk-Delete für mehrere Spiele gleichzeitig

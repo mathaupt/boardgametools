@@ -3,10 +3,13 @@ import { withApiLogging } from "@/lib/api-logger";
 import { requireAuth, handleApiError } from "@/lib/require-auth";
 import { GroupService } from "@/lib/services";
 
-export const GET = withApiLogging(async function GET() {
+export const GET = withApiLogging(async function GET(request: NextRequest) {
   try {
     const { userId } = await requireAuth();
-    const result = await GroupService.list(userId);
+    const { searchParams } = new URL(request.url);
+    const page = Number(searchParams.get("page")) || undefined;
+    const limit = Number(searchParams.get("limit")) || undefined;
+    const result = await GroupService.list(userId, { page, limit });
     return NextResponse.json(result);
   } catch (error) {
     return handleApiError(error);

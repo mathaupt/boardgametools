@@ -3,7 +3,7 @@ import { cachedQuery, invalidateTag } from "@/lib/cache";
 import { CacheTags } from "@/lib/cache-tags";
 import { ApiError } from "@/lib/require-auth";
 import { validateString, firstError } from "@/lib/validation";
-import { NOT_DELETED, SAFE_USER_SELECT } from "./shared";
+import { NOT_DELETED, SAFE_USER_SELECT, buildPagination, paginatedResponse } from "./shared";
 
 // ── Types ────────────────────────────────────────────────────────
 
@@ -25,18 +25,35 @@ const groupListInclude = {
 };
 
 export const GroupService = {
-  /** List groups the user owns or is a member of */
-  async list(userId: string) {
+  /** List groups the user owns or is a member of (optionally paginated) */
+  async list(userId: string, opts?: { page?: number; limit?: number }) {
+    const where = {
+      ...NOT_DELETED,
+      OR: [
+        { ownerId: userId },
+        { members: { some: { userId } } },
+      ],
+    };
+    const { page, limit, isPaginated, skip } = buildPagination(opts);
+
+    if (isPaginated) {
+      const [groups, total] = await Promise.all([
+        prisma.group.findMany({
+          where,
+          include: groupListInclude,
+          orderBy: { updatedAt: "desc" },
+          skip,
+          take: limit,
+        }),
+        prisma.group.count({ where }),
+      ]);
+      return paginatedResponse(groups, total, page, limit);
+    }
+
     return cachedQuery(
       () =>
         prisma.group.findMany({
-          where: {
-            ...NOT_DELETED,
-            OR: [
-              { ownerId: userId },
-              { members: { some: { userId } } },
-            ],
-          },
+          where,
           include: groupListInclude,
           orderBy: { updatedAt: "desc" },
         }),

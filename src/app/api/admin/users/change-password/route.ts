@@ -4,6 +4,7 @@ import { hash } from "bcryptjs";
 import prisma from "@/lib/db";
 import { withApiLogging } from "@/lib/api-logger";
 import { Errors } from "@/lib/error-messages";
+import { validateString, firstError } from "@/lib/validation";
 
 export const POST = withApiLogging(async function POST(request: NextRequest) {
   try {
@@ -11,8 +12,12 @@ export const POST = withApiLogging(async function POST(request: NextRequest) {
 
     const { userId: targetUserId, newPassword } = await request.json();
 
-    if (!targetUserId || !newPassword) {
-      return NextResponse.json({ error: Errors.MISSING_REQUIRED_FIELDS }, { status: 400 });
+    const validationError = firstError(
+      validateString(targetUserId, "userId", { max: 100 }),
+      validateString(newPassword, "newPassword", { max: 200 }),
+    );
+    if (validationError) {
+      return NextResponse.json({ error: validationError }, { status: 400 });
     }
 
     if (targetUserId === adminUserId) {
@@ -32,7 +37,7 @@ export const POST = withApiLogging(async function POST(request: NextRequest) {
       data: { passwordHash },
     });
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ message: Errors.PASSWORD_CHANGED });
   } catch (error) {
     return handleApiError(error);
   }

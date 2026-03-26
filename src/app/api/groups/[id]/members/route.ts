@@ -3,6 +3,7 @@ import { requireAuth, handleApiError } from "@/lib/require-auth";
 import prisma from "@/lib/db";
 import { withApiLogging } from "@/lib/api-logger";
 import { Errors } from "@/lib/error-messages";
+import { validateEmail } from "@/lib/validation";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -27,8 +28,9 @@ export const POST = withApiLogging(async function POST(
     const body = await request.json();
     const { email } = body;
 
-    if (!email) {
-      return NextResponse.json({ error: Errors.EMAIL_REQUIRED }, { status: 400 });
+    const emailError = validateEmail(email, "E-Mail");
+    if (emailError) {
+      return NextResponse.json({ error: emailError }, { status: 400 });
     }
 
     const user = await prisma.user.findUnique({ where: { email } });
@@ -98,7 +100,7 @@ export const DELETE = withApiLogging(async function DELETE(
     }
 
     await prisma.groupMember.delete({ where: { id: targetMember.id } });
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ message: Errors.MEMBER_REMOVED });
   } catch (error) {
     return handleApiError(error);
   }
