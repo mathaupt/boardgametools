@@ -43,13 +43,17 @@ export interface QualityData {
   version: string;
   lastReviewDate: string | null;
   categoryScores: CategoryScore[];
-  tests: { total: number; files: number; allPassing: boolean; apiRouteTests: number };
+  tests: {
+    total: number; files: number; allPassing: boolean; apiRouteTests: number;
+    byArea: Array<{ area: string; files: number; tests: number; modules: string[] }>;
+  };
   codeQuality: {
     typescriptErrors: number; eslintErrors: number; eslintWarnings: number;
     npmAuditVulnerabilities: number; dbIndices: number; errorBoundaries: number;
     loadingStates: number; serverComponentPages: number; fetchWaterfallPages: number;
   };
   coverage: { statements: number; branches: number; functions: number; lines: number } | null;
+  previousCoverage: { statements: number; branches: number; functions: number; lines: number } | null;
   findings: FindingSummary;
   findingDetails: Finding[];
   evaluatorFindings: { total: number; resolved: number; partial: number; open: number } | null;
@@ -306,15 +310,59 @@ export function QualityTab({ data, loading }: { data: QualityData | null; loadin
             <QualityBadge label="Fetch Waterfall" value={data.codeQuality.fetchWaterfallPages} good={0} unit=" Pages" />
           </div>
           {data.coverage && (
-            <div className="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-3">
-              <CoverageBar label="Statements" value={data.coverage.statements} />
-              <CoverageBar label="Branches" value={data.coverage.branches} />
-              <CoverageBar label="Functions" value={data.coverage.functions} />
-              <CoverageBar label="Lines" value={data.coverage.lines} />
+            <div className="mt-4">
+              <p className="text-xs font-medium text-muted-foreground mb-2">Code Coverage</p>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <CoverageBar label="Statements" value={data.coverage.statements} previous={data.previousCoverage?.statements} />
+                <CoverageBar label="Branches" value={data.coverage.branches} previous={data.previousCoverage?.branches} />
+                <CoverageBar label="Functions" value={data.coverage.functions} previous={data.previousCoverage?.functions} />
+                <CoverageBar label="Lines" value={data.coverage.lines} previous={data.previousCoverage?.lines} />
+              </div>
             </div>
           )}
         </CardContent>
       </Card>
+
+      {/* Test-Uebersicht — nur sichtbar wenn Testing Kategorie ausgewaehlt */}
+      {selectedCategory === "Testing" && data.tests.byArea && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base flex items-center gap-2">
+              <TestTube className="h-4 w-4" />
+              Test-Uebersicht
+            </CardTitle>
+            <CardDescription>
+              {data.tests.total} Tests in {data.tests.files} Dateien — alle bestanden
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {data.tests.byArea.map((area) => (
+                <div key={area.area} className="border rounded-lg p-3">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-medium">{area.area}</span>
+                    <div className="flex items-center gap-2">
+                      <Badge variant="outline" className="text-xs">{area.files} Dateien</Badge>
+                      <Badge className="text-xs bg-green-500/10 text-green-600 border-green-500/20">{area.tests} Tests</Badge>
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {area.modules.map((mod) => (
+                      <span key={mod} className="text-[11px] px-2 py-0.5 rounded-full bg-muted text-muted-foreground">{mod}</span>
+                    ))}
+                  </div>
+                  <div className="mt-2 h-1.5 bg-muted rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-green-500 rounded-full transition-all"
+                      style={{ width: `${(area.tests / data.tests.total) * 100}%` }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Tech Stack / BOM — nur sichtbar wenn BOM/Dependencies Kategorie ausgewaehlt */}
       {selectedCategory === "BOM/Dependencies" && data.techStack && data.techStack.length > 0 && (
@@ -419,13 +467,21 @@ function QualityBadge({ label, value, good, unit, inverse }: { label: string; va
   );
 }
 
-function CoverageBar({ label, value }: { label: string; value: number }) {
+function CoverageBar({ label, value, previous }: { label: string; value: number; previous?: number }) {
   const color = value >= 60 ? "bg-green-500" : value >= 40 ? "bg-yellow-500" : "bg-red-500";
+  const delta = previous != null ? value - previous : null;
   return (
     <div>
       <div className="flex justify-between text-xs mb-1">
         <span className="text-muted-foreground">{label}</span>
-        <span className="font-medium">{value.toFixed(1)}%</span>
+        <div className="flex items-center gap-1.5">
+          <span className="font-medium">{value.toFixed(1)}%</span>
+          {delta != null && delta !== 0 && (
+            <span className={`text-[10px] ${delta > 0 ? "text-green-500" : "text-red-500"}`}>
+              {delta > 0 ? "+" : ""}{delta.toFixed(1)}
+            </span>
+          )}
+        </div>
       </div>
       <div className="h-2 bg-muted rounded-full overflow-hidden">
         <div className={`h-full ${color} rounded-full transition-all`} style={{ width: `${Math.min(value, 100)}%` }} />

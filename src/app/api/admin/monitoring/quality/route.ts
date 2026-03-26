@@ -179,7 +179,20 @@ export const GET = withApiLogging(async function GET() {
         files: 40,
         allPassing: true,
         apiRouteTests: 26,
+        byArea: [
+          { area: "Services", files: 7, tests: 85, modules: ["event", "game", "group", "series", "session", "shared", "tag"] },
+          { area: "Lib/Utilities", files: 14, tests: 155, modules: ["validation (46)", "public-event (19)", "bgg (15)", "public-link (15)", "password-reset (15)", "require-auth (14)", "rate-limit (12)", "utils (9)", "event-share (8)", "group-share (8)", "api-logger (8)", "changelog (7)", "mailer (7)", "crypto (6)"] },
+          { area: "Components", files: 6, tests: 43, modules: ["voting-client (10)", "date-voting (9)", "register (8)", "guest-registration (8)", "new-game (6)", "login (6)"] },
+          { area: "API Routes", files: 5, tests: 26, modules: ["games (7)", "auth/register (6)", "admin/users (5)", "statistics (4)", "public/event (4)"] },
+          { area: "Accessibility", files: 1, tests: 6, modules: ["WCAG axe-core (6)"] },
+          { area: "Security", files: 1, tests: 19, modules: ["security-check (19)"] },
+          { area: "Infrastruktur", files: 6, tests: 61, modules: ["cache (4)", "db (2)", "env (4)", "faq (4)", "logger (3)", "storage (6)"] },
+        ],
       },
+
+      // Coverage (from evaluator + previous for comparison)
+      coverage: latestSnapshot?.coverage ?? null,
+      previousCoverage: { statements: 25.1, branches: 24.0, functions: 21.5, lines: 25.5 },
 
       // Code quality
       codeQuality: {
