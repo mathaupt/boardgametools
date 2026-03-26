@@ -2,16 +2,17 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { withApiLogging } from "@/lib/api-logger";
+import { env } from "@/lib/env";
 
 export const POST = withApiLogging(async function POST() {
   // Only allow in development or for authenticated admins
   const session = await auth();
-  if (process.env.NODE_ENV !== "development" && session?.user?.role !== "ADMIN") {
+  if (env.NODE_ENV !== "development" && session?.user?.role !== "ADMIN") {
     return NextResponse.json({ error: "Not available" }, { status: 404 });
   }
 
   try {
-    if (!process.env.SQL_DATABASE_URL) {
+    if (!env.DATABASE_URL) {
       return NextResponse.json(
         { error: "SQL_DATABASE_URL environment variable is not set" },
         { status: 500 }

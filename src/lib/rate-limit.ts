@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { env } from "@/lib/env";
 
 // Max entries to prevent unbounded memory growth (e.g. during DDoS).
 // When the limit is reached, expired entries are evicted first; if still
@@ -8,7 +9,7 @@ const MAX_MAP_SIZE = 10_000;
 // ── Upstash Redis Rate Limiting (preferred for production) ──────
 // Set UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN to enable.
 // Falls back to in-memory Map if not configured.
-const useUpstash = !!(process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN);
+const useUpstash = !!(env.UPSTASH_REDIS_REST_URL && env.UPSTASH_REDIS_REST_TOKEN);
 
 let upstashRatelimit: {
   limit: (identifier: string) => Promise<{ success: boolean; remaining: number; reset: number }>;

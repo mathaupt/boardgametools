@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import { env } from "@/lib/env";
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
@@ -6,7 +7,7 @@ const globalForPrisma = globalThis as unknown as {
 
 // Append connection pool parameters if not already present
 function getDatasourceUrl(): string {
-  const url = process.env.SQL_DATABASE_URL || "";
+  const url = env.DATABASE_URL;
   if (!url || url.includes("connection_limit") || url.includes("pool_timeout")) return url;
   const separator = url.includes("?") ? "&" : "?";
   return `${url}${separator}connection_limit=10&pool_timeout=20`;
@@ -16,7 +17,7 @@ export const prisma =
   globalForPrisma.prisma ??
   new PrismaClient({
     datasourceUrl: getDatasourceUrl(),
-    log: process.env.NODE_ENV === "development" ? ["warn", "error"] : ["error"],
+    log: env.NODE_ENV === "development" ? ["warn", "error"] : ["error"],
   });
 
 globalForPrisma.prisma = prisma;

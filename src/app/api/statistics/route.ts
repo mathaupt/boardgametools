@@ -8,8 +8,6 @@ import { CacheTags } from "@/lib/cache-tags";
 export const GET = withApiLogging(async function GET(_request: NextRequest) {
   const { userId } = await requireAuth();
 
-  const userId = userId;
-
   try {
     const result = await cachedQuery(
       async () => {

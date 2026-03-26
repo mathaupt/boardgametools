@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { env } from "@/lib/env";
 
 describe("env", () => {
   const originalEnv = { ...process.env };
@@ -11,37 +12,31 @@ describe("env", () => {
     process.env = { ...originalEnv };
   });
 
-  it("throws when SQL_DATABASE_URL is missing", async () => {
+  it("throws when SQL_DATABASE_URL is missing", () => {
     delete process.env.SQL_DATABASE_URL;
-    process.env.NEXTAUTH_SECRET = "test-secret";
-    await expect(() => import("@/lib/env")).rejects.toThrow("SQL_DATABASE_URL");
+    expect(() => env.DATABASE_URL).toThrow("SQL_DATABASE_URL");
   });
 
-  it("throws when NEXTAUTH_SECRET is missing", async () => {
-    process.env.SQL_DATABASE_URL = "postgres://test";
+  it("throws when NEXTAUTH_SECRET is missing", () => {
     delete process.env.NEXTAUTH_SECRET;
-    await expect(() => import("@/lib/env")).rejects.toThrow("NEXTAUTH_SECRET");
+    expect(() => env.NEXTAUTH_SECRET).toThrow("NEXTAUTH_SECRET");
   });
 
-  it("uses default values for optional vars", async () => {
-    process.env.SQL_DATABASE_URL = "postgres://test";
-    process.env.NEXTAUTH_SECRET = "test-secret";
+  it("uses default values for optional vars", () => {
     delete process.env.NEXTAUTH_URL;
     delete process.env.LOG_LEVEL;
-    const { env } = await import("@/lib/env");
     expect(env.NEXTAUTH_URL).toBe("http://localhost:3000");
     expect(env.LOG_LEVEL).toBe("info");
     expect(env.BGG_API_URL).toBe("https://boardgamegeek.com/xmlapi2");
     expect(env.SMTP_HOST).toBe("localhost");
-    expect(env.SMTP_PORT).toBe("2525");
+    expect(env.SMTP_PORT).toBe("587");
   });
 
-  it("reads env vars when all are set", async () => {
+  it("reads env vars when all are set", () => {
     process.env.SQL_DATABASE_URL = "postgres://mydb";
     process.env.NEXTAUTH_SECRET = "my-secret";
     process.env.NEXTAUTH_URL = "https://example.com";
     process.env.LOG_LEVEL = "debug";
-    const { env } = await import("@/lib/env");
     expect(env.DATABASE_URL).toBe("postgres://mydb");
     expect(env.NEXTAUTH_SECRET).toBe("my-secret");
     expect(env.NEXTAUTH_URL).toBe("https://example.com");

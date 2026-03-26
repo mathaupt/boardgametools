@@ -22,11 +22,12 @@ export default async function DashboardPage() {
 
   const [gamesCount, sessionsCount, groupsCount, eventsCount] = await cachedQuery(
     () => Promise.all([
-      prisma.game.count({ where: { ownerId: userId } }),
-      prisma.gameSession.count({ where: { createdById: userId } }),
+      prisma.game.count({ where: { ownerId: userId, deletedAt: null } }),
+      prisma.gameSession.count({ where: { createdById: userId, deletedAt: null } }),
       prisma.groupMember.count({ where: { userId } }),
       prisma.event.count({
         where: {
+          deletedAt: null,
           OR: [
             { createdById: userId },
             { invites: { some: { userId } } },
@@ -40,7 +41,7 @@ export default async function DashboardPage() {
 
   const recentSessions = await cachedQuery(
     () => prisma.gameSession.findMany({
-      where: { createdById: userId },
+      where: { createdById: userId, deletedAt: null },
       include: { game: true },
       orderBy: { playedAt: "desc" },
       take: 5,
@@ -52,6 +53,7 @@ export default async function DashboardPage() {
   const upcomingEvents: UpcomingEvent[] = await cachedQuery(
     () => prisma.event.findMany({
       where: {
+        deletedAt: null,
         eventDate: { gte: new Date() },
         OR: [
           { createdById: userId },

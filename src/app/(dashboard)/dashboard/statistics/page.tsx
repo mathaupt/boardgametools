@@ -41,14 +41,14 @@ export default async function StatisticsPage() {
     async () => {
       const [totalGames, totalSessions, durationAgg, allSessions] =
         await Promise.all([
-          prisma.game.count({ where: { ownerId: userId } }),
-          prisma.gameSession.count({ where: { createdById: userId } }),
+          prisma.game.count({ where: { ownerId: userId, deletedAt: null } }),
+          prisma.gameSession.count({ where: { createdById: userId, deletedAt: null } }),
           prisma.gameSession.aggregate({
-            where: { createdById: userId },
+            where: { createdById: userId, deletedAt: null },
             _sum: { durationMinutes: true },
           }),
           prisma.gameSession.findMany({
-            where: { createdById: userId },
+            where: { createdById: userId, deletedAt: null },
             include: {
               game: true,
               players: {

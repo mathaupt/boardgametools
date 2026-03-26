@@ -1,4 +1,5 @@
 import crypto from "crypto";
+import { env } from "@/lib/env";
 
 const KEY_LENGTH = 32; // AES-256
 const IV_LENGTH = 12;  // Recommended for GCM
@@ -14,10 +15,7 @@ const base64UrlDecode = (input: string) => {
 };
 
 const getKey = () => {
-  const secret = process.env.NEXTAUTH_SECRET;
-  if (!secret) {
-    throw new Error("NEXTAUTH_SECRET is not set");
-  }
+  const secret = env.NEXTAUTH_SECRET;
 
   // Derive 32-byte key via SHA256 hash of secret
   return crypto.createHash("sha256").update(secret).digest().subarray(0, KEY_LENGTH);

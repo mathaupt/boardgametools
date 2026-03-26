@@ -1,14 +1,14 @@
 import nodemailer from "nodemailer";
+import { env } from "@/lib/env";
 
-const smtpHost = process.env.SMTP_HOST;
-const smtpPort = Number(process.env.SMTP_PORT || 587);
-const smtpSecure = process.env.SMTP_SECURE === "true";
-const smtpUser = process.env.SMTP_USER;
-const smtpPass = process.env.SMTP_PASS;
+const smtpHost = env.SMTP_HOST;
+const smtpPort = Number(env.SMTP_PORT);
+const smtpSecure = env.SMTP_SECURE === "true";
+const smtpUser = env.SMTP_USER;
+const smtpPass = env.SMTP_PASS;
 const defaultSender =
-  process.env.SMTP_FROM ||
-  process.env.PASSWORD_RESET_SENDER ||
-  "BoardGameTools <no-reply@boardgametools.local>";
+  env.SMTP_FROM ||
+  env.PASSWORD_RESET_SENDER;
 
 if (!smtpHost) {
   console.warn("[mailer] SMTP_HOST is not configured. Emails will fail.");

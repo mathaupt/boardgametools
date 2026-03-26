@@ -13,7 +13,7 @@ export default async function SessionsPage() {
 
   const sessions = await cachedQuery(
     () => prisma.gameSession.findMany({
-      where: { createdById: userId },
+      where: { createdById: userId, deletedAt: null },
       include: {
         game: true,
         players: {

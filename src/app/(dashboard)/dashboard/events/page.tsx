@@ -18,7 +18,7 @@ export default async function EventsPage() {
 
   const events = await cachedQuery(
     () => prisma.event.findMany({
-      where: { createdById: userId },
+      where: { createdById: userId, deletedAt: null },
       include: {
         invites: {
           include: { user: { select: { id: true, name: true, email: true } } }

@@ -36,6 +36,7 @@ export default async function ProfilePage() {
     // Events die ich erstellt habe oder zu denen ich eingeladen bin
     prisma.event.findMany({
       where: {
+        deletedAt: null,
         OR: [
           { createdById: userId },
           { invites: { some: { userId } } },
@@ -81,7 +82,7 @@ export default async function ProfilePage() {
 
     // Meine Sessions mit Notizen
     prisma.gameSession.findMany({
-      where: { createdById: userId, notes: { not: null } },
+      where: { createdById: userId, deletedAt: null, notes: { not: null } },
       include: {
         game: { select: { id: true, name: true } },
       },

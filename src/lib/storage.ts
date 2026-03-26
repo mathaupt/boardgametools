@@ -1,6 +1,7 @@
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
 import crypto from "crypto";
+import { env } from "@/lib/env";
 
 export interface StorageResult {
   storagePath: string;
@@ -39,7 +40,7 @@ class BlobStorageProvider implements StorageProvider {
 }
 
 function getStorageProvider(): StorageProvider {
-  if (process.env.BLOB_READ_WRITE_TOKEN) {
+  if (env.BLOB_READ_WRITE_TOKEN) {
     return new BlobStorageProvider();
   }
   return new LocalStorageProvider();

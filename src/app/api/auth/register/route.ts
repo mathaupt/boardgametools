@@ -27,8 +27,9 @@ export const POST = withApiLogging(async function POST(request: NextRequest) {
     });
 
     if (existingUser) {
+      // Generische Fehlermeldung → verhindert User-Enumeration
       return NextResponse.json(
-        { error: "User with this email already exists" },
+        { error: "Registrierung fehlgeschlagen. Bitte versuche es erneut." },
         { status: 400 }
       );
     }

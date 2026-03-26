@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/db";
 import { withApiLogging } from "@/lib/api-logger";
 import { checkRateLimit, rateLimitResponse } from "@/lib/rate-limit";
+import { env } from "@/lib/env";
 
 interface ComponentHealth {
   status: "healthy" | "degraded" | "unhealthy";
@@ -43,7 +44,7 @@ export const GET = withApiLogging(async function GET(request: NextRequest) {
   const response: HealthResponse = {
     status: "healthy",
     version: APP_VERSION,
-    environment: process.env.NODE_ENV || "unknown",
+    environment: env.NODE_ENV,
     uptime: Math.round(process.uptime()),
     timestamp: new Date().toISOString(),
     memory: {

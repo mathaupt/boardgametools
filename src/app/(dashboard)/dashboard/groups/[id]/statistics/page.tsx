@@ -43,6 +43,7 @@ export default async function GroupStatisticsPage({
   const group = await prisma.group.findFirst({
     where: {
       id,
+      deletedAt: null,
       OR: [
         { ownerId: session.user.id },
         { members: { some: { userId: session.user.id } } },
@@ -90,7 +91,7 @@ export default async function GroupStatisticsPage({
         },
       }),
       prisma.groupComment.count({ where: { groupId: id } }),
-      prisma.event.count({ where: { groupId: id } }),
+      prisma.event.count({ where: { groupId: id, deletedAt: null } }),
       prisma.groupComment.groupBy({
         by: ["authorName"],
         where: { groupId: id },

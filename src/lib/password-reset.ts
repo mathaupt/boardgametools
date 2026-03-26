@@ -1,7 +1,8 @@
 import crypto from "crypto";
 import prisma from "./db";
+import { env } from "@/lib/env";
 
-const TOKEN_EXPIRY_MINUTES = parseInt(process.env.PASSWORD_RESET_TOKEN_TTL_MINUTES || "60", 10);
+const TOKEN_EXPIRY_MINUTES = parseInt(env.PASSWORD_RESET_TOKEN_TTL_MINUTES, 10);
 
 export function hashResetToken(token: string) {
   return crypto.createHash("sha256").update(token).digest("hex");

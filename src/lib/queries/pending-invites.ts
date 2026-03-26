@@ -12,7 +12,7 @@ export async function getPendingInvites(userId: string) {
       where: {
         userId,
         status: "pending",
-        event: { eventDate: { gte: new Date() } },
+        event: { eventDate: { gte: new Date() }, deletedAt: null },
       },
       include: {
         event: {

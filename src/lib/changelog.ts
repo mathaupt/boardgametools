@@ -11,6 +11,25 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.25.0",
+    date: "2026-03-24",
+    title: "Security Hardening & Code-Quality (Review P0-P1)",
+    description: "Umfassende Sicherheits- und Architektur-Verbesserungen basierend auf dem Code-Review: 5 kritische P0-Findings und 6 P1-Findings behoben. IDOR-Schwachstellen geschlossen, CSRF-Schutz eingefuehrt, CSP/HSTS gehaertet, env.ts zentralisiert.",
+    changes: [
+      { type: "fix", text: "IDOR-Schwachstelle in Event-Einladungen geschlossen – Einladungen koennen nur noch innerhalb des eigenen Events geloescht werden" },
+      { type: "fix", text: "Self-Reference-Bug in Statistics-Route behoben (const userId = userId)" },
+      { type: "fix", text: "BGG-API-Route abgesichert: Auth erforderlich, bggId-Validierung, Mock-Data-Fallback entfernt" },
+      { type: "fix", text: "Passwort-Policy einheitlich auf min. 8 Zeichen (vorher teils 6)" },
+      { type: "fix", text: "User-Enumeration bei Registrierung verhindert – generische Fehlermeldung statt 'E-Mail existiert bereits'" },
+      { type: "improvement", text: "CSRF-Schutz via Origin-Verification fuer POST/PUT/DELETE/PATCH in proxy.ts" },
+      { type: "improvement", text: "CSP gehaertet: unsafe-eval nur noch im Development-Modus" },
+      { type: "improvement", text: "HSTS-Header (max-age=2 Jahre, includeSubDomains, preload) fuer Produktion" },
+      { type: "improvement", text: "Event-Routes auf EventService migriert (190 auf 37 Zeilen)" },
+      { type: "improvement", text: "Soft-Delete-Filter (deletedAt: null) in 8 Dashboard-Pages und pending-invites ergaenzt" },
+      { type: "internal", text: "env.ts zentralisiert: 14 Dateien von process.env auf lazy Getter-basiertes env-Objekt migriert, SMTP_PORT-Default auf 587 korrigiert" },
+    ],
+  },
+  {
     version: "0.24.0",
     date: "2026-03-24",
     title: "Architektur-Bereinigung: Auth-Migration, v1-Deduplizierung, Service-Tests",

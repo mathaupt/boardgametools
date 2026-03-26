@@ -15,6 +15,7 @@ export default async function GroupsPage() {
   const groups = await cachedQuery(
     () => prisma.group.findMany({
       where: {
+        deletedAt: null,
         OR: [
           { ownerId: userId },
           { members: { some: { userId } } },

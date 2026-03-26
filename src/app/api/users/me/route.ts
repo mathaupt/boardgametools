@@ -37,7 +37,7 @@ export const PUT = withApiLogging(async function PUT(request: NextRequest) {
     const validationError = firstError(
       validateString(name, "name", { required: false, max: 100 }),
       validateString(email, "email", { required: false, max: 254 }),
-      validateString(newPassword, "newPassword", { required: false, min: 6, max: 100 })
+      validateString(newPassword, "newPassword", { required: false, min: 8, max: 100 })
     );
     if (validationError) return NextResponse.json({ error: validationError }, { status: 400 });
 
@@ -72,8 +72,8 @@ export const PUT = withApiLogging(async function PUT(request: NextRequest) {
       if (!isValid) {
         return NextResponse.json({ error: "Aktuelles Passwort ist falsch" }, { status: 403 });
       }
-      if (newPassword.length < 6) {
-        return NextResponse.json({ error: "Neues Passwort muss mindestens 6 Zeichen haben" }, { status: 400 });
+      if (newPassword.length < 8) {
+        return NextResponse.json({ error: "Neues Passwort muss mindestens 8 Zeichen haben" }, { status: 400 });
       }
       updateData.passwordHash = await hash(newPassword, 12);
     }

@@ -1,7 +1,11 @@
 /**
  * Server-side base URL resolution.
  * Priority: NEXT_PUBLIC_APP_URL > request Host header > NEXTAUTH_URL > VERCEL_URL > localhost.
+ *
+ * NOTE: This module reads process.env directly (not env.ts) because the
+ * fallback chain needs to distinguish "explicitly set" from "has a default".
  */
+
 export async function getPublicBaseUrl() {
   // 1. Explicit env var always wins
   if (process.env.NEXT_PUBLIC_APP_URL) {

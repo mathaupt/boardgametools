@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireAuth, handleApiError } from "@/lib/require-auth";
 import { withApiLogging } from "@/lib/api-logger";
 import logger from "@/lib/logger";
 
@@ -25,17 +26,23 @@ interface BGGSearchResult {
 }
 
 export const GET = withApiLogging(async function GET(request: NextRequest) {
+  await requireAuth();
+
   const { searchParams } = new URL(request.url);
   const bggId = searchParams.get("bggId");
   const query = searchParams.get("query");
 
   try {
     if (bggId) {
+      // Validiere bggId (nur Ziffern erlaubt → SSRF-Schutz)
+      if (!/^\d+$/.test(bggId)) {
+        return NextResponse.json({ error: "Invalid BGG ID" }, { status: 400 });
+      }
+
       // Spezifisches Spiel von BGG abrufen
       const response = await fetch(`https://boardgamegeek.com/xmlapi2/thing?id=${bggId}&stats=1`, {
         headers: {
-          'Authorization': `Bearer ${process.env.BGG_AUTH_TOKEN}`,
-          'User-Agent': 'BoardGameTools/1.0 (https://boardgametools.example.com)',
+          'User-Agent': 'BoardGameTools/1.0',
           'Accept': 'application/xml'
         }
       });
@@ -89,8 +96,7 @@ export const GET = withApiLogging(async function GET(request: NextRequest) {
       // Suche nach Spielen mit korrektem query Parameter
       const response = await fetch(`https://boardgamegeek.com/xmlapi2/search?type=boardgame&query=${encodeURIComponent(query)}`, {
         headers: {
-          'Authorization': `Bearer ${process.env.BGG_AUTH_TOKEN}`,
-          'User-Agent': 'BoardGameTools/1.0 (https://boardgametools.example.com)',
+          'User-Agent': 'BoardGameTools/1.0',
           'Accept': 'application/xml'
         }
       });
@@ -150,8 +156,7 @@ export const GET = withApiLogging(async function GET(request: NextRequest) {
             `https://boardgamegeek.com/xmlapi2/thing?id=${ids}`,
             {
               headers: {
-                'Authorization': `Bearer ${process.env.BGG_AUTH_TOKEN}`,
-                'User-Agent': 'BoardGameTools/1.0 (https://boardgametools.example.com)',
+                'User-Agent': 'BoardGameTools/1.0',
                 'Accept': 'application/xml',
               },
             }
@@ -186,35 +191,6 @@ export const GET = withApiLogging(async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Missing query parameter" }, { status: 400 });
     }
   } catch (error) {
-    logger.error({ err: error }, "BGG API Error");
-    
-    // Fallback zu Mock-Daten bei BGG API Problemen
-    logger.info("Falling back to mock data due to BGG API issues");
-    
-    if (query) {
-      const mockGames = [
-        { bggId: "13", name: "Catan", yearPublished: "1995", type: "boardgame" },
-        { bggId: "822", name: "Carcassonne", yearPublished: "2000", type: "boardgame" },
-        { bggId: "31260", name: "7 Wonders", yearPublished: "2010", type: "boardgame" },
-        { bggId: "167791", name: "Terraforming Mars", yearPublished: "2016", type: "boardgame" },
-        { bggId: "174430", name: "Gloomhaven", yearPublished: "2017", type: "boardgame" },
-        { bggId: "823", name: "The Lord of the Rings: The Board Game", yearPublished: "2000", type: "boardgame" },
-        { bggId: "122515", name: "The Lord of the Rings: The Card Game", yearPublished: "2011", type: "boardgame" },
-        { bggId: "283864", name: "The Lord of the Rings: Journeys in Middle-earth", yearPublished: "2019", type: "boardgame" },
-        { bggId: "317167", name: "The Lord of the Rings: The Confrontation", yearPublished: "2002", type: "boardgame" },
-        { bggId: "315698", name: "War of the Ring: The Board Game", yearPublished: "2004", type: "boardgame" }
-      ];
-      
-      const filteredGames = mockGames.filter(game => 
-        game.name.toLowerCase().includes(query.toLowerCase())
-      );
-      
-      return NextResponse.json(filteredGames);
-    }
-    
-    return NextResponse.json({ 
-      error: "Failed to fetch from BGG", 
-      details: error instanceof Error ? error.message : "Unknown error" 
-    }, { status: 500 });
+    return handleApiError(error);
   }
 });

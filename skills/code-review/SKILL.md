@@ -526,7 +526,7 @@ const isValid = await compare(inputPassword, group.password);
 
 ## Evaluator-Feedback (automatisch generiert)
 
-> Letzter Lauf: 2026-03-26 08:10:35
+> Letzter Lauf: 2026-03-26 08:12:48
 > Gesamt-Score: **9.9/10**
 
 ### Kategorie-Scores
@@ -599,11 +599,3 @@ const isValid = await compare(inputPassword, group.password);
 ### Offene Findings (1)
 
 - ❌ **P1-15** Admin kann sich selbst deaktivieren: Keine Self-Protection
-
-### REGRESSIONEN (1)
-
-- 🔄 **P1-15** REGRESSION: P1-15 "Admin kann sich selbst deaktivieren" war resolved, ist jetzt open. Keine Self-Protection
-
-### Empfohlene Reviewer-Anpassungen
-
-- 🔄 REGRESSION: P1-15 "Admin kann sich selbst deaktivieren" war resolved, ist jetzt open. Keine Self-Protection

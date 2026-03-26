@@ -1,10 +1,11 @@
 import { hash } from "bcryptjs";
 import prisma from "./db";
 import logger from "./logger";
+import { env } from "@/lib/env";
 
 export async function createAdminUser() {
-  const adminEmail = process.env.ADMIN_EMAIL;
-  const adminPassword = process.env.ADMIN_PASSWORD;
+  const adminEmail = env.ADMIN_EMAIL;
+  const adminPassword = env.ADMIN_PASSWORD;
 
   if (!adminEmail || !adminPassword) {
     throw new Error("ADMIN_EMAIL and ADMIN_PASSWORD environment variables must be set");

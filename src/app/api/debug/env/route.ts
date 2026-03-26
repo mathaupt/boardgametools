@@ -1,17 +1,18 @@
 import { NextResponse } from "next/server";
+import { env } from "@/lib/env";
 
 export async function GET() {
-  if (process.env.NODE_ENV !== "development") {
+  if (env.NODE_ENV !== "development") {
     return NextResponse.json({ error: "Not available" }, { status: 404 });
   }
 
   const envVars = {
-    SQL_DATABASE_URL: process.env.SQL_DATABASE_URL ? "Set" : "Missing",
-    NEXTAUTH_URL: process.env.NEXTAUTH_URL ? "Set" : "Missing", 
-    NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET ? "Set" : "Missing",
-    BGG_API_URL: process.env.BGG_API_URL ? "Set" : "Missing",
-    BGG_AUTH_TOKEN: process.env.BGG_AUTH_TOKEN ? "Set" : "Missing",
-    NODE_ENV: process.env.NODE_ENV || "development",
+    SQL_DATABASE_URL: env.DATABASE_URL ? "Set" : "Missing",
+    NEXTAUTH_URL: env.NEXTAUTH_URL ? "Set" : "Missing",
+    NEXTAUTH_SECRET: env.NEXTAUTH_SECRET ? "Set" : "Missing",
+    BGG_API_URL: env.BGG_API_URL ? "Set" : "Missing",
+    BGG_AUTH_TOKEN: env.BGG_AUTH_TOKEN ? "Set" : "Missing",
+    NODE_ENV: env.NODE_ENV,
   };
 
   return NextResponse.json({

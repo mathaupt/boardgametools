@@ -1,7 +1,8 @@
 import logger from "./logger";
+import { env } from "@/lib/env";
 
 const BGG_API_URL = "https://boardgamegeek.com/xmlapi2";
-const BGG_AUTH_TOKEN = process.env.BGG_AUTH_TOKEN;
+const BGG_AUTH_TOKEN = env.BGG_AUTH_TOKEN;
 
 function decodeHtmlEntities(value: string | null | undefined): string | null {
   if (value == null) {

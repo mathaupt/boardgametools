@@ -206,9 +206,17 @@ export const DELETE = withApiLogging(async function DELETE(
       return NextResponse.json({ error: "Event not found" }, { status: 404 });
     }
 
-    // Lösche Einladung
+    // Lösche Einladung (nur wenn sie zu diesem Event gehört → IDOR-Schutz)
+    const invite = await prisma.eventInvite.findFirst({
+      where: { id: inviteId, eventId: id },
+    });
+
+    if (!invite) {
+      return NextResponse.json({ error: "Invite not found" }, { status: 404 });
+    }
+
     await prisma.eventInvite.delete({
-      where: { id: inviteId }
+      where: { id: invite.id }
     });
 
     return NextResponse.json({ message: "Invite deleted" });
