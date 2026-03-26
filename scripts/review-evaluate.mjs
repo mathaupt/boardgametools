@@ -181,6 +181,69 @@ function detectRegressions(verifications) {
 }
 
 /**
+ * Detects test coverage regressions by comparing current coverage-summary.json
+ * against the most recent history snapshot that contains coverage data.
+ * Returns an array of regressions (metrics that dropped by more than 2%).
+ */
+function detectCoverageRegressions() {
+  if (!existsSync(HISTORY_DIR)) return [];
+
+  const files = readdirSync(HISTORY_DIR)
+    .filter((f) => f.endsWith(".json"))
+    .sort()
+    .reverse();
+
+  // Find last snapshot with coverage data
+  let prevCoverage = null;
+  for (const f of files) {
+    try {
+      const snap = JSON.parse(readFileSync(join(HISTORY_DIR, f), "utf8"));
+      if (snap.coverage && typeof snap.coverage.statements === "number") {
+        prevCoverage = snap.coverage;
+        break;
+      }
+    } catch { /* skip corrupt files */ }
+  }
+
+  if (!prevCoverage) return [];
+
+  // Read current coverage
+  let currentCoverage = null;
+  try {
+    const summaryPath = join(ROOT, "coverage/coverage-summary.json");
+    if (existsSync(summaryPath)) {
+      const raw = JSON.parse(readFileSync(summaryPath, "utf8"));
+      const total = raw.total || {};
+      currentCoverage = {
+        statements: total.statements?.pct ?? null,
+        branches: total.branches?.pct ?? null,
+        functions: total.functions?.pct ?? null,
+        lines: total.lines?.pct ?? null,
+      };
+    }
+  } catch { return []; }
+
+  if (!currentCoverage) return [];
+
+  const regressions = [];
+  const THRESHOLD = 2; // Allow up to 2% drop without flagging
+  for (const metric of ["statements", "branches", "functions", "lines"]) {
+    const prev = prevCoverage[metric];
+    const curr = currentCoverage[metric];
+    if (prev != null && curr != null && prev - curr > THRESHOLD) {
+      regressions.push({
+        metric,
+        previous: prev,
+        current: curr,
+        drop: Math.round((prev - curr) * 100) / 100,
+      });
+    }
+  }
+
+  return regressions;
+}
+
+/**
  * Archives the current evaluation result as a timestamped JSON file
  * in docs/code-reviews/history/ for future regression comparison.
  */
@@ -194,9 +257,26 @@ function archiveHistory(verifications, scores) {
   const ts = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}_${pad(now.getHours())}${pad(now.getMinutes())}`;
   const filePath = join(HISTORY_DIR, `${ts}.json`);
 
+  // Read coverage data from vitest json-summary if available
+  let coverage = null;
+  try {
+    const summaryPath = join(ROOT, "coverage/coverage-summary.json");
+    if (existsSync(summaryPath)) {
+      const raw = JSON.parse(readFileSync(summaryPath, "utf8"));
+      const total = raw.total || {};
+      coverage = {
+        statements: total.statements?.pct ?? null,
+        branches: total.branches?.pct ?? null,
+        functions: total.functions?.pct ?? null,
+        lines: total.lines?.pct ?? null,
+      };
+    }
+  } catch { /* ignore */ }
+
   const data = {
     date: now.toISOString(),
     overall: scores.overall,
+    coverage,
     findings: verifications.map((v) => ({
       id: v.id,
       priority: v.priority,
@@ -1347,6 +1427,67 @@ const COVERAGE_SCANS = [
     },
     threshold: 10,
   },
+  // ── Testing Infrastructure Scans ────────────────────────────────
+  {
+    id: "COV-14",
+    category: "testing",
+    name: "Coverage Thresholds konfiguriert",
+    scan() {
+      const config = readSafe("vitest.config.ts") || "";
+      const hasGlobal = /thresholds:\s*\{[^}]*statements:\s*\d/.test(config);
+      const hasLib = /src\/lib\/\*\*/.test(config) && /statements:\s*\d/.test(config);
+      const configured = hasGlobal && hasLib;
+      return {
+        found: configured ? 0 : 1,
+        detail: configured
+          ? "Globale + lib-spezifische Schwellen konfiguriert"
+          : "Keine Coverage-Schwellen in vitest.config.ts",
+      };
+    },
+    threshold: 0,
+  },
+  {
+    id: "COV-15",
+    category: "testing",
+    name: "Coverage Regression Tracking",
+    scan() {
+      // Check that history snapshots exist and contain coverage data
+      try {
+        const histDir = join(ROOT, "docs/code-reviews/history");
+        if (!existsSync(histDir)) return { found: 1, detail: "Kein History-Verzeichnis" };
+        const files = readdirSync(histDir).filter((f) => f.endsWith(".json")).sort().reverse();
+        if (files.length === 0) return { found: 1, detail: "Keine History-Snapshots" };
+        const last = JSON.parse(readFileSync(join(histDir, files[0]), "utf8"));
+        const hasCoverage = last.coverage && typeof last.coverage.statements === "number";
+        return {
+          found: hasCoverage ? 0 : 1,
+          detail: hasCoverage
+            ? `Letzter Snapshot enthält Coverage-Daten (${last.coverage.statements}% Stmts)`
+            : "History-Snapshots enthalten keine Coverage-Daten",
+        };
+      } catch {
+        return { found: 1, detail: "Fehler beim Lesen der History" };
+      }
+    },
+    threshold: 0,
+  },
+  {
+    id: "COV-16",
+    category: "testing",
+    name: "Automatische WCAG-Checks",
+    scan() {
+      const a11yTests = grepCount("axe\\|toHaveNoViolations\\|accessibility", "*.test.*", "tests");
+      const hasAxeDep = readSafe("package.json")?.includes("jest-axe") || false;
+      const ok = a11yTests > 0 && hasAxeDep;
+      return {
+        found: ok ? 0 : 1,
+        detail: ok
+          ? `${a11yTests} WCAG-Test-Referenzen + jest-axe installiert`
+          : "Keine automatisierten WCAG/axe Tests vorhanden",
+      };
+    },
+    threshold: 0,
+  },
 ];
 
 // ══════════════════════════════════════════════════════════════════
@@ -1722,6 +1863,16 @@ function main() {
   // 3. Detect regressions (compare with previous history snapshot)
   const regressions = detectRegressions(verifications);
 
+  // 3b. Detect coverage regressions
+  const covRegressions = detectCoverageRegressions();
+  if (covRegressions.length > 0 && !JSON_ONLY) {
+    console.log(`\n${C.R}⚠️  Coverage-Regressions erkannt:${C.X}`);
+    for (const r of covRegressions) {
+      console.log(`${C.R}  ${r.metric}: ${r.previous}% → ${r.current}% (−${r.drop}%)${C.X}`);
+    }
+    console.log();
+  }
+
   // 4. Compute scores
   const scores = computeScores(verifications, coverageResults);
 
@@ -1760,6 +1911,7 @@ function main() {
         currentStatus: r.currentStatus,
         detail: r.detail,
       })),
+      coverageRegressions: covRegressions,
       recommendations: recommendations.map((r) => ({
         type: r.type,
         findingId: r.findingId || null,
@@ -1821,9 +1973,14 @@ function main() {
   }
 
   // 12. Fail on regression check (for pre-commit hook)
-  if (FAIL_ON_REGRESSION && regressions.length > 0) {
+  if (FAIL_ON_REGRESSION && (regressions.length > 0 || covRegressions.length > 0)) {
     if (!JSON_ONLY) {
-      console.log(`${C.R}❌ ${regressions.length} Regression(en) erkannt – Commit blockiert (--fail-on-regression)${C.X}`);
+      if (regressions.length > 0) {
+        console.log(`${C.R}❌ ${regressions.length} Finding-Regression(en) erkannt – Commit blockiert (--fail-on-regression)${C.X}`);
+      }
+      if (covRegressions.length > 0) {
+        console.log(`${C.R}❌ ${covRegressions.length} Coverage-Regression(en) erkannt – Commit blockiert (--fail-on-regression)${C.X}`);
+      }
       console.log(`${C.R}   Behebe die Regressionen oder entferne --fail-on-regression aus dem Hook.${C.X}\n`);
     }
     process.exit(1);

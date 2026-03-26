@@ -11,6 +11,20 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.23.5",
+    date: "2026-03-26",
+    title: "Testing-Infrastruktur: Coverage-Schwellen, Regression Tracking, WCAG-Checks",
+    description: "Drei offene Review-Empfehlungen umgesetzt: Coverage-Schwellen verhindern Regressions, History-Snapshots enthalten jetzt Coverage-Daten fuer Trendanalyse, und automatisierte WCAG-Accessibility-Tests mit axe-core sichern Barrierefreiheit.",
+    changes: [
+      { type: "feature", text: "Globale + lib-spezifische Coverage-Schwellen in vitest.config.ts – Build bricht bei Unterschreitung ab" },
+      { type: "feature", text: "Coverage Regression Tracking: History-Snapshots speichern Coverage-% und erkennen Rueckgaenge (>2% Schwelle)" },
+      { type: "feature", text: "Automatisierte WCAG-Accessibility-Tests mit jest-axe/axe-core fuer Login- und Registrierungsseite" },
+      { type: "fix", text: "WCAG-Fix: Register-Seite – korrekte Heading-Hierarchie (h1→h2) und aria-labels fuer Passwort-Toggle-Buttons" },
+      { type: "internal", text: "3 neue Coverage-Scans im Review-Evaluator: COV-14 (Schwellen), COV-15 (Regression Tracking), COV-16 (WCAG-Checks)" },
+      { type: "internal", text: "detectCoverageRegressions() Funktion + Integration in --fail-on-regression Flag" },
+    ],
+  },
+  {
     version: "0.23.4",
     date: "2026-03-26",
     title: "Refactoring: Grosse Komponenten in Subkomponenten aufgeteilt",

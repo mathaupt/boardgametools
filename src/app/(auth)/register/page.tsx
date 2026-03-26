@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader } from "@/components/ui/card";
 import { Dice6, Eye, EyeOff, Check, X, Shield, Mail, User, Lock } from "lucide-react";
 
 export default function RegisterPage() {
@@ -111,7 +111,7 @@ export default function RegisterPage() {
         {/* Registration Card */}
         <Card className="shadow-xl border-border/50">
           <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl text-center">Konto erstellen</CardTitle>
+            <h2 className="text-2xl text-center font-semibold leading-none tracking-tight">Konto erstellen</h2>
             <CardDescription className="text-center">
               Registriere dich für BoardGameTools
             </CardDescription>
@@ -191,6 +191,7 @@ export default function RegisterPage() {
                     size="sm"
                     className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
                     onClick={() => setShowPassword(!showPassword)}
+                    aria-label={showPassword ? "Passwort verbergen" : "Passwort anzeigen"}
                   >
                     {showPassword ? (
                       <EyeOff className="h-4 w-4 text-muted-foreground" />
@@ -257,6 +258,7 @@ export default function RegisterPage() {
                     size="sm"
                     className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    aria-label={showConfirmPassword ? "Passwort-Bestätigung verbergen" : "Passwort-Bestätigung anzeigen"}
                   >
                     {showConfirmPassword ? (
                       <EyeOff className="h-4 w-4 text-muted-foreground" />

@@ -526,8 +526,8 @@ const isValid = await compare(inputPassword, group.password);
 
 ## Evaluator-Feedback (automatisch generiert)
 
-> Letzter Lauf: 2026-03-25 23:21:33
-> Gesamt-Score: **9.9/10**
+> Letzter Lauf: 2026-03-26 07:43:11
+> Gesamt-Score: **10/10**
 
 ### Kategorie-Scores
 
@@ -538,7 +538,7 @@ const isValid = await compare(inputPassword, group.password);
 | Architektur | **10/10** | 10 | 10 | 10 | 10 | 10 |
 | Performance | **10/10** | 10 | 10 | 10 | 10 | 10 |
 | API Design | **10/10** | 10 | 10 | 10 | 10 | 10 |
-| Testing | **8/10** | 10 | 10 | 0 | 10 | 10 |
+| Testing | **9.5/10** | 10 | 10 | 7.5 | 10 | 10 |
 | Datenbank | **10/10** | 10 | 10 | 10 | 10 | 10 |
 | Konzept-Konformität | **10/10** | 10 | 10 | 10 | 10 | 10 |
 | Best Practices | **10/10** | 10 | 10 | 10 | 10 | 10 |
@@ -567,7 +567,7 @@ const isValid = await compare(inputPassword, group.password);
 - ✅ **P2-19** Duplikat: Prisma-Client-Dateien: Duplikat entfernt
 - ✅ **P2-20** Duplikat: BGG-Logik: Kein dupliziertes XML-Parsing
 - ✅ **P2-21** next/image statt <img>: Keine <img> Tags
-- ✅ **P2-22** Fehlende Unit Tests: 26 Test-Dateien
+- ✅ **P2-22** Fehlende Unit Tests: 27 Test-Dateien
 - ✅ **P2-23** Inkonsistente Error-Responses: Konsistent: 339 error, 10 message
 - ✅ **P2-24** CONCEPT.md aktualisieren: Tech-Stack aktuell
 - ✅ **P2-25** Pendende Invites dupliziert: Shared Query extrahiert
@@ -600,4 +600,3 @@ const isValid = await compare(inputPassword, group.password);
 ### Empfohlene Reviewer-Anpassungen
 
 - ➕ NEU: "Test Coverage Lücken" – 18 von 32 lib-Dateien getestet (Schwelle: 5)
-- 📝 Abdeckung in "Testing" niedrig (0/10) – weitere Prüfpunkte hinzufügen
