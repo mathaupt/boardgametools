@@ -323,6 +323,125 @@ export function QualityTab({ data, loading }: { data: QualityData | null; loadin
         </CardContent>
       </Card>
 
+      {/* Architektur-Diagramm — nur sichtbar wenn Architecture Kategorie ausgewaehlt */}
+      {selectedCategory === "Architecture" && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base flex items-center gap-2">
+              <Layers className="h-4 w-4" />
+              Architektur-Uebersicht
+            </CardTitle>
+            <CardDescription>Schichtenarchitektur mit Hauptkomponenten</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {/* Client Layer */}
+              <div className="rounded-lg border-2 border-blue-400/40 bg-blue-500/5 p-3">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-2.5 h-2.5 rounded-full bg-blue-500" />
+                  <span className="text-xs font-semibold text-blue-600 uppercase tracking-wider">Client (Browser)</span>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  {["React 19 + Tailwind", "shadcn/ui Komponenten", "Server Components (14)", "Client Wrappers (108)"].map((c) => (
+                    <div key={c} className="text-[11px] bg-blue-500/10 rounded px-2 py-1.5 text-center">{c}</div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Arrow */}
+              <div className="flex justify-center"><div className="w-0.5 h-4 bg-muted-foreground/30" /><span className="text-[10px] text-muted-foreground ml-2">SSR / RSC + API Calls</span></div>
+
+              {/* Next.js Layer */}
+              <div className="rounded-lg border-2 border-purple-400/40 bg-purple-500/5 p-3">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-2.5 h-2.5 rounded-full bg-purple-500" />
+                  <span className="text-xs font-semibold text-purple-600 uppercase tracking-wider">Next.js 16 (App Router)</span>
+                </div>
+                <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
+                  {[
+                    { label: "41 Pages", sub: "14 Server, 27 Client" },
+                    { label: "71 API Routes", sub: "REST Endpoints" },
+                    { label: "proxy.ts", sub: "Auth + CSRF Guard" },
+                    { label: "10 Error Boundaries", sub: "Fehlerbehandlung" },
+                    { label: "14 Loading States", sub: "Skeleton UX" },
+                  ].map((c) => (
+                    <div key={c.label} className="text-center bg-purple-500/10 rounded px-2 py-1.5">
+                      <div className="text-[11px] font-medium">{c.label}</div>
+                      <div className="text-[9px] text-muted-foreground">{c.sub}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Arrow */}
+              <div className="flex justify-center"><div className="w-0.5 h-4 bg-muted-foreground/30" /><span className="text-[10px] text-muted-foreground ml-2">Service Layer + Validation</span></div>
+
+              {/* Business Logic Layer */}
+              <div className="rounded-lg border-2 border-green-400/40 bg-green-500/5 p-3">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-2.5 h-2.5 rounded-full bg-green-500" />
+                  <span className="text-xs font-semibold text-green-600 uppercase tracking-wider">Business Logic (src/lib/)</span>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  {[
+                    { label: "7 Services", sub: "Game, Event, Session, Group, Series, Tag, Shared" },
+                    { label: "Validation", sub: "validateString, Email, Enum" },
+                    { label: "Auth", sub: "NextAuth v5 + requireAuth" },
+                    { label: "Cache", sub: "cachedQuery + Tag-Invalidierung" },
+                    { label: "Rate Limiting", sub: "Upstash + In-Memory" },
+                    { label: "Error Messages", sub: "Zentrales DE-Modul" },
+                    { label: "Mailer", sub: "6 E-Mail-Templates" },
+                    { label: "Logger", sub: "Pino Structured JSON" },
+                  ].map((c) => (
+                    <div key={c.label} className="text-center bg-green-500/10 rounded px-2 py-1.5">
+                      <div className="text-[11px] font-medium">{c.label}</div>
+                      <div className="text-[9px] text-muted-foreground">{c.sub}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Arrow */}
+              <div className="flex justify-center"><div className="w-0.5 h-4 bg-muted-foreground/30" /><span className="text-[10px] text-muted-foreground ml-2">Prisma ORM + Redis + Blob</span></div>
+
+              {/* Data Layer */}
+              <div className="rounded-lg border-2 border-orange-400/40 bg-orange-500/5 p-3">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-2.5 h-2.5 rounded-full bg-orange-500" />
+                  <span className="text-xs font-semibold text-orange-600 uppercase tracking-wider">Datenschicht</span>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  {[
+                    { label: "PostgreSQL", sub: "27 Modelle, 30 Indices" },
+                    { label: "Prisma ORM", sub: "Connection Pool (10)" },
+                    { label: "Upstash Redis", sub: "Cache + Rate Limits" },
+                    { label: "Vercel Blob", sub: "File Storage" },
+                  ].map((c) => (
+                    <div key={c.label} className="text-center bg-orange-500/10 rounded px-2 py-1.5">
+                      <div className="text-[11px] font-medium">{c.label}</div>
+                      <div className="text-[9px] text-muted-foreground">{c.sub}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* External Services */}
+              <div className="rounded-lg border border-dashed border-muted-foreground/30 bg-muted/30 p-3">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-2.5 h-2.5 rounded-full bg-muted-foreground/50" />
+                  <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Externe Dienste</span>
+                </div>
+                <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
+                  {["BGG API (Spieldaten)", "SMTP (E-Mails)", "Vercel (Hosting)", "Speed Insights", "Husky (Git Hooks)"].map((c) => (
+                    <div key={c} className="text-[11px] bg-muted/50 rounded px-2 py-1.5 text-center text-muted-foreground">{c}</div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Test-Uebersicht — nur sichtbar wenn Testing Kategorie ausgewaehlt */}
       {selectedCategory === "Testing" && data.tests.byArea && (
         <Card>
