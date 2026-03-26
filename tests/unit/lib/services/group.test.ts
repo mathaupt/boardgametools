@@ -17,6 +17,7 @@ vi.mock("@/lib/db", () => ({
 }));
 
 vi.mock("@/lib/cache", () => ({
+  cachedQuery: vi.fn((_fn: () => Promise<unknown>, _keys: string[], _opts?: unknown) => _fn()),
   invalidateTag: vi.fn(),
 }));
 

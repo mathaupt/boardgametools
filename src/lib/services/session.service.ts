@@ -1,5 +1,5 @@
 import prisma from "@/lib/db";
-import { invalidateTag } from "@/lib/cache";
+import { cachedQuery, invalidateTag } from "@/lib/cache";
 import { CacheTags } from "@/lib/cache-tags";
 import { ApiError } from "@/lib/require-auth";
 import { validateString } from "@/lib/validation";
@@ -58,11 +58,16 @@ export const SessionService = {
       return paginatedResponse(sessions, total, page, limit);
     }
 
-    return prisma.gameSession.findMany({
-      where,
-      include: includeRelations,
-      orderBy: { playedAt: "desc" },
-    });
+    return cachedQuery(
+      () =>
+        prisma.gameSession.findMany({
+          where,
+          include: includeRelations,
+          orderBy: { playedAt: "desc" },
+        }),
+      ["user-sessions", userId],
+      { revalidate: 60, tags: [CacheTags.userSessions(userId)] }
+    );
   },
 
   /** Get a single session */

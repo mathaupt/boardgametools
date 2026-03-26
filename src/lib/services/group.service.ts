@@ -1,5 +1,5 @@
 import prisma from "@/lib/db";
-import { invalidateTag } from "@/lib/cache";
+import { cachedQuery, invalidateTag } from "@/lib/cache";
 import { CacheTags } from "@/lib/cache-tags";
 import { ApiError } from "@/lib/require-auth";
 import { validateString, firstError } from "@/lib/validation";
@@ -27,17 +27,22 @@ const groupListInclude = {
 export const GroupService = {
   /** List groups the user owns or is a member of */
   async list(userId: string) {
-    return prisma.group.findMany({
-      where: {
-        ...NOT_DELETED,
-        OR: [
-          { ownerId: userId },
-          { members: { some: { userId } } },
-        ],
-      },
-      include: groupListInclude,
-      orderBy: { updatedAt: "desc" },
-    });
+    return cachedQuery(
+      () =>
+        prisma.group.findMany({
+          where: {
+            ...NOT_DELETED,
+            OR: [
+              { ownerId: userId },
+              { members: { some: { userId } } },
+            ],
+          },
+          include: groupListInclude,
+          orderBy: { updatedAt: "desc" },
+        }),
+      ["user-groups", userId],
+      { revalidate: 60, tags: [CacheTags.userGroups(userId)] }
+    );
   },
 
   /** Get a single group with full details */

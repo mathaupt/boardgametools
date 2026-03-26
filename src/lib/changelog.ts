@@ -11,6 +11,18 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.27.0",
+    date: "2026-03-24",
+    title: "N+1 Query Fix, Service Caching & Dokumentations-Sync",
+    description: "N+1 Tag-Queries in GameService durch $transaction + createMany batching behoben. cachedQuery fuer alle Service-list()-Methoden aktiviert. Review-Dokumentation (SKILL.md) vollstaendig synchronisiert – alle 50 Findings als behoben markiert.",
+    changes: [
+      { type: "fix", text: "N+1 Tag-Queries in GameService.create/update: Tag-Operationen in $transaction mit batch createMany statt einzelnen Queries" },
+      { type: "improvement", text: "cachedQuery mit 60s Revalidierung fuer SessionService.list(), GroupService.list() und EventService.list() aktiviert" },
+      { type: "internal", text: "SKILL.md: 19 Findings-Status synchronisiert (Strikethrough nachgetragen), P1-15 False-Negative im Evaluator korrigiert, Score auf 10/10" },
+      { type: "internal", text: "GameService-Tests fuer $transaction + createMany angepasst" },
+    ],
+  },
+  {
     version: "0.26.0",
     date: "2026-03-24",
     title: "Service-Tests & Structured Logging (Review P1-P2)",

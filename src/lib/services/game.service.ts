@@ -111,18 +111,26 @@ export const GameService = {
       },
     });
 
-    // Link tags if provided
+    // Link tags if provided (wrapped in transaction for atomicity)
     if (Array.isArray(input.tagNames) && input.tagNames.length > 0) {
-      for (const tagName of input.tagNames) {
-        const trimmed = String(tagName).trim();
-        if (!trimmed) continue;
-        const tag = await prisma.tag.upsert({
-          where: { name_ownerId: { name: trimmed, ownerId: userId } },
-          create: { name: trimmed, ownerId: userId, source: "manual" },
-          update: {},
-        });
-        await prisma.gameTag.create({ data: { gameId: game.id, tagId: tag.id } });
-      }
+      await prisma.$transaction(async (tx) => {
+        const tagIds: string[] = [];
+        for (const tagName of input.tagNames!) {
+          const trimmed = String(tagName).trim();
+          if (!trimmed) continue;
+          const tag = await tx.tag.upsert({
+            where: { name_ownerId: { name: trimmed, ownerId: userId } },
+            create: { name: trimmed, ownerId: userId, source: "manual" },
+            update: {},
+          });
+          tagIds.push(tag.id);
+        }
+        if (tagIds.length > 0) {
+          await tx.gameTag.createMany({
+            data: tagIds.map((tagId) => ({ gameId: game.id, tagId })),
+          });
+        }
+      });
     }
 
     const result = await prisma.game.findUnique({
@@ -166,19 +174,27 @@ export const GameService = {
       },
     });
 
-    // Sync tags if provided
+    // Sync tags if provided (wrapped in transaction for atomicity)
     if (Array.isArray(input.tagNames)) {
-      await prisma.gameTag.deleteMany({ where: { gameId } });
-      for (const tagName of input.tagNames) {
-        const trimmed = String(tagName).trim();
-        if (!trimmed) continue;
-        const tag = await prisma.tag.upsert({
-          where: { name_ownerId: { name: trimmed, ownerId: userId } },
-          create: { name: trimmed, ownerId: userId, source: "manual" },
-          update: {},
-        });
-        await prisma.gameTag.create({ data: { gameId, tagId: tag.id } });
-      }
+      await prisma.$transaction(async (tx) => {
+        await tx.gameTag.deleteMany({ where: { gameId } });
+        const tagIds: string[] = [];
+        for (const tagName of input.tagNames!) {
+          const trimmed = String(tagName).trim();
+          if (!trimmed) continue;
+          const tag = await tx.tag.upsert({
+            where: { name_ownerId: { name: trimmed, ownerId: userId } },
+            create: { name: trimmed, ownerId: userId, source: "manual" },
+            update: {},
+          });
+          tagIds.push(tag.id);
+        }
+        if (tagIds.length > 0) {
+          await tx.gameTag.createMany({
+            data: tagIds.map((tagId) => ({ gameId, tagId })),
+          });
+        }
+      });
     }
 
     const result = await prisma.game.findUnique({

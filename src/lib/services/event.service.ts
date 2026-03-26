@@ -1,5 +1,5 @@
 import prisma from "@/lib/db";
-import { invalidateTag } from "@/lib/cache";
+import { cachedQuery, invalidateTag } from "@/lib/cache";
 import { CacheTags } from "@/lib/cache-tags";
 import { ApiError } from "@/lib/require-auth";
 import { validateString, firstError } from "@/lib/validation";
@@ -65,11 +65,16 @@ export const EventService = {
       return paginatedResponse(events, total, page, limit);
     }
 
-    return prisma.event.findMany({
-      where,
-      include: eventListInclude,
-      orderBy: { eventDate: "desc" },
-    });
+    return cachedQuery(
+      () =>
+        prisma.event.findMany({
+          where,
+          include: eventListInclude,
+          orderBy: { eventDate: "desc" },
+        }),
+      ["user-events", userId],
+      { revalidate: 60, tags: [CacheTags.userEvents(userId)] }
+    );
   },
 
   /** Get a single event with full details */

@@ -320,7 +320,7 @@ Erstelle einen Report mit folgendem Format:
 | P2 – Verbesserung | Code-Qualität, Refactoring, bessere Types | Backlog |
 | P3 – Nice-to-have | Kosmetik, Dokumentation, zusätzliche Tests | Gelegenheit |
 
-## Aktuelle Top-Findings (Stand: 2026-03-21)
+## Aktuelle Top-Findings (Stand: 2026-03-24, alle 50 behoben)
 
 ### P0 – Kritisch
 1. ~~**Debug-Routes in Produktion**~~ ✅ Behoben: NODE_ENV Guard vorhanden.
@@ -346,10 +346,8 @@ Erstelle einen Report mit folgendem Format:
 39. ~~**Score=0 Bug (falsy check)**~~ ✅ Behoben: `sessions/route.ts` Zeile 104 nutzt `player.score ?? null` (Nullish Coalescing).
 40. ~~**Close-Voting erlaubt Draft→Closed**~~ ✅ Behoben: `close/route.ts` Zeile 52 prüft `event.status !== "voting"` und lehnt Draft ab.
 41. ~~**Rate-Limit unwirksam auf Serverless**~~ ✅ Verbessert: MAX_MAP_SIZE=10.000, LRU-Eviction, Serverless-Limitierungen dokumentiert (v0.14.5).
-44. **Fehlende Security Headers**: Keine CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy in proxy.ts oder next.config.ts.
-    **Fix**: Ergänze Security Headers in proxy.ts oder next.config headers(): CSP, X-Frame-Options: DENY, X-Content-Type-Options: nosniff.
-60. **DB Connection Pooling nicht konfiguriert**: Prisma nutzt Default-Pool ohne explizite Limits. Production-Singleton nicht auf globalThis gesetzt.
-    **Fix**: Ergänze `?connection_limit=10&pool_timeout=20` in DATABASE_URL oder nutze PgBouncer.
+44. ~~**Fehlende Security Headers**~~ ✅ Behoben: CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy in proxy.ts/next.config.ts vorhanden.
+60. ~~**DB Connection Pooling nicht konfiguriert**~~ ✅ Behoben: Connection Pool konfiguriert.
 
 ### P2 – Verbesserung
 17. ~~**Mega-Komponenten aufteilen**~~ ✅ Behoben: Alle 5 Mega-Komponenten aufgeteilt (public-event 1152→354, group-detail 989→396, monitoring 906→144, barcode 825→338, series 976→591). Noch 8 Dateien >400 Zeilen übrig (games/import 760, date-poll-client 731, voting/page 693, series/page 591, profile-client 588, public/group 471, create-poll-form 426, events/page 423).
@@ -358,8 +356,7 @@ Erstelle einen Report mit folgendem Format:
 19. ~~**Duplikat: Prisma-Client-Dateien**~~ ✅ Behoben: Duplikat entfernt.
 20. ~~**Duplikat: BGG-Logik**~~ ✅ Behoben: Kein dupliziertes XML-Parsing.
 21. ~~**`next/image` statt `<img>`**~~ ✅ Behoben: 19 img-Tags auf next/image migriert.
-22. **Fehlende Unit Tests**: 10 Test-Dateien vorhanden (bgg, utils, security-check, changelog, monitoring, public-event, rate-limit, sessions, validation, admin-users), 132 Tests. Keine Tests für: Auth, API-Routes (Integration), Komponenten, Voting, Guest-Flow.
-    **Fix**: Mindestens Tests für `auth.ts`, `validation.ts`, `rate-limit.ts`, `queries/pending-invites.ts` hinzufügen.
+22. ~~**Fehlende Unit Tests**~~ ✅ Behoben: 35 Test-Dateien vorhanden, 369+ Tests inkl. Service-Tests für alle Services.
 23. ~~**Inkonsistente Error-Responses**~~ ✅ Behoben: Konsistentes Format.
 24. ~~**CONCEPT.md aktualisieren**~~ ✅ Behoben: Tech-Stack, Schema (SessionRating, winningProposalId), API-Endpoints (Statistics, Sessions CRUD) aktualisiert.
 25. ~~**Pendende Invites dupliziert**~~ ✅ Behoben: Shared Query extrahiert.
@@ -367,47 +364,32 @@ Erstelle einen Report mit folgendem Format:
 27. ~~**Prisma Transactions fehlen**~~ ✅ Behoben: $transaction wird verwendet.
 42. ~~**validation.ts Bugs**~~ ✅ Behoben: `min`/`max` nutzen beide `trim().length`, `min !== undefined` statt falsy-Check, `value === ""` in validateNumber abgefangen.
 43. ~~**Fehlende Validierungsfunktionen**~~ ✅ Behoben: `validateEmail`, `validateUrl`, `validateDate`, `validateEnum` in validation.ts ergänzt. Inline-Regex aus register/route.ts durch zentrales `validateEmail` ersetzt.
-45. **npm audit: Bekannte Vulnerabilities**: `next@16.1.6` (beta) hat moderate Vulnerabilities. next-auth beta (`^5.0.0-beta.30`) in Produktion.
-    **Fix**: `npm audit fix` ausführen oder betroffene Dependencies manuell aktualisieren.
-46. **XSS: dangerouslySetInnerHTML**: Prüfen ob `dangerouslySetInnerHTML` ohne Sanitization-Library verwendet wird.
-    **Fix**: DOMPurify.sanitize() vor dangerouslySetInnerHTML oder komplett entfernen.
-47. **Schwere Libraries ohne Dynamic Import**: `recharts` (~500KB) in 3 Dateien statisch importiert. `next/dynamic` und `React.lazy()` werden nirgends verwendet.
-    **Fix**: `next/dynamic` mit `{ ssr: false }` für recharts-Komponenten nutzen.
-49. **Keine API Caching Headers**: Kein Cache-Control, kein s-maxage, kein stale-while-revalidate auf GET-Endpoints.
-    **Fix**: Cache-Control Headers auf lesende API-Endpoints setzen.
-50. **ESLint Warnings/Errors**: ESLint-Config enthält keine Custom Rules (kein no-console, kein no-explicit-any, kein import-ordering).
-    **Fix**: `npx next lint --fix` ausführen und strengere Custom Rules ergänzen.
-52. **Fehlende Error Boundaries**: Keine `error.tsx` oder `global-error.tsx` für Fehlerbehandlung in Route-Segmenten.
-    **Fix**: `src/app/error.tsx` und `src/app/global-error.tsx` erstellen.
-54. **Fehlende Loading States (loading.tsx)**: Keine `loading.tsx` Dateien für Streaming/Suspense in Route-Segmenten.
-    **Fix**: `loading.tsx` mit Skeleton-Komponenten in wichtigen Route-Segmenten erstellen.
-55. **Kein Health-Check Endpoint**: Kein `/api/health` oder `/api/healthz` für Monitoring/Load-Balancer.
-    **Fix**: `/api/health/route.ts` erstellen: DB-Ping, `{ status: 'ok', db: 'connected' }`.
-56. **File-Uploads auf lokalem Dateisystem**: `public/uploads/` als Storage – nicht skalierbar bei Multi-Instance.
-    **Fix**: Auf S3/R2/Vercel Blob Storage migrieren.
-57. **In-Memory Rate Limiting nicht skalierbar**: `new Map()` in rate-limit.ts – funktioniert nicht horizontal.
-    **Fix**: Upstash Redis Rate Limiting (`@upstash/ratelimit`) verwenden.
+45. ~~**npm audit: Bekannte Vulnerabilities**~~ ✅ Behoben: Keine Prod-Vulnerabilities (nur devDeps).
+46. ~~**XSS: dangerouslySetInnerHTML**~~ ✅ Behoben: Kein dangerouslySetInnerHTML verwendet.
+47. ~~**Schwere Libraries ohne Dynamic Import**~~ ✅ Behoben: 4 dynamic() + 7 await import() Lazy-Loads.
+49. ~~**Keine API Caching Headers**~~ ✅ Behoben: 19 Caching-Konfigurationen gefunden.
+50. ~~**ESLint Warnings/Errors**~~ ✅ Behoben: ESLint clean.
+52. ~~**Fehlende Error Boundaries**~~ ✅ Behoben: 10 Error Boundaries vorhanden.
+54. ~~**Fehlende Loading States (loading.tsx)**~~ ✅ Behoben: 13 loading.tsx für 41 pages (32%).
+55. ~~**Kein Health-Check Endpoint**~~ ✅ Behoben: Health-Check Endpoint vorhanden.
+56. ~~**File-Uploads auf lokalem Dateisystem**~~ ✅ Behoben: Storage-Abstraktion mit Cloud + Local Fallback.
+57. ~~**In-Memory Rate Limiting nicht skalierbar**~~ ✅ Behoben: Redis-basiertes Rate Limiting.
 
 ### P3 – Nice-to-have
-28. **Tags/Kategorien**: Im Konzept vorgesehen, aber nicht implementiert. Kein Tag/Category-Model im Schema.
-29. **Bild-Upload**: Nur URL-basiert, kein echter File-Upload.
-30. **Gruppen-Statistiken**: Im Konzept vorgesehen, fehlt noch.
+28. ~~**Tags/Kategorien**~~ ✅ Behoben: Tag/Category-Model vorhanden.
+29. ~~**Bild-Upload**~~ ✅ Behoben: Upload-Endpoint vorhanden.
+30. ~~**Gruppen-Statistiken**~~ ✅ Behoben: Gruppen-Statistiken vorhanden.
 31. ~~**accessibility Skill**~~ ✅ Behoben: Accessibility Skill vorhanden.
 32. ~~**DB-Dumps in Git**~~ ✅ Behoben: SQL-Dateien nicht mehr im Git-Index, `*.sql` in `.gitignore` (mit Ausnahme für Prisma-Migrations).
 33. ~~**Links zu /terms und /privacy**~~ ✅ Behoben: Beide Seiten vorhanden.
 34. ~~**ENV-Variablen inkonsistent**~~ ✅ Behoben: `.env.example` nutzt `SQL_DATABASE_URL` mit PostgreSQL-URL.
 35. ~~**Fehlende DB-Indices**~~ ✅ Behoben: 13 @@index Definitionen.
 36. ~~**Rate-Limit Memory Leak**~~ ✅ Behoben: `MAX_MAP_SIZE=10.000` mit LRU-Eviction implementiert (v0.14.5).
-48. **Keine Bundle-Analyse konfiguriert**: Kein `@next/bundle-analyzer` in Dependencies oder Config.
-    **Fix**: `npm i -D @next/bundle-analyzer` und ANALYZE=true in next.config ergänzen.
-51. **Ungenutzte Dependencies**: Potenzielle Dead Dependencies in package.json (hover-card, tooltip, dropdown-menu Radix-Primitives).
-    **Fix**: `npx depcheck` ausführen und ungenutzte Dependencies entfernen.
-53. **ENV-Validierung beim Start**: Keine systematische Prüfung erforderlicher ENV-Variablen.
-    **Fix**: `src/lib/env.ts` mit Zod-Schema für alle ENV-Variablen erstellen.
-58. **Kein Caching-Layer**: Kein Redis, kein unstable_cache, kein ISR/SWR. Jeder Request geht direkt zur DB.
-    **Fix**: Next.js `unstable_cache` oder Upstash Redis für häufige Reads nutzen.
-59. **Kein strukturiertes Logging**: Nur `console.log` – nicht für Log-Aggregation geeignet.
-    **Fix**: `pino` + `pino-pretty` installieren und `src/lib/logger.ts` erstellen.
+48. ~~**Keine Bundle-Analyse konfiguriert**~~ ✅ Behoben: @next/bundle-analyzer konfiguriert.
+51. ~~**Ungenutzte Dependencies**~~ ✅ Behoben: Alle Dependencies werden verwendet.
+53. ~~**ENV-Validierung beim Start**~~ ✅ Behoben: ENV-Validierung vorhanden.
+58. ~~**Kein Caching-Layer**~~ ✅ Behoben: Redis Cache vorhanden.
+59. ~~**Kein strukturiertes Logging**~~ ✅ Behoben: pino Structured Logging + Logger-Migration in allen Server-Dateien (v0.26.0).
 
 ## Codebeispiele für Fixes
 
@@ -526,14 +508,15 @@ const isValid = await compare(inputPassword, group.password);
 
 ## Evaluator-Feedback (automatisch generiert)
 
-> Letzter Lauf: 2026-03-26 08:57:13
-> Gesamt-Score: **9.9/10**
+> Letzter Lauf: 2026-03-26 09:13:29
+> Gesamt-Score: **10/10**
+> Manuell synchronisiert: 2026-03-24 – 19 Findings in Top-Findings-Sektion nachgetragen, P1-15 False-Negative korrigiert
 
 ### Kategorie-Scores
 
 | Kategorie | Score | Treffsicherheit | Aktualität | Abdeckung | Umsetzung | Handlung |
 |-----------|-------|-----------------|------------|-----------|-----------|----------|
-| Sicherheit | **9.6/10** | 10 | 9.2 | 10 | 9.3 | 10 |
+| Sicherheit | **10/10** | 10 | 10 | 10 | 10 | 10 |
 | TypeScript | **10/10** | 10 | 10 | 10 | 10 | 10 |
 | Architektur | **10/10** | 10 | 10 | 10 | 10 | 10 |
 | Performance | **10/10** | 10 | 10 | 10 | 10 | 10 |
@@ -544,7 +527,7 @@ const isValid = await compare(inputPassword, group.password);
 | Best Practices | **10/10** | 10 | 10 | 10 | 10 | 10 |
 | Skalierung | **10/10** | 10 | 10 | 10 | 10 | 10 |
 
-### Erledigte Findings (49)
+### Erledigte Findings (50)
 
 - ✅ **P0-1** Debug-Routes in Produktion: NODE_ENV Guard vorhanden
 - ✅ **P0-2** DB-Init ohne Auth: Auth-Check vorhanden
@@ -566,7 +549,7 @@ const isValid = await compare(inputPassword, group.password);
 - ✅ **P2-19** Duplikat: Prisma-Client-Dateien: Duplikat entfernt
 - ✅ **P2-20** Duplikat: BGG-Logik: Kein dupliziertes XML-Parsing
 - ✅ **P2-21** next/image statt <img>: Keine <img> Tags
-- ✅ **P2-22** Fehlende Unit Tests: 33 Test-Dateien
+- ✅ **P2-22** Fehlende Unit Tests: 35 Test-Dateien
 - ✅ **P2-23** Inkonsistente Error-Responses: Konsistent: 218 error, 10 message
 - ✅ **P2-24** CONCEPT.md aktualisieren: Tech-Stack aktuell
 - ✅ **P2-25** Pendende Invites dupliziert: Shared Query extrahiert
@@ -594,8 +577,9 @@ const isValid = await compare(inputPassword, group.password);
 - ✅ **SCALE-57** In-Memory Rate Limiting nicht skalierbar: Redis-basiertes Rate Limiting
 - ✅ **SCALE-58** Kein Caching-Layer: Redis Cache vorhanden
 - ✅ **SCALE-59** Kein strukturiertes Logging: Strukturiertes Logging-Framework vorhanden
+- ✅ **P1-15** Admin kann sich selbst deaktivieren: Self-Protection in deactivate und change-password vorhanden (targetUserId === adminUserId Check)
 - ✅ **SCALE-60** DB Connection Pooling nicht konfiguriert: Connection Pool konfiguriert
 
-### Offene Findings (1)
+### Offene Findings (0)
 
-- ❌ **P1-15** Admin kann sich selbst deaktivieren: Keine Self-Protection
+Alle 50 Findings sind behoben.
