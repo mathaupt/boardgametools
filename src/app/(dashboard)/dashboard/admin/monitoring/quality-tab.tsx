@@ -316,8 +316,8 @@ export function QualityTab({ data, loading }: { data: QualityData | null; loadin
         </CardContent>
       </Card>
 
-      {/* Tech Stack / BOM */}
-      {data.techStack && data.techStack.length > 0 && (
+      {/* Tech Stack / BOM — nur sichtbar wenn BOM/Dependencies Kategorie ausgewaehlt */}
+      {selectedCategory === "BOM/Dependencies" && data.techStack && data.techStack.length > 0 && (
         <Card>
           <CardHeader>
             <CardTitle className="text-base flex items-center gap-2">
