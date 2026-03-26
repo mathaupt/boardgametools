@@ -503,10 +503,8 @@ Alle 8 Pages zu Server Components migriert — kein useEffect+fetch Waterfall me
 #### ~~DD-API-02: Gemischte Sprache in Fehlermeldungen (P1)~~ ✅ Behoben (v0.33.0)
 Zentrales `src/lib/error-messages.ts` Modul erstellt. ~156 englische Strings in 52 API-Route-Dateien auf Deutsch migriert.
 
-#### DD-API-03: PATCH wird nie verwendet (P1)
-Null PATCH-Handler im gesamten Projekt. Alle partiellen Updates nutzen PUT mit `!== undefined`-Checks. REST-Konvention: PUT = vollständiges Ersetzen, PATCH = partielles Update.
-
-**Fix:** PUT-Handler die partielle Payloads akzeptieren zu PATCH umbenennen.
+#### ~~DD-API-03: PATCH wird nie verwendet (P1)~~ ✅ Behoben (v0.37.0)
+PATCH-Alias (`export const PATCH = PUT;`) in 7 Route-Dateien ergaenzt.
 
 #### ~~DD-API-04: request.json() ohne Validierung in 5 Routes (P2)~~ ✅ Behoben (v0.35.0)
 validateString/validateEmail in share, members, change-password, deactivate, invites PUT hinzugefuegt.
@@ -540,20 +538,20 @@ Hat NODE_ENV/Admin-Guard, aber allein die Existenz einer DB-Init-Route in der AP
 #### ~~DD-TEST-01: Null API-Route-Integrationstests (P0)~~ ✅ Behoben (v0.33.0)
 26 API-Route-Tests in 5 Dateien erstellt: games, auth/register, admin/users, public/event, statistics.
 
-#### DD-TEST-02: Keine Public-Event-Voting-Flow-Tests (P1)
-7 Public-Endpoints mit komplexem Flow (join → propose → vote → date-vote). Keiner getestet.
+#### ~~DD-TEST-02: Keine Public-Event-Voting-Flow-Tests (P1)~~ ✅ Behoben (v0.37.0)
+13 Tests: join (3), vote POST (3), vote DELETE (2), date-vote (3), rate limiting, validation.
 
-#### DD-TEST-03: Keine Admin-Operations-Tests (P1)
-Admin-Routes (users, monitoring) komplett ungetestet — hohes Sicherheitsrisiko.
+#### ~~DD-TEST-03: Keine Admin-Operations-Tests (P1)~~ ✅ Behoben (v0.37.0)
+7 Tests: deactivate (4), change-password (3) — Self-Protection, Auth, Validation.
 
-#### DD-TEST-04: Keine Auth-Flow-Tests (P1)
-NextAuth Credential Provider, Session Callback, JWT Callback ungetestet.
+#### ~~DD-TEST-04: Keine Auth-Flow-Tests (P1)~~ ✅ Behoben (v0.37.0)
+6 Tests: requireAuth route integration (3), requireAdmin route integration (3).
 
 #### DD-TEST-05: E2E-Tests nur Smoke-Level (P2)
 6 E2E-Dateien testen primär "Redirect to Login" und "Page loads". games_test.ts hat auskommentierte Test-Bodies. Kein E2E-Test loggt sich ein, erstellt Daten oder testet CRUD-Flows.
 
-#### DD-TEST-06: Coverage-Schwellen zu niedrig (P3)
-vitest.config.ts: 20% global, 40% lib. src/app/api/** nicht in Coverage-Config enthalten.
+#### ~~DD-TEST-06: Coverage-Schwellen zu niedrig (P3)~~ ✅ Behoben (v0.37.0)
+Schwellen erhoeht: global 20%→30%, lib 40%→50%. API-Routes in Coverage aufgenommen.
 
 ---
 
@@ -874,7 +872,7 @@ const isValid = await compare(inputPassword, group.password);
 
 ## Evaluator-Feedback (automatisch generiert)
 
-> Letzter Lauf: 2026-03-26 15:58:10
+> Letzter Lauf: 2026-03-26 16:08:59
 > Gesamt-Score: **10/10**
 
 ### Kategorie-Scores

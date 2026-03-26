@@ -101,3 +101,5 @@ export const PUT = withApiLogging(async function PUT(request: NextRequest) {
     return handleApiError(error);
   }
 });
+
+export const PATCH = PUT;

@@ -19,6 +19,7 @@ export default defineConfig({
         "src/app/**/*form*.tsx",
         "src/app/**/*dialog*.tsx",
         "src/app/**/*modal*.tsx",
+        "src/app/api/**/*.ts",
       ],
       exclude: [
         "node_modules/",
@@ -30,16 +31,16 @@ export default defineConfig({
       ],
       thresholds: {
         // Global baseline – prevents overall coverage from regressing
-        statements: 20,
-        branches: 18,
-        functions: 18,
-        lines: 20,
+        statements: 30,
+        branches: 25,
+        functions: 25,
+        lines: 30,
         // Stricter thresholds for core library code
         "src/lib/**": {
-          statements: 40,
-          branches: 35,
-          functions: 40,
-          lines: 40,
+          statements: 50,
+          branches: 45,
+          functions: 50,
+          lines: 50,
         },
       },
     },

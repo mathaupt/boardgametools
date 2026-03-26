@@ -101,6 +101,8 @@ export const PUT = withApiLogging(async function PUT(
   }
 });
 
+export const PATCH = PUT;
+
 export const DELETE = withApiLogging(async function DELETE(
   request: NextRequest,
   { params }: RouteContext

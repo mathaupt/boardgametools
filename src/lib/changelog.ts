@@ -11,6 +11,20 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.37.0",
+    date: "2026-03-26",
+    title: "Testing + API Design: Voting-Flow-Tests, Admin-Tests, PATCH, Coverage",
+    description: "24 neue Tests fuer Public-Voting-Flow, Admin-Operationen und Auth-Flow-Integration. PATCH-Aliases fuer 7 Update-Routes. Coverage-Schwellen erhoeht.",
+    changes: [
+      { type: "feature", text: "13 Public-Voting-Flow-Tests: join, vote, date-vote mit Rate-Limiting und Validierung" },
+      { type: "feature", text: "7 Admin-Operations-Tests: deactivate, change-password mit Self-Protection und Auth" },
+      { type: "feature", text: "6 Auth-Flow-Integration-Tests: requireAuth/requireAdmin Route-Level-Verhalten" },
+      { type: "improvement", text: "PATCH-Alias (export const PATCH = PUT) in 7 API-Routes fuer REST-konforme partielle Updates" },
+      { type: "improvement", text: "Coverage-Schwellen erhoeht: global 20%->30%, lib 40%->50%. API-Routes in Coverage aufgenommen." },
+      { type: "internal", text: "Gesamtzahl Tests: 419 (war 395), 43 Testdateien (war 40)" },
+    ],
+  },
+  {
     version: "0.36.0",
     date: "2026-03-26",
     title: "Qualitaets-Dashboard: Neuer Monitoring-Tab mit Review-Ergebnissen + Tech-Stack BOM",
