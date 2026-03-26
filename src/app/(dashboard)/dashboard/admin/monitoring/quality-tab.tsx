@@ -53,6 +53,7 @@ export interface QualityData {
   findingDetails: Finding[];
   evaluatorFindings: { total: number; resolved: number; partial: number; open: number } | null;
   scoreHistory: Array<{ date: string; score: number }>;
+  techStack: Array<{ name: string; version: string; category: string; logo: string; url: string; license: string }>;
 }
 
 // --- Sub-Components ---
@@ -308,6 +309,55 @@ export function QualityTab({ data, loading }: { data: QualityData | null; loadin
           )}
         </CardContent>
       </Card>
+
+      {/* Tech Stack / BOM */}
+      {data.techStack && data.techStack.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base flex items-center gap-2">
+              <Package className="h-4 w-4" />
+              Tech-Stack / Bill of Materials
+            </CardTitle>
+            <CardDescription>
+              {data.techStack.length} Kern-Technologien — alle Lizenzen auf Greenlist (MIT, Apache-2.0, ISC)
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+              {data.techStack.map((tech) => (
+                <a
+                  key={tech.name}
+                  href={tech.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3 p-3 rounded-lg border border-border hover:border-primary/40 hover:bg-muted/50 transition-colors group"
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={tech.logo}
+                    alt={tech.name}
+                    width={24}
+                    height={24}
+                    className="w-6 h-6 shrink-0 opacity-70 group-hover:opacity-100 transition-opacity"
+                    loading="lazy"
+                  />
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-medium truncate group-hover:text-primary transition-colors">{tech.name}</p>
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-[10px] text-muted-foreground">{tech.version}</span>
+                      <span className="text-[10px] text-muted-foreground/50">|</span>
+                      <span className="text-[10px] text-muted-foreground">{tech.category}</span>
+                    </div>
+                  </div>
+                  <Badge variant="outline" className="text-[9px] px-1 py-0 shrink-0 hidden sm:inline-flex">
+                    {tech.license}
+                  </Badge>
+                </a>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Finding Details */}
       <Card>

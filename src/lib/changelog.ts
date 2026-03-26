@@ -13,7 +13,7 @@ export const changelog: ChangelogEntry[] = [
   {
     version: "0.36.0",
     date: "2026-03-26",
-    title: "Qualitaets-Dashboard: Neuer Monitoring-Tab mit Review-Ergebnissen",
+    title: "Qualitaets-Dashboard: Neuer Monitoring-Tab mit Review-Ergebnissen + Tech-Stack BOM",
     description: "Neuer 'Qualitaet'-Tab im Admin-Monitoring-Dashboard zeigt Management Summary, Kategorie-Scores (Radar-Chart), Finding-Status, Test-Ergebnisse, Code-Coverage und Score-Verlauf. API-Route /api/admin/monitoring/quality liefert alle Daten.",
     changes: [
       { type: "feature", text: "Neuer Quality-Tab im Monitoring-Dashboard: Management Summary als Entry-Point mit Drill-Down in Kategorie-Details" },
@@ -21,7 +21,8 @@ export const changelog: ChangelogEntry[] = [
       { type: "feature", text: "Finding-Liste mit Filter nach Kategorie und Status (offen/behoben), Prioritaets-Badges (P0-P3)" },
       { type: "feature", text: "Code-Qualitaets-Kacheln: TypeScript Errors, ESLint, npm audit, Error Boundaries, Coverage-Balken" },
       { type: "feature", text: "Score-Verlauf als Line-Chart (Evaluator-History)" },
-      { type: "internal", text: "API-Route /api/admin/monitoring/quality mit Deep-Dive-Findings, Kategorie-Scores und Evaluator-Snapshots" },
+      { type: "feature", text: "Tech-Stack / BOM Sektion: 16 Kern-Technologien mit Logo (SimpleIcons), Version, Kategorie, Lizenz-Badge und Link zur offiziellen Seite" },
+      { type: "internal", text: "API-Route /api/admin/monitoring/quality mit Deep-Dive-Findings, Kategorie-Scores, Tech-Stack und Evaluator-Snapshots" },
     ],
   },
   {

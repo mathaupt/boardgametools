@@ -213,6 +213,26 @@ export const GET = withApiLogging(async function GET() {
 
       // Score history
       scoreHistory,
+
+      // Tech Stack (BOM summary)
+      techStack: [
+        { name: "Next.js", version: "16.2", category: "Framework", logo: "https://cdn.simpleicons.org/nextdotjs/white", url: "https://nextjs.org", license: "MIT" },
+        { name: "React", version: "19.2", category: "UI", logo: "https://cdn.simpleicons.org/react", url: "https://react.dev", license: "MIT" },
+        { name: "TypeScript", version: "5.x", category: "Sprache", logo: "https://cdn.simpleicons.org/typescript", url: "https://www.typescriptlang.org", license: "Apache-2.0" },
+        { name: "Prisma", version: "5.22", category: "ORM", logo: "https://cdn.simpleicons.org/prisma/white", url: "https://www.prisma.io", license: "Apache-2.0" },
+        { name: "PostgreSQL", version: "—", category: "Datenbank", logo: "https://cdn.simpleicons.org/postgresql", url: "https://www.postgresql.org", license: "PostgreSQL" },
+        { name: "Tailwind CSS", version: "4.2", category: "Styling", logo: "https://cdn.simpleicons.org/tailwindcss", url: "https://tailwindcss.com", license: "MIT" },
+        { name: "shadcn/ui", version: "—", category: "Komponenten", logo: "https://cdn.simpleicons.org/shadcnui/white", url: "https://ui.shadcn.com", license: "MIT" },
+        { name: "NextAuth.js", version: "5.0-beta", category: "Auth", logo: "https://cdn.simpleicons.org/auth0", url: "https://authjs.dev", license: "ISC" },
+        { name: "Vitest", version: "4.x", category: "Testing", logo: "https://cdn.simpleicons.org/vitest", url: "https://vitest.dev", license: "MIT" },
+        { name: "Recharts", version: "3.8", category: "Charts", logo: "https://cdn.simpleicons.org/d3dotjs", url: "https://recharts.org", license: "MIT" },
+        { name: "Pino", version: "10.3", category: "Logging", logo: "https://cdn.simpleicons.org/pino/white", url: "https://getpino.io", license: "MIT" },
+        { name: "Upstash Redis", version: "—", category: "Cache", logo: "https://cdn.simpleicons.org/redis", url: "https://upstash.com", license: "MIT" },
+        { name: "Vercel", version: "—", category: "Hosting", logo: "https://cdn.simpleicons.org/vercel/white", url: "https://vercel.com", license: "—" },
+        { name: "Playwright", version: "1.58", category: "E2E", logo: "https://cdn.simpleicons.org/playwright", url: "https://playwright.dev", license: "Apache-2.0" },
+        { name: "Lucide", version: "0.563", category: "Icons", logo: "https://cdn.simpleicons.org/lucide/white", url: "https://lucide.dev", license: "ISC" },
+        { name: "bcryptjs", version: "3.x", category: "Crypto", logo: "https://cdn.simpleicons.org/letsencrypt", url: "https://github.com/dcodeIO/bcrypt.js", license: "MIT" },
+      ],
     });
   } catch (error) {
     return handleApiError(error);
