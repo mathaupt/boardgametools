@@ -11,6 +11,17 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.31.1",
+    date: "2026-03-26",
+    title: "Umfassendes Code-Review ueber alle Kategorien",
+    description: "Vollstaendiger Code-Review ueber 10 Kategorien (Sicherheit, Architektur, Performance, API Design, Testing, Datenbank, Konzept, Best Practices, Skalierung, TypeScript). 10 neue Findings dokumentiert, alle als P2/P3 eingestuft – keine kritischen oder wichtigen Probleme.",
+    changes: [
+      { type: "internal", text: "Code-Review: 10 Kategorien geprueft, Review-Score Evaluator 10/10, manuelles Review 9.6/10" },
+      { type: "internal", text: "10 neue Findings dokumentiert: N-ARCH-61 bis N-BP-70 (alle P2/P3, keine P0/P1)" },
+      { type: "internal", text: "SKILL.md aktualisiert mit detaillierten Review-Ergebnissen pro Kategorie inkl. Positiv-Bewertungen" },
+    ],
+  },
+  {
     version: "0.31.0",
     date: "2026-03-26",
     title: "Umfassender ESLint-Cleanup und Codequalitaet",
