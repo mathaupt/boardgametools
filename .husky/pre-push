@@ -1,2 +1,5 @@
+echo "🧪 Running full test suite before push..."
+npm run test
+
 echo "🗄️  Erstelle Prod-DB Backup vor Push..."
 bash scripts/backup-prod-db.sh

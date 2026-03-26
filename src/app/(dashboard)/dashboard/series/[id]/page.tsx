@@ -1,117 +1,62 @@
-"use client";
+import { auth } from "@/lib/auth";
+import prisma from "@/lib/db";
+import { redirect, notFound } from "next/navigation";
+import SeriesDetailClient from "./SeriesDetailClient";
+import type { GameSeries } from "./types";
 
-import { useState, useEffect, useCallback } from "react";
-import { useParams } from "next/navigation";
-import { AddGameDialog } from "./add-game-dialog";
-import { SeriesDetailHeader } from "./series-detail-header";
-import { SeriesProgressCard } from "./series-progress-card";
-import { SeriesEntryList } from "./series-entry-list";
-import { SeriesDeleteDialogs } from "./series-delete-dialogs";
-import { SeriesLoadingSkeleton } from "./series-loading-skeleton";
-import { SeriesNotFound } from "./series-not-found";
-import { useSeriesHandlers } from "./use-series-handlers";
-import type { GameSeries, SeriesEntry } from "./types";
+export default async function SeriesDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const session = await auth();
+  if (!session?.user?.id) redirect("/login");
 
-export default function SeriesDetailPage() {
-  const params = useParams();
-  const seriesId = params.id as string;
+  const { id } = await params;
 
-  const [series, setSeries] = useState<GameSeries | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [deleteSeriesOpen, setDeleteSeriesOpen] = useState(false);
-  const [deleteEntryTarget, setDeleteEntryTarget] = useState<SeriesEntry | null>(null);
-  const [deleting, setDeleting] = useState(false);
-  const [addDialogOpen, setAddDialogOpen] = useState(false);
-  const [expandedEntry, setExpandedEntry] = useState<string | null>(null);
-
-  const loadSeries = useCallback(async () => {
-    const res = await fetch(`/api/series/${seriesId}`);
-    if (res.ok) {
-      setSeries(await res.json());
-    }
-    setLoading(false);
-  }, [seriesId]);
-
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    loadSeries();
-  }, [loadSeries]);
-
-  const {
-    handleTogglePlayed,
-    handlePlayDetailChange,
-    handleRatingChange,
-    handleDifficultyChange,
-    handleMoveEntry,
-    handleDeleteEntry,
-    handleDeleteSeries,
-    handleGameAdded,
-  } = useSeriesHandlers({
-    seriesId,
-    series,
-    setSeries,
-    loadSeries,
-    setExpandedEntry,
-    setDeleteEntryTarget,
-    setDeleting,
-    setAddDialogOpen,
-    deleteEntryTarget,
+  const series = await prisma.gameSeries.findFirst({
+    where: { id, ownerId: session.user.id, deletedAt: null },
+    include: {
+      entries: {
+        include: { game: true },
+        orderBy: { sortOrder: "asc" },
+      },
+    },
   });
 
-  if (loading) {
-    return <SeriesLoadingSkeleton />;
-  }
+  if (!series) notFound();
 
-  if (!series) {
-    return <SeriesNotFound />;
-  }
+  const serializedSeries: GameSeries = {
+    id: series.id,
+    name: series.name,
+    description: series.description,
+    imageUrl: series.imageUrl,
+    entries: series.entries.map((entry) => ({
+      id: entry.id,
+      seriesId: entry.seriesId,
+      gameId: entry.gameId,
+      sortOrder: entry.sortOrder,
+      played: entry.played,
+      playedAt: entry.playedAt?.toISOString() ?? null,
+      rating: entry.rating,
+      difficulty: entry.difficulty,
+      playTimeMinutes: entry.playTimeMinutes,
+      successful: entry.successful,
+      playerCount: entry.playerCount,
+      score: entry.score,
+      game: {
+        id: entry.game.id,
+        name: entry.game.name,
+        description: entry.game.description,
+        imageUrl: entry.game.imageUrl,
+        minPlayers: entry.game.minPlayers,
+        maxPlayers: entry.game.maxPlayers,
+        playTimeMinutes: entry.game.playTimeMinutes,
+        complexity: entry.game.complexity,
+        bggId: entry.game.bggId,
+      },
+    })),
+  };
 
-  return (
-    <div className="space-y-6">
-      {/* Header with back button */}
-      <SeriesDetailHeader
-        series={series}
-        seriesId={seriesId}
-        onDeleteClick={() => setDeleteSeriesOpen(true)}
-      />
-
-      {/* Progress Card */}
-      <SeriesProgressCard entries={series.entries} />
-
-      {/* Games section with filter/sort and entry list */}
-      <SeriesEntryList
-        entries={series.entries}
-        expandedEntry={expandedEntry}
-        onToggleExpanded={(id) => setExpandedEntry(expandedEntry === id ? null : id)}
-        onAddClick={() => setAddDialogOpen(true)}
-        onTogglePlayed={handleTogglePlayed}
-        onMoveEntry={handleMoveEntry}
-        onRatingChange={handleRatingChange}
-        onDifficultyChange={handleDifficultyChange}
-        onPlayDetailChange={handlePlayDetailChange}
-        onDeleteEntry={setDeleteEntryTarget}
-      />
-
-      {/* Add Game Dialog */}
-      <AddGameDialog
-        open={addDialogOpen}
-        onOpenChange={setAddDialogOpen}
-        seriesId={seriesId}
-        existingGameIds={series.entries.map((e) => e.gameId)}
-        onGameAdded={handleGameAdded}
-      />
-
-      {/* Delete confirmation dialogs */}
-      <SeriesDeleteDialogs
-        deleteSeriesOpen={deleteSeriesOpen}
-        onDeleteSeriesOpenChange={setDeleteSeriesOpen}
-        deleteEntryTarget={deleteEntryTarget}
-        onDeleteEntryTargetChange={setDeleteEntryTarget}
-        onDeleteSeries={handleDeleteSeries}
-        onDeleteEntry={handleDeleteEntry}
-        deleting={deleting}
-        seriesName={series.name}
-      />
-    </div>
-  );
+  return <SeriesDetailClient initialSeries={serializedSeries} seriesId={id} />;
 }

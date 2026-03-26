@@ -11,6 +11,18 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.34.0",
+    date: "2026-03-26",
+    title: "Server Component Migration + Pre-Commit Optimierung",
+    description: "6 von 8 Pages von 'use client' + useEffect+fetch auf Server Components migriert (games/[id], games/[id]/edit, sessions/[id], sessions/new, sessions/[id]/edit, series/[id]). Pre-Commit Hook mit lint-staged optimiert.",
+    changes: [
+      { type: "improvement", text: "Server Component Migration: 6 Detail-/Formular-Seiten eliminieren Client-Fetch-Waterfall durch serverseitiges Prisma-Loading" },
+      { type: "improvement", text: "Pre-Commit: lint-staged fuer ESLint + Related Tests statt voller Testsuite. Volle Suite nach pre-push verschoben." },
+      { type: "internal", text: "Neue Client-Wrapper: game-detail-client.tsx, session-detail-client.tsx, session-form-client.tsx, session-edit-client.tsx, SeriesDetailClient.tsx" },
+      { type: "internal", text: "EditGameForm: onSave/onCancel optional gemacht (abwaertskompatibel)" },
+    ],
+  },
+  {
     version: "0.33.0",
     date: "2026-03-26",
     title: "P0-Fix: API-Route-Tests + Zentrales Error-Messages-Modul",

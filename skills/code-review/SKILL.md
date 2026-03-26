@@ -932,7 +932,7 @@ const isValid = await compare(inputPassword, group.password);
 
 ## Evaluator-Feedback (automatisch generiert)
 
-> Letzter Lauf: 2026-03-26 13:31:29
+> Letzter Lauf: 2026-03-26 14:07:17
 > Gesamt-Score: **10/10**
 
 ### Kategorie-Scores
@@ -973,7 +973,7 @@ const isValid = await compare(inputPassword, group.password);
 - ✅ **P2-19** Duplikat: Prisma-Client-Dateien: Duplikat entfernt
 - ✅ **P2-20** Duplikat: BGG-Logik: Kein dupliziertes XML-Parsing
 - ✅ **P2-21** next/image statt <img>: Keine <img> Tags
-- ✅ **P2-22** Fehlende Unit Tests: 35 Test-Dateien
+- ✅ **P2-22** Fehlende Unit Tests: 40 Test-Dateien
 - ✅ **P2-23** Inkonsistente Error-Responses: Konsistent: 223 error, 10 message
 - ✅ **P2-24** CONCEPT.md aktualisieren: Tech-Stack aktuell
 - ✅ **P2-25** Pendende Invites dupliziert: Shared Query extrahiert

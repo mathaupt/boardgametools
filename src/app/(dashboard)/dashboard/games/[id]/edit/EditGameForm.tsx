@@ -7,8 +7,8 @@ import { useToast } from "@/components/ui/use-toast";
 
 interface EditGameFormProps {
   game: Game;
-  onSave: (game: Partial<Game>) => void;
-  onCancel: () => void;
+  onSave?: (game: Partial<Game>) => void;
+  onCancel?: () => void;
 }
 
 export default function EditGameForm({ game, onSave, onCancel }: EditGameFormProps) {
@@ -48,7 +48,7 @@ export default function EditGameForm({ game, onSave, onCancel }: EditGameFormPro
       }
 
       const updatedGame = await response.json();
-      onSave(updatedGame);
+      onSave?.(updatedGame);
       router.push(`/dashboard/games/${game.id}`);
     } catch (error) {
       console.error('Save error:', error);
@@ -65,6 +65,8 @@ export default function EditGameForm({ game, onSave, onCancel }: EditGameFormPro
       [name]: value,
     }));
   };
+
+  const handleCancel = onCancel ?? (() => router.push(`/dashboard/games/${game.id}`));
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -195,7 +197,7 @@ export default function EditGameForm({ game, onSave, onCancel }: EditGameFormPro
             <div className="flex gap-3 justify-end pt-4">
               <button
                 type="button"
-                onClick={onCancel}
+                onClick={handleCancel}
                 className="px-4 py-2 text-muted-foreground border border-border rounded-md hover:bg-muted/50"
                 disabled={isSaving}
               >
