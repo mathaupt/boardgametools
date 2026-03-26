@@ -11,6 +11,17 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.28.0",
+    date: "2026-03-24",
+    title: "Komponenten-Splitting & Code-Organisation",
+    description: "Grosse Dateien aufgeteilt: events/page.tsx (425→201 Zeilen) in 3 Subkomponenten, bgg.ts (411→217 Zeilen) in Types + XML-Parser Module. Alle Dateien unter 300-Zeilen-Grenze (ausser changelog.ts als Datendatei).",
+    changes: [
+      { type: "improvement", text: "Event-Detailseite in EventInfoCard, EventGuestCard und EventProposalsCard aufgeteilt" },
+      { type: "improvement", text: "BGG-Modul in bgg-types.ts (Interfaces), bgg-xml.ts (XML-Parser) und bgg.ts (API-Funktionen) aufgeteilt" },
+      { type: "internal", text: "SKILL.md Finding #17 aktualisiert mit neuen Zeilenzahlen" },
+    ],
+  },
+  {
     version: "0.27.0",
     date: "2026-03-24",
     title: "N+1 Query Fix, Service Caching & Dokumentations-Sync",

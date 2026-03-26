@@ -1,32 +1,16 @@
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { PublicShareCard } from "./public-share-card";
 import { getPublicBaseUrl } from "@/lib/public-link";
-import {
-  ArrowLeft,
-  Calendar,
-  MapPin,
-  Users,
-  Vote,
-  Mail,
-  Plus,
-  Trophy,
-  Share2,
-  Download,
-  ThumbsUp,
-  ThumbsDown,
-  Gamepad,
-  UserCircle,
-} from "lucide-react";
-import Image from "next/image";
+import { ArrowLeft, Mail, Vote, Share2, Download } from "lucide-react";
 import Link from "next/link";
-import VotingClient from "./voting-client";
 import DatePollClient from "./date-poll-client";
 import { EventMailDialog } from "@/components/event-mail-dialog";
 import CloseVotingButton from "./close-voting-button";
+import { EventInfoCard } from "./event-info-card";
+import { EventGuestCard } from "./event-guest-card";
+import { EventProposalsCard } from "./event-proposals-card";
 
 export default async function EventDetailPage({
   params,
@@ -55,9 +39,7 @@ export default async function EventDetailPage({
       selectedGame: true,
       winningProposal: true,
       guestParticipants: {
-        include: {
-          _count: { select: { votes: true } }
-        },
+        include: { _count: { select: { votes: true } } },
         orderBy: { createdAt: "asc" }
       },
       dateProposals: {
@@ -101,17 +83,9 @@ export default async function EventDetailPage({
 
   // Get user votes for each proposal
   const userVotes = userId ? await prisma.vote.findMany({
-    where: {
-      userId,
-      proposal: {
-        eventId: id
-      }
-    },
-    select: {
-      proposalId: true
-    }
+    where: { userId, proposal: { eventId: id } },
+    select: { proposalId: true }
   }) : [];
-
   const userVoteIds = new Set(userVotes.map(vote => vote.proposalId));
 
   // Normalize proposals: merge BGG inline data for proposals without a Game record
@@ -182,125 +156,7 @@ export default async function EventDetailPage({
         </div>
       </div>
 
-      {/* Event Info */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-start justify-between">
-            <div>
-              <CardTitle className="flex items-center gap-2 text-xl sm:text-2xl text-foreground">
-                <div className="w-10 h-10 bg-primary/10 rounded flex items-center justify-center" aria-label="Event Icon">
-                  📅
-                </div>
-                {event.title}
-              </CardTitle>
-              <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-3 text-sm sm:text-base text-muted-foreground">
-                <div className="flex items-center gap-1">
-                  <Calendar className="h-4 w-4" />
-                  {eventDate.toLocaleDateString('de-DE', { 
-                    weekday: 'long', 
-                    year: 'numeric', 
-                    month: 'long', 
-                    day: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                  })}
-                </div>
-                {event.location && (
-                  <div className="flex items-center gap-1">
-                    <MapPin className="h-4 w-4" />
-                    {event.location}
-                  </div>
-                )}
-                <div className="flex items-center gap-1">
-                  <Users className="h-4 w-4" />
-                  {event.invites.length} Eingeladene
-                </div>
-                <Badge variant={isPast ? "secondary" : "default"}>
-                  {isPast ? "Vergangen" : "Anstehend"}
-                </Badge>
-              </div>
-            </div>
-          </div>
-        </CardHeader>
-        
-        {event.description && (
-          <CardContent>
-            <h3 className="font-semibold mb-2">Beschreibung</h3>
-            <p className="text-muted-foreground">{event.description}</p>
-          </CardContent>
-        )}
-
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Einladungen */}
-            <div>
-              <h3 className="font-semibold mb-3 flex items-center gap-2">
-                <Users className="h-4 w-4" />
-                Einladungen ({event.invites.length})
-              </h3>
-              <div className="space-y-2">
-                {event.invites.length === 0 ? (
-                  <p className="text-muted-foreground text-sm">Noch keine Einladungen</p>
-                ) : (
-                  event.invites.map((invite) => (
-                    <div key={invite.id} className="flex items-center justify-between p-2 border rounded">
-                      <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 bg-muted rounded-full flex items-center justify-center text-xs">
-                          {invite.user?.name?.[0] ?? "?"}
-                        </div>
-                        <span>{invite.user?.name ?? invite.email ?? "Unbekannt"}</span>
-                      </div>
-                      <Badge variant={
-                        invite.status === "accepted" ? "default" :
-                        invite.status === "declined" ? "destructive" : "secondary"
-                      }>
-                        {invite.status === "accepted" ? "Zugesagt" :
-                         invite.status === "declined" ? "Abgelehnt" : "Ausstehend"}
-                      </Badge>
-                    </div>
-                  ))
-                )}
-              </div>
-            </div>
-
-            {/* Event Status */}
-            <div>
-              <h3 className="font-semibold mb-3">Event Status</h3>
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span>Erstellt von:</span>
-                  <span>{event.createdBy.name}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Erstellt am:</span>
-                  <span>{new Date(event.createdAt).toLocaleDateString('de-DE')}</span>
-                </div>
-                {(event.selectedGame || event.winningProposal) && (
-                  <div className="flex items-center gap-3">
-                    <span className="text-sm text-muted-foreground">Ausgewähltes Spiel:</span>
-                    <div className="flex items-center gap-2">
-                      {(event.selectedGame?.imageUrl || event.winningProposal?.bggImageUrl) ? (
-                        <Image 
-                          src={(event.selectedGame?.imageUrl || event.winningProposal?.bggImageUrl)!} 
-                          alt={event.selectedGame?.name || event.winningProposal?.bggName || "Spiel"}
-                          width={32}
-                          height={32}
-                          className="rounded object-cover border border-border"
-                        />
-                      ) : (
-                        <div className="w-8 h-8 rounded bg-muted border border-border flex items-center justify-center">
-                          <Gamepad className="h-4 w-4 text-muted-foreground" />
-                        </div>
-                      )}
-                      <span className="font-medium">{event.selectedGame?.name || event.winningProposal?.bggName}</span>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      <EventInfoCard event={event} isPast={isPast} />
 
       {/* Public link + guest overview */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
@@ -311,47 +167,10 @@ export default async function EventDetailPage({
           initialPublicUrl={publicUrl}
           canManage={isCreator}
         />
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Users className="h-5 w-5" />
-              Öffentliche Gäste ({event.guestParticipants.length})
-            </CardTitle>
-            <CardDescription>
-              {guestVoteCount} Gast-Stimmen bisher gesammelt
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {event.guestParticipants.length === 0 ? (
-              <p className="text-sm text-muted-foreground">
-                Noch keine Gäste über den öffentlichen Link registriert.
-              </p>
-            ) : (
-              event.guestParticipants.map((guest) => (
-                <div
-                  key={guest.id}
-                  className="flex items-center justify-between rounded-lg border border-border/60 bg-muted/20 px-3 py-2"
-                >
-                  <div className="flex items-center gap-2">
-                    <div className="rounded-full bg-muted px-2 py-1 text-muted-foreground">
-                      <UserCircle className="h-4 w-4" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium">{guest.nickname}</p>
-                      <p className="text-xs text-muted-foreground">
-                        Seit {new Date(guest.createdAt).toLocaleDateString("de-DE")}
-                      </p>
-                    </div>
-                  </div>
-                  <Badge variant="secondary" className="text-xs">
-                    {guest._count?.votes ?? 0} Votes
-                  </Badge>
-                </div>
-              ))
-            )}
-          </CardContent>
-        </Card>
+        <EventGuestCard
+          guestParticipants={event.guestParticipants}
+          guestVoteCount={guestVoteCount}
+        />
       </div>
 
       {/* Terminabstimmung */}
@@ -367,59 +186,16 @@ export default async function EventDetailPage({
         selectedDate={event.selectedDate?.toISOString() ?? null}
       />
 
-      {/* Spielvorschläge mit Voting */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="flex items-center gap-2">
-                <Vote className="h-5 w-5" />
-                Spielvorschläge ({event.proposals.length})
-              </CardTitle>
-              <CardDescription>
-                Vorgeschlagene Spiele für dieses Event
-              </CardDescription>
-            </div>
-            {isCreator && !isPast && (
-              <Link href={`/dashboard/events/${event.id}/voting`}>
-                <Button>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Spiel vorschlagen
-                </Button>
-              </Link>
-            )}
-          </div>
-        </CardHeader>
-        <CardContent>
-          {event.proposals.length === 0 ? (
-            <div className="text-center py-8">
-              <div className="text-4xl mb-4">🎲</div>
-              <h3 className="font-semibold mb-2">Noch keine Vorschläge</h3>
-              <p className="text-muted-foreground mb-4">
-                Es wurden noch keine Spiele für dieses Event vorgeschlagen.
-              </p>
-              {isCreator && !isPast && (
-                <Link href={`/dashboard/events/${event.id}/voting`}>
-                  <Button>
-                    <Plus className="h-4 w-4 mr-2" />
-                    Ersten Vorschlag machen
-                  </Button>
-                </Link>
-              )}
-            </div>
-          ) : (
-            <VotingClient 
-              proposals={normalizedProposals} 
-              eventId={event.id} 
-              userId={userId || null}
-              userVoteIds={userVoteIds}
-              isPast={isPast}
-              selectedGameId={event.selectedGame?.id}
-              winningProposalId={event.winningProposalId ?? undefined}
-            />
-          )}
-        </CardContent>
-      </Card>
+      <EventProposalsCard
+        eventId={event.id}
+        proposals={normalizedProposals}
+        userId={userId || null}
+        userVoteIds={userVoteIds}
+        isPast={isPast}
+        isCreator={isCreator}
+        selectedGameId={event.selectedGame?.id}
+        winningProposalId={event.winningProposalId ?? undefined}
+      />
     </div>
   );
 }

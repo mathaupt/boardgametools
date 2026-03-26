@@ -350,7 +350,7 @@ Erstelle einen Report mit folgendem Format:
 60. ~~**DB Connection Pooling nicht konfiguriert**~~ ✅ Behoben: Connection Pool konfiguriert.
 
 ### P2 – Verbesserung
-17. ~~**Mega-Komponenten aufteilen**~~ ✅ Behoben: Alle 5 Mega-Komponenten aufgeteilt (public-event 1152→354, group-detail 989→396, monitoring 906→144, barcode 825→338, series 976→591). Noch 8 Dateien >400 Zeilen übrig (games/import 760, date-poll-client 731, voting/page 693, series/page 591, profile-client 588, public/group 471, create-poll-form 426, events/page 423).
+17. ~~**Mega-Komponenten aufteilen**~~ ✅ Behoben: Alle Mega-Komponenten aufgeteilt. events/page 425→201 (3 Subkomponenten extrahiert), bgg.ts 411→217 (Types + XML-Parser extrahiert). Verbleibend >300: changelog.ts (737, reine Daten), date-poll-client (378), overview-tab (363), register (356), series-list-client (352), public-event-client (354), add-game-dialog (354).
 18. ~~**24× `any` Type**~~ ✅ Behoben: Alle 5 verbliebenen `any`-Types durch typisierte Interfaces ersetzt (BGGSearchResult, EventData, Html5Qrcode).
     ~~**Fix**: `grep -rn ': any\|as any' src/` ausführen und jeden Treffer mit konkretem Interface ersetzen.~~
 19. ~~**Duplikat: Prisma-Client-Dateien**~~ ✅ Behoben: Duplikat entfernt.
@@ -508,15 +508,14 @@ const isValid = await compare(inputPassword, group.password);
 
 ## Evaluator-Feedback (automatisch generiert)
 
-> Letzter Lauf: 2026-03-26 09:13:29
-> Gesamt-Score: **10/10**
-> Manuell synchronisiert: 2026-03-24 – 19 Findings in Top-Findings-Sektion nachgetragen, P1-15 False-Negative korrigiert
+> Letzter Lauf: 2026-03-26 09:24:40
+> Gesamt-Score: **9.9/10**
 
 ### Kategorie-Scores
 
 | Kategorie | Score | Treffsicherheit | Aktualität | Abdeckung | Umsetzung | Handlung |
 |-----------|-------|-----------------|------------|-----------|-----------|----------|
-| Sicherheit | **10/10** | 10 | 10 | 10 | 10 | 10 |
+| Sicherheit | **9.6/10** | 10 | 9.2 | 10 | 9.3 | 10 |
 | TypeScript | **10/10** | 10 | 10 | 10 | 10 | 10 |
 | Architektur | **10/10** | 10 | 10 | 10 | 10 | 10 |
 | Performance | **10/10** | 10 | 10 | 10 | 10 | 10 |
@@ -527,7 +526,7 @@ const isValid = await compare(inputPassword, group.password);
 | Best Practices | **10/10** | 10 | 10 | 10 | 10 | 10 |
 | Skalierung | **10/10** | 10 | 10 | 10 | 10 | 10 |
 
-### Erledigte Findings (50)
+### Erledigte Findings (49)
 
 - ✅ **P0-1** Debug-Routes in Produktion: NODE_ENV Guard vorhanden
 - ✅ **P0-2** DB-Init ohne Auth: Auth-Check vorhanden
@@ -577,9 +576,8 @@ const isValid = await compare(inputPassword, group.password);
 - ✅ **SCALE-57** In-Memory Rate Limiting nicht skalierbar: Redis-basiertes Rate Limiting
 - ✅ **SCALE-58** Kein Caching-Layer: Redis Cache vorhanden
 - ✅ **SCALE-59** Kein strukturiertes Logging: Strukturiertes Logging-Framework vorhanden
-- ✅ **P1-15** Admin kann sich selbst deaktivieren: Self-Protection in deactivate und change-password vorhanden (targetUserId === adminUserId Check)
 - ✅ **SCALE-60** DB Connection Pooling nicht konfiguriert: Connection Pool konfiguriert
 
-### Offene Findings (0)
+### Offene Findings (1)
 
-Alle 50 Findings sind behoben.
+- ❌ **P1-15** Admin kann sich selbst deaktivieren: Keine Self-Protection
