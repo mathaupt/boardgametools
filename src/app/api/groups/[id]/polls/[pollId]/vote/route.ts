@@ -39,6 +39,10 @@ export const POST = withApiLogging(async function POST(
       return NextResponse.json({ error: "optionIds array is required" }, { status: 400 });
     }
 
+    if (optionIds.length > 50) {
+      return NextResponse.json({ error: "Zu viele Optionen" }, { status: 400 });
+    }
+
     // For single-choice polls, only allow one option
     if (poll.type === "single" && optionIds.length > 1) {
       return NextResponse.json({ error: "Single-choice poll: only one option allowed" }, { status: 400 });

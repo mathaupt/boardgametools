@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { compare } from "bcryptjs";
 import { findPublicGroupByToken } from "@/lib/group-share";
 import { withApiLogging } from "@/lib/api-logger";
+import { checkRateLimit, rateLimitResponse } from "@/lib/rate-limit";
 import logger from "@/lib/logger";
 
 type RouteContext = { params: Promise<{ token: string }> };
@@ -10,6 +11,10 @@ export const GET = withApiLogging(async function GET(
   request: NextRequest,
   { params }: RouteContext
 ) {
+  const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+  const { allowed, retryAfterMs } = checkRateLimit(`pub-group:${ip}`, 30, 60_000);
+  if (!allowed) return rateLimitResponse(retryAfterMs);
+
   const { token } = await params;
 
   try {

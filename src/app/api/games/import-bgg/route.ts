@@ -48,22 +48,24 @@ export const POST = withApiLogging(async function POST(request: NextRequest) {
       },
     });
 
-    // Auto-create tags from BGG categories
+    // Auto-create tags from BGG categories (batched in a single transaction)
     if (bggData.categories && bggData.categories.length > 0) {
-      for (const categoryName of bggData.categories) {
-        const trimmed = categoryName.trim();
-        if (!trimmed) continue;
-        const tag = await prisma.tag.upsert({
-          where: { name_ownerId: { name: trimmed, ownerId: userId } },
-          create: { name: trimmed, ownerId: userId, source: "bgg" },
-          update: {},
-        });
-        await prisma.gameTag.upsert({
-          where: { gameId_tagId: { gameId: game.id, tagId: tag.id } },
-          create: { gameId: game.id, tagId: tag.id },
-          update: {},
-        });
-      }
+      await prisma.$transaction(async (tx) => {
+        for (const categoryName of bggData.categories) {
+          const trimmed = categoryName.trim();
+          if (!trimmed) continue;
+          const tag = await tx.tag.upsert({
+            where: { name_ownerId: { name: trimmed, ownerId: userId } },
+            create: { name: trimmed, ownerId: userId, source: "bgg" },
+            update: {},
+          });
+          await tx.gameTag.upsert({
+            where: { gameId_tagId: { gameId: game.id, tagId: tag.id } },
+            create: { gameId: game.id, tagId: tag.id },
+            update: {},
+          });
+        }
+      });
     }
 
     invalidateTag(CacheTags.userGames(userId));

@@ -108,6 +108,16 @@ export const PUT = withApiLogging(async function PUT(
       );
     }
 
+    const validAvailabilities = ["yes", "maybe", "no"];
+    for (const v of votes) {
+      if (!v.availability || !validAvailabilities.includes(v.availability)) {
+        return NextResponse.json(
+          { error: "availability must be 'yes', 'maybe', or 'no'" },
+          { status: 400 }
+        );
+      }
+    }
+
     // Prüfe ob Event existiert und User Zugang hat
     const event = await prisma.event.findFirst({
       where: { id, deletedAt: null },

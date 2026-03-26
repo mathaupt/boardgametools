@@ -43,6 +43,7 @@ model User {
   apiLogs         ApiLog[]         @relation("apiLogs")
   sessionRatings  SessionRating[]  @relation("SessionRatings")
   tags            Tag[]
+  uploads         Upload[]
 }
 
 // ============================================
@@ -99,6 +100,7 @@ model GameSession {
 
   @@index([createdById])
   @@index([deletedAt])
+  @@index([gameId])
 }
 
 model SessionRating {
@@ -129,6 +131,7 @@ model SessionPlayer {
   user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([sessionId, userId])
+  @@index([userId])
 }
 
 // ============================================
@@ -155,6 +158,7 @@ model Group {
   comments    GroupComment[]
 
   @@index([deletedAt])
+  @@index([ownerId])
 }
 
 model GroupMember {
@@ -192,6 +196,8 @@ model GroupPoll {
   createdBy   User              @relation("CreatedPolls", fields: [createdById], references: [id], onDelete: Cascade)
   options     GroupPollOption[]
   comments    GroupComment[]
+
+  @@index([groupId])
 }
 
 model GroupPollOption {
@@ -203,6 +209,8 @@ model GroupPollOption {
   // Relations
   poll      GroupPoll       @relation(fields: [pollId], references: [id], onDelete: Cascade)
   votes     GroupPollVote[]
+
+  @@index([pollId])
 }
 
 model GroupPollVote {
@@ -232,6 +240,8 @@ model GroupComment {
   group      Group      @relation(fields: [groupId], references: [id], onDelete: Cascade)
   poll       GroupPoll? @relation(fields: [pollId], references: [id], onDelete: Cascade)
   user       User?      @relation("GroupComments", fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([groupId])
 }
 
 // ============================================
@@ -269,6 +279,7 @@ model Event {
   @@index([createdById])
   @@index([eventDate])
   @@index([deletedAt])
+  @@index([groupId])
 }
 
 model EventInvite {
@@ -419,6 +430,7 @@ model GameSeries {
   entries     GameSeriesEntry[]
 
   @@index([deletedAt])
+  @@index([ownerId])
 }
 
 model GameSeriesEntry {
@@ -499,6 +511,8 @@ model Upload {
   storagePath String   // relative path under /public/uploads/
   ownerId     String
   createdAt   DateTime @default(now())
+
+  owner       User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
 
   @@index([ownerId])
 }

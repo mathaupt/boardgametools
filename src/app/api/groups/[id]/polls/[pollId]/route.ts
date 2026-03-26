@@ -75,6 +75,10 @@ export const PUT = withApiLogging(async function PUT(
     const body = await request.json();
     const { status } = body;
 
+    if (status && !["open", "closed"].includes(status)) {
+      return NextResponse.json({ error: "Ungueltiger Status" }, { status: 400 });
+    }
+
     const updated = await prisma.groupPoll.update({
       where: { id: pollId },
       data: {

@@ -44,6 +44,16 @@ export const POST = withApiLogging(async function POST(
       return NextResponse.json({ error: "Too many votes" }, { status: 400 });
     }
 
+    const validAvailabilities = ["yes", "maybe", "no"];
+    for (const v of votes) {
+      if (!v.availability || !validAvailabilities.includes(v.availability)) {
+        return NextResponse.json(
+          { error: "availability must be 'yes', 'maybe', or 'no'" },
+          { status: 400 }
+        );
+      }
+    }
+
     // Prüfe ob Gast zum Event gehört
     const guest = await prisma.guestParticipant.findFirst({
       where: { id: guestId, eventId: event.id },

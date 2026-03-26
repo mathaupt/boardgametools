@@ -128,18 +128,21 @@ export const EventService = {
 
     // Build invite list
     const organizerInvite = { userId, status: "accepted" as const };
-    const additionalInvites = input.inviteEmails
-      ? await Promise.all(
-          input.inviteEmails.map(async (email: string) => {
-            const user = await prisma.user.findUnique({ where: { email } });
-            return {
-              userId: user?.id || null,
-              email: user ? null : email,
-              status: "pending" as const,
-            };
-          })
-        )
-      : [];
+    const additionalInvites: { userId: string | null; email: string | null; status: "pending" }[] = [];
+    if (input.inviteEmails && input.inviteEmails.length > 0) {
+      const users = await prisma.user.findMany({
+        where: { email: { in: input.inviteEmails } },
+      });
+      const userByEmail = new Map(users.map((u) => [u.email, u]));
+      for (const email of input.inviteEmails) {
+        const user = userByEmail.get(email);
+        additionalInvites.push({
+          userId: user?.id || null,
+          email: user ? null : email,
+          status: "pending" as const,
+        });
+      }
+    }
 
     const newEvent = await prisma.event.create({
       data: {

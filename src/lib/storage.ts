@@ -2,6 +2,7 @@ import { writeFile, mkdir } from "fs/promises";
 import path from "path";
 import crypto from "crypto";
 import { env } from "@/lib/env";
+import logger from "@/lib/logger";
 
 export interface StorageResult {
   storagePath: string;
@@ -42,6 +43,9 @@ class BlobStorageProvider implements StorageProvider {
 function getStorageProvider(): StorageProvider {
   if (env.BLOB_READ_WRITE_TOKEN) {
     return new BlobStorageProvider();
+  }
+  if (env.NODE_ENV === "production") {
+    logger.warn("Local file storage is ephemeral on serverless. Set BLOB_READ_WRITE_TOKEN for production.");
   }
   return new LocalStorageProvider();
 }

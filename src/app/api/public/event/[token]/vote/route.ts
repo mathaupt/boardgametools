@@ -94,6 +94,10 @@ export const DELETE = withApiLogging(async function DELETE(
   request: NextRequest,
   { params }: RouteContext
 ) {
+  const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+  const { allowed, retryAfterMs } = checkRateLimit(`pub-vote-del:${ip}`, 20, 60_000);
+  if (!allowed) return rateLimitResponse(retryAfterMs);
+
   const { token } = await params;
   const eventId = await resolveEventIdFromToken(token);
 

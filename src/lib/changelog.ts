@@ -11,6 +11,24 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.32.0",
+    date: "2026-03-26",
+    title: "P1-Findings behoben: Security, Performance, Datenbank, Skalierung",
+    description: "10 P1-Findings aus dem Deep-Dive Review behoben: Input-Validierung, Rate Limiting, DB-Indices, N+1-Queries, Statistics-Optimierung, Upstash-Fix, Dead-Code-Entfernung.",
+    changes: [
+      { type: "fix", text: "Input-Validierung: Enum-Checks fuer Date-Votes, Poll-Status, Poll-Optionen und Vote-Limits hinzugefuegt" },
+      { type: "fix", text: "Rate Limiting auf Public Group GET und Public Event Vote DELETE ergaenzt" },
+      { type: "fix", text: "8 fehlende DB-Indices hinzugefuegt (GameSession.gameId, SessionPlayer.userId, GroupPoll.groupId u.a.)" },
+      { type: "fix", text: "Upload-Model: FK-Relation zu User mit onDelete Cascade ergaenzt" },
+      { type: "improvement", text: "N+1 Query in BGG-Import behoben: Tag-Upserts in $transaction gebuendelt" },
+      { type: "improvement", text: "Statistiken: DB-Aggregation (groupBy, distinct, aggregate) statt 1000 Sessions in-memory" },
+      { type: "improvement", text: "Event-Einladungen: Batch-Query statt N einzelne User-Lookups" },
+      { type: "fix", text: "Upstash Rate Limit: Custom-Parameter werden jetzt per-Endpoint angewendet (war global hardcoded)" },
+      { type: "improvement", text: "Storage: Warnung bei lokalem Dateispeicher in Produktion (ephemeral auf Serverless)" },
+      { type: "internal", text: "Dead Code admin-create.ts entfernt" },
+    ],
+  },
+  {
     version: "0.31.2",
     date: "2026-03-26",
     title: "Deep-Dive Review: Detaillierte Berichte in docs/ aktualisiert",

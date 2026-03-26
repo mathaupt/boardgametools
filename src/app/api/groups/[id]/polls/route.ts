@@ -78,6 +78,13 @@ export const POST = withApiLogging(async function POST(
       return NextResponse.json({ error: validationError }, { status: 400 });
     }
 
+    for (const text of options) {
+      const optionError = validateString(text, "Option", { max: 500 });
+      if (optionError) {
+        return NextResponse.json({ error: optionError }, { status: 400 });
+      }
+    }
+
     const poll = await prisma.groupPoll.create({
       data: {
         groupId: id,

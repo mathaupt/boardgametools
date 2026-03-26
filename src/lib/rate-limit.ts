@@ -11,21 +11,38 @@ const MAX_MAP_SIZE = 10_000;
 // Falls back to in-memory Map if not configured.
 const useUpstash = !!(env.UPSTASH_REDIS_REST_URL && env.UPSTASH_REDIS_REST_TOKEN);
 
-let upstashRatelimit: {
+type UpstashLimiter = {
   limit: (identifier: string) => Promise<{ success: boolean; remaining: number; reset: number }>;
-} | null = null;
+};
 
-async function getUpstashRatelimit() {
-  if (upstashRatelimit) return upstashRatelimit;
+/** Cache of Ratelimit instances keyed by `${maxRequests}:${windowMs}`. */
+const upstashRatelimitCache = new Map<string, UpstashLimiter>();
+
+let sharedRedis: unknown = null;
+
+async function getUpstashRatelimit(
+  maxRequests: number,
+  windowMs: number
+): Promise<UpstashLimiter | null> {
+  const cacheKey = `${maxRequests}:${windowMs}`;
+  const cached = upstashRatelimitCache.get(cacheKey);
+  if (cached) return cached;
+
   try {
     const { Ratelimit } = await import("@upstash/ratelimit");
     const { Redis } = await import("@upstash/redis");
-    upstashRatelimit = new Ratelimit({
-      redis: Redis.fromEnv(),
-      limiter: Ratelimit.slidingWindow(10, "60 s"),
+    if (!sharedRedis) {
+      sharedRedis = Redis.fromEnv();
+    }
+    const windowSec = Math.ceil(windowMs / 1000);
+    const rl = new Ratelimit({
+      redis: sharedRedis as InstanceType<typeof Redis>,
+      limiter: Ratelimit.slidingWindow(maxRequests, `${windowSec} s`),
       analytics: true,
+      prefix: `rl:${maxRequests}:${windowSec}`,
     });
-    return upstashRatelimit;
+    upstashRatelimitCache.set(cacheKey, rl);
+    return rl;
   } catch {
     return null;
   }
@@ -73,7 +90,7 @@ export async function checkRateLimitAsync(
   windowMs: number = 60_000
 ): Promise<{ allowed: boolean; retryAfterMs: number }> {
   if (useUpstash) {
-    const rl = await getUpstashRatelimit();
+    const rl = await getUpstashRatelimit(maxRequests, windowMs);
     if (rl) {
       const result = await rl.limit(identifier);
       return {
