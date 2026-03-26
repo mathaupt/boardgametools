@@ -240,7 +240,7 @@ export default function GameDetailPage() {
           <div className="bg-card rounded-lg p-6 max-w-md w-full mx-4">
             <h2 className="text-xl font-bold text-foreground mb-4">Spiel löschen?</h2>
             <p className="text-muted-foreground mb-6">
-              Bist du sicher, dass du das Spiel "{game?.name}" löschen möchtest? 
+              Bist du sicher, dass du das Spiel &ldquo;{game?.name}&rdquo; löschen möchtest? 
               Diese Aktion kann nicht rückgängig gemacht werden.
             </p>
             <div className="flex gap-3 justify-end">

@@ -11,6 +11,20 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.30.1",
+    date: "2026-03-26",
+    title: "Code-Qualitaet: Review Score 10/10",
+    description: "Umfassendes Review aller Teilbereiche mit Behebung aller TypeScript-Fehler, ESLint-Errors, Evaluator-Regressions und Dependency-Bereinigung.",
+    changes: [
+      { type: "fix", text: "5 TypeScript-Fehler behoben (Typ-Inkompatibilitaeten, fehlender Logger-Import, Test-Typisierung)" },
+      { type: "fix", text: "13 ESLint-Errors behoben (empty-object-type, set-state-in-effect, unescaped-entities, purity)" },
+      { type: "fix", text: "Evaluator-False-Positive P1-15 korrigiert: hasSelfCheck erkennt jetzt die tatsaechlichen Code-Patterns" },
+      { type: "fix", text: "Ungenutzte direkte Dependency enhanced-resolve entfernt (bleibt transitiv via @tailwindcss)" },
+      { type: "internal", text: "Regressions-Log mit Root-Cause-Analysen und Gegenmassnahmen dokumentiert" },
+      { type: "internal", text: "Review-Score von 9.9/10 auf 10/10 angehoben: alle 50 Findings in 10 Kategorien resolved" },
+    ],
+  },
+  {
     version: "0.30.0",
     date: "2026-03-24",
     title: "P2 & P3 Findings komplett umgesetzt",

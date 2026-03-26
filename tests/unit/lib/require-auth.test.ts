@@ -68,7 +68,7 @@ describe("require-auth", () => {
     });
 
     it("throws ApiError(401) when session is null", async () => {
-      mockAuth.mockResolvedValue(null);
+      mockAuth.mockResolvedValue(null as never);
       await expect(requireAuth()).rejects.toThrow(ApiError);
       await expect(requireAuth()).rejects.toMatchObject({ statusCode: 401, message: "Unauthorized" });
     });
@@ -108,7 +108,7 @@ describe("require-auth", () => {
     });
 
     it("throws ApiError(401) when not authenticated", async () => {
-      mockAuth.mockResolvedValue(null);
+      mockAuth.mockResolvedValue(null as never);
       await expect(requireAdmin()).rejects.toThrow(ApiError);
       await expect(requireAdmin()).rejects.toMatchObject({ statusCode: 401 });
     });

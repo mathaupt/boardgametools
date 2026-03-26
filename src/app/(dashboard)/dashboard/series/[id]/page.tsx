@@ -32,7 +32,10 @@ export default function SeriesDetailPage() {
     setLoading(false);
   }, [seriesId]);
 
-  useEffect(() => { loadSeries(); }, [loadSeries]);
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    loadSeries();
+  }, [loadSeries]);
 
   const {
     handleTogglePlayed,

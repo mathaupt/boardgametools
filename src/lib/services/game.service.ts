@@ -20,7 +20,7 @@ export interface CreateGameInput {
   tagNames?: string[];
 }
 
-export interface UpdateGameInput extends Partial<CreateGameInput> {}
+export type UpdateGameInput = Partial<CreateGameInput>
 
 // ── Service ──────────────────────────────────────────────────────
 

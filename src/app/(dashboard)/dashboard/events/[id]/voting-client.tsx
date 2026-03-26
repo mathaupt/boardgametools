@@ -19,7 +19,7 @@ interface Proposal {
     imageUrl?: string | null;
   };
   proposedBy: {
-    name: string;
+    name: string | null;
   };
   _count: {
     votes: number;

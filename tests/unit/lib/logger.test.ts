@@ -20,7 +20,7 @@ describe("logger", () => {
   });
 
   it("uses debug level in non-production", async () => {
-    process.env.NODE_ENV = "development";
+    (process.env as Record<string, string | undefined>).NODE_ENV = "development";
     delete process.env.LOG_LEVEL;
     const logger = (await import("@/lib/logger")).default;
     expect(logger.level).toBe("debug");

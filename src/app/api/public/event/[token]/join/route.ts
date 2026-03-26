@@ -4,6 +4,7 @@ import { resolveEventIdFromToken } from "@/lib/event-share";
 import { withApiLogging } from "@/lib/api-logger";
 import { validateString } from "@/lib/validation";
 import { checkRateLimit, rateLimitResponse } from "@/lib/rate-limit";
+import logger from "@/lib/logger";
 
 type RouteContext = { params: Promise<{ token: string }> };
 

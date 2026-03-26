@@ -508,14 +508,14 @@ const isValid = await compare(inputPassword, group.password);
 
 ## Evaluator-Feedback (automatisch generiert)
 
-> Letzter Lauf: 2026-03-26 09:28:40
-> Gesamt-Score: **9.9/10**
+> Letzter Lauf: 2026-03-26 09:53:17
+> Gesamt-Score: **10/10**
 
 ### Kategorie-Scores
 
 | Kategorie | Score | Treffsicherheit | Aktualität | Abdeckung | Umsetzung | Handlung |
 |-----------|-------|-----------------|------------|-----------|-----------|----------|
-| Sicherheit | **9.6/10** | 10 | 9.2 | 10 | 9.3 | 10 |
+| Sicherheit | **10/10** | 10 | 10 | 10 | 10 | 10 |
 | TypeScript | **10/10** | 10 | 10 | 10 | 10 | 10 |
 | Architektur | **10/10** | 10 | 10 | 10 | 10 | 10 |
 | Performance | **10/10** | 10 | 10 | 10 | 10 | 10 |
@@ -526,7 +526,7 @@ const isValid = await compare(inputPassword, group.password);
 | Best Practices | **10/10** | 10 | 10 | 10 | 10 | 10 |
 | Skalierung | **10/10** | 10 | 10 | 10 | 10 | 10 |
 
-### Erledigte Findings (49)
+### Erledigte Findings (50)
 
 - ✅ **P0-1** Debug-Routes in Produktion: NODE_ENV Guard vorhanden
 - ✅ **P0-2** DB-Init ohne Auth: Auth-Check vorhanden
@@ -542,6 +542,7 @@ const isValid = await compare(inputPassword, group.password);
 - ✅ **P1-12** Close-Voting fehlt: Close-Voting Endpoint vorhanden
 - ✅ **P1-13** Registrierung: Keine E-Mail-Validierung: E-Mail-Validierung vorhanden
 - ✅ **P1-14** P95 Duration Query lädt alle Zeilen: P95 Query nutzt OFFSET/LIMIT
+- ✅ **P1-15** Admin kann sich selbst deaktivieren: Self-Protection in deactivate + change-password vorhanden
 - ✅ **P1-16** Admin-Endpoints: 401 statt 403: Proxy/Admin-Routes geben 403 für Non-Admins
 - ✅ **P2-17** Mega-Komponenten aufteilen: Alle Mega-Komponenten aufgeteilt
 - ✅ **P2-18** any-Types im Code: Keine any-Types
@@ -561,7 +562,7 @@ const isValid = await compare(inputPassword, group.password);
 - ✅ **P3-33** Links zu /terms und /privacy fehlen: Beide Seiten vorhanden
 - ✅ **P3-35** Fehlende DB-Indices: 22 @@index Definitionen
 - ✅ **SEC-44** Fehlende Security Headers: CSP, X-Frame-Options, X-Content-Type-Options vorhanden
-- ✅ **SEC-45** npm audit: Bekannte Vulnerabilities: Keine Prod-Vulnerabilities (5 high nur in devDeps, 1 moderate)
+- ✅ **SEC-45** npm audit: Bekannte Vulnerabilities: Keine Prod-Vulnerabilities (2 high nur in devDeps, 0 moderate)
 - ✅ **SEC-46** XSS: dangerouslySetInnerHTML ohne Sanitization: Kein dangerouslySetInnerHTML verwendet
 - ✅ **PERF-47** Schwere Libraries ohne Dynamic Import: 4 dynamic() + 7 await import() Lazy-Loads
 - ✅ **PERF-48** Keine Bundle-Analyse konfiguriert: @next/bundle-analyzer konfiguriert
@@ -577,7 +578,3 @@ const isValid = await compare(inputPassword, group.password);
 - ✅ **SCALE-58** Kein Caching-Layer: Redis Cache vorhanden
 - ✅ **SCALE-59** Kein strukturiertes Logging: Strukturiertes Logging-Framework vorhanden
 - ✅ **SCALE-60** DB Connection Pooling nicht konfiguriert: Connection Pool konfiguriert
-
-### Offene Findings (1)
-
-- ❌ **P1-15** Admin kann sich selbst deaktivieren: Keine Self-Protection

@@ -13,7 +13,7 @@ export interface CreateSeriesInput {
   imageUrl?: string;
 }
 
-export interface UpdateSeriesInput extends Partial<CreateSeriesInput> {}
+export type UpdateSeriesInput = Partial<CreateSeriesInput>
 
 export interface AddEntryInput {
   gameId: string;

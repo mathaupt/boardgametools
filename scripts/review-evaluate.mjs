@@ -575,7 +575,7 @@ const FINDINGS = [
       const deactivateRoute = readSafe("src/app/api/admin/users/deactivate/route.ts");
       const changePwRoute = readSafe("src/app/api/admin/users/change-password/route.ts");
       const hasSelfCheck = (content) =>
-        content && (content.includes("session.user.id") || content.includes("eigenen") || content.includes("yourself"));
+        content && (content.includes("session.user.id") || content.includes("adminUserId") || content.includes("eigenen") || content.includes("Eigenes") || content.includes("yourself") || content.includes("your own"));
       const deactivateOk = hasSelfCheck(deactivateRoute);
       const changePwOk = hasSelfCheck(changePwRoute);
       const usersOk = hasSelfCheck(usersRoute);

@@ -1,0 +1,418 @@
+{
+  "date": "2026-03-26T08:10:35.586Z",
+  "overall": 9.9,
+  "coverage": {
+    "statements": 25.57,
+    "branches": 24.63,
+    "functions": 21.96,
+    "lines": 26.03
+  },
+  "findings": [
+    {
+      "id": "P0-1",
+      "priority": "P0",
+      "category": "security",
+      "title": "Debug-Routes in Produktion",
+      "status": "resolved",
+      "detail": "NODE_ENV Guard vorhanden"
+    },
+    {
+      "id": "P0-2",
+      "priority": "P0",
+      "category": "security",
+      "title": "DB-Init ohne Auth",
+      "status": "resolved",
+      "detail": "Auth-Check vorhanden"
+    },
+    {
+      "id": "P0-3",
+      "priority": "P0",
+      "category": "security",
+      "title": "Hardcoded Admin-Credentials",
+      "status": "resolved",
+      "detail": "Credentials externalisiert"
+    },
+    {
+      "id": "P0-4",
+      "priority": "P0",
+      "category": "security",
+      "title": "Gruppen-Passwörter im Klartext",
+      "status": "resolved",
+      "detail": "bcrypt wird verwendet"
+    },
+    {
+      "id": "P0-5",
+      "priority": "P0",
+      "category": "security",
+      "title": "Kein Rate Limiting + keine proxy.ts",
+      "status": "resolved",
+      "detail": "Proxy/Middleware + Rate Limiting vorhanden"
+    },
+    {
+      "id": "P0-6",
+      "priority": "P0",
+      "category": "security",
+      "title": "passwordHash in API-Responses",
+      "status": "resolved",
+      "detail": "passwordHash wird nicht exponiert"
+    },
+    {
+      "id": "P1-7",
+      "priority": "P1",
+      "category": "security",
+      "title": "PII in Logs",
+      "status": "resolved",
+      "detail": "Keine PII in API-Logs"
+    },
+    {
+      "id": "P1-8",
+      "priority": "P1",
+      "category": "api",
+      "title": "Fehlende Input-Validierung",
+      "status": "resolved",
+      "detail": "validation.ts in 18 Routes importiert"
+    },
+    {
+      "id": "P1-9",
+      "priority": "P1",
+      "category": "performance",
+      "title": "Keine Pagination",
+      "status": "resolved",
+      "detail": "Pagination auf allen Listen-Endpoints"
+    },
+    {
+      "id": "P1-10",
+      "priority": "P1",
+      "category": "concept",
+      "title": "Statistiken komplett fehlend",
+      "status": "resolved",
+      "detail": "Statistiken-Seite + API vorhanden"
+    },
+    {
+      "id": "P1-11",
+      "priority": "P1",
+      "category": "concept",
+      "title": "Session-Detailseite fehlt",
+      "status": "resolved",
+      "detail": "Session-Detailseite vorhanden"
+    },
+    {
+      "id": "P1-12",
+      "priority": "P1",
+      "category": "concept",
+      "title": "Close-Voting fehlt",
+      "status": "resolved",
+      "detail": "Close-Voting Endpoint vorhanden"
+    },
+    {
+      "id": "P1-13",
+      "priority": "P1",
+      "category": "security",
+      "title": "Registrierung: Keine E-Mail-Validierung",
+      "status": "resolved",
+      "detail": "E-Mail-Validierung vorhanden"
+    },
+    {
+      "id": "P1-14",
+      "priority": "P1",
+      "category": "performance",
+      "title": "P95 Duration Query lädt alle Zeilen",
+      "status": "resolved",
+      "detail": "P95 Query nutzt OFFSET/LIMIT"
+    },
+    {
+      "id": "P1-15",
+      "priority": "P1",
+      "category": "security",
+      "title": "Admin kann sich selbst deaktivieren",
+      "status": "open",
+      "detail": "Keine Self-Protection"
+    },
+    {
+      "id": "P1-16",
+      "priority": "P1",
+      "category": "api",
+      "title": "Admin-Endpoints: 401 statt 403",
+      "status": "resolved",
+      "detail": "Proxy/Admin-Routes geben 403 für Non-Admins"
+    },
+    {
+      "id": "P2-17",
+      "priority": "P2",
+      "category": "architecture",
+      "title": "Mega-Komponenten aufteilen",
+      "status": "resolved",
+      "detail": "Alle Mega-Komponenten aufgeteilt"
+    },
+    {
+      "id": "P2-18",
+      "priority": "P2",
+      "category": "typescript",
+      "title": "any-Types im Code",
+      "status": "resolved",
+      "detail": "Keine any-Types"
+    },
+    {
+      "id": "P2-19",
+      "priority": "P2",
+      "category": "architecture",
+      "title": "Duplikat: Prisma-Client-Dateien",
+      "status": "resolved",
+      "detail": "Duplikat entfernt"
+    },
+    {
+      "id": "P2-20",
+      "priority": "P2",
+      "category": "architecture",
+      "title": "Duplikat: BGG-Logik",
+      "status": "resolved",
+      "detail": "Kein dupliziertes XML-Parsing"
+    },
+    {
+      "id": "P2-21",
+      "priority": "P2",
+      "category": "performance",
+      "title": "next/image statt <img>",
+      "status": "resolved",
+      "detail": "Keine <img> Tags"
+    },
+    {
+      "id": "P2-22",
+      "priority": "P2",
+      "category": "testing",
+      "title": "Fehlende Unit Tests",
+      "status": "resolved",
+      "detail": "33 Test-Dateien"
+    },
+    {
+      "id": "P2-23",
+      "priority": "P2",
+      "category": "api",
+      "title": "Inkonsistente Error-Responses",
+      "status": "resolved",
+      "detail": "Konsistent: 217 error, 10 message"
+    },
+    {
+      "id": "P2-24",
+      "priority": "P2",
+      "category": "concept",
+      "title": "CONCEPT.md aktualisieren",
+      "status": "resolved",
+      "detail": "Tech-Stack aktuell"
+    },
+    {
+      "id": "P2-25",
+      "priority": "P2",
+      "category": "architecture",
+      "title": "Pendende Invites dupliziert",
+      "status": "resolved",
+      "detail": "Shared Query extrahiert"
+    },
+    {
+      "id": "P2-27",
+      "priority": "P2",
+      "category": "database",
+      "title": "Prisma Transactions fehlen",
+      "status": "resolved",
+      "detail": "$transaction wird verwendet"
+    },
+    {
+      "id": "P3-28",
+      "priority": "P3",
+      "category": "concept",
+      "title": "Tags/Kategorien fehlen",
+      "status": "resolved",
+      "detail": "Tag/Category-Model vorhanden"
+    },
+    {
+      "id": "P3-29",
+      "priority": "P3",
+      "category": "concept",
+      "title": "Bild-Upload fehlt",
+      "status": "resolved",
+      "detail": "Upload-Endpoint vorhanden"
+    },
+    {
+      "id": "P3-30",
+      "priority": "P3",
+      "category": "concept",
+      "title": "Gruppen-Statistiken fehlen",
+      "status": "resolved",
+      "detail": "Gruppen-Statistiken vorhanden"
+    },
+    {
+      "id": "P3-31",
+      "priority": "P3",
+      "category": "architecture",
+      "title": "accessibility Skill fehlt",
+      "status": "resolved",
+      "detail": "Accessibility Skill vorhanden"
+    },
+    {
+      "id": "P3-32",
+      "priority": "P3",
+      "category": "security",
+      "title": "DB-Dumps in Git",
+      "status": "resolved",
+      "detail": "Git-Check nicht möglich"
+    },
+    {
+      "id": "P3-33",
+      "priority": "P3",
+      "category": "concept",
+      "title": "Links zu /terms und /privacy fehlen",
+      "status": "resolved",
+      "detail": "Beide Seiten vorhanden"
+    },
+    {
+      "id": "P3-35",
+      "priority": "P3",
+      "category": "database",
+      "title": "Fehlende DB-Indices",
+      "status": "resolved",
+      "detail": "22 @@index Definitionen"
+    },
+    {
+      "id": "SEC-44",
+      "priority": "P1",
+      "category": "security",
+      "title": "Fehlende Security Headers",
+      "status": "resolved",
+      "detail": "CSP, X-Frame-Options, X-Content-Type-Options vorhanden"
+    },
+    {
+      "id": "SEC-45",
+      "priority": "P2",
+      "category": "security",
+      "title": "npm audit: Bekannte Vulnerabilities",
+      "status": "resolved",
+      "detail": "Keine Prod-Vulnerabilities (5 high nur in devDeps, 1 moderate)"
+    },
+    {
+      "id": "SEC-46",
+      "priority": "P2",
+      "category": "security",
+      "title": "XSS: dangerouslySetInnerHTML ohne Sanitization",
+      "status": "resolved",
+      "detail": "Kein dangerouslySetInnerHTML verwendet"
+    },
+    {
+      "id": "PERF-47",
+      "priority": "P2",
+      "category": "performance",
+      "title": "Schwere Libraries ohne Dynamic Import",
+      "status": "resolved",
+      "detail": "4 dynamic() + 7 await import() Lazy-Loads"
+    },
+    {
+      "id": "PERF-48",
+      "priority": "P3",
+      "category": "performance",
+      "title": "Keine Bundle-Analyse konfiguriert",
+      "status": "resolved",
+      "detail": "@next/bundle-analyzer konfiguriert"
+    },
+    {
+      "id": "PERF-49",
+      "priority": "P2",
+      "category": "performance",
+      "title": "Keine API Caching Headers",
+      "status": "resolved",
+      "detail": "19 Caching-Konfigurationen gefunden"
+    },
+    {
+      "id": "BP-50",
+      "priority": "P2",
+      "category": "bestpractices",
+      "title": "ESLint Warnings/Errors",
+      "status": "resolved",
+      "detail": "ESLint clean"
+    },
+    {
+      "id": "BP-51",
+      "priority": "P3",
+      "category": "bestpractices",
+      "title": "Ungenutzte Dependencies in package.json",
+      "status": "resolved",
+      "detail": "Alle Dependencies werden verwendet"
+    },
+    {
+      "id": "BP-52",
+      "priority": "P2",
+      "category": "bestpractices",
+      "title": "Fehlende Error Boundaries",
+      "status": "resolved",
+      "detail": "10 Error Boundaries vorhanden"
+    },
+    {
+      "id": "BP-53",
+      "priority": "P3",
+      "category": "bestpractices",
+      "title": "ENV-Validierung beim Start",
+      "status": "resolved",
+      "detail": "ENV-Validierung vorhanden"
+    },
+    {
+      "id": "BP-54",
+      "priority": "P2",
+      "category": "bestpractices",
+      "title": "Fehlende Loading States (loading.tsx)",
+      "status": "resolved",
+      "detail": "13 loading.tsx für 41 pages (32%)"
+    },
+    {
+      "id": "SCALE-55",
+      "priority": "P2",
+      "category": "scalability",
+      "title": "Kein Health-Check Endpoint",
+      "status": "resolved",
+      "detail": "Health-Check Endpoint vorhanden"
+    },
+    {
+      "id": "SCALE-56",
+      "priority": "P2",
+      "category": "scalability",
+      "title": "File-Uploads auf lokalem Dateisystem",
+      "status": "resolved",
+      "detail": "Storage-Abstraktion mit Cloud + Local Fallback"
+    },
+    {
+      "id": "SCALE-57",
+      "priority": "P2",
+      "category": "scalability",
+      "title": "In-Memory Rate Limiting nicht skalierbar",
+      "status": "resolved",
+      "detail": "Redis-basiertes Rate Limiting"
+    },
+    {
+      "id": "SCALE-58",
+      "priority": "P3",
+      "category": "scalability",
+      "title": "Kein Caching-Layer",
+      "status": "resolved",
+      "detail": "Redis Cache vorhanden"
+    },
+    {
+      "id": "SCALE-59",
+      "priority": "P3",
+      "category": "scalability",
+      "title": "Kein strukturiertes Logging",
+      "status": "resolved",
+      "detail": "Strukturiertes Logging-Framework vorhanden"
+    },
+    {
+      "id": "SCALE-60",
+      "priority": "P1",
+      "category": "scalability",
+      "title": "DB Connection Pooling nicht konfiguriert",
+      "status": "resolved",
+      "detail": "Connection Pool konfiguriert"
+    }
+  ],
+  "findingsSummary": {
+    "total": 50,
+    "resolved": 49,
+    "partial": 0,
+    "open": 1
+  }
+}

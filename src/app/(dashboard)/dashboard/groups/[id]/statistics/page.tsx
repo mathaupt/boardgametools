@@ -102,6 +102,7 @@ export default async function GroupStatisticsPage({
         where: {
           groupId: id,
           createdAt: {
+            // eslint-disable-next-line react-hooks/purity -- server component, Date.now() is fine
             gte: new Date(Date.now() - 365 * 24 * 60 * 60 * 1000),
           },
         },
