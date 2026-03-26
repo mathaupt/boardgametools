@@ -60,6 +60,7 @@ export function Navbar() {
           href="/dashboard/changelog"
           title="Versionshistorie"
           className="shrink-0 rounded bg-muted px-1.5 py-0.5 text-[10px] font-semibold leading-4 text-muted-foreground no-underline"
+          suppressHydrationWarning
         >
           v{currentVersion}
         </Link>
