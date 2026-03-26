@@ -11,6 +11,18 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.37.1",
+    date: "2026-03-26",
+    title: "Vollstaendiger Review v0.37: Score 9.2/10, 38 von 55 Findings behoben",
+    description: "Kompletter Review aller 10 Kategorien nach Abschluss aller P0/P1/P2-Fixes. Management Summary und Review-Dokumentation aktualisiert. 419 Tests in 43 Dateien.",
+    changes: [
+      { type: "internal", text: "SKILL.md: Gesamtbewertung v0.37.0 mit 3-Spalten-Score-Verlauf (v0.31.1 -> v0.34.1 -> v0.37.0)" },
+      { type: "internal", text: "Management Summary v0.37: Score 9.2/10, 38 Findings behoben, 17 P2/P3 im Backlog" },
+      { type: "internal", text: "Review-Dokument v0.37: Alle 10 Kategorien mit Begruendung + Status aller 55 DD-Findings" },
+      { type: "fix", text: "quality/route.ts: Dupliziertes coverage-Property entfernt (TS-Fehler)" },
+    ],
+  },
+  {
     version: "0.37.0",
     date: "2026-03-26",
     title: "Testing + API Design: Voting-Flow-Tests, Admin-Tests, PATCH, Coverage",

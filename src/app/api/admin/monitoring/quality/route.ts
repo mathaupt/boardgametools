@@ -207,9 +207,6 @@ export const GET = withApiLogging(async function GET() {
         fetchWaterfallPages: 0,
       },
 
-      // Coverage (from evaluator)
-      coverage: latestSnapshot?.coverage ?? null,
-
       // Findings summary
       findings: {
         total: DEEP_DIVE_FINDINGS.length,

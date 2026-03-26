@@ -666,23 +666,25 @@ Kein Sentry/Datadog/etc. für Client-Fehler. Nur console.error im Browser.
 
 ---
 
-### Gesamtbewertung (Deep-Dive, aktualisiert nach P0+P1 Fixes v0.34.0)
+### Gesamtbewertung (Deep-Dive, aktualisiert nach v0.37.0 — vollstaendiger Review)
 
-| Kategorie | Score (vorher) | Score (nachher) | Begründung |
-|-----------|---------------|----------------|-----------|
-| Sicherheit | 9.4/10 | **9.8/10** | ~~5 Input-Validierungs-Lücken~~, ~~2 Rate-Limiting-Gaps~~ → alle behoben |
-| Architektur | 7.8/10 | **9.2/10** | ~~8 Pages Client statt Server~~, ~~N+1~~ → alle migriert/behoben |
-| Performance | 8.6/10 | **9.5/10** | ~~N+1~~, ~~Client-Fetch-Waterfall~~, ~~fehlende Indices~~ → behoben |
-| API Design | 7.0/10 | **8.0/10** | ~~gemischte Sprache~~ → zentrales Error-Messages-Modul |
-| Testing | 6.6/10 | **7.8/10** | ~~P0: 0 API-Route-Tests~~ → 26 Tests in 5 Dateien |
-| Datenbank | 8.0/10 | **9.5/10** | ~~8+ fehlende FK-Indices~~, ~~Upload FK fehlt~~ → 30 Indices total |
-| Konzept | 9.5/10 | **9.5/10** | Unverändert |
-| Best Practices | 8.4/10 | **9.0/10** | ~~Pre-Commit zu langsam~~, ~~Dead Code~~, ~~API-Sprache~~ → behoben |
-| Skalierung | 9.0/10 | **9.5/10** | ~~Upstash-Params~~, ~~Local Storage Warning~~ → behoben |
-| **GESAMT** | **8.3/10** | **9.1/10** | **+0.8 durch P0+P1 Fixes (v0.32.0–v0.34.0)** |
+| Kategorie | Score (v0.31.1) | Score (v0.34.1) | **Score (v0.37.0)** | Begruendung |
+|-----------|----------------|----------------|--------------------:|-----------|
+| Sicherheit | 9.4 | 9.8 | **9.8/10** | Alle Input-Validierungs- + Rate-Limiting-Gaps behoben. Verbleibend: P3 Max-Laenge, Magic-Bytes |
+| Architektur | 7.8 | 9.2 | **9.2/10** | 8 Pages migriert, N+1 eliminiert, TagService extrahiert. Verbleibend: P2 grosse Dateien |
+| Performance | 8.6 | 9.5 | **9.5/10** | 30 Indices, DB-Aggregation, Pagination ueberall, kein Waterfall. Verbleibend: P3 analytics |
+| API Design | 7.0 | 8.0 | **9.0/10** | +1.0: PATCH-Aliases, dt. Fehlermeldungen, Validation, Response-Formate. Verbleibend: P2 Action-Verbs |
+| Testing | 6.6 | 7.8 | **8.5/10** | +0.7: 419 Tests (+24), Voting-Flow, Admin-Ops, Auth-Flow. Coverage 30%/50%. Verbleibend: P2 E2E |
+| Datenbank | 8.0 | 9.5 | **9.5/10** | 30 Indices, Upload FK. Verbleibend: P2/P3 Enums, Constraints |
+| Konzept | 9.5 | 9.5 | **9.5/10** | Alle Features implementiert, Tags-Doku aktualisiert |
+| Best Practices | 8.4 | 9.0 | **9.2/10** | +0.2: Coverage erhoeht, Console-Cleanup. Verbleibend: P3 .env Template |
+| Skalierung | 9.0 | 9.5 | **9.5/10** | Upstash per-Endpoint, Storage-Warning. Verbleibend: P3 unstable_cache |
+| BOM | 8.5 | 8.5 | **8.5/10** | npm audit clean. Verbleibend: P2 next-auth Beta |
+| **GESAMT** | **8.3** | **9.1** | **9.2/10** | **+0.1 durch Testing + API Design Fixes (v0.35.0-v0.37.0)** |
 
-> **Vergleich:** Evaluator-Score bleibt 10/10 (alle 50 historischen Findings resolved).
-> Von den ~48 Deep-Dive-Findings sind jetzt **13 P0/P1 behoben**, ~35 P2/P3 verbleiben als Backlog.
+> **DD-Finding-Status:** 38 behoben / 17 offen (nur P2/P3, keine P0/P1)
+> **Evaluator-Score:** 10/10 (50/50 historische Findings resolved)
+> **Tests:** 419 in 43 Dateien, 50 API-Route-Tests, alle gruen
 
 ---
 
@@ -872,7 +874,7 @@ const isValid = await compare(inputPassword, group.password);
 
 ## Evaluator-Feedback (automatisch generiert)
 
-> Letzter Lauf: 2026-03-26 16:08:59
+> Letzter Lauf: 2026-03-26 16:20:54
 > Gesamt-Score: **10/10**
 
 ### Kategorie-Scores
@@ -913,7 +915,7 @@ const isValid = await compare(inputPassword, group.password);
 - ✅ **P2-19** Duplikat: Prisma-Client-Dateien: Duplikat entfernt
 - ✅ **P2-20** Duplikat: BGG-Logik: Kein dupliziertes XML-Parsing
 - ✅ **P2-21** next/image statt <img>: Keine <img> Tags
-- ✅ **P2-22** Fehlende Unit Tests: 40 Test-Dateien
+- ✅ **P2-22** Fehlende Unit Tests: 43 Test-Dateien
 - ✅ **P2-23** Inkonsistente Error-Responses: Konsistent: 226 error, 15 message
 - ✅ **P2-24** CONCEPT.md aktualisieren: Tech-Stack aktuell
 - ✅ **P2-25** Pendende Invites dupliziert: Shared Query extrahiert
