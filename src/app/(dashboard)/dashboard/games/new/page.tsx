@@ -6,8 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, ScanBarcode } from "lucide-react";
+import { ArrowLeft, ScanBarcode, X } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { BarcodeScanner } from "@/components/barcode-scanner";
 
 export default function NewGamePage() {
@@ -15,6 +16,30 @@ export default function NewGamePage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [barcodeScannerOpen, setBarcodeScannerOpen] = useState(false);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+
+  async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append("image", file);
+      const res = await fetch("/api/upload", { method: "POST", body: formData });
+      if (res.ok) {
+        const data = await res.json();
+        setImageUrl(data.url);
+      } else {
+        setError("Bild-Upload fehlgeschlagen");
+      }
+    } catch {
+      setError("Bild-Upload fehlgeschlagen");
+    } finally {
+      setUploading(false);
+    }
+  }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -30,6 +55,7 @@ export default function NewGamePage() {
       playTimeMinutes: parseInt(formData.get("playTimeMinutes") as string) || undefined,
       complexity: parseInt(formData.get("complexity") as string) || undefined,
       bggId: formData.get("bggId") as string || undefined,
+      imageUrl: imageUrl || undefined,
     };
 
     try {
@@ -149,6 +175,37 @@ export default function NewGamePage() {
                 <Label htmlFor="complexity">Komplexität (1-5)</Label>
                 <Input id="complexity" name="complexity" type="number" min="1" max="5" placeholder="3" data-testid="game-complexity" />
               </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="image">Spielbild</Label>
+              {imageUrl ? (
+                <div className="relative w-full h-48 rounded-md overflow-hidden border">
+                  <Image src={imageUrl} alt="Vorschau" fill className="object-cover" />
+                  <button
+                    type="button"
+                    onClick={() => setImageUrl(null)}
+                    className="absolute top-2 right-2 p-1.5 rounded-full bg-background/80 backdrop-blur-sm border hover:bg-destructive hover:text-destructive-foreground"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+              ) : (
+                <div className="flex items-center gap-4">
+                  <Input
+                    id="image"
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp,image/gif"
+                    onChange={handleImageUpload}
+                    disabled={uploading}
+                    className="max-w-sm"
+                  />
+                  {uploading && <span className="text-sm text-muted-foreground">Wird hochgeladen...</span>}
+                </div>
+              )}
+              <p className="text-xs text-muted-foreground">
+                Optional: JPEG, PNG, WebP oder GIF (max. 5 MB)
+              </p>
             </div>
 
             <div className="space-y-2">

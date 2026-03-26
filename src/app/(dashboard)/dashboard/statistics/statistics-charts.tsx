@@ -7,7 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { BarChart3, Trophy } from "lucide-react";
+import { BarChart3, Trophy, CalendarDays, Star } from "lucide-react";
 import {
   ResponsiveContainer,
   BarChart,
@@ -31,6 +31,8 @@ interface StatisticsChartsProps {
     wins: number;
     winRate: number;
   }>;
+  weekdayDistribution: Array<{ day: string; sessions: number }>;
+  complexityBreakdown: Array<{ level: string; count: number }>;
 }
 
 const CHART_COLORS = [
@@ -60,6 +62,8 @@ function formatMonthLabel(month: string): string {
 export function StatisticsCharts({
   monthlyActivity,
   playerStats,
+  weekdayDistribution,
+  complexityBreakdown,
 }: StatisticsChartsProps) {
   const monthlyData = monthlyActivity.map((m) => ({
     ...m,
@@ -159,6 +163,58 @@ export function StatisticsCharts({
                   fill={CHART_COLORS[1]}
                   radius={[0, 4, 4, 0]}
                 />
+              </BarChart>
+            </ResponsiveContainer>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Weekday Distribution */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-base">
+            <CalendarDays className="h-4 w-4" />
+            Wochentag-Verteilung
+          </CardTitle>
+          <CardDescription>An welchen Tagen wird am meisten gespielt</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {weekdayDistribution.every((d) => d.sessions === 0) ? (
+            <p className="text-sm text-muted-foreground">Keine Daten.</p>
+          ) : (
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={weekdayDistribution}>
+                <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
+                <XAxis dataKey="day" tick={{ fontSize: 12 }} tickLine={false} axisLine={false} />
+                <YAxis allowDecimals={false} tick={{ fontSize: 12 }} tickLine={false} axisLine={false} />
+                <Tooltip contentStyle={tooltipStyle} formatter={(value) => [`${value}`, "Sessions"]} />
+                <Bar dataKey="sessions" fill={CHART_COLORS[2]} radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Complexity Breakdown */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-base">
+            <Star className="h-4 w-4" />
+            Komplexitäts-Verteilung
+          </CardTitle>
+          <CardDescription>Deine Spiele nach Komplexitätsstufe</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {complexityBreakdown.every((c) => c.count === 0) ? (
+            <p className="text-sm text-muted-foreground">Keine Komplexitätsdaten vorhanden.</p>
+          ) : (
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={complexityBreakdown}>
+                <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
+                <XAxis dataKey="level" tick={{ fontSize: 12 }} tickLine={false} axisLine={false} />
+                <YAxis allowDecimals={false} tick={{ fontSize: 12 }} tickLine={false} axisLine={false} />
+                <Tooltip contentStyle={tooltipStyle} formatter={(value) => [`${value}`, "Spiele"]} />
+                <Bar dataKey="count" fill={CHART_COLORS[3]} radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           )}

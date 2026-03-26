@@ -11,6 +11,22 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.30.0",
+    date: "2026-03-24",
+    title: "P2 & P3 Findings komplett umgesetzt",
+    description: "Alle verbleibenden P2- und P3-Review-Findings implementiert: CI/CD Pipeline, Dependency Updates, erweiterte Statistiken, Tag-Filter UI, Bild-Upload, E2E Tests.",
+    changes: [
+      { type: "feature", text: "GitHub Actions CI/CD Pipeline mit Lint, Typecheck, Tests, Security und Build" },
+      { type: "feature", text: "Statistiken erweitert: Wochentag-Verteilung, Komplexitaets-Verteilung, Durchschnittsdauer pro Session" },
+      { type: "feature", text: "Spiele-Suche und Tag-Filter-Chips auf der Spieleliste" },
+      { type: "feature", text: "Tags werden auf Spielkarten angezeigt (max. 3 + Zaehler)" },
+      { type: "feature", text: "Bild-Upload beim Erstellen neuer Spiele (JPEG/PNG/WebP/GIF, max. 5 MB)" },
+      { type: "improvement", text: "Dependency Updates: alle Pakete auf aktuelle Versionen aktualisiert" },
+      { type: "improvement", text: "E2E-Tests fuer Sessions, Events, Gruppen und Spielereihen ergaenzt (4 neue Test-Dateien)" },
+      { type: "internal", text: "next-auth v5 ist bereits auf der neuesten Beta (beta.30), Bundle-Analyse und Gruppen-Statistiken bereits vollstaendig konfiguriert" },
+    ],
+  },
+  {
     version: "0.28.0",
     date: "2026-03-24",
     title: "Komponenten-Splitting & Code-Organisation",

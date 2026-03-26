@@ -14,6 +14,7 @@ export default async function GamesPage() {
       orderBy: { name: "asc" },
       include: {
         _count: { select: { sessions: true } },
+        tags: { include: { tag: true } },
       },
     }),
     ["user-games-list", userId!],

@@ -23,8 +23,7 @@ import { cachedQuery } from "@/lib/cache";
 import { CacheTags } from "@/lib/cache-tags";
 
 const GroupStatisticsCharts = dynamic(
-  () => import("./group-statistics-charts").then((mod) => mod.GroupStatisticsCharts),
-  { ssr: false }
+  () => import("./group-statistics-charts").then((mod) => mod.GroupStatisticsCharts)
 );
 
 export default async function GroupStatisticsPage({

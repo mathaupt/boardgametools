@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
     const method = searchParams.get("method");
     const path = searchParams.get("path");
     const statusCode = searchParams.get("statusCode");
-    const userId = searchParams.get("userId");
+    const filterUserId = searchParams.get("userId");
     const from = searchParams.get("from");
     const to = searchParams.get("to");
 
@@ -37,8 +37,8 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    if (userId) {
-      where.userId = userId;
+    if (filterUserId) {
+      where.userId = filterUserId;
     }
 
     if (from || to) {

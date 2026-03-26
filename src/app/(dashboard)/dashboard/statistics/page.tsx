@@ -25,8 +25,7 @@ import { cachedQuery } from "@/lib/cache";
 import { CacheTags } from "@/lib/cache-tags";
 
 const StatisticsCharts = dynamic(
-  () => import("./statistics-charts").then((mod) => mod.StatisticsCharts),
-  { ssr: false }
+  () => import("./statistics-charts").then((mod) => mod.StatisticsCharts)
 );
 
 export default async function StatisticsPage() {
@@ -37,7 +36,7 @@ export default async function StatisticsPage() {
 
   const userId = session.user.id;
 
-  const { totalGames, totalSessions, totalPlayTimeMinutes, uniquePlayersCount, mostPlayed, playerStats, monthlyActivity } = await cachedQuery(
+  const { totalGames, totalSessions, totalPlayTimeMinutes, uniquePlayersCount, mostPlayed, playerStats, monthlyActivity, avgSessionDuration, weekdayDistribution, complexityBreakdown } = await cachedQuery(
     async () => {
       const [totalGames, totalSessions, durationAgg, allSessions] =
         await Promise.all([
@@ -144,7 +143,41 @@ export default async function StatisticsPage() {
         ...monthMap.get(m)!,
       }));
 
-      return { totalGames, totalSessions, totalPlayTimeMinutes, uniquePlayersCount: uniquePlayerIds.size, mostPlayed, playerStats, monthlyActivity };
+      // --- Average Session Duration ---
+      const avgSessionDuration = totalSessions > 0 
+        ? Math.round(totalPlayTimeMinutes / totalSessions) 
+        : 0;
+
+      // --- Weekday Distribution ---
+      const weekdayMap = new Map<number, number>();
+      for (let i = 0; i < 7; i++) weekdayMap.set(i, 0);
+      for (const s of allSessions) {
+        const day = new Date(s.playedAt).getDay();
+        weekdayMap.set(day, (weekdayMap.get(day) ?? 0) + 1);
+      }
+      const weekdayNames = ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"];
+      const weekdayDistribution = Array.from(weekdayMap.entries()).map(([day, count]) => ({
+        day: weekdayNames[day],
+        sessions: count,
+      }));
+
+      // --- Complexity Breakdown ---
+      const complexityMap = new Map<number, number>();
+      const allGames = await prisma.game.findMany({
+        where: { ownerId: userId, deletedAt: null },
+        select: { complexity: true },
+      });
+      for (const g of allGames) {
+        if (g.complexity) {
+          complexityMap.set(g.complexity, (complexityMap.get(g.complexity) ?? 0) + 1);
+        }
+      }
+      const complexityBreakdown = [1, 2, 3, 4, 5].map((level) => ({
+        level: `${level}/5`,
+        count: complexityMap.get(level) ?? 0,
+      }));
+
+      return { totalGames, totalSessions, totalPlayTimeMinutes, uniquePlayersCount: uniquePlayerIds.size, mostPlayed, playerStats, monthlyActivity, avgSessionDuration, weekdayDistribution, complexityBreakdown };
     },
     ["user-statistics", userId],
     { revalidate: 120, tags: [CacheTags.userStats(userId)] }
@@ -219,7 +252,7 @@ export default async function StatisticsPage() {
             <div className="text-2xl font-bold">
               {formatDuration(totalPlayTimeMinutes)}
             </div>
-            <p className="text-xs text-muted-foreground">Gesamtspielzeit</p>
+            <p className="text-xs text-muted-foreground">Ø {avgSessionDuration} Min. pro Session</p>
           </CardContent>
         </Card>
         <Card>
@@ -240,6 +273,8 @@ export default async function StatisticsPage() {
       <StatisticsCharts
         monthlyActivity={monthlyActivity}
         playerStats={playerStats}
+        weekdayDistribution={weekdayDistribution}
+        complexityBreakdown={complexityBreakdown}
       />
 
       {/* Most Played Games & Player Leaderboard */}

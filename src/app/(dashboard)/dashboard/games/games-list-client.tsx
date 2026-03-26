@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -16,7 +17,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Plus, Users, Clock, Star, Download, ImageIcon, Trash2, Trash, ScanBarcode } from "lucide-react";
+import { Plus, Users, Clock, Star, Download, ImageIcon, Trash2, Trash, ScanBarcode, Tag } from "lucide-react";
 import { BarcodeScanner } from "@/components/barcode-scanner";
 
 export interface GameItem {
@@ -30,6 +31,7 @@ export interface GameItem {
   complexity: number | null;
   bggId: string | null;
   _count: { sessions: number };
+  tags?: Array<{ tag: { id: string; name: string } }>;
 }
 
 interface GamesListClientProps {
@@ -43,6 +45,22 @@ export default function GamesListClient({ games: initialGames }: GamesListClient
   const [deleteAllOpen, setDeleteAllOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [barcodeScannerOpen, setBarcodeScannerOpen] = useState(false);
+  const [searchText, setSearchText] = useState("");
+  const [activeTag, setActiveTag] = useState<string | null>(null);
+
+  // Extract unique tags from all games
+  const allTags = Array.from(
+    new Map(
+      games.flatMap((g) => (g.tags ?? []).map((t) => [t.tag.id, t.tag.name]))
+    ).entries()
+  ).sort((a, b) => a[1].localeCompare(b[1]));
+
+  // Filter games
+  const filteredGames = games.filter((game) => {
+    const matchesSearch = !searchText || game.name.toLowerCase().includes(searchText.toLowerCase());
+    const matchesTag = !activeTag || (game.tags ?? []).some((t) => t.tag.id === activeTag);
+    return matchesSearch && matchesTag;
+  });
 
   async function handleDelete(game: GameItem) {
     setDeleting(true);
@@ -130,6 +148,45 @@ export default function GamesListClient({ games: initialGames }: GamesListClient
         </div>
       </div>
 
+      {games.length > 0 && (
+        <div className="space-y-3">
+          <Input
+            placeholder="Spiele durchsuchen..."
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+            className="max-w-sm"
+          />
+          {allTags.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              <button
+                onClick={() => setActiveTag(null)}
+                className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                  !activeTag
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-muted text-muted-foreground hover:bg-muted/80"
+                }`}
+              >
+                Alle
+              </button>
+              {allTags.map(([id, name]) => (
+                <button
+                  key={id}
+                  onClick={() => setActiveTag(activeTag === id ? null : id)}
+                  className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                    activeTag === id
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-muted text-muted-foreground hover:bg-muted/80"
+                  }`}
+                >
+                  <Tag className="h-3 w-3" />
+                  {name}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
       {games.length === 0 ? (
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12">
@@ -137,14 +194,20 @@ export default function GamesListClient({ games: initialGames }: GamesListClient
             <Link href="/dashboard/games/new">
               <Button>
                 <Plus className="h-4 w-4 mr-2" />
-                Erstes Spiel hinzuf&uuml;gen
+                Erstes Spiel hinzufügen
               </Button>
             </Link>
           </CardContent>
         </Card>
+      ) : filteredGames.length === 0 ? (
+        <Card>
+          <CardContent className="flex flex-col items-center justify-center py-12">
+            <p className="text-muted-foreground">Keine Spiele gefunden für diesen Filter.</p>
+          </CardContent>
+        </Card>
       ) : (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {games.map((game) => (
+          {filteredGames.map((game) => (
             <div key={game.id} className="relative group">
               <Link href={`/dashboard/games/${game.id}`}>
                 <Card className="hover:shadow-md transition-shadow cursor-pointer h-full overflow-hidden">
@@ -188,6 +251,18 @@ export default function GamesListClient({ games: initialGames }: GamesListClient
                         </div>
                       )}
                     </div>
+                    {game.tags && game.tags.length > 0 && (
+                      <div className="flex flex-wrap gap-1 mt-2">
+                        {game.tags.slice(0, 3).map((t) => (
+                          <span key={t.tag.id} className="inline-flex items-center px-2 py-0.5 rounded-full text-xs bg-muted text-muted-foreground">
+                            {t.tag.name}
+                          </span>
+                        ))}
+                        {game.tags.length > 3 && (
+                          <span className="text-xs text-muted-foreground">+{game.tags.length - 3}</span>
+                        )}
+                      </div>
+                    )}
                     <p className="text-xs text-muted-foreground mt-3">
                       {game._count?.sessions ?? 0} Sessions gespielt
                     </p>
