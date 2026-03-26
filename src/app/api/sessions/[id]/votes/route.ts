@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { requireAuth, handleApiError } from "@/lib/require-auth";
 import prisma from "@/lib/db";
 import { withApiLogging } from "@/lib/api-logger";
 
@@ -9,10 +9,7 @@ export const GET = withApiLogging(async function GET(
   request: NextRequest,
   { params }: RouteContext
 ) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const { userId } = await requireAuth();
 
   const { id } = await params;
 
@@ -37,8 +34,8 @@ export const GET = withApiLogging(async function GET(
     }
 
     // Prüfe ob User Berechtigung hat (Teilnehmer oder Ersteller)
-    const isParticipant = sessionData.players.some((p) => p.userId === session.user.id);
-    const isCreator = sessionData.createdById === session.user.id;
+    const isParticipant = sessionData.players.some((p) => p.userId === userId);
+    const isCreator = sessionData.createdById === userId;
 
     if (!isParticipant && !isCreator) {
       return NextResponse.json({ error: "Access denied" }, { status: 403 });
@@ -46,8 +43,7 @@ export const GET = withApiLogging(async function GET(
 
     return NextResponse.json(sessionData);
   } catch (error) {
-    console.error("Error fetching session:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return handleApiError(error);
   }
 });
 
@@ -55,10 +51,7 @@ export const POST = withApiLogging(async function POST(
   request: NextRequest,
   { params }: RouteContext
 ) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const { userId } = await requireAuth();
 
   const { id } = await params;
 
@@ -83,8 +76,8 @@ export const POST = withApiLogging(async function POST(
     }
 
     // Prüfe ob User Teilnehmer oder Ersteller ist
-    const isParticipant = sessionData.players.some((p) => p.userId === session.user.id);
-    const isCreator = sessionData.createdById === session.user.id;
+    const isParticipant = sessionData.players.some((p) => p.userId === userId);
+    const isCreator = sessionData.createdById === userId;
 
     if (!isParticipant && !isCreator) {
       return NextResponse.json({ error: "Access denied" }, { status: 403 });
@@ -93,11 +86,11 @@ export const POST = withApiLogging(async function POST(
     // Upsert: Bewertung erstellen oder aktualisieren
     const sessionRating = await prisma.sessionRating.upsert({
       where: {
-        sessionId_userId: { sessionId: id, userId: session.user.id },
+        sessionId_userId: { sessionId: id, userId: userId },
       },
       create: {
         sessionId: id,
-        userId: session.user.id,
+        userId: userId,
         rating,
         comment: comment?.trim() || null,
       },
@@ -112,7 +105,6 @@ export const POST = withApiLogging(async function POST(
 
     return NextResponse.json(sessionRating, { status: 201 });
   } catch (error) {
-    console.error("Error creating session rating:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return handleApiError(error);
   }
 });

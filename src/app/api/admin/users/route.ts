@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { requireAdmin, handleApiError } from "@/lib/require-auth";
 import { hash } from "bcryptjs";
 import prisma from "@/lib/db";
 import { withApiLogging } from "@/lib/api-logger";
@@ -7,17 +7,8 @@ import { validateString, firstError } from "@/lib/validation";
 
 export const POST = withApiLogging(async function POST(request: Request) {
   try {
-    const session = await auth();
-    
-    // Check if user is admin
-    if (!session?.user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-    if (session.user.role !== "ADMIN") {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-    }
+    const { userId } = await requireAdmin();
 
-    const adminId = session.user.id;
     const { name, email, password, role } = await request.json();
 
     const validationError = firstError(
@@ -70,7 +61,6 @@ export const POST = withApiLogging(async function POST(request: Request) {
 
     return NextResponse.json(user);
   } catch (error) {
-    console.error("Error creating user:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return handleApiError(error);
   }
 });

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { requireAuth, handleApiError } from "@/lib/require-auth";
 import prisma from "@/lib/db";
 import { withApiLogging } from "@/lib/api-logger";
 
@@ -9,10 +9,7 @@ export const GET = withApiLogging(async function GET(
   request: NextRequest,
   { params }: RouteContext
 ) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const { userId } = await requireAuth();
 
   const { id } = await params;
 
@@ -23,8 +20,8 @@ export const GET = withApiLogging(async function GET(
         id,
         deletedAt: null,
         OR: [
-          { ownerId: session.user.id },
-          { members: { some: { userId: session.user.id } } },
+          { ownerId: userId },
+          { members: { some: { userId: userId } } },
         ],
       },
       select: { id: true },
@@ -127,10 +124,6 @@ export const GET = withApiLogging(async function GET(
       monthlyActivity: monthlyData,
     });
   } catch (error) {
-    console.error("Error fetching group statistics:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return handleApiError(error);
   }
 });

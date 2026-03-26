@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { requireAuth, handleApiError } from "@/lib/require-auth";
 import prisma from "@/lib/db";
 import { sendCustomEventMessage, sendEventUpcomingReminder } from "@/lib/mailer";
 import { getPublicBaseUrl } from "@/lib/public-link";
@@ -21,10 +21,7 @@ export const POST = withApiLogging(async function POST(
   request: NextRequest,
   { params }: RouteContext
 ) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const { userId, name, email } = await requireAuth();
 
   const { id } = await params;
 
@@ -52,7 +49,7 @@ export const POST = withApiLogging(async function POST(
 
     // Prüfe ob Event existiert und User der Organisator ist
     const event = await prisma.event.findFirst({
-      where: { id, createdById: session.user.id, deletedAt: null },
+      where: { id, createdById: userId, deletedAt: null },
       include: {
         invites: { include: { user: { select: { id: true, name: true, email: true } } } },
       },
@@ -62,7 +59,7 @@ export const POST = withApiLogging(async function POST(
       return NextResponse.json({ error: "Event not found" }, { status: 404 });
     }
 
-    const senderName = session.user.name || session.user.email || "Der Organisator";
+    const senderName = name || email || "Der Organisator";
     let sentCount = 0;
     let failedCount = 0;
     const errors: string[] = [];
@@ -70,7 +67,7 @@ export const POST = withApiLogging(async function POST(
     // Empfänger bestimmen
     const recipients = type === "reminder"
       ? event.invites.filter((inv) => inv.status === "accepted")
-      : event.invites.filter((inv) => inv.userId !== session.user.id);
+      : event.invites.filter((inv) => inv.userId !== userId);
 
     for (const invite of recipients) {
       const recipientEmail = invite.user?.email || invite.email;
@@ -119,7 +116,6 @@ export const POST = withApiLogging(async function POST(
       ...(errors.length > 0 ? { errors } : {}),
     });
   } catch (error) {
-    console.error("Error sending event mail:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return handleApiError(error);
   }
 });

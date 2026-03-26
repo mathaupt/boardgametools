@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { requireAuth, handleApiError } from "@/lib/require-auth";
 import prisma from "@/lib/db";
 import { withApiLogging } from "@/lib/api-logger";
 
@@ -9,15 +9,12 @@ export const PUT = withApiLogging(async function PUT(
   request: NextRequest,
   { params }: RouteContext
 ) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const { userId } = await requireAuth();
 
   const { id: seriesId } = await params;
 
   const series = await prisma.gameSeries.findFirst({
-    where: { id: seriesId, ownerId: session.user.id, deletedAt: null },
+    where: { id: seriesId, ownerId: userId, deletedAt: null },
   });
 
   if (!series) {
@@ -46,7 +43,6 @@ export const PUT = withApiLogging(async function PUT(
 
     return NextResponse.json({ message: "Order updated" });
   } catch (error) {
-    console.error("Error reordering series entries:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return handleApiError(error);
   }
 });

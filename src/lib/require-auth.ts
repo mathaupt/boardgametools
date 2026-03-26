@@ -15,18 +15,29 @@ export class ApiError extends Error {
   }
 }
 
+/** Auth result with user metadata for route handlers that need name/email */
+export interface AuthResult {
+  userId: string;
+  role: string;
+  name: string | null;
+  email: string | null;
+}
+
 /**
  * Require an authenticated session.
  * Throws ApiError(401) when no session exists.
  */
-export async function requireAuth(): Promise<{ userId: string; role: string }> {
+export async function requireAuth(): Promise<AuthResult> {
   const session = await auth();
   if (!session?.user?.id) {
     throw new ApiError(401, "Unauthorized");
   }
+  const user = session.user as unknown as Record<string, unknown>;
   return {
     userId: session.user.id,
-    role: (session.user as unknown as Record<string, unknown>).role as string ?? "USER",
+    role: (user.role as string) ?? "USER",
+    name: (session.user.name as string) ?? null,
+    email: (session.user.email as string) ?? null,
   };
 }
 

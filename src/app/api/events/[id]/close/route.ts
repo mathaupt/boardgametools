@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { invalidateTag } from "@/lib/cache";
-import { auth } from "@/lib/auth";
+import { requireAuth, handleApiError } from "@/lib/require-auth";
 import prisma from "@/lib/db";
 import { withApiLogging } from "@/lib/api-logger";
 import { CacheTags } from "@/lib/cache-tags";
@@ -11,10 +11,7 @@ export const POST = withApiLogging(async function POST(
   request: NextRequest,
   { params }: RouteContext
 ) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const { userId } = await requireAuth();
 
   const { id } = await params;
 
@@ -37,7 +34,7 @@ export const POST = withApiLogging(async function POST(
       );
     }
 
-    if (event.createdById !== session.user.id) {
+    if (event.createdById !== userId) {
       return NextResponse.json(
         { error: "Nur der Ersteller kann die Abstimmung beenden" },
         { status: 403 }
@@ -79,14 +76,10 @@ export const POST = withApiLogging(async function POST(
       },
     });
 
-    invalidateTag(CacheTags.userEvents(session.user.id));
+    invalidateTag(CacheTags.userEvents(userId));
 
     return NextResponse.json(updatedEvent);
   } catch (error) {
-    console.error("Error closing voting:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return handleApiError(error);
   }
 });

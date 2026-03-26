@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { requireAuth, handleApiError } from "@/lib/require-auth";
 import prisma from "@/lib/db";
 import { withApiLogging } from "@/lib/api-logger";
 
@@ -11,10 +11,7 @@ export const POST = withApiLogging(async function POST(
   request: NextRequest,
   { params }: RouteContext
 ) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const { userId } = await requireAuth();
 
   const { id } = await params;
 
@@ -25,7 +22,7 @@ export const POST = withApiLogging(async function POST(
       return NextResponse.json({ error: "Event not found" }, { status: 404 });
     }
 
-    if (event.createdById !== session.user.id) {
+    if (event.createdById !== userId) {
       return NextResponse.json(
         { error: "Only the event creator can select a date" },
         { status: 403 }
@@ -68,7 +65,6 @@ export const POST = withApiLogging(async function POST(
       eventDate: updatedEvent.eventDate,
     });
   } catch (error) {
-    console.error("Error selecting date:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return handleApiError(error);
   }
 });

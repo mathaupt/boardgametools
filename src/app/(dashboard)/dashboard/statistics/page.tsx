@@ -2,6 +2,7 @@ import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import {
   Card,
   CardContent,
@@ -22,7 +23,11 @@ import {
 import { formatDuration } from "@/lib/utils";
 import { cachedQuery } from "@/lib/cache";
 import { CacheTags } from "@/lib/cache-tags";
-import { StatisticsCharts } from "./statistics-charts";
+
+const StatisticsCharts = dynamic(
+  () => import("./statistics-charts").then((mod) => mod.StatisticsCharts),
+  { ssr: false }
+);
 
 export default async function StatisticsPage() {
   const session = await auth();

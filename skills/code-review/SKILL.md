@@ -526,25 +526,25 @@ const isValid = await compare(inputPassword, group.password);
 
 ## Evaluator-Feedback (automatisch generiert)
 
-> Letzter Lauf: 2026-03-26 07:43:11
-> Gesamt-Score: **10/10**
+> Letzter Lauf: 2026-03-26 08:10:35
+> Gesamt-Score: **9.9/10**
 
 ### Kategorie-Scores
 
 | Kategorie | Score | Treffsicherheit | Aktualität | Abdeckung | Umsetzung | Handlung |
 |-----------|-------|-----------------|------------|-----------|-----------|----------|
-| Sicherheit | **10/10** | 10 | 10 | 10 | 10 | 10 |
+| Sicherheit | **9.6/10** | 10 | 9.2 | 10 | 9.3 | 10 |
 | TypeScript | **10/10** | 10 | 10 | 10 | 10 | 10 |
 | Architektur | **10/10** | 10 | 10 | 10 | 10 | 10 |
 | Performance | **10/10** | 10 | 10 | 10 | 10 | 10 |
 | API Design | **10/10** | 10 | 10 | 10 | 10 | 10 |
-| Testing | **9.5/10** | 10 | 10 | 7.5 | 10 | 10 |
+| Testing | **10/10** | 10 | 10 | 10 | 10 | 10 |
 | Datenbank | **10/10** | 10 | 10 | 10 | 10 | 10 |
 | Konzept-Konformität | **10/10** | 10 | 10 | 10 | 10 | 10 |
 | Best Practices | **10/10** | 10 | 10 | 10 | 10 | 10 |
 | Skalierung | **10/10** | 10 | 10 | 10 | 10 | 10 |
 
-### Erledigte Findings (50)
+### Erledigte Findings (49)
 
 - ✅ **P0-1** Debug-Routes in Produktion: NODE_ENV Guard vorhanden
 - ✅ **P0-2** DB-Init ohne Auth: Auth-Check vorhanden
@@ -560,15 +560,14 @@ const isValid = await compare(inputPassword, group.password);
 - ✅ **P1-12** Close-Voting fehlt: Close-Voting Endpoint vorhanden
 - ✅ **P1-13** Registrierung: Keine E-Mail-Validierung: E-Mail-Validierung vorhanden
 - ✅ **P1-14** P95 Duration Query lädt alle Zeilen: P95 Query nutzt OFFSET/LIMIT
-- ✅ **P1-15** Admin kann sich selbst deaktivieren: Self-Protection in deactivate + change-password vorhanden
 - ✅ **P1-16** Admin-Endpoints: 401 statt 403: Proxy/Admin-Routes geben 403 für Non-Admins
 - ✅ **P2-17** Mega-Komponenten aufteilen: Alle Mega-Komponenten aufgeteilt
 - ✅ **P2-18** any-Types im Code: Keine any-Types
 - ✅ **P2-19** Duplikat: Prisma-Client-Dateien: Duplikat entfernt
 - ✅ **P2-20** Duplikat: BGG-Logik: Kein dupliziertes XML-Parsing
 - ✅ **P2-21** next/image statt <img>: Keine <img> Tags
-- ✅ **P2-22** Fehlende Unit Tests: 27 Test-Dateien
-- ✅ **P2-23** Inkonsistente Error-Responses: Konsistent: 339 error, 10 message
+- ✅ **P2-22** Fehlende Unit Tests: 33 Test-Dateien
+- ✅ **P2-23** Inkonsistente Error-Responses: Konsistent: 217 error, 10 message
 - ✅ **P2-24** CONCEPT.md aktualisieren: Tech-Stack aktuell
 - ✅ **P2-25** Pendende Invites dupliziert: Shared Query extrahiert
 - ✅ **P2-27** Prisma Transactions fehlen: $transaction wird verwendet
@@ -582,7 +581,7 @@ const isValid = await compare(inputPassword, group.password);
 - ✅ **SEC-44** Fehlende Security Headers: CSP, X-Frame-Options, X-Content-Type-Options vorhanden
 - ✅ **SEC-45** npm audit: Bekannte Vulnerabilities: Keine Prod-Vulnerabilities (5 high nur in devDeps, 1 moderate)
 - ✅ **SEC-46** XSS: dangerouslySetInnerHTML ohne Sanitization: Kein dangerouslySetInnerHTML verwendet
-- ✅ **PERF-47** Schwere Libraries ohne Dynamic Import: 2 dynamic() + 7 await import() Lazy-Loads
+- ✅ **PERF-47** Schwere Libraries ohne Dynamic Import: 4 dynamic() + 7 await import() Lazy-Loads
 - ✅ **PERF-48** Keine Bundle-Analyse konfiguriert: @next/bundle-analyzer konfiguriert
 - ✅ **PERF-49** Keine API Caching Headers: 19 Caching-Konfigurationen gefunden
 - ✅ **BP-50** ESLint Warnings/Errors: ESLint clean
@@ -597,6 +596,14 @@ const isValid = await compare(inputPassword, group.password);
 - ✅ **SCALE-59** Kein strukturiertes Logging: Strukturiertes Logging-Framework vorhanden
 - ✅ **SCALE-60** DB Connection Pooling nicht konfiguriert: Connection Pool konfiguriert
 
+### Offene Findings (1)
+
+- ❌ **P1-15** Admin kann sich selbst deaktivieren: Keine Self-Protection
+
+### REGRESSIONEN (1)
+
+- 🔄 **P1-15** REGRESSION: P1-15 "Admin kann sich selbst deaktivieren" war resolved, ist jetzt open. Keine Self-Protection
+
 ### Empfohlene Reviewer-Anpassungen
 
-- ➕ NEU: "Test Coverage Lücken" – 18 von 32 lib-Dateien getestet (Schwelle: 5)
+- 🔄 REGRESSION: P1-15 "Admin kann sich selbst deaktivieren" war resolved, ist jetzt open. Keine Self-Protection

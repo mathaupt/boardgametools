@@ -2,6 +2,7 @@ import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import {
   Card,
   CardContent,
@@ -20,7 +21,11 @@ import {
 } from "lucide-react";
 import { cachedQuery } from "@/lib/cache";
 import { CacheTags } from "@/lib/cache-tags";
-import { GroupStatisticsCharts } from "./group-statistics-charts";
+
+const GroupStatisticsCharts = dynamic(
+  () => import("./group-statistics-charts").then((mod) => mod.GroupStatisticsCharts),
+  { ssr: false }
+);
 
 export default async function GroupStatisticsPage({
   params,

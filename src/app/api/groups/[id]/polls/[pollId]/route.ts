@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { requireAuth, handleApiError } from "@/lib/require-auth";
 import prisma from "@/lib/db";
 import { withApiLogging } from "@/lib/api-logger";
 
@@ -9,16 +9,13 @@ export const GET = withApiLogging(async function GET(
   request: NextRequest,
   { params }: RouteContext
 ) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const { userId } = await requireAuth();
 
   const { id, pollId } = await params;
 
   try {
     const membership = await prisma.groupMember.findFirst({
-      where: { groupId: id, userId: session.user.id },
+      where: { groupId: id, userId: userId },
     });
 
     if (!membership) {
@@ -48,8 +45,7 @@ export const GET = withApiLogging(async function GET(
 
     return NextResponse.json(poll);
   } catch (error) {
-    console.error("Error fetching poll:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return handleApiError(error);
   }
 });
 
@@ -57,10 +53,7 @@ export const PUT = withApiLogging(async function PUT(
   request: NextRequest,
   { params }: RouteContext
 ) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const { userId } = await requireAuth();
 
   const { id, pollId } = await params;
 
@@ -75,7 +68,7 @@ export const PUT = withApiLogging(async function PUT(
 
     // Only poll creator or group owner can close
     const group = await prisma.group.findFirst({ where: { id, deletedAt: null } });
-    if (poll.createdById !== session.user.id && group?.ownerId !== session.user.id) {
+    if (poll.createdById !== userId && group?.ownerId !== userId) {
       return NextResponse.json({ error: "Not authorized" }, { status: 403 });
     }
 
@@ -99,8 +92,7 @@ export const PUT = withApiLogging(async function PUT(
 
     return NextResponse.json(updated);
   } catch (error) {
-    console.error("Error updating poll:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return handleApiError(error);
   }
 });
 
@@ -108,10 +100,7 @@ export const DELETE = withApiLogging(async function DELETE(
   request: NextRequest,
   { params }: RouteContext
 ) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const { userId } = await requireAuth();
 
   const { id, pollId } = await params;
 
@@ -125,14 +114,13 @@ export const DELETE = withApiLogging(async function DELETE(
     }
 
     const group = await prisma.group.findFirst({ where: { id, deletedAt: null } });
-    if (poll.createdById !== session.user.id && group?.ownerId !== session.user.id) {
+    if (poll.createdById !== userId && group?.ownerId !== userId) {
       return NextResponse.json({ error: "Not authorized" }, { status: 403 });
     }
 
     await prisma.groupPoll.delete({ where: { id: pollId } });
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Error deleting poll:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return handleApiError(error);
   }
 });

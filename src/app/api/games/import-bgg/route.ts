@@ -1,16 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { invalidateTag } from "@/lib/cache";
-import { auth } from "@/lib/auth";
+import { requireAuth, handleApiError } from "@/lib/require-auth";
 import prisma from "@/lib/db";
 import { fetchBGGGame } from "@/lib/bgg";
 import { withApiLogging } from "@/lib/api-logger";
 import { CacheTags } from "@/lib/cache-tags";
 
 export const POST = withApiLogging(async function POST(request: NextRequest) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const { userId } = await requireAuth();
 
   try {
     const { bggId, ean } = await request.json();
@@ -20,7 +17,7 @@ export const POST = withApiLogging(async function POST(request: NextRequest) {
     }
 
     const existingGame = await prisma.game.findFirst({
-      where: { bggId: bggId.toString(), ownerId: session.user.id, deletedAt: null },
+      where: { bggId: bggId.toString(), ownerId: userId, deletedAt: null },
     });
 
     if (existingGame) {
@@ -46,7 +43,7 @@ export const POST = withApiLogging(async function POST(request: NextRequest) {
         complexity: bggData.complexity ? Math.round(bggData.complexity) : null,
         bggId: bggData.bggId,
         imageUrl: bggData.imageUrl,
-        ownerId: session.user.id,
+        ownerId: userId,
         ...(ean ? { ean: ean.toString() } : {}),
       },
     });
@@ -57,8 +54,8 @@ export const POST = withApiLogging(async function POST(request: NextRequest) {
         const trimmed = categoryName.trim();
         if (!trimmed) continue;
         const tag = await prisma.tag.upsert({
-          where: { name_ownerId: { name: trimmed, ownerId: session.user.id } },
-          create: { name: trimmed, ownerId: session.user.id, source: "bgg" },
+          where: { name_ownerId: { name: trimmed, ownerId: userId } },
+          create: { name: trimmed, ownerId: userId, source: "bgg" },
           update: {},
         });
         await prisma.gameTag.upsert({
@@ -69,9 +66,9 @@ export const POST = withApiLogging(async function POST(request: NextRequest) {
       }
     }
 
-    invalidateTag(CacheTags.userGames(session.user.id));
-    invalidateTag(CacheTags.userTags(session.user.id));
-    invalidateTag(CacheTags.userDashboard(session.user.id));
+    invalidateTag(CacheTags.userGames(userId));
+    invalidateTag(CacheTags.userTags(userId));
+    invalidateTag(CacheTags.userDashboard(userId));
 
     return NextResponse.json(
       {
@@ -88,7 +85,6 @@ export const POST = withApiLogging(async function POST(request: NextRequest) {
       { status: 201 }
     );
   } catch (error) {
-    console.error("Error importing game from BGG:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return handleApiError(error);
   }
 });

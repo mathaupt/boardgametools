@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { requireAuth, handleApiError } from "@/lib/require-auth";
 import prisma from "@/lib/db";
 import { withApiLogging } from "@/lib/api-logger";
 
@@ -9,10 +9,7 @@ export const POST = withApiLogging(async function POST(
   request: NextRequest,
   { params }: RouteContext
 ) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const { userId } = await requireAuth();
 
   const { id } = await params;
 
@@ -40,8 +37,8 @@ export const POST = withApiLogging(async function POST(
       return NextResponse.json({ error: "Event not found" }, { status: 404 });
     }
 
-    const isInvited = event.invites.some((invite) => invite.userId === session.user.id);
-    const hasAccess = event.createdById === session.user.id || isInvited || event.isPublic;
+    const isInvited = event.invites.some((invite) => invite.userId === userId);
+    const hasAccess = event.createdById === userId || isInvited || event.isPublic;
 
     if (!hasAccess) {
       return NextResponse.json({ error: "Access denied" }, { status: 403 });
@@ -60,7 +57,7 @@ export const POST = withApiLogging(async function POST(
     const existingVote = await prisma.vote.findFirst({
       where: { 
         proposalId, 
-        userId: session.user.id 
+        userId: userId 
       }
     });
 
@@ -74,7 +71,7 @@ export const POST = withApiLogging(async function POST(
     const vote = await prisma.vote.create({
       data: {
         proposalId,
-        userId: session.user.id
+        userId: userId
       },
       include: {
         proposal: {
@@ -88,8 +85,7 @@ export const POST = withApiLogging(async function POST(
 
     return NextResponse.json(vote, { status: 201 });
   } catch (error) {
-    console.error("Error creating vote:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return handleApiError(error);
   }
 });
 
@@ -97,10 +93,7 @@ export const DELETE = withApiLogging(async function DELETE(
   request: NextRequest,
   { params }: RouteContext
 ) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const { userId } = await requireAuth();
 
   const { id } = await params;
   const { searchParams } = new URL(request.url);
@@ -117,7 +110,7 @@ export const DELETE = withApiLogging(async function DELETE(
     const deletedVote = await prisma.vote.deleteMany({
       where: { 
         proposalId, 
-        userId: session.user.id 
+        userId: userId 
       }
     });
 
@@ -127,7 +120,6 @@ export const DELETE = withApiLogging(async function DELETE(
 
     return NextResponse.json({ message: "Vote removed" });
   } catch (error) {
-    console.error("Error removing vote:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return handleApiError(error);
   }
 });

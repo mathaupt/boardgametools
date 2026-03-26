@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/db";
 import { auth } from "@/lib/auth";
+import { ApiError } from "@/lib/require-auth";
 
 interface LogEntry {
   method: string;
@@ -64,11 +65,18 @@ export function withApiLogging<C extends RouteHandlerContext = RouteHandlerConte
     try {
       response = await handler(req, context);
     } catch (err) {
-      errorMessage = err instanceof Error ? err.message : "Unknown error";
-      response = NextResponse.json(
-        { error: "Internal Server Error" },
-        { status: 500 }
-      );
+      if (err instanceof ApiError) {
+        response = NextResponse.json(
+          { error: err.message },
+          { status: err.statusCode }
+        );
+      } else {
+        errorMessage = err instanceof Error ? err.message : "Unknown error";
+        response = NextResponse.json(
+          { error: "Internal Server Error" },
+          { status: 500 }
+        );
+      }
     }
 
     const durationMs = Date.now() - start;

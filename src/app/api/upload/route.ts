@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { requireAuth, handleApiError } from "@/lib/require-auth";
 import prisma from "@/lib/db";
 import { withApiLogging } from "@/lib/api-logger";
 import { storage, generateFileName } from "@/lib/storage";
@@ -8,10 +8,7 @@ const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 const MAX_SIZE = 5 * 1024 * 1024; // 5 MB
 
 export const POST = withApiLogging(async function POST(request: NextRequest) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const { userId } = await requireAuth();
 
   try {
     const formData = await request.formData();
@@ -47,7 +44,7 @@ export const POST = withApiLogging(async function POST(request: NextRequest) {
         mimeType: file.type,
         sizeBytes: file.size,
         storagePath: result.storagePath,
-        ownerId: session.user.id,
+        ownerId: userId,
       },
     });
 
@@ -62,7 +59,6 @@ export const POST = withApiLogging(async function POST(request: NextRequest) {
       { status: 201 }
     );
   } catch (error) {
-    console.error("Error uploading file:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return handleApiError(error);
   }
 });

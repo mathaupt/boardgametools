@@ -11,6 +11,25 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.24.0",
+    date: "2026-03-24",
+    title: "Architektur-Bereinigung: Auth-Migration, v1-Deduplizierung, Service-Tests",
+    description: "Grosse Architektur-Bereinigung: 16 duplizierte v1-API-Routen entfernt, 43 Routen auf requireAuth/handleApiError migriert, Service-Layer-Tests eingefuehrt, Recharts-Bundle optimiert, unbenutzte Dependencies entfernt.",
+    changes: [
+      { type: "improvement", text: "43 API-Routen von manueller Auth-Pruefung auf requireAuth()/handleApiError() migriert – einheitliches Auth-Pattern" },
+      { type: "improvement", text: "withApiLogging faengt jetzt ApiError automatisch ab – korrekte Fehler-Responses auch ohne try/catch im Handler" },
+      { type: "improvement", text: "requireAuth() liefert jetzt auch name und email – weniger Boilerplate in Routen die Benutzer-Infos benoetigen" },
+      { type: "improvement", text: "Recharts-Komponenten werden jetzt lazy geladen (next/dynamic, ssr: false) – kleineres initiales Bundle" },
+      { type: "fix", text: "Variable-Shadowing-Bugs in 4 API-Routen behoben – Auth-userId/email wurde durch Body-Daten ueberschrieben (Einladungen, Admin-Deaktivierung, Admin-Passwort, Gruppen-Mitglieder)" },
+      { type: "internal", text: "16 unbenutzte v1-API-Routen (539 Zeilen) entfernt – kein Frontend-Code nutzte /api/v1/ Endpunkte" },
+      { type: "internal", text: "5 unbenutzte Dependencies entfernt: mocha, ajv, axios, diff, react-is" },
+      { type: "internal", text: "Neue npm-Scripts: typecheck (tsc --noEmit), analyze (Bundle-Analyse mit @next/bundle-analyzer)" },
+      { type: "internal", text: "dev:turbo Script entfernt (Duplikat von dev)" },
+      { type: "feature", text: "63 neue Service-Layer-Tests: require-auth (14), shared (10), tag (6), game (13), group (10), session (10) – Gesamtzahl jetzt 333 Tests" },
+      { type: "internal", text: "next.config.ts: Bundle-Analyzer Integration fuer npm run analyze" },
+    ],
+  },
+  {
     version: "0.23.5",
     date: "2026-03-26",
     title: "Testing-Infrastruktur: Coverage-Schwellen, Regression Tracking, WCAG-Checks",

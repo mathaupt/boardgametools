@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { requireAuth, handleApiError } from "@/lib/require-auth";
 import prisma from "@/lib/db";
 import { withApiLogging } from "@/lib/api-logger";
 
@@ -10,10 +10,7 @@ export const GET = withApiLogging(async function GET(
   _request: NextRequest,
   { params }: RouteContext
 ) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const { userId } = await requireAuth();
 
   const { id } = await params;
 
@@ -29,8 +26,8 @@ export const GET = withApiLogging(async function GET(
       return NextResponse.json({ error: "Event not found" }, { status: 404 });
     }
 
-    const isInvited = event.invites.some((i) => i.userId === session.user.id);
-    const hasAccess = event.createdById === session.user.id || isInvited;
+    const isInvited = event.invites.some((i) => i.userId === userId);
+    const hasAccess = event.createdById === userId || isInvited;
 
     if (!hasAccess) {
       return NextResponse.json({ error: "Access denied" }, { status: 403 });
@@ -51,8 +48,7 @@ export const GET = withApiLogging(async function GET(
 
     return NextResponse.json(proposals);
   } catch (error) {
-    console.error("Error fetching date proposals:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return handleApiError(error);
   }
 });
 
@@ -63,10 +59,7 @@ export const POST = withApiLogging(async function POST(
   request: NextRequest,
   { params }: RouteContext
 ) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const { userId } = await requireAuth();
 
   const { id } = await params;
 
@@ -77,7 +70,7 @@ export const POST = withApiLogging(async function POST(
       return NextResponse.json({ error: "Event not found" }, { status: 404 });
     }
 
-    if (event.createdById !== session.user.id) {
+    if (event.createdById !== userId) {
       return NextResponse.json(
         { error: "Only the event creator can create date proposals" },
         { status: 403 }
@@ -179,8 +172,7 @@ export const POST = withApiLogging(async function POST(
 
     return NextResponse.json(allProposals, { status: 201 });
   } catch (error) {
-    console.error("Error creating date proposals:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return handleApiError(error);
   }
 });
 
@@ -189,10 +181,7 @@ export const DELETE = withApiLogging(async function DELETE(
   _request: NextRequest,
   { params }: RouteContext
 ) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const { userId } = await requireAuth();
 
   const { id } = await params;
 
@@ -203,7 +192,7 @@ export const DELETE = withApiLogging(async function DELETE(
       return NextResponse.json({ error: "Event not found" }, { status: 404 });
     }
 
-    if (event.createdById !== session.user.id) {
+    if (event.createdById !== userId) {
       return NextResponse.json(
         { error: "Only the event creator can delete date proposals" },
         { status: 403 }
@@ -214,7 +203,6 @@ export const DELETE = withApiLogging(async function DELETE(
 
     return NextResponse.json({ message: "Date proposals deleted" });
   } catch (error) {
-    console.error("Error deleting date proposals:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return handleApiError(error);
   }
 });

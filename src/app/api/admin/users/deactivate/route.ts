@@ -1,39 +1,31 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { requireAdmin, handleApiError } from "@/lib/require-auth";
 import prisma from "@/lib/db";
 import { withApiLogging } from "@/lib/api-logger";
 
 export const POST = withApiLogging(async function POST(request: NextRequest) {
   try {
-    const session = await auth();
-    
-    if (!session?.user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-    if (session.user.role !== "ADMIN") {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-    }
+    const { userId: adminUserId } = await requireAdmin();
 
-    const { userId, isActive } = await request.json();
+    const { userId: targetUserId, isActive } = await request.json();
 
-    if (!userId || typeof isActive !== "boolean") {
+    if (!targetUserId || typeof isActive !== "boolean") {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
     // Prevent admin from deactivating themselves
-    if (userId === session.user.id) {
+    if (targetUserId === adminUserId) {
       return NextResponse.json({ error: "Cannot modify your own account" }, { status: 400 });
     }
 
     // Update user active status
     await prisma.user.update({
-      where: { id: userId },
+      where: { id: targetUserId },
       data: { isActive },
     });
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Error toggling user status:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return handleApiError(error);
   }
 });

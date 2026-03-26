@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { invalidateTag } from "@/lib/cache";
-import { auth } from "@/lib/auth";
+import { requireAuth, handleApiError } from "@/lib/require-auth";
 import prisma from "@/lib/db";
 import { fetchBGGGame } from "@/lib/bgg";
 import { withApiLogging } from "@/lib/api-logger";
@@ -12,15 +12,12 @@ export const POST = withApiLogging(async function POST(
   request: NextRequest,
   { params }: RouteContext
 ) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const { userId } = await requireAuth();
 
   const { id: seriesId } = await params;
 
   const series = await prisma.gameSeries.findFirst({
-    where: { id: seriesId, ownerId: session.user.id, deletedAt: null },
+    where: { id: seriesId, ownerId: userId, deletedAt: null },
   });
 
   if (!series) {
@@ -36,7 +33,7 @@ export const POST = withApiLogging(async function POST(
     // If bggId provided, import or find the game first
     if (!resolvedGameId && bggId) {
       let game = await prisma.game.findFirst({
-        where: { bggId: bggId.toString(), ownerId: session.user.id, deletedAt: null },
+        where: { bggId: bggId.toString(), ownerId: userId, deletedAt: null },
       });
 
       if (!game) {
@@ -55,7 +52,7 @@ export const POST = withApiLogging(async function POST(
             complexity: bggData.complexity ? Math.round(bggData.complexity) : null,
             bggId: bggData.bggId,
             imageUrl: bggData.imageUrl,
-            ownerId: session.user.id,
+            ownerId: userId,
           },
         });
       }
@@ -72,7 +69,7 @@ export const POST = withApiLogging(async function POST(
 
     // Check game exists and belongs to user
     const game = await prisma.game.findFirst({
-      where: { id: resolvedGameId, ownerId: session.user.id, deletedAt: null },
+      where: { id: resolvedGameId, ownerId: userId, deletedAt: null },
     });
 
     if (!game) {
@@ -122,11 +119,10 @@ export const POST = withApiLogging(async function POST(
       },
     });
 
-    invalidateTag(CacheTags.userSeries(session.user.id));
+    invalidateTag(CacheTags.userSeries(userId));
 
     return NextResponse.json(entry, { status: 201 });
   } catch (error) {
-    console.error("Error adding entry to series:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return handleApiError(error);
   }
 });

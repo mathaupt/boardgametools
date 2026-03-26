@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { requireAuth, handleApiError } from "@/lib/require-auth";
 import prisma from "@/lib/db";
 import { withApiLogging } from "@/lib/api-logger";
 
@@ -9,17 +9,14 @@ export const POST = withApiLogging(async function POST(
   request: NextRequest,
   { params }: RouteContext
 ) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const { userId } = await requireAuth();
 
   const { id, pollId } = await params;
 
   try {
     // Check membership
     const membership = await prisma.groupMember.findFirst({
-      where: { groupId: id, userId: session.user.id },
+      where: { groupId: id, userId: userId },
     });
 
     if (!membership) {
@@ -49,7 +46,7 @@ export const POST = withApiLogging(async function POST(
 
     // Get the user's display name
     const user = await prisma.user.findUnique({
-      where: { id: session.user.id },
+      where: { id: userId },
       select: { name: true },
     });
 
@@ -60,7 +57,7 @@ export const POST = withApiLogging(async function POST(
       await tx.groupPollVote.deleteMany({
         where: {
           option: { pollId },
-          userId: session.user.id,
+          userId: userId,
         },
       });
 
@@ -70,7 +67,7 @@ export const POST = withApiLogging(async function POST(
             data: {
               optionId,
               voterName,
-              userId: session.user.id,
+              userId: userId,
             },
           })
         )
@@ -81,7 +78,6 @@ export const POST = withApiLogging(async function POST(
 
     return NextResponse.json(votes, { status: 201 });
   } catch (error) {
-    console.error("Error voting:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return handleApiError(error);
   }
 });

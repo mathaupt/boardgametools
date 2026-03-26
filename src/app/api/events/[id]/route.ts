@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { requireAuth, handleApiError } from "@/lib/require-auth";
 import prisma from "@/lib/db";
 import { withApiLogging } from "@/lib/api-logger";
 
@@ -9,10 +9,7 @@ export const GET = withApiLogging(async function GET(
   request: NextRequest,
   { params }: RouteContext
 ) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const { userId } = await requireAuth();
 
   const { id } = await params;
 
@@ -32,7 +29,7 @@ export const GET = withApiLogging(async function GET(
             guest: { select: { id: true, nickname: true } },
             _count: { select: { votes: true, guestVotes: true } },
             votes: {
-              where: { userId: session.user.id },
+              where: { userId: userId },
               select: { id: true },
             },
           }
@@ -52,8 +49,8 @@ export const GET = withApiLogging(async function GET(
     }
 
     // Prüfe ob User Berechtigung hat (Ersteller oder eingeladen)
-    const isCreator = event.createdById === session.user.id;
-    const isInvited = event.invites.some(invite => invite.userId === session.user.id);
+    const isCreator = event.createdById === userId;
+    const isInvited = event.invites.some(invite => invite.userId === userId);
 
     if (!isCreator && !isInvited) {
       return NextResponse.json({ error: "Access denied" }, { status: 403 });
@@ -97,13 +94,12 @@ export const GET = withApiLogging(async function GET(
         ...guest,
         votes: undefined,
       })),
-      currentUserId: session.user.id,
+      currentUserId: userId,
       isCreator,
     };
 
     return NextResponse.json(eventResponse);
   } catch (error) {
-    console.error("Error fetching event:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return handleApiError(error);
   }
 });

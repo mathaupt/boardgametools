@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { invalidateTag } from "@/lib/cache";
-import { auth } from "@/lib/auth";
+import { requireAuth, handleApiError } from "@/lib/require-auth";
 import prisma from "@/lib/db";
 import { sendEventInviteEmail, sendInviteResponseEmail } from "@/lib/mailer";
 import { getPublicBaseUrl } from "@/lib/public-link";
@@ -25,24 +25,21 @@ export const POST = withApiLogging(async function POST(
   request: NextRequest,
   { params }: RouteContext
 ) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const { userId: authUserId, name: authName, email: authEmail } = await requireAuth();
 
   const { id } = await params;
 
   try {
     const body = await request.json();
-    const { email, userId } = body;
+    const { email: targetEmail, userId: targetUserId } = body;
 
     const validationError = firstError(
-      validateString(email, "email", { required: false, max: 254 }),
-      validateString(userId, "userId", { required: false, max: 100 })
+      validateString(targetEmail, "email", { required: false, max: 254 }),
+      validateString(targetUserId, "userId", { required: false, max: 100 })
     );
     if (validationError) return NextResponse.json({ error: validationError }, { status: 400 });
 
-    if (!email && !userId) {
+    if (!targetEmail && !targetUserId) {
       return NextResponse.json({ 
         error: "Either email or userId is required" 
       }, { status: 400 });
@@ -50,7 +47,7 @@ export const POST = withApiLogging(async function POST(
 
     // Prüfe ob Event existiert und User Berechtigung hat
     const event = await prisma.event.findFirst({
-      where: { id, createdById: session.user.id, deletedAt: null }
+      where: { id, createdById: authUserId, deletedAt: null }
     });
 
     if (!event) {
@@ -58,10 +55,10 @@ export const POST = withApiLogging(async function POST(
     }
 
     // Ziel-User ermitteln (falls vorhanden)
-    const targetUser = userId
-      ? await prisma.user.findUnique({ where: { id: userId } })
-      : email
-        ? await prisma.user.findUnique({ where: { email } })
+    const targetUser = targetUserId
+      ? await prisma.user.findUnique({ where: { id: targetUserId } })
+      : targetEmail
+        ? await prisma.user.findUnique({ where: { email: targetEmail } })
         : null;
 
     // Prüfe ob bereits eingeladen
@@ -72,9 +69,9 @@ export const POST = withApiLogging(async function POST(
       if (existing) {
         return NextResponse.json({ error: "User already invited" }, { status: 400 });
       }
-    } else if (email) {
+    } else if (targetEmail) {
       const existing = await prisma.eventInvite.findFirst({
-        where: { eventId: id, email },
+        where: { eventId: id, email: targetEmail },
       });
       if (existing) {
         return NextResponse.json({ error: "Email already invited" }, { status: 400 });
@@ -86,14 +83,14 @@ export const POST = withApiLogging(async function POST(
       data: {
         eventId: id,
         userId: targetUser?.id || null,
-        email: targetUser ? null : email,
+        email: targetUser ? null : targetEmail,
         status: "pending",
       },
       include: { user: { select: { id: true, name: true, email: true } } },
     });
 
     // Sende Einladungs-Mail
-    const recipientEmail = targetUser?.email || email;
+    const recipientEmail = targetUser?.email || targetEmail;
     if (recipientEmail) {
       const eventUrl = await buildInviteUrl(invite, id);
       try {
@@ -102,7 +99,7 @@ export const POST = withApiLogging(async function POST(
           eventTitle: event.title,
           eventDate: event.eventDate,
           location: event.location,
-          inviterName: session.user.name || session.user.email || "Jemand",
+          inviterName: authName || authEmail || "Jemand",
           eventUrl,
         });
       } catch (mailErr) {
@@ -110,12 +107,11 @@ export const POST = withApiLogging(async function POST(
       }
     }
 
-    invalidateTag(CacheTags.userEvents(session.user.id));
+    invalidateTag(CacheTags.userEvents(authUserId));
 
     return NextResponse.json(invite, { status: 201 });
   } catch (error) {
-    console.error("Error creating invite:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return handleApiError(error);
   }
 });
 
@@ -124,10 +120,7 @@ export const PUT = withApiLogging(async function PUT(
   request: NextRequest,
   { params }: RouteContext
 ) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const { userId, name, email } = await requireAuth();
 
   const { id } = await params;
 
@@ -143,7 +136,7 @@ export const PUT = withApiLogging(async function PUT(
 
     // Finde die Einladung des aktuellen Users
     const invite = await prisma.eventInvite.findFirst({
-      where: { eventId: id, userId: session.user.id },
+      where: { eventId: id, userId: userId },
     });
 
     if (!invite) {
@@ -166,13 +159,13 @@ export const PUT = withApiLogging(async function PUT(
       include: { createdBy: { select: { email: true, name: true } } },
     });
 
-    if (event && event.createdById !== session.user.id) {
+    if (event && event.createdById !== userId) {
       const eventUrl = `${await getPublicBaseUrl()}/dashboard/events/${id}`;
       try {
         await sendInviteResponseEmail({
           to: event.createdBy.email,
           eventTitle: event.title,
-          responderName: session.user.name || session.user.email || "Jemand",
+          responderName: name || email || "Jemand",
           response: status,
           eventUrl,
         });
@@ -183,8 +176,7 @@ export const PUT = withApiLogging(async function PUT(
 
     return NextResponse.json(updatedInvite);
   } catch (error) {
-    console.error("Error updating invite:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return handleApiError(error);
   }
 });
 
@@ -192,10 +184,7 @@ export const DELETE = withApiLogging(async function DELETE(
   request: NextRequest,
   { params }: RouteContext
 ) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const { userId } = await requireAuth();
 
   const { id } = await params;
   const { searchParams } = new URL(request.url);
@@ -210,7 +199,7 @@ export const DELETE = withApiLogging(async function DELETE(
   try {
     // Prüfe ob Event existiert und User Berechtigung hat
     const event = await prisma.event.findFirst({
-      where: { id, createdById: session.user.id, deletedAt: null }
+      where: { id, createdById: userId, deletedAt: null }
     });
 
     if (!event) {
@@ -224,7 +213,6 @@ export const DELETE = withApiLogging(async function DELETE(
 
     return NextResponse.json({ message: "Invite deleted" });
   } catch (error) {
-    console.error("Error deleting invite:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return handleApiError(error);
   }
 });

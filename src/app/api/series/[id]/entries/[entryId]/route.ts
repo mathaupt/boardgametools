@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { requireAuth, handleApiError } from "@/lib/require-auth";
 import prisma from "@/lib/db";
 import { withApiLogging } from "@/lib/api-logger";
 import { validateString, validateNumber, firstError } from "@/lib/validation";
@@ -10,10 +10,7 @@ export const PUT = withApiLogging(async function PUT(
   request: NextRequest,
   { params }: RouteContext
 ) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const { userId } = await requireAuth();
 
   const { id: seriesId, entryId } = await params;
 
@@ -21,7 +18,7 @@ export const PUT = withApiLogging(async function PUT(
     where: {
       id: entryId,
       seriesId,
-      series: { ownerId: session.user.id },
+      series: { ownerId: userId },
     },
   });
 
@@ -115,8 +112,7 @@ export const PUT = withApiLogging(async function PUT(
 
     return NextResponse.json(updated);
   } catch (error) {
-    console.error("Error updating series entry:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return handleApiError(error);
   }
 });
 
@@ -124,10 +120,7 @@ export const DELETE = withApiLogging(async function DELETE(
   _request: NextRequest,
   { params }: RouteContext
 ) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const { userId } = await requireAuth();
 
   const { id: seriesId, entryId } = await params;
 
@@ -135,7 +128,7 @@ export const DELETE = withApiLogging(async function DELETE(
     where: {
       id: entryId,
       seriesId,
-      series: { ownerId: session.user.id },
+      series: { ownerId: userId },
     },
   });
 

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { requireAuth, handleApiError } from "@/lib/require-auth";
 import prisma from "@/lib/db";
 import { withApiLogging } from "@/lib/api-logger";
 
@@ -11,10 +11,7 @@ export const POST = withApiLogging(async function POST(
   request: NextRequest,
   { params }: RouteContext
 ) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const { userId } = await requireAuth();
 
   const { id } = await params;
 
@@ -46,8 +43,8 @@ export const POST = withApiLogging(async function POST(
       return NextResponse.json({ error: "Event not found" }, { status: 404 });
     }
 
-    const isInvited = event.invites.some((i) => i.userId === session.user.id);
-    const hasAccess = event.createdById === session.user.id || isInvited;
+    const isInvited = event.invites.some((i) => i.userId === userId);
+    const hasAccess = event.createdById === userId || isInvited;
 
     if (!hasAccess) {
       return NextResponse.json({ error: "Access denied" }, { status: 403 });
@@ -70,13 +67,13 @@ export const POST = withApiLogging(async function POST(
       where: {
         dateProposalId_userId: {
           dateProposalId,
-          userId: session.user.id,
+          userId: userId,
         },
       },
       update: { availability },
       create: {
         dateProposalId,
-        userId: session.user.id,
+        userId: userId,
         availability,
       },
       include: {
@@ -86,8 +83,7 @@ export const POST = withApiLogging(async function POST(
 
     return NextResponse.json(vote, { status: 200 });
   } catch (error) {
-    console.error("Error voting on date proposal:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return handleApiError(error);
   }
 });
 
@@ -97,10 +93,7 @@ export const PUT = withApiLogging(async function PUT(
   request: NextRequest,
   { params }: RouteContext
 ) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const { userId } = await requireAuth();
 
   const { id } = await params;
 
@@ -125,8 +118,8 @@ export const PUT = withApiLogging(async function PUT(
       return NextResponse.json({ error: "Event not found" }, { status: 404 });
     }
 
-    const isInvited = event.invites.some((i) => i.userId === session.user.id);
-    const hasAccess = event.createdById === session.user.id || isInvited;
+    const isInvited = event.invites.some((i) => i.userId === userId);
+    const hasAccess = event.createdById === userId || isInvited;
 
     if (!hasAccess) {
       return NextResponse.json({ error: "Access denied" }, { status: 403 });
@@ -139,13 +132,13 @@ export const PUT = withApiLogging(async function PUT(
           where: {
             dateProposalId_userId: {
               dateProposalId: v.dateProposalId,
-              userId: session.user.id,
+              userId: userId,
             },
           },
           update: { availability: v.availability },
           create: {
             dateProposalId: v.dateProposalId,
-            userId: session.user.id,
+            userId: userId,
             availability: v.availability,
           },
         })
@@ -154,7 +147,6 @@ export const PUT = withApiLogging(async function PUT(
 
     return NextResponse.json(results);
   } catch (error) {
-    console.error("Error bulk voting on date proposals:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return handleApiError(error);
   }
 });

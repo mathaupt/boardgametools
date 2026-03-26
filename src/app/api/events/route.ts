@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { invalidateTag } from "@/lib/cache";
-import { auth } from "@/lib/auth";
+import { requireAuth, handleApiError } from "@/lib/require-auth";
 import prisma from "@/lib/db";
 import { sendEventInviteEmail } from "@/lib/mailer";
 import { getPublicBaseUrl } from "@/lib/public-link";
@@ -10,10 +10,7 @@ import { validateString, firstError } from "@/lib/validation";
 import { CacheTags } from "@/lib/cache-tags";
 
 export const GET = withApiLogging(async function GET(request: NextRequest) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const { userId, name, email } = await requireAuth();
 
   const { searchParams } = new URL(request.url);
   const eventId = searchParams.get("eventId");
@@ -43,7 +40,7 @@ export const GET = withApiLogging(async function GET(request: NextRequest) {
         }
       });
     } else {
-      const where = { createdById: session.user.id, deletedAt: null as null };
+      const where = { createdById: userId, deletedAt: null as null };
       const includeRelations = {
         invites: {
           include: { user: { select: { id: true, name: true, email: true } } }
@@ -76,16 +73,12 @@ export const GET = withApiLogging(async function GET(request: NextRequest) {
 
     return NextResponse.json(events);
   } catch (error) {
-    console.error("Error fetching events:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return handleApiError(error);
   }
 });
 
 export const POST = withApiLogging(async function POST(request: NextRequest) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const { userId, name, email } = await requireAuth();
 
   try {
     const body = await request.json();
@@ -116,7 +109,7 @@ export const POST = withApiLogging(async function POST(request: NextRequest) {
 
     // Erstelle Event
     const organizerInvite = {
-      userId: session.user.id,
+      userId: userId,
       status: "accepted" as const,
     };
 
@@ -141,7 +134,7 @@ export const POST = withApiLogging(async function POST(request: NextRequest) {
         eventDate: new Date(eventDate),
         location: location || null,
         groupId: groupId || null,
-        createdById: session.user.id,
+        createdById: userId,
         invites: {
           create: [organizerInvite, ...additionalInvites],
         },
@@ -161,10 +154,10 @@ export const POST = withApiLogging(async function POST(request: NextRequest) {
 
     // Sende Einladungs-Mails an alle eingeladenen User (nicht an Organisator)
     const base = await getPublicBaseUrl();
-    const inviterName = session.user.name || session.user.email || "Jemand";
+    const inviterName = name || email || "Jemand";
 
     for (const invite of newEvent.invites) {
-      if (invite.userId === session.user.id) continue; // Organisator nicht mailen
+      if (invite.userId === userId) continue; // Organisator nicht mailen
       const recipientEmail = invite.user?.email || invite.email;
       if (!recipientEmail) continue;
 
@@ -187,12 +180,11 @@ export const POST = withApiLogging(async function POST(request: NextRequest) {
       }
     }
 
-    invalidateTag(CacheTags.userEvents(session.user.id));
-    invalidateTag(CacheTags.userDashboard(session.user.id));
+    invalidateTag(CacheTags.userEvents(userId));
+    invalidateTag(CacheTags.userDashboard(userId));
 
     return NextResponse.json(newEvent, { status: 201 });
   } catch (error) {
-    console.error("Error creating event:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return handleApiError(error);
   }
 });

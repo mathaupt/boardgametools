@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { requireAuth, handleApiError } from "@/lib/require-auth";
 import prisma from "@/lib/db";
 import { searchBGGGames, fetchBGGGame } from "@/lib/bgg";
 import { withApiLogging } from "@/lib/api-logger";
@@ -82,10 +82,7 @@ function cleanProductName(title: string, brand: string): string {
 }
 
 export const GET = withApiLogging(async function GET(request: NextRequest) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const { userId } = await requireAuth();
 
   const ean = request.nextUrl.searchParams.get("ean");
   if (!ean || ean.length < 8) {
@@ -95,7 +92,7 @@ export const GET = withApiLogging(async function GET(request: NextRequest) {
   try {
     // Step 1: Check local DB for a game with this EAN
     const localGame = await prisma.game.findFirst({
-      where: { ean, ownerId: session.user.id, deletedAt: null },
+      where: { ean, ownerId: userId, deletedAt: null },
     });
 
     if (localGame) {

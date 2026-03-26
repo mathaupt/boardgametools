@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { invalidateTag } from "@/lib/cache";
-import { auth } from "@/lib/auth";
+import { requireAuth, handleApiError } from "@/lib/require-auth";
 import { hash } from "bcryptjs";
 import prisma from "@/lib/db";
 import { withApiLogging } from "@/lib/api-logger";
@@ -13,10 +13,7 @@ export const GET = withApiLogging(async function GET(
   request: NextRequest,
   { params }: RouteContext
 ) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const { userId } = await requireAuth();
 
   const { id } = await params;
 
@@ -26,8 +23,8 @@ export const GET = withApiLogging(async function GET(
         id,
         deletedAt: null,
         OR: [
-          { ownerId: session.user.id },
-          { members: { some: { userId: session.user.id } } },
+          { ownerId: userId },
+          { members: { some: { userId: userId } } },
         ],
       },
       include: {
@@ -66,8 +63,7 @@ export const GET = withApiLogging(async function GET(
     const { password: _pw, ...safeGroup } = group;
     return NextResponse.json({ ...safeGroup, hasPassword: !!_pw });
   } catch (error) {
-    console.error("Error fetching group:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return handleApiError(error);
   }
 });
 
@@ -75,16 +71,13 @@ export const PUT = withApiLogging(async function PUT(
   request: NextRequest,
   { params }: RouteContext
 ) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const { userId } = await requireAuth();
 
   const { id } = await params;
 
   try {
     const group = await prisma.group.findFirst({
-      where: { id, ownerId: session.user.id, deletedAt: null },
+      where: { id, ownerId: userId, deletedAt: null },
     });
 
     if (!group) {
@@ -119,13 +112,12 @@ export const PUT = withApiLogging(async function PUT(
       },
     });
 
-    invalidateTag(CacheTags.userGroups(session.user.id));
-    invalidateTag(CacheTags.userDashboard(session.user.id));
+    invalidateTag(CacheTags.userGroups(userId));
+    invalidateTag(CacheTags.userDashboard(userId));
 
     return NextResponse.json(updated);
   } catch (error) {
-    console.error("Error updating group:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return handleApiError(error);
   }
 });
 
@@ -133,16 +125,13 @@ export const DELETE = withApiLogging(async function DELETE(
   request: NextRequest,
   { params }: RouteContext
 ) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const { userId } = await requireAuth();
 
   const { id } = await params;
 
   try {
     const group = await prisma.group.findFirst({
-      where: { id, ownerId: session.user.id, deletedAt: null },
+      where: { id, ownerId: userId, deletedAt: null },
     });
 
     if (!group) {
@@ -151,12 +140,11 @@ export const DELETE = withApiLogging(async function DELETE(
 
     await prisma.group.update({ where: { id }, data: { deletedAt: new Date() } });
 
-    invalidateTag(CacheTags.userGroups(session.user.id));
-    invalidateTag(CacheTags.userDashboard(session.user.id));
+    invalidateTag(CacheTags.userGroups(userId));
+    invalidateTag(CacheTags.userDashboard(userId));
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Error deleting group:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return handleApiError(error);
   }
 });

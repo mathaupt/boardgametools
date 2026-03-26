@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { requireAuth, handleApiError } from "@/lib/require-auth";
 import prisma from "@/lib/db";
 import { encryptId } from "@/lib/crypto";
 import { getPublicBaseUrl } from "@/lib/public-link";
@@ -11,16 +11,13 @@ export const POST = withApiLogging(async function POST(
   request: NextRequest,
   { params }: RouteContext
 ) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const { userId } = await requireAuth();
 
   const { id } = await params;
 
   try {
     const group = await prisma.group.findFirst({
-      where: { id, ownerId: session.user.id, deletedAt: null },
+      where: { id, ownerId: userId, deletedAt: null },
       select: { id: true, shareToken: true },
     });
 
@@ -40,7 +37,6 @@ export const POST = withApiLogging(async function POST(
 
     return NextResponse.json({ shareToken: updated.shareToken, publicUrl });
   } catch (error) {
-    console.error("Error publishing group:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return handleApiError(error);
   }
 });

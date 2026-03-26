@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { requireAuth, handleApiError } from "@/lib/require-auth";
 import prisma from "@/lib/db";
 import { sendEventReminderEmail } from "@/lib/mailer";
 import { getPublicBaseUrl } from "@/lib/public-link";
@@ -12,10 +12,7 @@ export const POST = withApiLogging(async function POST(
   request: NextRequest,
   { params }: RouteContext
 ) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const { userId, name, email } = await requireAuth();
 
   const { id } = await params;
 
@@ -29,7 +26,7 @@ export const POST = withApiLogging(async function POST(
 
     // Prüfe ob Event existiert und User Berechtigung hat
     const event = await prisma.event.findFirst({
-      where: { id, createdById: session.user.id, deletedAt: null },
+      where: { id, createdById: userId, deletedAt: null },
     });
 
     if (!event) {
@@ -68,13 +65,12 @@ export const POST = withApiLogging(async function POST(
       eventTitle: event.title,
       eventDate: event.eventDate,
       location: event.location,
-      inviterName: session.user.name || session.user.email || "Jemand",
+      inviterName: name || email || "Jemand",
       eventUrl,
     });
 
     return NextResponse.json({ message: "Reminder sent" });
   } catch (error) {
-    console.error("Error sending reminder:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return handleApiError(error);
   }
 });

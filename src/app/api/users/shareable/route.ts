@@ -1,19 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { requireAuth, handleApiError } from "@/lib/require-auth";
 import prisma from "@/lib/db";
 import { withApiLogging } from "@/lib/api-logger";
 
 export const GET = withApiLogging(async function GET(request: NextRequest) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const { userId } = await requireAuth();
 
   try {
     // Alle Users für Sharing (außer sich selbst)
     const users = await prisma.user.findMany({
       where: { 
-        id: { not: session.user.id }
+        id: { not: userId }
       },
       select: {
         id: true,
@@ -25,7 +22,6 @@ export const GET = withApiLogging(async function GET(request: NextRequest) {
 
     return NextResponse.json(users);
   } catch (error) {
-    console.error("Error fetching users:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return handleApiError(error);
   }
 });

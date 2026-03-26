@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { requireAuth, handleApiError } from "@/lib/require-auth";
 import prisma from "@/lib/db";
 import { withApiLogging } from "@/lib/api-logger";
 import { validateString } from "@/lib/validation";
@@ -10,17 +10,14 @@ export const GET = withApiLogging(async function GET(
   request: NextRequest,
   { params }: RouteContext
 ) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const { userId } = await requireAuth();
 
   const { id } = await params;
 
   try {
     // Check membership
     const membership = await prisma.groupMember.findFirst({
-      where: { groupId: id, userId: session.user.id },
+      where: { groupId: id, userId: userId },
     });
 
     if (!membership) {
@@ -45,8 +42,7 @@ export const GET = withApiLogging(async function GET(
 
     return NextResponse.json(polls);
   } catch (error) {
-    console.error("Error fetching polls:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return handleApiError(error);
   }
 });
 
@@ -54,17 +50,14 @@ export const POST = withApiLogging(async function POST(
   request: NextRequest,
   { params }: RouteContext
 ) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const { userId } = await requireAuth();
 
   const { id } = await params;
 
   try {
     // Check membership
     const membership = await prisma.groupMember.findFirst({
-      where: { groupId: id, userId: session.user.id },
+      where: { groupId: id, userId: userId },
     });
 
     if (!membership) {
@@ -91,7 +84,7 @@ export const POST = withApiLogging(async function POST(
         title,
         description: description || null,
         type: type || "single",
-        createdById: session.user.id,
+        createdById: userId,
         options: {
           create: options.map((text: string, index: number) => ({
             text,
@@ -111,7 +104,6 @@ export const POST = withApiLogging(async function POST(
 
     return NextResponse.json(poll, { status: 201 });
   } catch (error) {
-    console.error("Error creating poll:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return handleApiError(error);
   }
 });
