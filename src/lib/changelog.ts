@@ -11,6 +11,19 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.38.1",
+    date: "2026-03-27",
+    title: "BOM Score 9.0: Radix-Konsolidierung, Dependency-Hygiene, CONCEPT.md",
+    description: "BOM-Score von 8.5 auf 9.0 angehoben. Radix-UI-Duplikate konsolidiert (4 alte @radix-ui-Packages → radix-ui monolithisch), prisma CLI und pg nach devDependencies verschoben, CONCEPT.md Tech-Stack um 4 fehlende Technologien ergaenzt. Alle 10 Kategorien jetzt >= 9.0.",
+    changes: [
+      { type: "improvement", text: "Radix UI konsolidiert: 4 alte @radix-ui/react-* Packages entfernt, Imports auf radix-ui monolithisch umgestellt" },
+      { type: "improvement", text: "prisma CLI von dependencies nach devDependencies verschoben" },
+      { type: "improvement", text: "pg Package von dependencies nach devDependencies verschoben" },
+      { type: "improvement", text: "CONCEPT.md Tech-Stack: Pino, Upstash, Vercel Blob, Speed Insights ergaenzt" },
+      { type: "internal", text: "Alle 10 Review-Kategorien >= 9.0, Gesamtscore 9.3/10" },
+    ],
+  },
+  {
     version: "0.38.0",
     date: "2026-03-27",
     title: "Testing Score 9.0: 89 neue Tests, BGG-XML, Coverage-Boost",

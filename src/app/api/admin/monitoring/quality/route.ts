@@ -108,7 +108,7 @@ const CATEGORY_SCORES = [
   { category: "Konzept", score: 9.5, previous: 9.5, evaluator: 10 },
   { category: "Best Practices", score: 9.2, previous: 8.4, evaluator: 10 },
   { category: "Scaling", score: 9.5, previous: 9.0, evaluator: 10 },
-  { category: "BOM/Dependencies", score: 8.5, previous: 8.5, evaluator: 10 },
+  { category: "BOM/Dependencies", score: 9.0, previous: 8.5, evaluator: 10 },
 ];
 
 export const GET = withApiLogging(async function GET() {

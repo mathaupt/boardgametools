@@ -48,7 +48,7 @@ describe("error-messages", () => {
   it("has no duplicate string values", () => {
     const stringValues = allKeys
       .map((k) => Errors[k])
-      .filter((v): v is string => typeof v === "string");
+      .filter((v): v is typeof v & string => typeof v === "string");
     const unique = new Set(stringValues);
     expect(unique.size).toBe(stringValues.length);
   });

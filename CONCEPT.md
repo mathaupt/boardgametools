@@ -131,6 +131,10 @@ BoardGameTools ist eine Next.js Webanwendung zur Verwaltung von Brettspielen, Sp
 | **Unit Tests** | Vitest |
 | **Linting** | ESLint |
 | **Git Hooks** | Husky |
+| **Logging** | Pino (strukturiertes JSON-Logging) |
+| **Rate Limiting** | @upstash/ratelimit + @upstash/redis |
+| **File Storage** | @vercel/blob (Cloud) + Local Fallback |
+| **Performance** | @vercel/speed-insights |
 
 ---
 

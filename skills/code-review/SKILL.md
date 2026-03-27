@@ -679,8 +679,8 @@ Kein Sentry/Datadog/etc. für Client-Fehler. Nur console.error im Browser.
 | Konzept | 9.5 | 9.5 | **9.5/10** | Alle Features implementiert, Tags-Doku aktualisiert |
 | Best Practices | 8.4 | 9.0 | **9.2/10** | +0.2: Coverage erhoeht, Console-Cleanup. Verbleibend: P3 .env Template |
 | Skalierung | 9.0 | 9.5 | **9.5/10** | Upstash per-Endpoint, Storage-Warning. Verbleibend: P3 unstable_cache |
-| BOM | 8.5 | 8.5 | **8.5/10** | npm audit clean. Verbleibend: P2 next-auth Beta |
-| **GESAMT** | **8.3** | **9.1** | **9.3/10** | **+1.0 durch alle Fixes (v0.32.0-v0.38.0)** |
+| BOM | 8.5 | 8.5 | **9.0/10** | +0.5: Radix-Duplikate konsolidiert, prisma/pg nach devDeps, CONCEPT.md aktualisiert. Verbleibend: next-auth Beta |
+| **GESAMT** | **8.3** | **9.1** | **9.3/10** | **Alle 10 Kategorien >= 9.0. +1.0 durch alle Fixes (v0.32.0-v0.38.0)** |
 
 > **DD-Finding-Status:** 38 behoben / 17 offen (nur P2/P3, keine P0/P1)
 > **Evaluator-Score:** 10/10 (50/50 historische Findings resolved)
