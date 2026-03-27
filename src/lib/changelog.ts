@@ -11,6 +11,23 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.40.0",
+    date: "2026-03-24",
+    title: "Erweiterte FAQ: 11 Sektionen, 55 Fragen zu allen Features",
+    description: "FAQ komplett ueberarbeitet und von 7 auf 11 Sektionen mit 55 Fragen erweitert. Neue Sektionen fuer Statistiken, Profil/Konto, Administration und Changelog. Bestehende Sektionen um fehlende Features ergaenzt (Tags, Bulk-Delete, Kalender-Export, BGG-Gaeste-Vorschlaege, Gruppenstatistiken).",
+    changes: [
+      { type: "feature", text: "FAQ: Neue Sektion 'Statistiken' mit 3 Fragen zu Diagrammen und Datenquellen" },
+      { type: "feature", text: "FAQ: Neue Sektion 'Profil & Konto' mit 4 Fragen zu Passwort, E-Mail und Aktivitaeten" },
+      { type: "feature", text: "FAQ: Neue Sektion 'Administration' mit 4 Fragen zu Monitoring und Anomalie-Erkennung" },
+      { type: "feature", text: "FAQ: Neue Sektion 'Updates & Versionen' mit 2 Fragen zum Changelog" },
+      { type: "improvement", text: "FAQ: Spielesammlung um Tags, Bulk-Delete und Reihen-Bewertung ergaenzt (7 statt 4 Fragen)" },
+      { type: "improvement", text: "FAQ: Events um Kalender-Export, BGG-Gaeste-Vorschlaege und Abstimmungs-Abschluss ergaenzt (8 statt 5 Fragen)" },
+      { type: "improvement", text: "FAQ: Gruppen um Statistiken ergaenzt, Teilen um Einladungslinks und Gaeste-Details erweitert" },
+      { type: "improvement", text: "FAQ: Troubleshooting um E-Mail-Probleme, Duplikate und Performance ergaenzt (6 statt 4 Fragen)" },
+      { type: "internal", text: "CONCEPT.md: @vercel/analytics im Tech-Stack ergaenzt" },
+    ],
+  },
+  {
     version: "0.39.1",
     date: "2026-03-24",
     title: "Entwicklungsprozess & Quality-Dashboard aktualisiert",

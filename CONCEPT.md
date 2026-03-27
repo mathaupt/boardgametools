@@ -139,7 +139,7 @@ BoardGameTools ist eine Next.js Webanwendung zur Verwaltung von Brettspielen, Sp
 | **Logging** | Pino (strukturiertes JSON-Logging) |
 | **Rate Limiting** | @upstash/ratelimit + @upstash/redis |
 | **File Storage** | @vercel/blob (Cloud) + Local Fallback |
-| **Performance** | @vercel/speed-insights |
+| **Performance** | @vercel/speed-insights + @vercel/analytics |
 
 ---
 

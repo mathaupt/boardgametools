@@ -10,6 +10,10 @@ import {
   Share2,
   Wrench,
   HelpCircle,
+  BarChart3,
+  User,
+  Shield,
+  History,
 } from "lucide-react";
 import Link from "next/link";
 import { FaqAccordion } from "./faq-accordion";
@@ -24,6 +28,10 @@ const iconMap: Record<string, React.ElementType> = {
   clock: Clock,
   share: Share2,
   wrench: Wrench,
+  "bar-chart": BarChart3,
+  user: User,
+  shield: Shield,
+  history: History,
 };
 
 export default function FaqPage() {
