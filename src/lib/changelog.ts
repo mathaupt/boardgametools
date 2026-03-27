@@ -13,13 +13,14 @@ export const changelog: ChangelogEntry[] = [
   {
     version: "0.39.1",
     date: "2026-03-24",
-    title: "Entwicklungsprozess & Agent-Architektur dokumentiert",
-    description: "Lessons Learned aus 105 Findings: 8 spezialisierte Agents mit 91 Regeln und 10-Schritte-Entwicklungsprozess definiert. Alle Fehler systematisch kategorisiert nach Root Cause.",
+    title: "Entwicklungsprozess & Quality-Dashboard aktualisiert",
+    description: "Lessons Learned aus 105 Findings: 8 spezialisierte Agents mit 91 Regeln und 10-Schritte-Entwicklungsprozess definiert. Quality-Dashboard auf v0.39.1 aktualisiert — alle 55 Deep-Dive-Findings resolved (48 behoben + 7 Design-Decisions).",
     changes: [
       { type: "internal", text: "docs/DEVELOPMENT-PROCESS.md: 8 Agents (Security, Architecture, API Design, Database, Testing, Code Quality, DevOps, Documentation)" },
       { type: "internal", text: "91 verbindliche Regeln abgeleitet aus 105 Findings (7 P0, 28 P1, 39 P2, 28 P3)" },
       { type: "internal", text: "10-Schritte-Entwicklungsprozess mit Agent-Zuordnung pro Schritt" },
       { type: "internal", text: "Tag-1-Checkliste: 19 Setup-Punkte die alle P0-Findings verhindert haetten" },
+      { type: "improvement", text: "Quality-Dashboard: Alle 55 Findings auf resolved aktualisiert, Scores auf v0.39.0-Werte" },
     ],
   },
   {
