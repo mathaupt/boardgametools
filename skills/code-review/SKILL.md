@@ -866,7 +866,7 @@ const isValid = await compare(inputPassword, group.password);
 
 ## Evaluator-Feedback (automatisch generiert)
 
-> Letzter Lauf: 2026-03-27 10:32:05
+> Letzter Lauf: 2026-03-27 10:34:54
 > Gesamt-Score: **9.9/10**
 
 ### Kategorie-Scores
@@ -938,12 +938,4 @@ const isValid = await compare(inputPassword, group.password);
 
 ### Offene Findings (1)
 
-- ❌ **SEC-45** npm audit: Bekannte Vulnerabilities: 0 critical, 8 high, 30 moderate
-
-### REGRESSIONEN (1)
-
-- 🔄 **SEC-45** REGRESSION: SEC-45 "npm audit: Bekannte Vulnerabilities" war partially_resolved, ist jetzt open. 0 critical, 8 high, 30 moderate
-
-### Empfohlene Reviewer-Anpassungen
-
-- 🔄 REGRESSION: SEC-45 "npm audit: Bekannte Vulnerabilities" war partially_resolved, ist jetzt open. 0 critical, 8 high, 30 moderate
+- ❌ **SEC-45** npm audit: Bekannte Vulnerabilities: 0 critical, 8 high, 31 moderate
