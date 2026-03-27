@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/require-auth";
 import prisma from "@/lib/db";
-import { Prisma } from "@prisma/client";
+import { Prisma } from "@/generated/prisma/client";
 import logger from "@/lib/logger";
 
 type ValidPeriod = "1h" | "6h" | "24h" | "7d" | "30d";

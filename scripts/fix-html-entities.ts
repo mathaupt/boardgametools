@@ -1,6 +1,9 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "../src/generated/prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
+import "dotenv/config";
 
-const prisma = new PrismaClient();
+const adapter = new PrismaPg({ connectionString: process.env.SQL_DATABASE_URL! });
+const prisma = new PrismaClient({ adapter });
 
 function decodeHtmlEntities(str: string): string {
   return str

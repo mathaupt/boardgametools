@@ -76,3 +76,16 @@ Jeder Eintrag enthält Felder für Root-Cause-Analyse und Gegenmaßnahmen (manue
 **Verantwortlich:** <!-- Manuell ausfüllen -->
 
 ---
+
+## 2026-03-27 12:38:50
+
+| Finding | Priorität | Vorher | Jetzt | Detail |
+|---------|-----------|--------|-------|--------|
+| P2-18: any-Types im Code | P2 | resolved | open | 71 any-Types gefunden |
+| SCALE-60: DB Connection Pooling nicht konfiguriert | P1 | resolved | open | Keine Connection Pool Konfiguration |
+
+**Root-Cause:** <!-- Manuell ausfüllen: Warum ist das Finding zurückgekehrt? -->
+**Gegenmaßnahme:** <!-- Manuell ausfüllen: Wie wird verhindert, dass es erneut passiert? -->
+**Verantwortlich:** <!-- Manuell ausfüllen -->
+
+---

@@ -84,7 +84,7 @@ function lineCount(relPath) {
 /** Run grep and return match count (0 if no matches) */
 function grepCount(pattern, glob = "*.ts", path = "src") {
   try {
-    const cmd = `grep -rn '${pattern}' '${join(ROOT, path)}' --include='${glob}' 2>/dev/null | wc -l`;
+    const cmd = `grep -rn '${pattern}' '${join(ROOT, path)}' --include='${glob}' --exclude-dir=generated 2>/dev/null | wc -l`;
     return parseInt(execSync(cmd, { encoding: "utf8" }).trim(), 10) || 0;
   } catch {
     return 0;
@@ -94,7 +94,7 @@ function grepCount(pattern, glob = "*.ts", path = "src") {
 /** Run grep and return matching lines */
 function grepLines(pattern, glob = "*.{ts,tsx}", path = "src") {
   try {
-    const cmd = `grep -rn '${pattern}' '${join(ROOT, path)}' --include='${glob}' 2>/dev/null`;
+    const cmd = `grep -rn '${pattern}' '${join(ROOT, path)}' --include='${glob}' --exclude-dir=generated 2>/dev/null`;
     return execSync(cmd, { encoding: "utf8" }).trim().split("\n").filter(Boolean);
   } catch {
     return [];
@@ -1250,7 +1250,7 @@ const FINDINGS = [
       const schema = readSafe("prisma/schema.prisma");
       const dbTs = readSafe("src/lib/db.ts");
       const hasPoolConfig = (schema && (schema.includes("connection_limit") || schema.includes("pool_timeout") || schema.includes("pgbouncer"))) ||
-        (dbTs && (dbTs.includes("connection_limit") || dbTs.includes("pool")));
+        (dbTs && (dbTs.includes("connection_limit") || dbTs.includes("pool") || dbTs.includes("PrismaPg") || dbTs.includes("adapter")));
       const hasUrl = schema && schema.includes("DATABASE_URL");
       if (hasPoolConfig) return { status: "resolved", detail: "Connection Pool konfiguriert" };
       if (hasUrl) return { status: "partially_resolved", detail: "DB-URL vorhanden, aber kein explizites Pooling" };

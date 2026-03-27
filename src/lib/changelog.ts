@@ -11,6 +11,20 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.42.0",
+    date: "2026-03-24",
+    title: "Prisma 7 Migration: Neuer Client, PrismaPg Adapter, prisma.config.ts",
+    description: "Vollstaendige Migration auf Prisma 7: Neuer prisma-client Generator (statt prisma-client-js), PrismaPg Driver-Adapter fuer PostgreSQL, prisma.config.ts fuer CLI-Konfiguration. Alle 13 Imports auf generierten Client-Pfad umgestellt.",
+    changes: [
+      { type: "improvement", text: "Prisma 7: Neuer rust-freier Client (schnellere Queries, kleinere Bundles)" },
+      { type: "improvement", text: "PrismaPg Adapter: Direkter PostgreSQL-Treiber statt Query Engine" },
+      { type: "improvement", text: "prisma.config.ts: Zentrale CLI-Konfiguration mit dotenv-Support" },
+      { type: "internal", text: "Generator auf prisma-client mit output ../src/generated/prisma umgestellt" },
+      { type: "internal", text: "13 Imports von @prisma/client auf @/generated/prisma/client migriert" },
+      { type: "internal", text: "Scripts (reset-password, fix-html-entities) auf PrismaPg Adapter migriert" },
+    ],
+  },
+  {
     version: "0.41.0",
     date: "2026-03-24",
     title: "Swagger UI Viewer & OpenAPI Dokumentation",

@@ -1,4 +1,4 @@
-import { Game, Event, GameProposal, User } from "@prisma/client";
+import { Game, Event, GameProposal, User } from "@/generated/prisma/client";
 
 export interface ProposalWithDetails extends GameProposal {
   game: Game;

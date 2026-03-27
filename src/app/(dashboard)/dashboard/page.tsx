@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Gamepad2, CalendarDays, Users, Vote, ArrowRight } from "lucide-react";
 import { PendingInvites } from "@/components/pending-invites";
-import type { GameSession, Event, Game, GameProposal } from "@prisma/client";
+import type { GameSession, Event, Game, GameProposal } from "@/generated/prisma/client";
 
 type UpcomingEvent = Event & {
   selectedGame: Game | null;

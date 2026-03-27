@@ -1,9 +1,12 @@
 import { hash } from "bcryptjs";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "../src/generated/prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
+import "dotenv/config";
 import readline from "node:readline/promises";
 import { stdin as input, stdout as output } from "node:process";
 
-const prisma = new PrismaClient();
+const adapter = new PrismaPg({ connectionString: process.env.SQL_DATABASE_URL! });
+const prisma = new PrismaClient({ adapter });
 
 async function main() {
   const rl = readline.createInterface({ input, output });
