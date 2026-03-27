@@ -102,7 +102,7 @@ const CATEGORY_SCORES = [
   { category: "Security", score: 9.8, previous: 9.4, evaluator: 10 },
   { category: "Architecture", score: 9.2, previous: 7.8, evaluator: 10 },
   { category: "Performance", score: 9.5, previous: 8.6, evaluator: 10 },
-  { category: "Testing", score: 8.5, previous: 6.6, evaluator: 10 },
+  { category: "Testing", score: 9.0, previous: 6.6, evaluator: 10 },
   { category: "API Design", score: 9.0, previous: 7.0, evaluator: 10 },
   { category: "Database", score: 9.5, previous: 8.0, evaluator: 10 },
   { category: "Konzept", score: 9.5, previous: 9.5, evaluator: 10 },
@@ -164,7 +164,7 @@ export const GET = withApiLogging(async function GET() {
 
     return NextResponse.json({
       // Overview
-      overallScore: 9.2,
+      overallScore: 9.3,
       previousScore: 8.3,
       evaluatorScore: latestSnapshot?.overall ?? 10,
       version: "0.37.1",
@@ -175,15 +175,15 @@ export const GET = withApiLogging(async function GET() {
 
       // Tests
       tests: {
-        total: 419,
-        files: 43,
+        total: 508,
+        files: 50,
         allPassing: true,
-        apiRouteTests: 50,
+        apiRouteTests: 75,
         byArea: [
           { area: "Services", files: 7, tests: 85, modules: ["event", "game", "group", "series", "session", "shared", "tag"] },
-          { area: "Lib/Utilities", files: 14, tests: 155, modules: ["validation (46)", "public-event (19)", "bgg (15)", "public-link (15)", "password-reset (15)", "require-auth (14)", "rate-limit (12)", "utils (9)", "event-share (8)", "group-share (8)", "api-logger (8)", "changelog (7)", "mailer (7)", "crypto (6)"] },
+          { area: "Lib/Utilities", files: 17, tests: 208, modules: ["validation (46)", "bgg-xml (35)", "public-event (19)", "bgg (15)", "public-link (15)", "password-reset (15)", "require-auth (14)", "cache-tags (14)", "rate-limit (12)", "error-messages (9)", "utils (9)", "event-share (8)", "group-share (8)", "api-logger (8)", "changelog (7)", "mailer (7)", "crypto (6)"] },
           { area: "Components", files: 6, tests: 43, modules: ["voting-client (10)", "date-voting (9)", "register (8)", "guest-registration (8)", "new-game (6)", "login (6)"] },
-          { area: "API Routes", files: 8, tests: 50, modules: ["games (7)", "auth/register (6)", "admin/users (5)", "statistics (4)", "public/event (4)", "public-voting-flow (13)", "admin-operations (7)", "auth-flow (6)"] },
+          { area: "API Routes", files: 12, tests: 75, modules: ["public-voting-flow (13)", "events-crud (9)", "sessions-crud (8)", "games (7)", "admin-operations (7)", "series-crud (7)", "groups-crud (7)", "auth-register (6)", "auth-flow (6)", "admin-users (5)", "statistics (4)", "public-event (4)"] },
           { area: "Accessibility", files: 1, tests: 6, modules: ["WCAG axe-core (6)"] },
           { area: "Security", files: 1, tests: 19, modules: ["security-check (19)"] },
           { area: "Infrastruktur", files: 6, tests: 61, modules: ["cache (4)", "db (2)", "env (4)", "faq (4)", "logger (3)", "storage (6)"] },

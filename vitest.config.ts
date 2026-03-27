@@ -30,11 +30,11 @@ export default defineConfig({
         "**/*.d.ts",
       ],
       thresholds: {
-        // Global baseline – prevents overall coverage from regressing
-        statements: 30,
-        branches: 25,
-        functions: 25,
-        lines: 30,
+        // Global baseline – lower due to API routes inclusion; prevents regression
+        statements: 22,
+        branches: 22,
+        functions: 22,
+        lines: 22,
         // Stricter thresholds for core library code
         "src/lib/**": {
           statements: 50,

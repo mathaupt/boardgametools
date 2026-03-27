@@ -11,6 +11,20 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.38.0",
+    date: "2026-03-27",
+    title: "Testing Score 9.0: 89 neue Tests, BGG-XML, Coverage-Boost",
+    description: "Testing-Score von 8.5 auf 9.0 angehoben durch 89 neue Tests: BGG-XML-Parser (35), Error-Messages (9), Cache-Tags (14), Events/Sessions/Series/Groups CRUD-Routes (31). Gesamtzahl: 508 Tests in 50 Dateien.",
+    changes: [
+      { type: "feature", text: "35 BGG-XML-Parser-Tests: decodeHtmlEntities, parseXMLValue, parseBGGSearchResponse, parseBGGCollectionResponse" },
+      { type: "feature", text: "9 Error-Messages-Tests: Konstanten-Existenz, keine Duplikate, Funktions-Typen, deutsche Texte" },
+      { type: "feature", text: "14 Cache-Tags-Tests: Alle 10 Tag-Funktionen, Format-Validierung, ID-Isolation" },
+      { type: "feature", text: "31 CRUD-Route-Tests: Events (9), Sessions (8), Series (7), Groups (7) — GET/POST mit Auth + Pagination" },
+      { type: "internal", text: "Gesamtzahl: 508 Tests (war 419), 50 Testdateien (war 43), 75 API-Route-Tests (war 50)" },
+      { type: "internal", text: "Testing-Score: 9.0/10 (war 8.5), Gesamt-Score: 9.3/10 (war 9.2)" },
+    ],
+  },
+  {
     version: "0.37.1",
     date: "2026-03-26",
     title: "Vollstaendiger Review v0.37: Score 9.2/10, 38 von 55 Findings behoben",

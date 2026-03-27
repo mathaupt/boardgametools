@@ -52,3 +52,15 @@ Jeder Eintrag enthält Felder für Root-Cause-Analyse und Gegenmaßnahmen (manue
 **Verantwortlich:** <!-- Manuell ausfüllen -->
 
 ---
+
+## 2026-03-27 08:12:23
+
+| Finding | Priorität | Vorher | Jetzt | Detail |
+|---------|-----------|--------|-------|--------|
+| SEC-45: npm audit: Bekannte Vulnerabilities | P2 | resolved | partially_resolved | 2 high nur in devDependencies |
+
+**Root-Cause:** lint-staged Package hat brace-expansion als transitive devDependency eingebracht. Production: 0 high/critical.
+**Gegenmaßnahme:** False Positive — npm audit --omit=dev --audit-level=high gibt exit 0.
+**Verantwortlich:** Devin (automatisiert)
+
+---

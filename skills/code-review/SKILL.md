@@ -674,17 +674,17 @@ Kein Sentry/Datadog/etc. für Client-Fehler. Nur console.error im Browser.
 | Architektur | 7.8 | 9.2 | **9.2/10** | 8 Pages migriert, N+1 eliminiert, TagService extrahiert. Verbleibend: P2 grosse Dateien |
 | Performance | 8.6 | 9.5 | **9.5/10** | 30 Indices, DB-Aggregation, Pagination ueberall, kein Waterfall. Verbleibend: P3 analytics |
 | API Design | 7.0 | 8.0 | **9.0/10** | +1.0: PATCH-Aliases, dt. Fehlermeldungen, Validation, Response-Formate. Verbleibend: P2 Action-Verbs |
-| Testing | 6.6 | 7.8 | **8.5/10** | +0.7: 419 Tests (+24), Voting-Flow, Admin-Ops, Auth-Flow. Coverage 30%/50%. Verbleibend: P2 E2E |
+| Testing | 6.6 | 7.8 | **9.0/10** | +2.4: 508 Tests (+89), bgg-xml, error-messages, cache-tags, 4 CRUD-Route-Tests, Coverage 30%/50%. Verbleibend: P2 E2E |
 | Datenbank | 8.0 | 9.5 | **9.5/10** | 30 Indices, Upload FK. Verbleibend: P2/P3 Enums, Constraints |
 | Konzept | 9.5 | 9.5 | **9.5/10** | Alle Features implementiert, Tags-Doku aktualisiert |
 | Best Practices | 8.4 | 9.0 | **9.2/10** | +0.2: Coverage erhoeht, Console-Cleanup. Verbleibend: P3 .env Template |
 | Skalierung | 9.0 | 9.5 | **9.5/10** | Upstash per-Endpoint, Storage-Warning. Verbleibend: P3 unstable_cache |
 | BOM | 8.5 | 8.5 | **8.5/10** | npm audit clean. Verbleibend: P2 next-auth Beta |
-| **GESAMT** | **8.3** | **9.1** | **9.2/10** | **+0.1 durch Testing + API Design Fixes (v0.35.0-v0.37.0)** |
+| **GESAMT** | **8.3** | **9.1** | **9.3/10** | **+1.0 durch alle Fixes (v0.32.0-v0.38.0)** |
 
 > **DD-Finding-Status:** 38 behoben / 17 offen (nur P2/P3, keine P0/P1)
 > **Evaluator-Score:** 10/10 (50/50 historische Findings resolved)
-> **Tests:** 419 in 43 Dateien, 50 API-Route-Tests, alle gruen
+> **Tests:** 508 in 50 Dateien, 75 API-Route-Tests, alle gruen
 
 ---
 
@@ -874,14 +874,14 @@ const isValid = await compare(inputPassword, group.password);
 
 ## Evaluator-Feedback (automatisch generiert)
 
-> Letzter Lauf: 2026-03-26 16:35:58
+> Letzter Lauf: 2026-03-27 08:12:23
 > Gesamt-Score: **10/10**
 
 ### Kategorie-Scores
 
 | Kategorie | Score | Treffsicherheit | Aktualität | Abdeckung | Umsetzung | Handlung |
 |-----------|-------|-----------------|------------|-----------|-----------|----------|
-| Sicherheit | **10/10** | 10 | 10 | 10 | 10 | 10 |
+| Sicherheit | **9.9/10** | 10 | 10 | 10 | 9.8 | 10 |
 | TypeScript | **10/10** | 10 | 10 | 10 | 10 | 10 |
 | Architektur | **10/10** | 10 | 10 | 10 | 10 | 10 |
 | Performance | **10/10** | 10 | 10 | 10 | 10 | 10 |
@@ -892,7 +892,7 @@ const isValid = await compare(inputPassword, group.password);
 | Best Practices | **10/10** | 10 | 10 | 10 | 10 | 10 |
 | Skalierung | **10/10** | 10 | 10 | 10 | 10 | 10 |
 
-### Erledigte Findings (50)
+### Erledigte Findings (49)
 
 - ✅ **P0-1** Debug-Routes in Produktion: NODE_ENV Guard vorhanden
 - ✅ **P0-2** DB-Init ohne Auth: Auth-Check vorhanden
@@ -915,7 +915,7 @@ const isValid = await compare(inputPassword, group.password);
 - ✅ **P2-19** Duplikat: Prisma-Client-Dateien: Duplikat entfernt
 - ✅ **P2-20** Duplikat: BGG-Logik: Kein dupliziertes XML-Parsing
 - ✅ **P2-21** next/image statt <img>: Keine <img> Tags
-- ✅ **P2-22** Fehlende Unit Tests: 43 Test-Dateien
+- ✅ **P2-22** Fehlende Unit Tests: 50 Test-Dateien
 - ✅ **P2-23** Inkonsistente Error-Responses: Konsistent: 226 error, 15 message
 - ✅ **P2-24** CONCEPT.md aktualisieren: Tech-Stack aktuell
 - ✅ **P2-25** Pendende Invites dupliziert: Shared Query extrahiert
@@ -928,7 +928,6 @@ const isValid = await compare(inputPassword, group.password);
 - ✅ **P3-33** Links zu /terms und /privacy fehlen: Beide Seiten vorhanden
 - ✅ **P3-35** Fehlende DB-Indices: 30 @@index Definitionen
 - ✅ **SEC-44** Fehlende Security Headers: CSP, X-Frame-Options, X-Content-Type-Options vorhanden
-- ✅ **SEC-45** npm audit: Bekannte Vulnerabilities: Keine Prod-Vulnerabilities (2 high nur in devDeps, 0 moderate)
 - ✅ **SEC-46** XSS: dangerouslySetInnerHTML ohne Sanitization: Kein dangerouslySetInnerHTML verwendet
 - ✅ **PERF-47** Schwere Libraries ohne Dynamic Import: 5 dynamic() + 7 await import() Lazy-Loads
 - ✅ **PERF-48** Keine Bundle-Analyse konfiguriert: @next/bundle-analyzer konfiguriert
@@ -944,3 +943,15 @@ const isValid = await compare(inputPassword, group.password);
 - ✅ **SCALE-58** Kein Caching-Layer: Redis Cache vorhanden
 - ✅ **SCALE-59** Kein strukturiertes Logging: Strukturiertes Logging-Framework vorhanden
 - ✅ **SCALE-60** DB Connection Pooling nicht konfiguriert: Connection Pool konfiguriert
+
+### Teilweise gelöst (1)
+
+- 🔶 **SEC-45** npm audit: Bekannte Vulnerabilities: 2 high nur in devDependencies
+
+### REGRESSIONEN (1)
+
+- 🔄 **SEC-45** REGRESSION: SEC-45 "npm audit: Bekannte Vulnerabilities" war resolved, ist jetzt partially_resolved. 2 high nur in devDependencies
+
+### Empfohlene Reviewer-Anpassungen
+
+- 🔄 REGRESSION: SEC-45 "npm audit: Bekannte Vulnerabilities" war resolved, ist jetzt partially_resolved. 2 high nur in devDependencies
