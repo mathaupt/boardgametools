@@ -7,6 +7,7 @@ const isDev = process.env.NODE_ENV === "development";
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  serverExternalPackages: ["@prisma/client", "@prisma/adapter-pg"],
   turbopack: {
     resolveAlias: {
       '@': './src',
