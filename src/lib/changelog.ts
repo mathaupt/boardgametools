@@ -11,6 +11,18 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.41.0",
+    date: "2026-03-24",
+    title: "OpenAPI/Swagger Dokumentation & Dokumentations-Pflicht in AGENTS.md",
+    description: "Vollstaendige OpenAPI 3.1 Spezifikation fuer alle 71 API-Endpunkte erstellt (docs/openapi.yaml). AGENTS.md um Pflicht-Regel 6 'Dokumentations-Pflicht' erweitert: Swagger, FEATURES.md, FAQ und CONCEPT.md muessen bei jeder Aenderung aktuell gehalten werden.",
+    changes: [
+      { type: "feature", text: "docs/openapi.yaml: OpenAPI 3.1 Spec mit allen 71 Endpunkten, Request/Response-Schemas, Auth-Infos und Tags" },
+      { type: "improvement", text: "AGENTS.md: Neue Pflicht-Regel 6 'Dokumentations-Pflicht' — definiert welches Dokument bei welcher Aenderung aktualisiert werden muss" },
+      { type: "improvement", text: "AGENTS.md: Feature-Entwicklungs-Workflow von 7 auf 11 Schritte erweitert (inkl. Swagger, FEATURES.md, FAQ)" },
+      { type: "improvement", text: "AGENTS.md: Wichtige-Dateien-Tabelle um 6 Eintraege erweitert (openapi.yaml, FEATURES.md, faq.ts, error-messages.ts, DEVELOPMENT-PROCESS.md, .env.local.example)" },
+    ],
+  },
+  {
     version: "0.40.1",
     date: "2026-03-24",
     title: "Feature-Dokumentation: docs/FEATURES.md",

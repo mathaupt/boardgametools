@@ -82,11 +82,46 @@ include: { user: { select: { id: true, name: true, email: true } } }
 include: { createdBy: { select: { id: true, name: true, email: true } } }
 ```
 
-### 5. Komponenten-Größe
+### 5. Komponenten-Groesse
 
 - Maximum ~300 Zeilen pro Datei
-- Große Komponenten in Subkomponenten aufteilen
-- Shared State über Props oder Context weitergeben
+- Grosse Komponenten in Subkomponenten aufteilen
+- Shared State ueber Props oder Context weitergeben
+
+### 6. Dokumentations-Pflicht (KRITISCH!)
+
+**Alle Dokumentationen MUESSEN bei jeder Aenderung aktuell gehalten werden!**
+
+| Dokument | Pfad | Aktualisieren bei... |
+|----------|------|---------------------|
+| **Changelog** | `src/lib/changelog.ts` | JEDER Aenderung (Pflicht-Regel 1) |
+| **CONCEPT.md** | `CONCEPT.md` | Neues Feature, Tech-Stack-Aenderung, Schema-Aenderung |
+| **FEATURES.md** | `docs/FEATURES.md` | Neue Seite, neuer Endpunkt, geaenderte Funktionalitaet |
+| **OpenAPI/Swagger** | `docs/openapi.yaml` | Neuer API-Endpunkt, geaendertes Request/Response-Schema, neue Query-Parameter |
+| **FAQ** | `src/lib/faq.ts` | Neues Feature das Nutzer betrifft, geaenderte Bedienung |
+| **AGENTS.md** | `AGENTS.md` | Neue Regeln, neue Dateien, neue Skills, geaenderte Konventionen |
+
+**Workflow bei neuem API-Endpunkt:**
+1. Route in `src/app/api/` implementieren
+2. `docs/openapi.yaml` um den Endpunkt erweitern (Pfad, Methoden, Request/Response, Auth)
+3. `docs/FEATURES.md` aktualisieren (falls nutzersichtbar)
+4. `src/lib/faq.ts` erweitern (falls neue Nutzerfrage entsteht)
+5. `CONCEPT.md` aktualisieren (falls neuer Feature-Bereich)
+6. Changelog-Eintrag schreiben
+
+**Workflow bei neuer Seite/Feature:**
+1. Seite unter `src/app/` implementieren
+2. `docs/FEATURES.md` um die Seite erweitern (Route, Zugriff, Aktionen)
+3. `src/lib/faq.ts` um relevante Fragen erweitern
+4. `CONCEPT.md` aktualisieren
+5. Changelog-Eintrag schreiben
+
+**Swagger-Konventionen (`docs/openapi.yaml`):**
+- Alle Beschreibungen auf Deutsch
+- Tags nach Domaene: Auth, Games, BGG, Sessions, Series, Events, Groups, Public, Admin, System
+- Jeder Endpunkt: summary, parameters, requestBody (mit Schema), responses
+- Auth: `security: []` fuer oeffentliche Endpunkte, Session-Cookie fuer geschuetzte
+- Fehler immer als `{ error: string }` Schema referenzieren
 
 ## Projektstruktur
 
@@ -95,7 +130,10 @@ boardgametools/
 ├── AGENTS.md              # Diese Datei (IMMER aktuell halten!)
 ├── CONCEPT.md             # Detailliertes Konzept
 ├── skills/                # AgentSkills (siehe unten)
-├── docs/                  # Projekt-Dokumentation (gitignored)
+├── docs/                  # Projekt-Dokumentation
+│   ├── FEATURES.md        # **Feature-Dokumentation (PFLICHT aktuell halten!)**
+│   ├── DEVELOPMENT-PROCESS.md  # Entwicklungsprozess & Agent-Architektur
+│   ├── openapi.yaml       # **Swagger/OpenAPI Spec (PFLICHT aktuell halten!)**
 │   ├── architecture/      # Architektur-Snapshots und Bewertungen
 │   ├── best-practices/    # Best-Practices-Snapshots und Bewertungen
 │   ├── bill-of-materials/ # BOM-Snapshots und Bewertungen
@@ -148,12 +186,16 @@ boardgametools/
 ### Neues Feature entwickeln
 
 1. Lies den entsprechenden Skill in `skills/`
-2. Prüfe das Datenmodell in `prisma/schema.prisma`
+2. Pruefe das Datenmodell in `prisma/schema.prisma`
 3. Erstelle/erweitere API Routes in `src/app/api/`
-4. Erstelle UI-Komponenten und Seiten
-5. Schreibe Unit Tests in `tests/unit/`
-6. **Changelog-Eintrag schreiben** in `src/lib/changelog.ts`
-7. Commit + Review-Evaluator prüfen
+4. **`docs/openapi.yaml` um neue Endpunkte erweitern**
+5. Erstelle UI-Komponenten und Seiten
+6. **`docs/FEATURES.md` aktualisieren**
+7. Schreibe Unit Tests in `tests/unit/`
+8. **`src/lib/faq.ts` erweitern** (falls neue Nutzerfrage)
+9. **`CONCEPT.md` aktualisieren** (falls neuer Feature-Bereich)
+10. **Changelog-Eintrag schreiben** in `src/lib/changelog.ts`
+11. Commit + Review-Evaluator pruefen
 
 ### Datenbank ändern
 
@@ -229,13 +271,19 @@ export async function GET() {
 | `src/lib/utils.ts` | Utility Funktionen |
 | `src/lib/validation.ts` | Input-Validierung |
 | `src/lib/rate-limit.ts` | Rate Limiting |
-| `src/lib/changelog.ts` | **Changelog (PFLICHT bei jeder Änderung!)** |
+| `src/lib/changelog.ts` | **Changelog (PFLICHT bei jeder Aenderung!)** |
+| `src/lib/faq.ts` | **FAQ (PFLICHT bei neuen Features aktualisieren!)** |
+| `src/lib/error-messages.ts` | Zentrale deutsche Fehlermeldungen |
+| `docs/openapi.yaml` | **Swagger/OpenAPI Spec (PFLICHT bei API-Aenderungen!)** |
+| `docs/FEATURES.md` | **Feature-Dokumentation (PFLICHT bei neuen Seiten/Features!)** |
+| `docs/DEVELOPMENT-PROCESS.md` | Entwicklungsprozess & Agent-Architektur (91 Regeln) |
 | `scripts/review-evaluate.mjs` | Review-Evaluator (50 Findings + Regressionserkennung) |
 | `docs/code-reviews/regressions.md` | **Regressions-Log** (automatisch + manuell) |
-| `docs/code-reviews/history/` | Historische Review-Snapshots (JSON, für Regression-Diff) |
+| `docs/code-reviews/history/` | Historische Review-Snapshots (JSON, fuer Regression-Diff) |
 | `prisma/schema.prisma` | Datenbank-Schema |
 | `.env` | Lokale Umgebungsvariablen |
 | `.env.prod` | Prod-DB-Credentials (NIEMALS committen!) |
+| `.env.local.example` | Template fuer lokale Entwicklung |
 
 ## Umgebungsvariablen
 
