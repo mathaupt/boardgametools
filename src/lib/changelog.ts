@@ -13,13 +13,15 @@ export const changelog: ChangelogEntry[] = [
   {
     version: "0.41.0",
     date: "2026-03-24",
-    title: "OpenAPI/Swagger Dokumentation & Dokumentations-Pflicht in AGENTS.md",
-    description: "Vollstaendige OpenAPI 3.1 Spezifikation fuer alle 71 API-Endpunkte erstellt (docs/openapi.yaml). AGENTS.md um Pflicht-Regel 6 'Dokumentations-Pflicht' erweitert: Swagger, FEATURES.md, FAQ und CONCEPT.md muessen bei jeder Aenderung aktuell gehalten werden.",
+    title: "Swagger UI Viewer & OpenAPI Dokumentation",
+    description: "Integrierter Swagger UI Viewer im Admin-Bereich unter /dashboard/admin/api-docs. Vollstaendige OpenAPI 3.1 Spezifikation fuer alle 71 API-Endpunkte. AGENTS.md um Pflicht-Regel 6 'Dokumentations-Pflicht' erweitert.",
     changes: [
-      { type: "feature", text: "docs/openapi.yaml: OpenAPI 3.1 Spec mit allen 71 Endpunkten, Request/Response-Schemas, Auth-Infos und Tags" },
-      { type: "improvement", text: "AGENTS.md: Neue Pflicht-Regel 6 'Dokumentations-Pflicht' — definiert welches Dokument bei welcher Aenderung aktualisiert werden muss" },
-      { type: "improvement", text: "AGENTS.md: Feature-Entwicklungs-Workflow von 7 auf 11 Schritte erweitert (inkl. Swagger, FEATURES.md, FAQ)" },
-      { type: "improvement", text: "AGENTS.md: Wichtige-Dateien-Tabelle um 6 Eintraege erweitert (openapi.yaml, FEATURES.md, faq.ts, error-messages.ts, DEVELOPMENT-PROCESS.md, .env.local.example)" },
+      { type: "feature", text: "Swagger UI Viewer unter Admin > API-Docs — interaktive API-Dokumentation im Browser" },
+      { type: "feature", text: "docs/openapi.yaml: OpenAPI 3.1 Spec mit allen 71 Endpunkten, Request/Response-Schemas, Auth-Infos und 18 Tags" },
+      { type: "feature", text: "/api/docs Endpunkt: Liefert OpenAPI-YAML (Admin-geschuetzt)" },
+      { type: "improvement", text: "Navbar: Neuer Admin-Link 'API-Docs' mit FileCode-Icon" },
+      { type: "improvement", text: "AGENTS.md: Neue Pflicht-Regel 6 'Dokumentations-Pflicht' — Swagger, FEATURES.md, FAQ muessen aktuell bleiben" },
+      { type: "improvement", text: "AGENTS.md: Feature-Workflow von 7 auf 11 Schritte erweitert" },
     ],
   },
   {
