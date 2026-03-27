@@ -14,7 +14,7 @@ export const POST = withApiLogging(async function POST(request: NextRequest) {
 
     const validationError = firstError(
       validateString(targetUserId, "userId", { max: 100 }),
-      validateString(newPassword, "newPassword", { max: 200 }),
+      validateString(newPassword, "newPassword", { max: 128 }),
     );
     if (validationError) {
       return NextResponse.json({ error: validationError }, { status: 400 });

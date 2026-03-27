@@ -18,8 +18,8 @@ export const POST = withApiLogging(async function POST(request: Request) {
       return NextResponse.json({ error: "Token fehlt" }, { status: 400 });
     }
 
-    if (!password || typeof password !== "string" || password.length < 8) {
-      return NextResponse.json({ error: "Passwort muss mindestens 8 Zeichen haben" }, { status: 400 });
+    if (!password || typeof password !== "string" || password.length < 8 || password.length > 128) {
+      return NextResponse.json({ error: "Passwort muss zwischen 8 und 128 Zeichen lang sein" }, { status: 400 });
     }
 
     const tokenRecord = await verifyResetToken(token);

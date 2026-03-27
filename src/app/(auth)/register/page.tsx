@@ -67,6 +67,12 @@ export default function RegisterPage() {
       return;
     }
 
+    if (password.length > 128) {
+      setError("Passwort darf maximal 128 Zeichen lang sein");
+      setIsLoading(false);
+      return;
+    }
+
     if (passwordStrength < 2) {
       setError("Passwort ist zu schwach. Bitte verwenden Sie eine Kombination aus Buchstaben, Zahlen und Sonderzeichen.");
       setIsLoading(false);

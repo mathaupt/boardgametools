@@ -17,7 +17,7 @@ export const POST = withApiLogging(async function POST(request: NextRequest) {
 
     const lengthError = firstError(
       validateString(name, "name", { min: 1, max: 100 }),
-      validateString(password, "password", { min: 8, max: 100 }),
+      validateString(password, "password", { min: 8, max: 128 }),
       validateEmail(email)
     );
     if (lengthError) return NextResponse.json({ error: lengthError }, { status: 400 });

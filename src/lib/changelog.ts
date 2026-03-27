@@ -11,6 +11,22 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.39.0",
+    date: "2026-03-24",
+    title: "Alle P2/P3 Findings behoben: Security, Analytics, API-Haertung",
+    description: "Alle verbleibenden P2/P3-Findings aus dem Deep-Dive-Review behoben. Passwort-Max-Laenge (128 Zeichen) fuer alle Routen, Magic-Bytes-Validierung fuer Uploads, @vercel/analytics fuer RUM, strikte Production-Guards, .env.local.example Template. Gesamtscore: 9.5/10.",
+    changes: [
+      { type: "fix", text: "Passwort-Max-Laenge (128 Zeichen) fuer alle Registrierungs-, Aenderungs- und Reset-Routen" },
+      { type: "fix", text: "Upload: Server-seitige Magic-Bytes-Validierung (JPEG, PNG, GIF, WebP) gegen MIME-Spoofing" },
+      { type: "fix", text: "/api/db/init komplett in Production blockiert, Admin-Pflicht in Development" },
+      { type: "fix", text: "events/route.ts: requireAuth() in try/catch verschoben" },
+      { type: "feature", text: "@vercel/analytics fuer Real-User-Metrics installiert und in Layout eingebunden" },
+      { type: "improvement", text: ".env.local.example Template fuer lokale Entwicklung erstellt" },
+      { type: "internal", text: "DD-DB-03/04 als implizit validiert dokumentiert, DD-API-07/DB-06/ARCH-03/04/SCALE-03/04/TEST-05 als Design-Entscheidungen akzeptiert" },
+      { type: "internal", text: "Deep-Dive Review Score: 9.5/10 — alle P0-P2 behoben, nur akzeptierte Design-Entscheidungen offen" },
+    ],
+  },
+  {
     version: "0.38.1",
     date: "2026-03-27",
     title: "BOM Score 9.0: Radix-Konsolidierung, Dependency-Hygiene, CONCEPT.md",

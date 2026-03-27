@@ -208,7 +208,7 @@ fi
 if should_run "A05"; then
   section "⚙️  OWASP A05 – Security Misconfiguration"
 
-  if git ls-files 2>/dev/null | grep '^\.env' | grep -v '.env.example' >/dev/null 2>&1; then
+  if git ls-files 2>/dev/null | grep '^\.env' | grep -v '.env.example' | grep -v '.env.local.example' >/dev/null 2>&1; then
     fail ".env Dateien werden versioniert" "A05"
   else
     pass ".env Dateien sind geschützt" "A05"

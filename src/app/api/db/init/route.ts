@@ -7,9 +7,13 @@ import logger from "@/lib/logger";
 import { Errors } from "@/lib/error-messages";
 
 export const POST = withApiLogging(async function POST() {
-  // Only allow in development or for authenticated admins
+  // Block entirely in production
+  if (env.NODE_ENV !== "development") {
+    return NextResponse.json({ error: Errors.NOT_AVAILABLE }, { status: 404 });
+  }
+  // Require admin even in development
   const session = await auth();
-  if (env.NODE_ENV !== "development" && session?.user?.role !== "ADMIN") {
+  if (session?.user?.role !== "ADMIN") {
     return NextResponse.json({ error: Errors.NOT_AVAILABLE }, { status: 404 });
   }
 

@@ -4,14 +4,14 @@ import { withApiLogging } from "@/lib/api-logger";
 import { EventService } from "@/lib/services/event.service";
 
 export const GET = withApiLogging(async function GET(request: NextRequest) {
-  const { userId } = await requireAuth();
-
-  const { searchParams } = new URL(request.url);
-  const eventId = searchParams.get("eventId");
-  const page = parseInt(searchParams.get("page") || "0", 10);
-  const limit = Math.min(parseInt(searchParams.get("limit") || "0", 10), 100);
-
   try {
+    const { userId } = await requireAuth();
+
+    const { searchParams } = new URL(request.url);
+    const eventId = searchParams.get("eventId");
+    const page = parseInt(searchParams.get("page") || "0", 10);
+    const limit = Math.min(parseInt(searchParams.get("limit") || "0", 10), 100);
+
     if (eventId) {
       const event = await EventService.getById(userId, eventId);
       return NextResponse.json(event);
@@ -25,9 +25,9 @@ export const GET = withApiLogging(async function GET(request: NextRequest) {
 });
 
 export const POST = withApiLogging(async function POST(request: NextRequest) {
-  const { userId } = await requireAuth();
-
   try {
+    const { userId } = await requireAuth();
+
     const body = await request.json();
     const newEvent = await EventService.create(userId, body);
     return NextResponse.json(newEvent, { status: 201 });

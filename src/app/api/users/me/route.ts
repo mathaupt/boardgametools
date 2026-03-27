@@ -38,7 +38,7 @@ export const PUT = withApiLogging(async function PUT(request: NextRequest) {
     const validationError = firstError(
       validateString(name, "name", { required: false, max: 100 }),
       validateString(email, "email", { required: false, max: 254 }),
-      validateString(newPassword, "newPassword", { required: false, min: 8, max: 100 })
+      validateString(newPassword, "newPassword", { required: false, min: 8, max: 128 })
     );
     if (validationError) return NextResponse.json({ error: validationError }, { status: 400 });
 

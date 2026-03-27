@@ -106,8 +106,13 @@ BoardGameTools ist eine Next.js Webanwendung zur Verwaltung von Brettspielen, Sp
 
 ### 16. Weitere Features
 - **FAQ-Seite**, **Changelog**, **Health-Check** (`/api/health`)
-- **Rate-Limiting**: In-Memory Rate-Limiter für API-Schutz
+- **Rate-Limiting**: Redis-basiert (@upstash/ratelimit) mit In-Memory-Fallback
 - **Prod-Datenbank-Backup**: Automatisiertes Backup-System (max. 10 Backups)
+- **Soft-Delete**: Spiele, Sessions, Events, Gruppen, Serien werden per `deletedAt` markiert statt physisch geloescht
+- **Strukturiertes Logging**: Pino JSON-Logging, API-Request-Logging in DB (ApiLog)
+- **Qualitaets-Dashboard**: Admin-Monitoring-Tab mit Review-Scores, Findings, Coverage, Architektur-Diagramm, Tech-Stack
+- **Zentrales Error-Messages-Modul**: Alle API-Fehlermeldungen auf Deutsch in `src/lib/error-messages.ts`
+- **Security Headers**: CSP, HSTS, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy
 
 ---
 

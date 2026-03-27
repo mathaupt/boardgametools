@@ -79,6 +79,10 @@ function ResetPasswordForm() {
       setError("Passwort muss mindestens 8 Zeichen lang sein");
       return;
     }
+    if (password.length > 128) {
+      setError("Passwort darf maximal 128 Zeichen lang sein");
+      return;
+    }
     if (password !== confirmPassword) {
       setError("Passwörter stimmen nicht überein");
       return;

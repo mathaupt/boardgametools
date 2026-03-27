@@ -124,13 +124,17 @@ describe("API /api/events", () => {
       );
     });
 
-    it("throws when not authenticated (requireAuth outside try/catch)", async () => {
+    it("returns 401 when not authenticated", async () => {
       vi.mocked(requireAuth).mockRejectedValue(
         new (ApiError as unknown as new (s: number, m: string) => Error)(401, "Unauthorized")
       );
 
       const req = createMockRequest("GET", "http://localhost:3000/api/events");
-      await expect((GET as Function)(req)).rejects.toThrow("Unauthorized");
+      const res = await (GET as Function)(req);
+      const { status } = parseResponse(res);
+
+      expect(status).toBe(401);
+      expect(handleApiError).toHaveBeenCalled();
     });
 
     it("handles service errors via handleApiError", async () => {
@@ -176,7 +180,7 @@ describe("API /api/events", () => {
       expect(handleApiError).toHaveBeenCalledWith(validationError);
     });
 
-    it("throws when not authenticated (requireAuth outside try/catch)", async () => {
+    it("returns 401 when not authenticated", async () => {
       vi.mocked(requireAuth).mockRejectedValue(
         new (ApiError as unknown as new (s: number, m: string) => Error)(401, "Unauthorized")
       );
@@ -184,7 +188,11 @@ describe("API /api/events", () => {
       const req = createMockRequest("POST", "http://localhost:3000/api/events", {
         body: { title: "Game Night" },
       });
-      await expect((POST as Function)(req)).rejects.toThrow("Unauthorized");
+      const res = await (POST as Function)(req);
+      const { status } = parseResponse(res);
+
+      expect(status).toBe(401);
+      expect(handleApiError).toHaveBeenCalled();
       expect(EventService.create).not.toHaveBeenCalled();
     });
   });

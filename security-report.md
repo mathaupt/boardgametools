@@ -1,10 +1,10 @@
 # Security Check Bericht
 
-- Status: BESTANDEN
-- Fehler: 0
-- Warnungen: 4
-- Datum: 2026-03-27 09:20:42
+- Status: FEHLGESCHLAGEN
+- Fehler: 1
+- Warnungen: 5
+- Datum: 2026-03-27 11:34:16
 - Branch: main
-- Commit: c9c257c
+- Commit: 9fd3b12
 
 Geprüfte Kategorien: A01, A02, A03, A04, A05, A06, A07, A08, A09, A10, PII (Datenschutz).
