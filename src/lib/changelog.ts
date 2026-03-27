@@ -11,6 +11,17 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.40.1",
+    date: "2026-03-24",
+    title: "Feature-Dokumentation: docs/FEATURES.md",
+    description: "Vollstaendige Feature-Dokumentation erstellt mit allen 41 Seiten, 71 API-Endpunkten und 27 Datenbank-Modellen. Organisiert nach 14 Feature-Bereichen mit Aktionen, Formularen und Zugriffsrechten.",
+    changes: [
+      { type: "internal", text: "docs/FEATURES.md: 14 Feature-Bereiche dokumentiert (Dashboard, Spiele, BGG, Sessions, Reihen, Events, Termine, Gaeste, Gruppen, Statistiken, Profil, Admin, Sonstige, Technik)" },
+      { type: "internal", text: "Jede Seite mit Route, Zugriffsrecht, Aktionen, Formularen und Datenansichten beschrieben" },
+      { type: "internal", text: "Technische Uebersicht: Navigation, Seiten-Matrix, Datenmodelle, Tech-Stack, Zugriffsrechte" },
+    ],
+  },
+  {
     version: "0.40.0",
     date: "2026-03-24",
     title: "Erweiterte FAQ: 11 Sektionen, 55 Fragen zu allen Features",
