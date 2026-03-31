@@ -17,10 +17,13 @@ export const changelog: ChangelogEntry[] = [
     description: "Umfassende Security-Haertung basierend auf Security Best Practices Review. Dependency Vulnerabilities behoben, BGG API mit Rate Limiting und Input-Validierung abgesichert, Passwort-Uebertragung auf Header-only umgestellt.",
     changes: [
       { type: "fix", text: "Dependency Vulnerabilities behoben: hono, @hono/node-server, effect, lodash aktualisiert" },
+      { type: "fix", text: "nodemailer auf v8.0.4 aktualisiert (SMTP Command Injection Fix)" },
+      { type: "fix", text: "mocha-Subdependencies gefixt: diff auf 8.0.4, serialize-javascript auf 7.0.5 (npm overrides)" },
       { type: "improvement", text: "BGG API: Rate Limiting (20 Req/Min), Query-Laengenvalidierung (max 200 Zeichen), Response-Groessenlimit (2 MB)" },
       { type: "improvement", text: "BGG API: Zentralisierte fetchBGG-Funktion mit Timeout (10s) und Content-Length-Pruefung" },
       { type: "improvement", text: "BGG API: SSRF-Schutz fuer Batch-Thumbnail-Abruf (ID-Validierung)" },
       { type: "fix", text: "Gruppen-Passwort wird nur noch per Header (x-group-password) akzeptiert, nicht mehr per URL-Parameter" },
+      { type: "internal", text: "npm audit: 0 Vulnerabilities (vorher 14)" },
       { type: "internal", text: "Neue Fehlermeldung QUERY_MAX_LENGTH fuer BGG-Suchbegriff-Validierung" },
     ],
   },

@@ -52,7 +52,7 @@
     "lucide-react": "^0.563.0",
     "next": "^16.2.1",
     "next-auth": "^5.0.0-beta.30",
-    "nodemailer": "^7.0.13",
+    "nodemailer": "^8.0.4",
     "pino": "^10.3.1",
     "radix-ui": "^1.4.3",
     "react": "19.2.3",
@@ -99,5 +99,11 @@
       "eslint --max-warnings=0",
       "vitest related --run"
     ]
+  },
+  "overrides": {
+    "mocha": {
+      "diff": "^8.0.4",
+      "serialize-javascript": "^7.0.5"
+    }
   }
 }
