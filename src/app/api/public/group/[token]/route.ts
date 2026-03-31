@@ -53,8 +53,8 @@ export const GET = withApiLogging(async function GET(
       return NextResponse.json({ error: Errors.GROUP_NOT_FOUND }, { status: 404 });
     }
 
-    // Check password if set (accept from header or query param)
-    const password = request.headers.get("x-group-password") || new URL(request.url).searchParams.get("password");
+    // Check password if set (header only – never accept passwords via query params)
+    const password = request.headers.get("x-group-password");
 
     if (group.password && (!password || !(await compare(password, group.password)))) {
       // Return minimal info without details

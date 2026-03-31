@@ -99,6 +99,7 @@ export const Errors = {
   BGG_USERNAME_REQUIRED: "BGG-Benutzername ist erforderlich",
   COLLECTION_FETCH_FAILED: "Sammlung konnte nicht abgerufen werden",
   QUERY_MIN_LENGTH: "Suchbegriff muss mindestens 2 Zeichen lang sein",
+  QUERY_MAX_LENGTH: "Suchbegriff darf maximal 200 Zeichen lang sein",
   SEARCH_FAILED: "Suche fehlgeschlagen",
   BGG_ID_REQUIRED: "BGG-ID ist erforderlich",
   GAME_ALREADY_EXISTS: "Spiel existiert bereits in deiner Sammlung",

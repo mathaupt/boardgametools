@@ -1,8 +1,31 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth, handleApiError } from "@/lib/require-auth";
 import { withApiLogging } from "@/lib/api-logger";
+import { checkRateLimit, rateLimitResponse } from "@/lib/rate-limit";
 import logger from "@/lib/logger";
 import { Errors } from "@/lib/error-messages";
+
+// Max response size from BGG API (2 MB) to prevent memory exhaustion
+const MAX_BGG_RESPONSE_SIZE = 2 * 1024 * 1024;
+// Max query length
+const MAX_QUERY_LENGTH = 200;
+
+/** Fetch from BGG with timeout and response size validation. */
+async function fetchBGG(url: string): Promise<string> {
+  const response = await fetch(url, {
+    headers: { "User-Agent": "BoardGameTools/1.0", Accept: "application/xml" },
+    signal: AbortSignal.timeout(10_000),
+  });
+  if (!response.ok) {
+    logger.error({ status: response.status, statusText: response.statusText, url }, "BGG API Error");
+    throw new Error("BGG API Error");
+  }
+  const contentLength = response.headers.get("content-length");
+  if (contentLength && parseInt(contentLength, 10) > MAX_BGG_RESPONSE_SIZE) {
+    throw new Error("BGG API response too large");
+  }
+  return response.text();
+}
 
 interface BGGGameDetail {
   name: string;
@@ -29,6 +52,11 @@ interface BGGSearchResult {
 export const GET = withApiLogging(async function GET(request: NextRequest) {
   await requireAuth();
 
+  // Rate limiting: 20 requests per minute per IP
+  const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+  const { allowed, retryAfterMs } = checkRateLimit(`bgg:${ip}`, 20, 60_000);
+  if (!allowed) return rateLimitResponse(retryAfterMs);
+
   const { searchParams } = new URL(request.url);
   const bggId = searchParams.get("bggId");
   const query = searchParams.get("query");
@@ -41,19 +69,7 @@ export const GET = withApiLogging(async function GET(request: NextRequest) {
       }
 
       // Spezifisches Spiel von BGG abrufen
-      const response = await fetch(`https://boardgamegeek.com/xmlapi2/thing?id=${bggId}&stats=1`, {
-        headers: {
-          'User-Agent': 'BoardGameTools/1.0',
-          'Accept': 'application/xml'
-        }
-      });
-      
-      if (!response.ok) {
-        logger.error({ status: response.status, statusText: response.statusText }, "BGG API Error");
-        throw new Error('BGG API Error');
-      }
-
-      const xmlText = await response.text();
+      const xmlText = await fetchBGG(`https://boardgamegeek.com/xmlapi2/thing?id=${bggId}&stats=1`);
       
       // Einfache XML Parsing ohne externe Libraries
       const parseXML = (xml: string) => {
@@ -94,20 +110,16 @@ export const GET = withApiLogging(async function GET(request: NextRequest) {
 
       return NextResponse.json(game);
     } else if (query) {
-      // Suche nach Spielen mit korrektem query Parameter
-      const response = await fetch(`https://boardgamegeek.com/xmlapi2/search?type=boardgame&query=${encodeURIComponent(query)}`, {
-        headers: {
-          'User-Agent': 'BoardGameTools/1.0',
-          'Accept': 'application/xml'
-        }
-      });
-      
-      if (!response.ok) {
-        logger.error({ status: response.status, statusText: response.statusText }, "BGG API Error");
-        throw new Error('BGG API Error');
+      // Input-Validierung: Laenge begrenzen (DoS-Schutz)
+      if (query.length > MAX_QUERY_LENGTH) {
+        return NextResponse.json({ error: Errors.QUERY_MAX_LENGTH }, { status: 400 });
+      }
+      if (query.length < 2) {
+        return NextResponse.json({ error: Errors.QUERY_MIN_LENGTH }, { status: 400 });
       }
 
-      const xmlText = await response.text();
+      // Suche nach Spielen mit korrektem query Parameter
+      const xmlText = await fetchBGG(`https://boardgamegeek.com/xmlapi2/search?type=boardgame&query=${encodeURIComponent(query)}`);
       
       // Einfache XML Parsing für Search Results
       const parseSearchXML = (xml: string) => {
@@ -151,19 +163,12 @@ export const GET = withApiLogging(async function GET(request: NextRequest) {
 
       // Batch-fetch thumbnails for top results (single API call)
       if (games.length > 0) {
-        const ids = games.slice(0, 20).map((g: BGGSearchResult) => g.bggId).join(",");
+        const ids = games.slice(0, 20).map((g: BGGSearchResult) => g.bggId).filter((id) => /^\d+$/.test(id)).join(",");
         try {
-          const thumbRes = await fetch(
-            `https://boardgamegeek.com/xmlapi2/thing?id=${ids}`,
-            {
-              headers: {
-                'User-Agent': 'BoardGameTools/1.0',
-                'Accept': 'application/xml',
-              },
-            }
+          const thumbXml = await fetchBGG(
+            `https://boardgamegeek.com/xmlapi2/thing?id=${ids}`
           );
-          if (thumbRes.ok) {
-            const thumbXml = await thumbRes.text();
+          if (thumbXml) {
             // Parse thumbnail URLs per item
             const itemRegex = /<item[^>]*id="(\d+)"[^>]*>[\s\S]*?<\/item>/g;
             let match;

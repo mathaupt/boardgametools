@@ -11,6 +11,20 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.43.0",
+    date: "2026-03-31",
+    title: "Security Hardening: Dependency Updates, BGG API Protection, Passwort-Sicherheit",
+    description: "Umfassende Security-Haertung basierend auf Security Best Practices Review. Dependency Vulnerabilities behoben, BGG API mit Rate Limiting und Input-Validierung abgesichert, Passwort-Uebertragung auf Header-only umgestellt.",
+    changes: [
+      { type: "fix", text: "Dependency Vulnerabilities behoben: hono, @hono/node-server, effect, lodash aktualisiert" },
+      { type: "improvement", text: "BGG API: Rate Limiting (20 Req/Min), Query-Laengenvalidierung (max 200 Zeichen), Response-Groessenlimit (2 MB)" },
+      { type: "improvement", text: "BGG API: Zentralisierte fetchBGG-Funktion mit Timeout (10s) und Content-Length-Pruefung" },
+      { type: "improvement", text: "BGG API: SSRF-Schutz fuer Batch-Thumbnail-Abruf (ID-Validierung)" },
+      { type: "fix", text: "Gruppen-Passwort wird nur noch per Header (x-group-password) akzeptiert, nicht mehr per URL-Parameter" },
+      { type: "internal", text: "Neue Fehlermeldung QUERY_MAX_LENGTH fuer BGG-Suchbegriff-Validierung" },
+    ],
+  },
+  {
     version: "0.42.0",
     date: "2026-03-24",
     title: "Prisma 7 Migration: Neuer Client, PrismaPg Adapter, prisma.config.ts",
