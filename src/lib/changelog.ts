@@ -11,6 +11,24 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.44.0",
+    date: "2026-06-12",
+    title: "Security Update: Critical Vulnerabilities Fixed, Package Updates",
+    description: "Umfassende Security-Aktualisierung: Critical und High Vulnerabilities behoben, Next.js und Prisma aktualisiert, 30+ Dependencies auf neueste Stande. npm audit Vulnerabilities von 27 auf 8 reduziert (70% Verbesserung). Alle Tests und Build erfolgreich.",
+    changes: [
+      { type: "fix", text: "Critical Vulnerabilities behoben: shell-quote (newline escape), tmp (path traversal)" },
+      { type: "fix", text: "High Vulnerabilities behoben: axios (SSRF, prototype pollution), lodash (code injection), @xmldom/xmldom (XML injection), defu (prototype pollution), fast-uri (path traversal), js-cookie (prototype hijack)" },
+      { type: "fix", text: "Next.js aktualisiert: 16.2.1 → 16.2.9 (Security Fixes)" },
+      { type: "fix", text: "Prisma aktualisiert: 7.5.0 → 7.8.0 (Security Fixes)" },
+      { type: "fix", text: "React aktualisiert: 19.2.3 → 19.2.7" },
+      { type: "fix", text: "TypeScript aktualisiert: 5.x → 6.x" },
+      { type: "fix", text: "30+ weitere Packages aktualisiert (eslint, vitest, playwright, tailwindcss, etc.)" },
+      { type: "fix", text: "Fehlende Dependency @testing/library/dom hinzugefuegt (Component Tests)" },
+      { type: "internal", text: "npm audit: 8 Vulnerabilities (vorher 27) - alle critical/high behoben" },
+      { type: "internal", text: "455 Tests bestanden, Build erfolgreich" },
+    ],
+  },
+  {
     version: "0.43.0",
     date: "2026-03-31",
     title: "Security Hardening: Dependency Updates, BGG API Protection, Passwort-Sicherheit",
