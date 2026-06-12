@@ -285,7 +285,7 @@ export default function GamesListClient({ games: initialGames }: GamesListClient
         </div>
       )}
 
-      {/* Einzelnes Spiel loeschen */}
+      {/* Einzelnes Spiel löschen */}
       <AlertDialog open={!!deleteTarget} onOpenChange={(open: boolean) => { if (!open) setDeleteTarget(null); }}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -313,7 +313,7 @@ export default function GamesListClient({ games: initialGames }: GamesListClient
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* Alle Spiele loeschen */}
+      {/* Alle Spiele löschen */}
       <AlertDialog open={deleteAllOpen} onOpenChange={setDeleteAllOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>

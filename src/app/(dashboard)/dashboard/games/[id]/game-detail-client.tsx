@@ -27,11 +27,11 @@ export default function GameDetailClient({ game }: { game: SerializedGame }) {
     setIsDeleting(true);
     try {
       const response = await fetch(`/api/games/${game.id}`, { method: "DELETE" });
-      if (!response.ok) throw new Error("Fehler beim Loeschen des Spiels");
+      if (!response.ok) throw new Error("Fehler beim Löschen des Spiels");
       router.push("/dashboard/games");
     } catch (_error) {
       console.error("Delete error:", _error);
-      setError("Fehler beim Loeschen des Spiels");
+      setError("Fehler beim Löschen des Spiels");
       setShowDeleteModal(false);
     } finally {
       setIsDeleting(false);
@@ -65,7 +65,7 @@ export default function GameDetailClient({ game }: { game: SerializedGame }) {
           </div>
           <div className="flex gap-2">
             <button onClick={() => router.push(`/dashboard/games/${game.id}/edit`)} className="bg-primary text-primary-foreground px-4 py-2 rounded hover:bg-primary/90">Bearbeiten</button>
-            <button onClick={() => setShowDeleteModal(true)} className="bg-destructive text-destructive-foreground px-4 py-2 rounded hover:bg-destructive/90">Loeschen</button>
+            <button onClick={() => setShowDeleteModal(true)} className="bg-destructive text-destructive-foreground px-4 py-2 rounded hover:bg-destructive/90">Löschen</button>
           </div>
         </div>
 
@@ -122,11 +122,11 @@ export default function GameDetailClient({ game }: { game: SerializedGame }) {
       {showDeleteModal && (
         <div className="fixed inset-0 bg-foreground/20 backdrop-blur-sm flex items-center justify-center z-50">
           <div className="bg-card rounded-lg p-6 max-w-md w-full mx-4">
-            <h2 className="text-xl font-bold text-foreground mb-4">Spiel loeschen?</h2>
-            <p className="text-muted-foreground mb-6">Bist du sicher, dass du das Spiel &ldquo;{game.name}&rdquo; loeschen moechtest? Diese Aktion kann nicht rueckgaengig gemacht werden.</p>
+            <h2 className="text-xl font-bold text-foreground mb-4">Spiel löschen?</h2>
+            <p className="text-muted-foreground mb-6">Bist du sicher, dass du das Spiel &ldquo;{game.name}&rdquo; löschen möchtest? Diese Aktion kann nicht rückgängig gemacht werden.</p>
             <div className="flex gap-3 justify-end">
               <button onClick={() => setShowDeleteModal(false)} className="px-4 py-2 text-muted-foreground border border-border rounded hover:bg-muted/50" disabled={isDeleting}>Abbrechen</button>
-              <button onClick={handleDelete} className="px-4 py-2 bg-destructive text-destructive-foreground rounded hover:bg-destructive/90 disabled:opacity-50" disabled={isDeleting}>{isDeleting ? "Wird geloescht..." : "Loeschen"}</button>
+              <button onClick={handleDelete} className="px-4 py-2 bg-destructive text-destructive-foreground rounded hover:bg-destructive/90 disabled:opacity-50" disabled={isDeleting}>{isDeleting ? "Wird gelöscht..." : "Löschen"}</button>
             </div>
           </div>
         </div>

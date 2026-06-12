@@ -175,6 +175,19 @@ include: { createdBy: { select: { id: true, name: true, email: true } } }
 - Test-Status im Bug-Eintrag dokumentieren
 - Ziel: Regression verhindern
 
+### 8. Deutsche Rechtschreibung und Grammatik (KRITISCH!)
+
+**Alle deutschen Texte MUESSEN korrekte deutsche Rechtschreibung verwenden!**
+
+**Verpflichtende Regeln:**
+- **Umlaute verwenden:** "ö" statt "oe", "ä" statt "ae", "ü" statt "ue"
+- **Beispiele:** "löschen" statt "loeschen", "öffentlich" statt "oeffentlich", "Größe" statt "Groesse"
+- **Ausnahmen:** Technische Begriffe (z.B. "Soft-Delete", "IDOR", "Coverage")
+- **Gilt für:** Frontend-Texte, Fehlermeldungen, FAQ, Changelog, Dokumentation
+
+**Falsch:** "loeschen", "oeffentlich", "Groesse", "uebersicht"  
+**Richtig:** "löschen", "öffentlich", "Größe", "Übersicht"
+
 ## Projektstruktur
 
 ```

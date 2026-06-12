@@ -66,11 +66,11 @@ export default function SessionDetailClient({ session }: SessionDetailClientProp
     try {
       const res = await fetch(`/api/sessions/${session.id}`, { method: "DELETE" });
       if (!res.ok) {
-        throw new Error("Fehler beim Loeschen");
+        throw new Error("Fehler beim Löschen");
       }
       router.push("/dashboard/sessions");
     } catch {
-      toast({ title: "Fehler", description: "Fehler beim Loeschen der Session.", variant: "destructive" });
+      toast({ title: "Fehler", description: "Fehler beim Löschen der Session.", variant: "destructive" });
       setDeleting(false);
     }
   };
@@ -107,7 +107,7 @@ export default function SessionDetailClient({ session }: SessionDetailClientProp
           </Link>
           <Button variant="destructive" size="sm" onClick={() => setDeleteDialogOpen(true)} disabled={deleting}>
             <Trash2 className="h-4 w-4 mr-2" />
-            {deleting ? "Wird geloescht..." : "Loeschen"}
+            {deleting ? "Wird gelöscht..." : "Löschen"}
           </Button>
         </div>
       </div>
@@ -222,12 +222,12 @@ export default function SessionDetailClient({ session }: SessionDetailClientProp
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Session loeschen</AlertDialogTitle>
-            <AlertDialogDescription>Moechtest du diese Session wirklich loeschen? Diese Aktion kann nicht rueckgaengig gemacht werden.</AlertDialogDescription>
+            <AlertDialogTitle>Session löschen</AlertDialogTitle>
+            <AlertDialogDescription>Möchtest du diese Session wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Abbrechen</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete}>Loeschen</AlertDialogAction>
+            <AlertDialogAction onClick={handleDelete}>Löschen</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
