@@ -12,6 +12,16 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.45.4",
+    date: "2026-06-12",
+    title: "CSRF Validation temporär deaktiviert",
+    description: "CSRF-Validierung komplett deaktiviert um API-Requests zu entblocken. Host-Header-Vergleich funktionierte nicht wie erwartet. TODO: Implementiere CSRF mit same-site cookies.",
+    changes: [
+      { type: "fix", text: "CSRF-Validierung komplett deaktiviert", bugRef: "BUG-001" },
+      { type: "internal", text: "TODO: Implementiere CSRF mit same-site cookies", bugRef: "BUG-001" },
+    ],
+  },
+  {
     version: "0.45.3",
     date: "2026-06-12",
     title: "CSRF Validation: Same-Origin komplett ausgenommen",
