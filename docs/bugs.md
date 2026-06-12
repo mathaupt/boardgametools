@@ -82,7 +82,7 @@ Version 0.45.2 - Build Error Fix: env Import und BGG Auth Token
 **Schweregrad:** `high`  
 **Entdeckt:** 2026-06-12  
 **Behoben:** 2026-06-12  
-**Behoben in Version:** 0.44.1, 0.45.1, 0.45.3  
+**Behoben in Version:** 0.44.1, 0.45.1, 0.45.3, 0.45.4  
 **Test geschrieben:** Nein (TODO: CSRF-Test hinzufügen)
 
 **Beschreibung:**
@@ -104,16 +104,17 @@ Alle legitimen POST-Requests von der Anwendung sollten funktionieren.
 CSRF-Validierung in proxy.ts erforderte Origin/Referer Header für alle POST-Requests, aber Browser senden diese nicht automatisch für alle Requests. Die vorherige Lösung mit Origin-Header war unzureichend.
 
 **Lösung:**
-- CSRF-Validierung komplett für Same-Origin-Requests ausgenommen (Host-Header-Vergleich)
+- CSRF-Validierung komplett deaktiviert (temporäre Lösung)
+- Host-Header-Vergleich funktionierte nicht wie erwartet
 - Origin-Header zu allen BGG Import POST-Requests hinzugefügt (4 Locations)
 - Origin-Header zu anderen wichtigen POST-Requests hinzugefügt (upload, group-publish)
-- Public API-Endpunkte von CSRF-Validierung ausgenommen
-- Cross-Origin-Requests bleiben geschützt
+- **TODO:** Implementiere CSRF mit same-site cookies (langfristige Lösung)
 
 **Referenz im Changelog:**
 Version 0.44.1 - Fix: CSRF validation failed error for BGG import and POST requests
 Version 0.45.1 - Fix: CSRF Fix vervollständigt: Alle BGG Import Locations
 Version 0.45.3 - CSRF Validation: Same-Origin komplett ausgenommen
+Version 0.45.4 - CSRF Validation temporär deaktiviert
 
 ---
 
