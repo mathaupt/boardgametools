@@ -38,6 +38,44 @@ Version X.Y.Z - Fix: [Beschreibung]
 
 ## Bugs
 
+### [BUG-003] BGG API 401 Unauthorized Error
+
+**Status:** `fixed`  
+**Schweregrad:** `high`  
+**Entdeckt:** 2026-06-12  
+**Behoben:** 2026-06-12  
+**Behoben in Version:** 0.45.2  
+**Test geschrieben:** Nein (TODO: BGG Auth Test hinzufügen)
+
+**Beschreibung:**
+BGG API Suche und Import funktionieren nicht mehr mit 401 Unauthorized Fehler. BGG API hat Authentifizierung für alle Anforderungen eingeführt.
+
+**Reproduktion:**
+1. Entwicklungsserver starten
+2. Als Benutzer einloggen
+3. BGG Suche versuchen (z.B. "spirit island")
+4. 401 Unauthorized Fehler vom BGG API
+
+**Erwartetes Verhalten:**
+BGG Suche sollte Ergebnisse zurückgeben.
+
+**Tatsächliches Verhalten:**
+401 Unauthorized Fehler, Suche schlägt fehl.
+
+**Ursache:**
+BGG API erfordert jetzt Authentifizierung für alle Anfragen, aber /api/bgg/route.ts hat BGG_AUTH_TOKEN nicht verwendet.
+
+**Lösung:**
+- BGG_AUTH_TOKEN Support zu /api/bgg/route.ts hinzugefügt
+- env Import von default auf named import geändert (Build Error Fix)
+- .env.local Template mit BGG_AUTH_TOKEN Placeholder erstellt
+- Server neu gestartet um Änderungen zu übernehmen
+
+**Referenz im Changelog:**
+Version 0.45.2 - Build Error Fix: env Import und BGG Auth Token
+
+---
+
 ### [BUG-001] CSRF Validation Failed bei BGG Import
 
 **Status:** `fixed`  
@@ -119,6 +157,6 @@ Version 0.44.0 - docs: fix README test credentials and update project info
 
 - **Offene Bugs:** 0
 - **In Bearbeitung:** 0
-- **Behoben:** 2
+- **Behoben:** 3
 - **Wontfix:** 0
-- **Gesamt:** 2
+- **Gesamt:** 3
