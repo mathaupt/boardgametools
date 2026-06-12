@@ -12,6 +12,17 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.45.5",
+    date: "2026-06-12",
+    title: "CSRF Validation wieder aktiviert mit Port-Fix",
+    description: "CSRF-Validierung wieder aktiviert mit port-agnostischem Hostname-Vergleich. Das Problem war der Port-Vergleich (3000 vs 3001). Jetzt werden Hostnames ohne Ports verglichen.",
+    changes: [
+      { type: "fix", text: "CSRF-Validierung wieder aktiviert", bugRef: "BUG-001" },
+      { type: "fix", text: "Port-agnostischer Hostname-Vergleich implementiert", bugRef: "BUG-001" },
+      { type: "internal", text: "Host-Header ohne Port gegen erwarteten Hostname verglichen", bugRef: "BUG-001" },
+    ],
+  },
+  {
     version: "0.45.4",
     date: "2026-06-12",
     title: "CSRF Validation temporär deaktiviert",
