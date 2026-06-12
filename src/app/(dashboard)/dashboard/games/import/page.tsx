@@ -147,7 +147,10 @@ export default function ImportBGGPage() {
     try {
       const response = await fetch("/api/games/import-bgg", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "Origin": window.location.origin 
+        },
         body: JSON.stringify({ bggId: selectedGame.bggId, ean: barcodeEan || undefined }),
       });
 
