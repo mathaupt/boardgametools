@@ -4,6 +4,7 @@ import { withApiLogging } from "@/lib/api-logger";
 import { checkRateLimit, rateLimitResponse } from "@/lib/rate-limit";
 import logger from "@/lib/logger";
 import { Errors } from "@/lib/error-messages";
+import env from "@/lib/env";
 
 // Max response size from BGG API (2 MB) to prevent memory exhaustion
 const MAX_BGG_RESPONSE_SIZE = 2 * 1024 * 1024;
@@ -12,8 +13,18 @@ const MAX_QUERY_LENGTH = 200;
 
 /** Fetch from BGG with timeout and response size validation. */
 async function fetchBGG(url: string): Promise<string> {
+  const headers: Record<string, string> = { 
+    "User-Agent": "BoardGameTools/1.0", 
+    Accept: "application/xml" 
+  };
+  
+  // Add BGG authentication token if available
+  if (env.BGG_AUTH_TOKEN) {
+    headers["Authorization"] = `Bearer ${env.BGG_AUTH_TOKEN}`;
+  }
+  
   const response = await fetch(url, {
-    headers: { "User-Agent": "BoardGameTools/1.0", Accept: "application/xml" },
+    headers,
     signal: AbortSignal.timeout(10_000),
   });
   if (!response.ok) {
