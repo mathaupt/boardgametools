@@ -12,6 +12,16 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.45.1",
+    date: "2026-06-12",
+    title: "CSRF Fix vervollständigt: Alle BGG Import Locations",
+    description: "Origin Header zu zusätzlichem BGG Import Location (games/import/page.tsx) hinzugefügt. Alle BGG Import POST-Requests enthalten jetzt Origin Header.",
+    changes: [
+      { type: "fix", text: "Origin Header zu games/import/page.tsx BGG Import hinzugefügt", bugRef: "BUG-001" },
+      { type: "internal", text: "Entwicklungsserver neu gestartet um Middleware-Änderungen zu aktivieren", bugRef: "BUG-001" },
+    ],
+  },
+  {
     version: "0.45.0",
     date: "2026-06-12",
     title: "Bug-Tracking System eingeführt",
