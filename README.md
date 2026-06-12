@@ -52,18 +52,17 @@ BGG_AUTH_TOKEN="dein-bgg-token-hier"
 
 **Test-Login:**
 
-Der Test-Benutzer muss zuerst erstellt werden (via API oder Registrierung):
+Der Test-Benutzer muss zuerst erstellt werden (via Registrierungsformular):
 
 ```bash
-# Option 1: Test-Benutzer via npm script erstellen
+# Option 1: Registrierungsformular im Browser öffnen
+# Öffne http://localhost:3000/register und registriere dich mit:
+# Email: test@example.com
+# Passwort: password123
+# Name: Test User
+
+# Option 2: npm script für Hinweise
 npm run db:seed:test-user
-
-# Option 2: Test-Benutzer via curl erstellen
-curl -X POST http://localhost:3000/api/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{"email":"test@example.com","password":"password123","name":"Test User"}'
-
-# Option 3: Test-Benutzer über Registrierungsformular erstellen
 ```
 
 Danach kann man sich einloggen mit:
@@ -81,7 +80,7 @@ Danach kann man sich einloggen mit:
 | `npm run test:e2e` | E2E Tests ausführen |
 | `npm run db:migrate` | Datenbank-Migration |
 | `npm run db:studio` | Prisma Studio öffnen |
-| `npm run db:seed:test-user` | Erstellt Test-Benutzer für Login |
+| `npm run db:seed:test-user` | Zeigt Hinweise zur Test-Benutzer Erstellung |
 
 ### Pre-Commit Checks
 
