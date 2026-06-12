@@ -7,9 +7,6 @@ export const proxy = auth((req) => {
   const isLoggedIn = !!req.auth;
 
   // --- CSRF protection for mutation requests (Origin verification) ---
-  // DISABLED: Current implementation is blocking legitimate same-origin requests
-  // TODO: Implement proper CSRF protection with same-site cookies
-  /*
   if (
     MUTATION_METHODS.has(req.method) &&
     pathname.startsWith("/api/") &&
@@ -22,10 +19,11 @@ export const proxy = auth((req) => {
     const expectedOrigin = req.nextUrl.origin;
 
     // Skip CSRF validation for same-origin requests (browser requests from same domain)
-    // Check if request is from same origin by comparing host header
-    const isSameOrigin = host === new URL(expectedOrigin).host;
+    // Check if request is from same origin by comparing host header (without port)
+    const hostWithoutPort = host?.split(":")[0];
+    const expectedHostWithoutPort = new URL(expectedOrigin).hostname;
     
-    if (isSameOrigin) {
+    if (hostWithoutPort === expectedHostWithoutPort) {
       // Same-origin requests are safe - skip CSRF validation
       return;
     }
@@ -45,7 +43,6 @@ export const proxy = auth((req) => {
       return Response.json({ error: "CSRF validation failed" }, { status: 403 });
     }
   }
-  */
 
   // Protect dashboard routes — redirect to login
   if (pathname.startsWith("/dashboard") && !isLoggedIn) {
