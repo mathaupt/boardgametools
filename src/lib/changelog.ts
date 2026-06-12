@@ -24,6 +24,7 @@ export const changelog: ChangelogEntry[] = [
       { type: "fix", text: "TypeScript aktualisiert: 5.x → 6.x" },
       { type: "fix", text: "30+ weitere Packages aktualisiert (eslint, vitest, playwright, tailwindcss, etc.)" },
       { type: "fix", text: "Fehlende Dependency @testing/library/dom hinzugefuegt (Component Tests)" },
+      { type: "fix", text: "nodemailer auf 7.0.13 downgraded (Peer Dependency Compatibility mit next-auth)" },
       { type: "internal", text: "npm audit: 8 Vulnerabilities (vorher 27) - alle critical/high behoben" },
       { type: "internal", text: "455 Tests bestanden, Build erfolgreich" },
     ],
