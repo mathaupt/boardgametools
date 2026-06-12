@@ -1,0 +1,121 @@
+# Bug-Tracking Liste
+
+Diese Datei enthält alle gefundenen Bugs mit fortlaufender Nummerierung, Status, und Referenzierung im Changelog.
+
+## Format
+
+```markdown
+### [BUG-XXX] Bug-Titel
+
+**Status:** `open` | `in_progress` | `fixed` | `wontfix`  
+**Schweregrad:** `critical` | `high` | `medium` | `low`  
+**Entdeckt:** YYYY-MM-DD  
+**Behoben:** YYYY-MM-DD (falls fixed)  
+**Behoben in Version:** X.Y.Z  
+**Test geschrieben:** Ja/Nein (Pflicht bei Fix!)
+
+**Beschreibung:**
+Detaillierte Beschreibung des Bugs.
+
+**Reproduktion:**
+Schritte zum Reproduzieren des Bugs.
+
+**Erwartetes Verhalten:**
+Was sollte passieren.
+
+**Tatsächliches Verhalten:**
+Was tatsächlich passiert.
+
+**Ursache:**
+Root-Cause Analyse (falls bekannt).
+
+**Lösung:**
+Beschreibung der Lösung.
+
+**Referenz im Changelog:**
+Version X.Y.Z - Fix: [Beschreibung]
+```
+
+## Bugs
+
+### [BUG-001] CSRF Validation Failed bei BGG Import
+
+**Status:** `fixed`  
+**Schweregrad:** `high`  
+**Entdeckt:** 2026-06-12  
+**Behoben:** 2026-06-12  
+**Behoben in Version:** 0.44.1  
+**Test geschrieben:** Nein (TODO: CSRF-Test hinzufügen)
+
+**Beschreibung:**
+Beim Importieren von Spielen über BGG trat ein 403 "CSRF validation failed" Fehler auf. Die CSRF-Validierung im proxy.ts Middleware war zu streng und blockierte legitime Same-Origin-POST-Requests.
+
+**Reproduktion:**
+1. Entwicklungsserver starten
+2. Als Benutzer einloggen
+3. Versuchen, ein Spiel über BGG zu importieren
+4. 403 Fehler mit "CSRF validation failed"
+
+**Erwartetes Verhalten:**
+BGG Import sollte erfolgreich funktionieren.
+
+**Tatsächliches Verhalten:**
+403 "CSRF validation failed" Fehler.
+
+**Ursache:**
+CSRF-Validierung in proxy.ts erforderte Origin/Referer Header für alle POST-Requests, auch für Same-Origin-Requests vom Browser.
+
+**Lösung:**
+- CSRF-Validierung liberalisiert: Same-Origin-Requests ohne Origin/Referer werden zugelassen
+- Origin-Header zu BGG Import POST-Requests hinzugefügt
+- Public API-Endpunkte von CSRF-Validierung ausgenommen
+- CSRF-Schutz bleibt für Cross-Origin-Requests aktiv
+
+**Referenz im Changelog:**
+Version 0.44.1 - Fix: CSRF validation failed error for BGG import and POST requests
+
+---
+
+### [BUG-002] Test-Login Credentials in README nicht funktionieren
+
+**Status:** `fixed`  
+**Schweregrad:** `medium`  
+**Entdeckt:** 2026-06-12  
+**Behoben:** 2026-06-12  
+**Behoben in Version:** 0.44.0  
+**Test geschrieben:** Nein (TODO: Registration-Flow-Test hinzufügen)
+
+**Beschreibung:**
+Die in der README dokumentierten Test-Anmeldedaten (test@example.com / password123) funktionierten nicht, da der Test-Benutzer nicht automatisch in der Datenbank existiert.
+
+**Reproduktion:**
+1. README Anweisungen befolgen
+2. Versuchen, sich mit test@example.com / password123 einzuloggen
+3. "Ungültige Anmeldedaten" Fehler
+
+**Erwartetes Verhalten:**
+Test-Benutzer sollte existieren und login sollte funktionieren.
+
+**Tatsächliches Verhalten:**
+Test-Benutzer existiert nicht, Login schlägt fehl.
+
+**Ursache:**
+README suggerierte existierende Test-Credentials, aber es gab keinen Mechanismus um den Test-Benutzer automatisch zu erstellen.
+
+**Lösung:**
+- README aktualisiert mit klaren Anweisungen zur Test-Benutzer-Erstellung
+- npm script db:seed:test-user hinzugefügt
+- Anleitung auf Browser-Registrierung statt API/curl geändert
+
+**Referenz im Changelog:**
+Version 0.44.0 - docs: fix README test credentials and update project info
+
+---
+
+## Statistik
+
+- **Offene Bugs:** 0
+- **In Bearbeitung:** 0
+- **Behoben:** 2
+- **Wontfix:** 0
+- **Gesamt:** 2
