@@ -12,6 +12,20 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.46.0",
+    date: "2026-06-12",
+    title: "Deutsche Rechtschreibung korrigiert - Umlaute statt oe/ae/ue",
+    description: "Alle deutschen Texte auf korrekte Rechtschreibung mit Umlauten umgestellt. Neue Pflicht-Regel 8 in AGENTS.md: Umlaute verwenden statt oe/ae/ue.",
+    changes: [
+      { type: "improvement", text: "AGENTS.md um Pflicht-Regel 8 (Deutsche Rechtschreibung) erweitert" },
+      { type: "fix", text: "error-messages.ts: loeschen → löschen, oeffentlich → öffentlich, etc." },
+      { type: "fix", text: "game-detail-client.tsx: Löschen statt Loeschen" },
+      { type: "fix", text: "session-detail-client.tsx: Löschen statt Loeschen" },
+      { type: "fix", text: "games-list-client.tsx: Kommentare korrigiert" },
+      { type: "internal", text: "Verpflichtende Regel: ö statt oe, ä statt ae, ü statt ue" },
+    ],
+  },
+  {
     version: "0.45.5",
     date: "2026-06-12",
     title: "CSRF Validation wieder aktiviert mit Port-Fix",
