@@ -82,7 +82,7 @@ Version 0.45.2 - Build Error Fix: env Import und BGG Auth Token
 **Schweregrad:** `high`  
 **Entdeckt:** 2026-06-12  
 **Behoben:** 2026-06-12  
-**Behoben in Version:** 0.44.1, 0.45.1, 0.45.3, 0.45.4, 0.45.5  
+**Behoben in Version:** 0.44.1, 0.45.1, 0.45.3, 0.45.4, 0.45.5, 0.46.1  
 **Test geschrieben:** Nein (TODO: CSRF-Test hinzufügen)
 
 **Beschreibung:**
@@ -104,8 +104,9 @@ Alle legitimen POST-Requests von der Anwendung sollten funktionieren.
 CSRF-Validierung in proxy.ts erforderte Origin/Referer Header für alle POST-Requests, aber Browser senden diese nicht automatisch für alle Requests. Die vorherige Lösung mit Origin-Header war unzureichend. Das Hauptproblem war der Port-Vergleich (3000 vs 3001) im Host-Header.
 
 **Lösung:**
-- CSRF-Validierung wieder aktiviert mit port-agnostischem Hostname-Vergleich
-- Host-Header ohne Port gegen erwarteten Hostname verglichen
+- CSRF-Validierung weiter liberalisiert: Requests ohne Origin/Referer werden als Same-Origin angesehen
+- Browsers senden Origin/Referer nur für Cross-Origin-Requests
+- Port-agnostischer Hostname-Vergleich implementiert
 - Origin-Header zu allen BGG Import POST-Requests hinzugefügt (4 Locations)
 - Origin-Header zu anderen wichtigen POST-Requests hinzugefügt (upload, group-publish)
 - Cross-Origin-Requests bleiben geschützt
@@ -116,6 +117,7 @@ Version 0.45.1 - Fix: CSRF Fix vervollständigt: Alle BGG Import Locations
 Version 0.45.3 - CSRF Validation: Same-Origin komplett ausgenommen
 Version 0.45.4 - CSRF Validation temporär deaktiviert
 Version 0.45.5 - CSRF Validation wieder aktiviert mit Port-Fix
+Version 0.46.1 - CSRF Validation: Requests ohne Origin/Referer erlaubt
 
 ---
 
