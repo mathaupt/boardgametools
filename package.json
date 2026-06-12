@@ -21,6 +21,7 @@
     "db:migrate": "prisma migrate dev",
     "db:generate": "prisma generate",
     "db:studio": "prisma studio",
+    "db:seed:test-user": "curl -X POST http://localhost:3000/api/auth/register -H 'Content-Type: application/json' -d '{\"email\":\"test@example.com\",\"password\":\"password123\",\"name\":\"Test User\"}'",
     "postinstall": "prisma generate",
     "prepare": "husky",
     "security-check": "bash scripts/security-check.sh",

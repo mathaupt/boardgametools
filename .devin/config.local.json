@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Exec(lsof)",
+      "Exec(xargs kill)",
+      "Exec(npm run)",
+      "Exec(npm audit)",
+      "Exec(npm outdated)",
+      "Exec(npm update)",
+      "Exec(npm list)",
+      "Exec(npx npm-check-updates)",
+      "Exec(npm install)",
+      "Exec(git status)",
+      "Exec(git diff)",
+      "Exec(git add)",
+      "Exec(git commit)",
+      "Exec(cat)",
+      "Exec(git push)",
+      "Exec(npm view)"
+    ]
+  }
+}

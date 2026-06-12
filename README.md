@@ -1,6 +1,6 @@
 # BoardGameTools
 
-Version: 0.1.0
+Version: 0.44.0
 
 Eine Webanwendung zur Verwaltung von Brettspielen, Spielsessions und Events mit Voting-Funktionalität.
 
@@ -15,10 +15,10 @@ Eine Webanwendung zur Verwaltung von Brettspielen, Spielsessions und Events mit 
 
 ## Tech Stack
 
-- Next.js 14 (App Router)
+- Next.js 16 (App Router, Turbopack)
 - TypeScript
-- SQLite + Prisma ORM
-- Tailwind CSS + shadcn/ui
+- PostgreSQL + Prisma ORM
+- Tailwind CSS 4 + shadcn/ui
 - NextAuth.js v5 (Credentials)
 - Vitest (Unit Tests)
 - CodeceptJS + Playwright (E2E Tests)
@@ -51,6 +51,22 @@ BGG_AUTH_TOKEN="dein-bgg-token-hier"
 ```
 
 **Test-Login:**
+
+Der Test-Benutzer muss zuerst erstellt werden (via API oder Registrierung):
+
+```bash
+# Option 1: Test-Benutzer via npm script erstellen
+npm run db:seed:test-user
+
+# Option 2: Test-Benutzer via curl erstellen
+curl -X POST http://localhost:3000/api/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"email":"test@example.com","password":"password123","name":"Test User"}'
+
+# Option 3: Test-Benutzer über Registrierungsformular erstellen
+```
+
+Danach kann man sich einloggen mit:
 - Email: `test@example.com`
 - Passwort: `password123`
 
@@ -65,6 +81,7 @@ BGG_AUTH_TOKEN="dein-bgg-token-hier"
 | `npm run test:e2e` | E2E Tests ausführen |
 | `npm run db:migrate` | Datenbank-Migration |
 | `npm run db:studio` | Prisma Studio öffnen |
+| `npm run db:seed:test-user` | Erstellt Test-Benutzer für Login |
 
 ### Pre-Commit Checks
 
