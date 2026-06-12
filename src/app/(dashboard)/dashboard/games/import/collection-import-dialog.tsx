@@ -111,7 +111,10 @@ export function CollectionImportDialog({ existingBggIds, onImported }: Collectio
       try {
         const response = await fetch("/api/games/import-bgg", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { 
+            "Content-Type": "application/json",
+            "Origin": window.location.origin 
+          },
           body: JSON.stringify({ bggId }),
         });
         if (response.ok) {

@@ -38,7 +38,10 @@ export function GroupDetailClient({ group, userId, isOwner, initialPublicUrl }: 
   async function handlePublish() {
     setLoading("publish");
     try {
-      const res = await fetch(`/api/groups/${group.id}/publish`, { method: "POST" });
+      const res = await fetch(`/api/groups/${group.id}/publish`, { 
+        method: "POST",
+        headers: { "Origin": window.location.origin }
+      });
       const data = await res.json();
       if (res.ok) {
         setPublicUrl(`${getClientBaseUrl()}/public/group/${data.shareToken}`);

@@ -27,7 +27,11 @@ export default function NewGamePage() {
     try {
       const formData = new FormData();
       formData.append("image", file);
-      const res = await fetch("/api/upload", { method: "POST", body: formData });
+      const res = await fetch("/api/upload", { 
+        method: "POST", 
+        headers: { "Origin": window.location.origin },
+        body: formData 
+      });
       if (res.ok) {
         const data = await res.json();
         setImageUrl(data.url);
@@ -84,7 +88,10 @@ export default function NewGamePage() {
     try {
       const res = await fetch("/api/games/import-bgg", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "Origin": window.location.origin 
+        },
         body: JSON.stringify({ bggId, ean }),
       });
       if (res.ok) {

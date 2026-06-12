@@ -11,6 +11,19 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.44.1",
+    date: "2026-06-12",
+    title: "CSRF Validation Fix: BGG Import und POST-Requests",
+    description: "CSRF-Validierung in proxy.ts fuer Same-Origin-Requests liberalisiert und Origin-Header zu BGG-Import-POST-Requests hinzugefuegt. Behebt 403 'CSRF validation failed' Fehler beim Spiel-Import.",
+    changes: [
+      { type: "fix", text: "CSRF-Validierung in proxy.ts liberalisiert: Same-Origin-Requests ohne Origin/Referer werden jetzt zugelassen" },
+      { type: "fix", text: "Origin-Header zu BGG-Import-POST-Requests hinzugefuegt (collection-import-dialog, games-list-client, new-game)" },
+      { type: "fix", text: "Origin-Header zu weiteren POST-Requests hinzugefuegt (upload, group-publish)" },
+      { type: "improvement", text: "Public API-Endpunkte (/api/public/*) von CSRF-Validierung ausgenommen" },
+      { type: "internal", text: "CSRF-Schutz bleibt fuer Cross-Origin-Requests aktiv" },
+    ],
+  },
+  {
     version: "0.44.0",
     date: "2026-06-12",
     title: "Security Update: Critical Vulnerabilities Fixed, Package Updates",

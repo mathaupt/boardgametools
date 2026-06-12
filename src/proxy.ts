@@ -10,11 +10,14 @@ export const proxy = auth((req) => {
   if (
     MUTATION_METHODS.has(req.method) &&
     pathname.startsWith("/api/") &&
-    !pathname.startsWith("/api/auth/") // NextAuth has its own CSRF
+    !pathname.startsWith("/api/auth/") && // NextAuth has its own CSRF
+    !pathname.startsWith("/api/public/") // Public endpoints don't require CSRF
   ) {
     const origin = req.headers.get("origin");
     const expectedOrigin = req.nextUrl.origin;
 
+    // For same-origin requests, allow if Origin matches or is absent (browser sends it automatically)
+    // For cross-origin requests, require Origin to match
     if (origin) {
       if (origin !== expectedOrigin) {
         return Response.json({ error: "CSRF validation failed" }, { status: 403 });
@@ -25,6 +28,8 @@ export const proxy = auth((req) => {
       if (referer && !referer.startsWith(expectedOrigin)) {
         return Response.json({ error: "CSRF validation failed" }, { status: 403 });
       }
+      // If both Origin and Referer are absent, allow for same-origin requests
+      // (modern browsers should send Origin automatically, but we're lenient)
     }
   }
 

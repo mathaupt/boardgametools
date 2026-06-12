@@ -94,7 +94,10 @@ export default function GamesListClient({ games: initialGames }: GamesListClient
     try {
       const res = await fetch("/api/games/import-bgg", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "Origin": window.location.origin 
+        },
         body: JSON.stringify({ bggId, ean }),
       });
       if (res.ok) {
