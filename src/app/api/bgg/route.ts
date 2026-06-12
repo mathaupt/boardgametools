@@ -4,7 +4,7 @@ import { withApiLogging } from "@/lib/api-logger";
 import { checkRateLimit, rateLimitResponse } from "@/lib/rate-limit";
 import logger from "@/lib/logger";
 import { Errors } from "@/lib/error-messages";
-import env from "@/lib/env";
+import { env } from "@/lib/env";
 
 // Max response size from BGG API (2 MB) to prevent memory exhaustion
 const MAX_BGG_RESPONSE_SIZE = 2 * 1024 * 1024;
