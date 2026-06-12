@@ -100,6 +100,21 @@ include: { createdBy: { select: { id: true, name: true, email: true } } }
 | **OpenAPI/Swagger** | `docs/openapi.yaml` | Neuer API-Endpunkt, geaendertes Request/Response-Schema, neue Query-Parameter |
 | **FAQ** | `src/lib/faq.ts` | Neues Feature das Nutzer betrifft, geaenderte Bedienung |
 | **AGENTS.md** | `AGENTS.md` | Neue Regeln, neue Dateien, neue Skills, geaenderte Konventionen |
+| **Bugs** | `docs/bugs.md` | Neuer Bug gefunden, Bug-Status-Update, Bug behoben |
+
+**Workflow bei neuem Bug:**
+1. Bug in `docs/bugs.md` eintragen mit fortlaufender Nummer (BUG-XXX)
+2. Status auf `open` setzen, Schweregrad zuweisen
+3. Reproduktionsschritte und erwartetes/tatsächliches Verhalten dokumentieren
+4. Changelog-Eintrag schreiben (falls Bug-Fix Teil eines Releases)
+
+**Workflow bei Bug-Fix:**
+1. Bug in `docs/bugs.md` auf `fixed` setzen
+2. Behoben-Datum und Version eintragen
+3. **PFLICHT:** Test schreiben um Regression zu verhindern
+4. Test-Status in Bug-Eintrag dokumentieren
+5. Changelog-Eintrag mit Bug-Referenz schreiben
+6. Bug-Statistik am Ende der Datei aktualisieren
 
 **Workflow bei neuem API-Endpunkt:**
 1. Route in `src/app/api/` implementieren
@@ -123,6 +138,43 @@ include: { createdBy: { select: { id: true, name: true, email: true } } }
 - Auth: `security: []` fuer oeffentliche Endpunkte, Session-Cookie fuer geschuetzte
 - Fehler immer als `{ error: string }` Schema referenzieren
 
+### 7. Bug-Tracking (KRITISCH!)
+
+**Jeder gefundene Bug muss in `docs/bugs.md` dokumentiert werden!**
+
+**Bug-Format:**
+```markdown
+### [BUG-XXX] Bug-Titel
+
+**Status:** `open` | `in_progress` | `fixed` | `wontfix`
+**Schweregrad:** `critical` | `high` | `medium` | `low`
+**Entdeckt:** YYYY-MM-DD
+**Behoben:** YYYY-MM-DD (falls fixed)
+**Behoben in Version:** X.Y.Z
+**Test geschrieben:** Ja/Nein (Pflicht bei Fix!)
+
+**Beschreibung:** ...
+**Reproduktion:** ...
+**Erwartetes Verhalten:** ...
+**Tatsächliches Verhalten:** ...
+**Ursache:** ...
+**Lösung:** ...
+**Referenz im Changelog:** Version X.Y.Z - Fix: ...
+```
+
+**Bug-Status-Workflow:**
+1. **Neuer Bug:** Status `open`, in `docs/bugs.md` eintragen
+2. **In Bearbeitung:** Status `in_progress`
+3. **Behoben:** Status `fixed`, Version eintragen, **TEST SCHREIBEN** (Pflicht!)
+4. **Wontfix:** Status `wontfix` mit Begründung
+
+**Test-Pflicht bei Bug-Fix:**
+- Nach JEDEM Bug-Fix muss ein Test geschrieben werden
+- Unit-Test für logische Fehler
+- E2E-Test für UI/Workflow-Fehler
+- Test-Status im Bug-Eintrag dokumentieren
+- Ziel: Regression verhindern
+
 ## Projektstruktur
 
 ```
@@ -131,6 +183,7 @@ boardgametools/
 ├── CONCEPT.md             # Detailliertes Konzept
 ├── skills/                # AgentSkills (siehe unten)
 ├── docs/                  # Projekt-Dokumentation
+│   ├── bugs.md            # **Bug-Tracking Liste (PFLICHT aktuell halten!)**
 │   ├── FEATURES.md        # **Feature-Dokumentation (PFLICHT aktuell halten!)**
 │   ├── DEVELOPMENT-PROCESS.md  # Entwicklungsprozess & Agent-Architektur
 │   ├── openapi.yaml       # **Swagger/OpenAPI Spec (PFLICHT aktuell halten!)**
@@ -202,6 +255,16 @@ boardgametools/
 1. Ändere `prisma/schema.prisma`
 2. Führe Migration aus: `npx prisma migrate dev --name <name>`
 3. Generiere Client: `npx prisma generate`
+
+### Bug-Fix entwickeln
+
+1. Bug in `docs/bugs.md` finden oder erstellen
+2. Status auf `in_progress` setzen
+3. Bug analysieren und fixen
+4. **PFLICHT:** Test schreiben um Regression zu verhindern
+5. Bug in `docs/bugs.md` auf `fixed` setzen
+6. Changelog-Eintrag mit Bug-Referenz schreiben
+7. Commit + Review-Evaluator prüfen
 
 ### Tests ausführen
 

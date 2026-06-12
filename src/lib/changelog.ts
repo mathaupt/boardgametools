@@ -6,21 +6,37 @@ export interface ChangelogEntry {
   changes: Array<{
     type: "feature" | "fix" | "improvement" | "internal";
     text: string;
+    bugRef?: string; // Optional Bug-Referenz (z.B. "BUG-001")
   }>;
 }
 
 export const changelog: ChangelogEntry[] = [
+  {
+    version: "0.45.0",
+    date: "2026-06-12",
+    title: "Bug-Tracking System eingeführt",
+    description: "Neues Bug-Tracking System mit fortlaufender Nummerierung, Status-Management und Changelog-Referenzierung. Jeder Bug wird in docs/bugs.md dokumentiert und nach Fix mit Test versehen.",
+    changes: [
+      { type: "feature", text: "Bug-Tracking System: docs/bugs.md mit fortlaufender Nummerierung (BUG-XXX)" },
+      { type: "feature", text: "Bug-Status-Workflow: open → in_progress → fixed → wontfix" },
+      { type: "feature", text: "Changelog-Erweiterung: bugRef Feld für Bug-Referenzierung" },
+      { type: "improvement", text: "AGENTS.md um Pflicht-Regel 7 (Bug-Tracking) erweitert" },
+      { type: "improvement", text: "Bug-Fix Workflow in Entwicklungs-Workflows integriert" },
+      { type: "improvement", text: "Test-Pflicht bei Bug-Fix: Unit/E2E Tests verpflichtend" },
+      { type: "internal", text: "Historische Bugs (BUG-001, BUG-002) dokumentiert und referenziert" },
+    ],
+  },
   {
     version: "0.44.1",
     date: "2026-06-12",
     title: "CSRF Validation Fix: BGG Import und POST-Requests",
     description: "CSRF-Validierung in proxy.ts fuer Same-Origin-Requests liberalisiert und Origin-Header zu BGG-Import-POST-Requests hinzugefuegt. Behebt 403 'CSRF validation failed' Fehler beim Spiel-Import.",
     changes: [
-      { type: "fix", text: "CSRF-Validierung in proxy.ts liberalisiert: Same-Origin-Requests ohne Origin/Referer werden jetzt zugelassen" },
-      { type: "fix", text: "Origin-Header zu BGG-Import-POST-Requests hinzugefuegt (collection-import-dialog, games-list-client, new-game)" },
-      { type: "fix", text: "Origin-Header zu weiteren POST-Requests hinzugefuegt (upload, group-publish)" },
-      { type: "improvement", text: "Public API-Endpunkte (/api/public/*) von CSRF-Validierung ausgenommen" },
-      { type: "internal", text: "CSRF-Schutz bleibt fuer Cross-Origin-Requests aktiv" },
+      { type: "fix", text: "CSRF-Validierung in proxy.ts liberalisiert: Same-Origin-Requests ohne Origin/Referer werden jetzt zugelassen", bugRef: "BUG-001" },
+      { type: "fix", text: "Origin-Header zu BGG-Import-POST-Requests hinzugefuegt (collection-import-dialog, games-list-client, new-game)", bugRef: "BUG-001" },
+      { type: "fix", text: "Origin-Header zu weiteren POST-Requests hinzugefuegt (upload, group-publish)", bugRef: "BUG-001" },
+      { type: "improvement", text: "Public API-Endpunkte (/api/public/*) von CSRF-Validierung ausgenommen", bugRef: "BUG-001" },
+      { type: "internal", text: "CSRF-Schutz bleibt fuer Cross-Origin-Requests aktiv", bugRef: "BUG-001" },
     ],
   },
   {
@@ -40,6 +56,19 @@ export const changelog: ChangelogEntry[] = [
       { type: "fix", text: "nodemailer auf 7.0.13 downgraded (Peer Dependency Compatibility mit next-auth)" },
       { type: "internal", text: "npm audit: 8 Vulnerabilities (vorher 27) - alle critical/high behoben" },
       { type: "internal", text: "455 Tests bestanden, Build erfolgreich" },
+    ],
+  },
+  {
+    version: "0.44.0-docs",
+    date: "2026-06-12",
+    title: "Dokumentation: README Test-Credentials und Projekt-Info",
+    description: "README aktualisiert mit klaren Anweisungen zur Test-Benutzer-Erstellung und korrigierten Projekt-Informationen. Behebt Verwirrung um nicht funktionierende Test-Credentials.",
+    changes: [
+      { type: "fix", text: "README Test-Login Anweisungen korrigiert: Browser-Registrierung statt API/curl", bugRef: "BUG-002" },
+      { type: "improvement", text: "npm script db:seed:test-user hinzugefuegt fuer Hinweise zur Test-Benutzer-Erstellung", bugRef: "BUG-002" },
+      { type: "improvement", text: "Version von 0.1.0 auf 0.44.0 aktualisiert", bugRef: "BUG-002" },
+      { type: "improvement", text: "Tech Stack korrigiert: Next.js 14→16, SQLite→PostgreSQL, Tailwind 3→4", bugRef: "BUG-002" },
+      { type: "internal", text: "Scripts-Tabelle um db:seed:test-user erweitert", bugRef: "BUG-002" },
     ],
   },
   {
