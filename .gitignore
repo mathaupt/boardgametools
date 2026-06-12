@@ -43,6 +43,7 @@ review-evaluation.json
 
 # documentation snapshots & evaluations (local, generated)
 /docs/
+!docs/bugs.md
 
 # database backups & dumps
 *.bak
