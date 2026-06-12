@@ -82,7 +82,7 @@ Version 0.45.2 - Build Error Fix: env Import und BGG Auth Token
 **Schweregrad:** `high`  
 **Entdeckt:** 2026-06-12  
 **Behoben:** 2026-06-12  
-**Behoben in Version:** 0.44.1, 0.45.1, 0.45.3, 0.45.4  
+**Behoben in Version:** 0.44.1, 0.45.1, 0.45.3, 0.45.4, 0.45.5  
 **Test geschrieben:** Nein (TODO: CSRF-Test hinzufügen)
 
 **Beschreibung:**
@@ -101,20 +101,21 @@ Alle legitimen POST-Requests von der Anwendung sollten funktionieren.
 403 "CSRF validation failed" Fehler für alle POST-Requests ohne Origin-Header.
 
 **Ursache:**
-CSRF-Validierung in proxy.ts erforderte Origin/Referer Header für alle POST-Requests, aber Browser senden diese nicht automatisch für alle Requests. Die vorherige Lösung mit Origin-Header war unzureichend.
+CSRF-Validierung in proxy.ts erforderte Origin/Referer Header für alle POST-Requests, aber Browser senden diese nicht automatisch für alle Requests. Die vorherige Lösung mit Origin-Header war unzureichend. Das Hauptproblem war der Port-Vergleich (3000 vs 3001) im Host-Header.
 
 **Lösung:**
-- CSRF-Validierung komplett deaktiviert (temporäre Lösung)
-- Host-Header-Vergleich funktionierte nicht wie erwartet
+- CSRF-Validierung wieder aktiviert mit port-agnostischem Hostname-Vergleich
+- Host-Header ohne Port gegen erwarteten Hostname verglichen
 - Origin-Header zu allen BGG Import POST-Requests hinzugefügt (4 Locations)
 - Origin-Header zu anderen wichtigen POST-Requests hinzugefügt (upload, group-publish)
-- **TODO:** Implementiere CSRF mit same-site cookies (langfristige Lösung)
+- Cross-Origin-Requests bleiben geschützt
 
 **Referenz im Changelog:**
 Version 0.44.1 - Fix: CSRF validation failed error for BGG import and POST requests
 Version 0.45.1 - Fix: CSRF Fix vervollständigt: Alle BGG Import Locations
 Version 0.45.3 - CSRF Validation: Same-Origin komplett ausgenommen
 Version 0.45.4 - CSRF Validation temporär deaktiviert
+Version 0.45.5 - CSRF Validation wieder aktiviert mit Port-Fix
 
 ---
 
