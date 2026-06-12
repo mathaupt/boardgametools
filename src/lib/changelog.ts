@@ -12,6 +12,18 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.45.2",
+    date: "2026-06-12",
+    title: "Build Error Fix: env Import und BGG Auth Token",
+    description: "Build Error behoben durch Änderung von default zu named import für env. BGG_AUTH_TOKEN Support zu /api/bgg/route.ts hinzugefügt. .env.local Template erstellt.",
+    changes: [
+      { type: "fix", text: "env Import von default auf named import geändert" },
+      { type: "fix", text: "BGG_AUTH_TOKEN Support zu /api/bgg/route.ts hinzugefügt" },
+      { type: "improvement", text: ".env.local Template mit BGG_AUTH_TOKEN Placeholder erstellt" },
+      { type: "internal", text: "BGG API erfordert jetzt Authentifizierung für alle Anfragen" },
+    ],
+  },
+  {
     version: "0.45.1",
     date: "2026-06-12",
     title: "CSRF Fix vervollständigt: Alle BGG Import Locations",
