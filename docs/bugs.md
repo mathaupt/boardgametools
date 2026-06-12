@@ -44,7 +44,7 @@ Version X.Y.Z - Fix: [Beschreibung]
 **Schweregrad:** `high`  
 **Entdeckt:** 2026-06-12  
 **Behoben:** 2026-06-12  
-**Behoben in Version:** 0.44.1  
+**Behoben in Version:** 0.44.1, 0.45.1  
 **Test geschrieben:** Nein (TODO: CSRF-Test hinzufügen)
 
 **Beschreibung:**
@@ -67,12 +67,15 @@ CSRF-Validierung in proxy.ts erforderte Origin/Referer Header für alle POST-Req
 
 **Lösung:**
 - CSRF-Validierung liberalisiert: Same-Origin-Requests ohne Origin/Referer werden zugelassen
-- Origin-Header zu BGG Import POST-Requests hinzugefügt
+- Origin-Header zu allen BGG Import POST-Requests hinzugefügt (4 Locations: collection-import-dialog, games-list-client, new-game, import/page)
+- Origin-Header zu anderen POST-Requests hinzugefügt (upload, group-publish)
 - Public API-Endpunkte von CSRF-Validierung ausgenommen
+- Entwicklungsserver neu gestartet um Middleware-Änderungen zu aktivieren
 - CSRF-Schutz bleibt für Cross-Origin-Requests aktiv
 
 **Referenz im Changelog:**
 Version 0.44.1 - Fix: CSRF validation failed error for BGG import and POST requests
+Version 0.45.1 - Fix: CSRF Fix vervollständigt: Alle BGG Import Locations
 
 ---
 
