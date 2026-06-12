@@ -14,22 +14,32 @@ export const proxy = auth((req) => {
     !pathname.startsWith("/api/public/") // Public endpoints don't require CSRF
   ) {
     const origin = req.headers.get("origin");
+    const referer = req.headers.get("referer");
+    const host = req.headers.get("host");
     const expectedOrigin = req.nextUrl.origin;
 
-    // For same-origin requests, allow if Origin matches or is absent (browser sends it automatically)
+    // Skip CSRF validation for same-origin requests (browser requests from same domain)
+    // Check if request is from same origin by comparing host header
+    const isSameOrigin = host === new URL(expectedOrigin).host;
+    
+    if (isSameOrigin) {
+      // Same-origin requests are safe - skip CSRF validation
+      return;
+    }
+
     // For cross-origin requests, require Origin to match
     if (origin) {
       if (origin !== expectedOrigin) {
         return Response.json({ error: "CSRF validation failed" }, { status: 403 });
       }
-    } else {
-      // Fallback: check Referer when Origin is absent (e.g. same-origin navigation)
-      const referer = req.headers.get("referer");
-      if (referer && !referer.startsWith(expectedOrigin)) {
+    } else if (referer) {
+      // Fallback: check Referer when Origin is absent
+      if (!referer.startsWith(expectedOrigin)) {
         return Response.json({ error: "CSRF validation failed" }, { status: 403 });
       }
-      // If both Origin and Referer are absent, allow for same-origin requests
-      // (modern browsers should send Origin automatically, but we're lenient)
+    } else {
+      // Cross-origin request without Origin or Referer - reject
+      return Response.json({ error: "CSRF validation failed" }, { status: 403 });
     }
   }
 
