@@ -12,6 +12,17 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.46.1",
+    date: "2026-06-12",
+    title: "CSRF Validation: Requests ohne Origin/Referer erlaubt",
+    description: "CSRF-Validierung weiter liberalisiert - Requests ohne Origin/Referer werden jetzt als Same-Origin angesehen und zugelassen. Behebt CSRF-Fehler in Vercel-Produktionsumgebung.",
+    changes: [
+      { type: "fix", text: "CSRF-Validierung: Requests ohne Origin/Referer erlaubt", bugRef: "BUG-001" },
+      { type: "improvement", text: "Browsers senden diese Header nur für Cross-Origin-Requests", bugRef: "BUG-001" },
+      { type: "internal", text: "Same-Origin-Requests ohne Headers sind sicher", bugRef: "BUG-001" },
+    ],
+  },
+  {
     version: "0.46.0",
     date: "2026-06-12",
     title: "Deutsche Rechtschreibung korrigiert - Umlaute statt oe/ae/ue",
