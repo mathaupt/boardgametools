@@ -82,38 +82,38 @@ Version 0.45.2 - Build Error Fix: env Import und BGG Auth Token
 **Schweregrad:** `high`  
 **Entdeckt:** 2026-06-12  
 **Behoben:** 2026-06-12  
-**Behoben in Version:** 0.44.1, 0.45.1  
+**Behoben in Version:** 0.44.1, 0.45.1, 0.45.3  
 **Test geschrieben:** Nein (TODO: CSRF-Test hinzufügen)
 
 **Beschreibung:**
-Beim Importieren von Spielen über BGG trat ein 403 "CSRF validation failed" Fehler auf. Die CSRF-Validierung im proxy.ts Middleware war zu streng und blockierte legitime Same-Origin-POST-Requests.
+CSRF-Validierung blockierte legitime Same-Origin-POST-Requests vom Browser, einschließlich BGG Import und alle anderen API-POST-Endpoints. Ursprüngliche Lösung mit Origin-Header war unzureichend, da nicht alle POST-Requests abgedeckt waren.
 
 **Reproduktion:**
 1. Entwicklungsserver starten
 2. Als Benutzer einloggen
-3. Versuchen, ein Spiel über BGG zu importieren
-4. 403 Fehler mit "CSRF validation failed"
+3. Beliebige POST-Request an API ausführen (z.B. Spiel erstellen, BGG Import)
+4. 403 "CSRF validation failed" Fehler
 
 **Erwartetes Verhalten:**
-BGG Import sollte erfolgreich funktionieren.
+Alle legitimen POST-Requests von der Anwendung sollten funktionieren.
 
 **Tatsächliches Verhalten:**
-403 "CSRF validation failed" Fehler.
+403 "CSRF validation failed" Fehler für alle POST-Requests ohne Origin-Header.
 
 **Ursache:**
-CSRF-Validierung in proxy.ts erforderte Origin/Referer Header für alle POST-Requests, auch für Same-Origin-Requests vom Browser.
+CSRF-Validierung in proxy.ts erforderte Origin/Referer Header für alle POST-Requests, aber Browser senden diese nicht automatisch für alle Requests. Die vorherige Lösung mit Origin-Header war unzureichend.
 
 **Lösung:**
-- CSRF-Validierung liberalisiert: Same-Origin-Requests ohne Origin/Referer werden zugelassen
-- Origin-Header zu allen BGG Import POST-Requests hinzugefügt (4 Locations: collection-import-dialog, games-list-client, new-game, import/page)
-- Origin-Header zu anderen POST-Requests hinzugefügt (upload, group-publish)
+- CSRF-Validierung komplett für Same-Origin-Requests ausgenommen (Host-Header-Vergleich)
+- Origin-Header zu allen BGG Import POST-Requests hinzugefügt (4 Locations)
+- Origin-Header zu anderen wichtigen POST-Requests hinzugefügt (upload, group-publish)
 - Public API-Endpunkte von CSRF-Validierung ausgenommen
-- Entwicklungsserver neu gestartet um Middleware-Änderungen zu aktivieren
-- CSRF-Schutz bleibt für Cross-Origin-Requests aktiv
+- Cross-Origin-Requests bleiben geschützt
 
 **Referenz im Changelog:**
 Version 0.44.1 - Fix: CSRF validation failed error for BGG import and POST requests
 Version 0.45.1 - Fix: CSRF Fix vervollständigt: Alle BGG Import Locations
+Version 0.45.3 - CSRF Validation: Same-Origin komplett ausgenommen
 
 ---
 
