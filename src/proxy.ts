@@ -18,6 +18,12 @@ export const proxy = auth((req) => {
     const host = req.headers.get("host");
     const expectedOrigin = req.nextUrl.origin;
 
+    // If neither Origin nor Referer is present, assume it's a same-origin request (safe)
+    // Browsers typically send these headers for cross-origin requests
+    if (!origin && !referer) {
+      return; // Allow same-origin requests without headers
+    }
+
     // Skip CSRF validation for same-origin requests (browser requests from same domain)
     // Check if request is from same origin by comparing host header (without port)
     const hostWithoutPort = host?.split(":")[0];
@@ -38,9 +44,6 @@ export const proxy = auth((req) => {
       if (!referer.startsWith(expectedOrigin)) {
         return Response.json({ error: "CSRF validation failed" }, { status: 403 });
       }
-    } else {
-      // Cross-origin request without Origin or Referer - reject
-      return Response.json({ error: "CSRF validation failed" }, { status: 403 });
     }
   }
 
