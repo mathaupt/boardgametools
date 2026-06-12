@@ -12,6 +12,17 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.45.3",
+    date: "2026-06-12",
+    title: "CSRF Validation: Same-Origin komplett ausgenommen",
+    description: "CSRF-Validierung komplett für Same-Origin-Requests ausgenommen. Host-Header-Vergleich statt Origin/Referer-Validierung. Behebt 403 CSRF Errors für alle lokalen API-POST-Requests.",
+    changes: [
+      { type: "fix", text: "CSRF-Validierung komplett für Same-Origin-Requests übersprungen", bugRef: "BUG-001" },
+      { type: "improvement", text: "Host-Header-Vergleich statt Origin/Referer-Validierung", bugRef: "BUG-001" },
+      { type: "internal", text: "Cross-Origin-Requests bleiben geschützt", bugRef: "BUG-001" },
+    ],
+  },
+  {
     version: "0.45.2",
     date: "2026-06-12",
     title: "Build Error Fix: env Import und BGG Auth Token",
