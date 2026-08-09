@@ -1,6 +1,6 @@
 # BoardGameTools — Feature-Dokumentation
 
-> **Version 0.48.0** | 41 Seiten | 92 API-Endpunkte | 29 Datenbank-Modelle
+> **Version 0.49.0** | 42 Seiten | 92 API-Endpunkte | 29 Datenbank-Modelle
 >
 > Vollstaendige Dokumentation aller Nutzer-sichtbaren Features,
 > organisiert nach Bereichen mit Screenshots-Beschreibungen,
@@ -24,7 +24,8 @@
 12. [Administration](#12-administration)
 13. [Sonstige Features](#13-sonstige-features)
 14. [Mobile API](#14-mobile-api)
-15. [Technische Uebersicht](#15-technische-uebersicht)
+15. [iOS-Companion-App](#15-ios-companion-app)
+16. [Technische Uebersicht](#16-technische-uebersicht)
 
 ---
 
@@ -664,7 +665,52 @@ iOS-App ihren lokalen SwiftData-Speicher synchronisieren kann.
 
 ---
 
-## 15. Technische Uebersicht
+## 15. iOS-Companion-App
+
+**Projekt:** `BoardGameTools/` | **Technologie:** Swift 6, SwiftUI, SwiftData, iOS 17+
+
+Native iOS-Companion-App, die über die `/api/mobile/v1/*` REST-API mit dem Backend
+kommuniziert. Unterstützt Authentifizierung, Token-Refresh, Offline-Datenhaltung
+und alle Kernbereiche des Web-Frontends.
+
+### Features (MVP)
+
+| Bereich | Status |
+|---------|--------|
+| Login / Anmeldung | Anmelden per E-Mail/Passwort, Sign in with Apple vorbereitet |
+| Dashboard | Statistik-Kacheln (Spiele, Sessions, Events, Gruppen) |
+| Spiele | Liste, Detailansicht mit Tags/Komplexität, BGG-Import-Endpoint nutzbar |
+| Sessions | Liste gespielter Partien |
+| Events | Liste anstehender Events |
+| Gruppen | Liste eigener Gruppen |
+| Einstellungen | API-URL konfigurierbar, Abmelden |
+
+### Architektur
+
+- `APIClient` — zentraler HTTP-Client mit Bearer-Token, automatischem Refresh,
+  multipart Upload und deutschen Fehlermeldungen.
+- `AuthManager` — Anmeldestatus, Login/Logout, Sign in with Apple.
+- `KeychainManager` — sichere Speicherung von Access-/Refresh-Token.
+- SwiftData-Modelle für `Game`, `Session`, `Event`, `Group`, `User` und
+  `SyncMetadata` (Basis für Offline-First-Sync).
+- Erste SwiftUI-Views: `LoginView`, `DashboardView`, `GameListView`,
+  `GameDetailView`, `SessionListView`, `EventListView`, `GroupListView`,
+  `SettingsView`.
+
+### Build & Tests
+
+```bash
+cd BoardGameTools
+xcodegen generate --project .
+xcodebuild -project BoardGameTools.xcodeproj -scheme BoardGameTools \
+  -destination 'platform=iOS Simulator,name=iPhone 16,OS=18.5' build
+xcodebuild -project BoardGameTools.xcodeproj -scheme BoardGameTools \
+  -destination 'platform=iOS Simulator,name=iPhone 16,OS=18.5' test
+```
+
+---
+
+## 16. Technische Uebersicht
 
 ### Navigation (Hauptmenue)
 

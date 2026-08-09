@@ -147,9 +147,30 @@ BoardGameTools ist eine Next.js Webanwendung zur Verwaltung von Brettspielen, Sp
 
 ## Native iOS-App
 
-Das Mobile-API-Backend für die native iOS-Companion-App (SwiftUI + SwiftData) ist implementiert. Die versionierte REST-API `/api/mobile/v1/*` setzt auf dem bestehenden Next.js-Backend auf und verwendet die Service-Schicht. Unterstützt werden Bearer-Token-Authentifizierung, API-Token-Paar mit Refresh, Sync-Endpoint, CRUD für Spiele, Sessions, Events und Gruppen, BGG-Suche/EAN-Lookup, Bild-Upload, Push-Device-Registrierung, Sign in with Apple und Deep Links für öffentliche Share-Links.
+Das Mobile-API-Backend für die native iOS-Companion-App (SwiftUI + SwiftData) ist
+implementiert. Das Xcode-Projekt `BoardGameTools/` wurde mit XcodeGen angelegt und
+baut mit Swift 6 für iOS 17+. Es enthält bereits einen lauffähigen Client mit
+automatischem Build und Unit-Test-Ziel:
 
-Das vollständige Design-Dokument befindet sich unter `docs/superpowers/specs/2026-08-09-ios-app-design.md`.
+- `APIClient` — zentraler HTTP-Client für `/api/mobile/v1/*` mit Bearer-Token,
+  automatischem Refresh, multipart-Upload und deutschen Fehlermeldungen.
+- `AuthManager` & `KeychainManager` — Login/Logout, Token-Speicherung in der
+  Keychain, Vorbereitung für Sign in with Apple.
+- SwiftData-Modell-Grundgerüst für `Game`, `Session`, `Event`, `Group`, `User`
+  und `SyncMetadata` (Basis für Offline-First-Sync).
+- SwiftUI-Views: `LoginView`, `DashboardView`, `GameListView`,
+  `GameDetailView`, `SessionListView`, `EventListView`, `GroupListView` und
+  `SettingsView`.
+
+Die versionierte REST-API `/api/mobile/v1/*` setzt auf dem bestehenden
+Next.js-Backend auf und verwendet die Service-Schicht. Unterstützt werden
+Bearer-Token-Authentifizierung, API-Token-Paar mit Refresh, Sync-Endpoint, CRUD
+für Spiele, Sessions, Events und Gruppen, BGG-Suche/EAN-Lookup, Bild-Upload,
+Push-Device-Registrierung, Sign in with Apple und Deep Links für öffentliche
+Share-Links.
+
+Das vollständige Design-Dokument befindet sich unter
+`docs/superpowers/specs/2026-08-09-ios-app-design.md`.
 
 ---
 

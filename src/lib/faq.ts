@@ -389,7 +389,7 @@ export const faqSections: FaqSection[] = [
       {
         question: "Unterstützt die App Offline-Modus?",
         answer:
-          "Ja, alle relevanten Daten werden in SwiftData zwischengespeichert. Lesen und einfache Schreiboperationen funktionieren offline und werden synchronisiert, sobald die Verbindung wieder hergestellt ist.",
+          "Das SwiftData-Grundgerüst für den Offline-Modus ist bereits vorhanden. Lesen erfolgt aktuell live über die Mobile API; die vollständige Zwei-Wege-Synchronisation inklusive lokalen Schreiboperationen wird sukzessive ergänzt.",
       },
       {
         question: "Wie funktioniert Sign in with Apple?",
