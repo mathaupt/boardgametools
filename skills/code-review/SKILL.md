@@ -866,7 +866,7 @@ const isValid = await compare(inputPassword, group.password);
 
 ## Evaluator-Feedback (automatisch generiert)
 
-> Letzter Lauf: 2026-08-09 14:51:53
+> Letzter Lauf: 2026-08-09 19:39:29
 > Gesamt-Score: **9.9/10**
 
 ### Kategorie-Scores
@@ -893,7 +893,7 @@ const isValid = await compare(inputPassword, group.password);
 - ✅ **P0-5** Kein Rate Limiting + keine proxy.ts: Proxy/Middleware + Rate Limiting vorhanden
 - ✅ **P0-6** passwordHash in API-Responses: passwordHash wird nicht exponiert
 - ✅ **P1-7** PII in Logs: Keine PII in API-Logs
-- ✅ **P1-8** Fehlende Input-Validierung: validation.ts in 21 Routes importiert
+- ✅ **P1-8** Fehlende Input-Validierung: validation.ts in 24 Routes importiert
 - ✅ **P1-9** Keine Pagination: Pagination auf allen Listen-Endpoints
 - ✅ **P1-10** Statistiken komplett fehlend: Statistiken-Seite + API vorhanden
 - ✅ **P1-11** Session-Detailseite fehlt: Session-Detailseite vorhanden
@@ -907,8 +907,8 @@ const isValid = await compare(inputPassword, group.password);
 - ✅ **P2-19** Duplikat: Prisma-Client-Dateien: Duplikat entfernt
 - ✅ **P2-20** Duplikat: BGG-Logik: Kein dupliziertes XML-Parsing
 - ✅ **P2-21** next/image statt <img>: Keine <img> Tags
-- ✅ **P2-22** Fehlende Unit Tests: 50 Test-Dateien
-- ✅ **P2-23** Inkonsistente Error-Responses: Konsistent: 230 error, 15 message
+- ✅ **P2-22** Fehlende Unit Tests: 66 Test-Dateien
+- ✅ **P2-23** Inkonsistente Error-Responses: Konsistent: 258 error, 23 message
 - ✅ **P2-24** CONCEPT.md aktualisieren: Tech-Stack aktuell
 - ✅ **P2-25** Pendende Invites dupliziert: Shared Query extrahiert
 - ✅ **P2-27** Prisma Transactions fehlen: $transaction wird verwendet
@@ -918,7 +918,7 @@ const isValid = await compare(inputPassword, group.password);
 - ✅ **P3-31** accessibility Skill fehlt: Accessibility Skill vorhanden
 - ✅ **P3-32** DB-Dumps in Git: Git-Check nicht möglich
 - ✅ **P3-33** Links zu /terms und /privacy fehlen: Beide Seiten vorhanden
-- ✅ **P3-35** Fehlende DB-Indices: 30 @@index Definitionen
+- ✅ **P3-35** Fehlende DB-Indices: 33 @@index Definitionen
 - ✅ **SEC-44** Fehlende Security Headers: CSP, X-Frame-Options, X-Content-Type-Options vorhanden
 - ✅ **SEC-46** XSS: dangerouslySetInnerHTML ohne Sanitization: Kein dangerouslySetInnerHTML verwendet
 - ✅ **PERF-47** Schwere Libraries ohne Dynamic Import: 6 dynamic() + 7 await import() Lazy-Loads

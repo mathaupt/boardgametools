@@ -1,0 +1,60 @@
+name: BoardGameTools
+targets:
+  BoardGameTools:
+    type: application
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - BoardGameTools
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.boardgametools.ios
+        INFOPLIST_FILE: BoardGameTools/Info.plist
+        CODE_SIGN_ENTITLEMENTS: BoardGameTools/BoardGameTools.entitlements
+        SWIFT_VERSION: "6.0"
+        SWIFT_STRICT_CONCURRENCY: complete
+        GENERATE_INFOPLIST_FILE: NO
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS: YES
+    entitlements:
+      path: BoardGameTools/BoardGameTools.entitlements
+      properties:
+        com.apple.developer.applesignin:
+          - Default
+        com.apple.developer.usernotifications.filter: true
+    info:
+      path: BoardGameTools/Info.plist
+      properties:
+        CFBundleDisplayName: BoardGameTools
+        LSRequiresIPhoneOS: true
+        UIRequiredDeviceCapabilities:
+          - armv7
+        UILaunchScreen:
+          UIImageName: ""
+          UIColorName: ""
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        NSCameraUsageDescription: "Kamera wird zum Scannen von Barcodes und Spielcovern verwendet."
+        UIBackgroundModes:
+          - fetch
+          - remote-notification
+        CFBundleURLTypes:
+          - CFBundleURLName: com.boardgametools.app
+            CFBundleURLSchemes:
+              - boardgametools
+        NSAppTransportSecurity:
+          NSAllowsArbitraryLoads: false
+  BoardGameToolsTests:
+    type: bundle.unit-test
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - BoardGameToolsTests
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: "YES"
+        SWIFT_VERSION: "6.0"
+    dependencies:
+      - target: BoardGameTools
