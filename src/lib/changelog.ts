@@ -19,6 +19,7 @@ export const changelog: ChangelogEntry[] = [
     changes: [
       { type: "feature", text: "Prisma-Schema um `ApiToken`, `PushDevice` und `appleSub` erweitert und Migration durchgeführt" },
       { type: "feature", text: "Token-Service mit `createTokenPair`, `rotateTokenPair` und `revokeToken` inkl. SHA-256-Hashing erstellt" },
+      { type: "feature", text: "`apiAuth`-Helfer für Bearer-Token und Web-Session; `proxy.ts` mobil/Bearer-freundlich angepasst" },
     ],
   },
   {

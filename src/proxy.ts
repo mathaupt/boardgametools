@@ -13,6 +13,11 @@ export const proxy = auth((req) => {
     !pathname.startsWith("/api/auth/") && // NextAuth has its own CSRF
     !pathname.startsWith("/api/public/") // Public endpoints don't require CSRF
   ) {
+    const authHeader = req.headers.get("authorization") || "";
+    if (authHeader.startsWith("Bearer ")) {
+      // API-token requests are not vulnerable to browser CSRF
+      return;
+    }
     const origin = req.headers.get("origin");
     const referer = req.headers.get("referer");
     const host = req.headers.get("host");
@@ -57,6 +62,7 @@ export const proxy = auth((req) => {
     pathname.startsWith("/api/") &&
     !pathname.startsWith("/api/auth/") &&
     !pathname.startsWith("/api/public/") &&
+    !pathname.startsWith("/api/mobile/v1/") &&
     !pathname.startsWith("/api/bgg")
   ) {
     if (pathname.startsWith("/api/admin")) {
