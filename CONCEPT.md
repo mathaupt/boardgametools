@@ -145,6 +145,14 @@ BoardGameTools ist eine Next.js Webanwendung zur Verwaltung von Brettspielen, Sp
 
 ---
 
+## Native iOS-App (geplant)
+
+Eine native iOS-Companion-App (SwiftUI + SwiftData) ist geplant. Sie nutzt eine neue versionierte REST-API (`/api/mobile/v1/*`) auf dem bestehenden Next.js-Backend und wiederverwendet die Service-Schicht. Die App bietet Offline-Fähigkeit, nativen Barcode-Scan, Cover-OCR über Vision, Sign in with Apple, Push-Benachrichtigungen und Deep Links für öffentliche Share-Links.
+
+Das vollständige Design-Dokument befindet sich unter `docs/superpowers/specs/2026-08-09-ios-app-design.md`.
+
+---
+
 ## Datenbank-Schema
 
 ```

@@ -12,6 +12,17 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.47.1",
+    date: "2026-08-09",
+    title: "Konzept und Design-Spec für native iOS-App",
+    description: "Erstelltes umfassendes Design-Dokument für eine native iOS-Companion-App auf Basis der bestehenden Next.js-Webanwendung. Die iOS-App soll über eine neue versionierte REST-API (`/api/mobile/v1/*`) auf die bestehende Service-Schicht zugreifen, Offline-Fähigkeit über SwiftData bieten und native Features wie Barcode-Scan, Cover-OCR, Sign in with Apple, Push-Benachrichtigungen sowie Deep Links für öffentliche Share-Links nutzen.",
+    changes: [
+      { type: "internal", text: "Design-Spec `docs/superpowers/specs/2026-08-09-ios-app-design.md` erstellt" },
+      { type: "internal", text: "CONCEPT.md um Abschnitt Native iOS-App (geplant) ergänzt" },
+      { type: "internal", text: ".gitignore angepasst, damit Design-Specs und Pläne unter docs/superpowers/ versioniert werden können" },
+    ],
+  },
+  {
     version: "0.47.0",
     date: "2026-08-09",
     title: "Dependency-Update: Alle Software-Komponenten auf aktuelle Versionen",
