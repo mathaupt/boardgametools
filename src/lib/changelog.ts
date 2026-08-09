@@ -22,6 +22,7 @@ export const changelog: ChangelogEntry[] = [
       { type: "feature", text: "`apiAuth`-Helfer für Bearer-Token und Web-Session; `proxy.ts` mobil/Bearer-freundlich angepasst" },
       { type: "feature", text: "Mobile Auth-Routen `/api/mobile/v1/auth/login|refresh|logout|logout-all` mit Unit-Tests" },
       { type: "feature", text: "`/api/mobile/v1/me` und `/api/mobile/v1/dashboard` mit Profil, Totalen und Statistik" },
+      { type: "feature", text: "`/api/mobile/v1/sync` fuer vollstaendigen Offline-Snapshot (Spiele, Sessions, Events, Gruppen, Votes)" },
     ],
   },
   {
