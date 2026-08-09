@@ -12,6 +12,30 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.47.0",
+    date: "2026-08-09",
+    title: "Dependency-Update: Alle Software-Komponenten auf aktuelle Versionen",
+    description: "Umfassendes Software-Update auf die neuesten kompatiblen Versionen (Next.js 16.3.0, React 19.2.8, TypeScript 6.0.3, Prisma 7.9.1, Tailwind CSS 4.3.3, ESLint 9.39.5, Vitest 4.1.10). Peer-Dependency-Konflikte über `.npmrc legacy-peer-deps=true` und gezielte `package.json` overrides gelöst. `.env.local` wurde aus dem Git-Index entfernt, damit lokale Geheimnisse nicht versioniert werden. Typecheck, Lint, Unit-Tests und Build laufen erfolgreich. Verbleibende 6 npm-audit-Findings sind bekannte transitive Dev-Restrisiken.",
+    changes: [
+      { type: "improvement", text: "Next.js auf 16.3.0, React auf 19.2.8, React-DOM auf 19.2.8 aktualisiert" },
+      { type: "improvement", text: "TypeScript auf 6.0.3 aktualisiert" },
+      { type: "improvement", text: "Prisma, @prisma/client und @prisma/adapter-pg auf 7.9.1 aktualisiert" },
+      { type: "improvement", text: "Tailwind CSS und @tailwindcss/postcss auf 4.3.3 aktualisiert" },
+      { type: "improvement", text: "ESLint auf 9.39.5 und eslint-config-next auf 16.3.0 aktualisiert" },
+      { type: "improvement", text: "Vitest, @vitejs/plugin-react und @vitest/coverage-v8 auf 4.x aktualisiert" },
+      { type: "improvement", text: "nodemailer auf 9.0.5 aktualisiert (Sicherheitsfix)" },
+      { type: "improvement", text: "Alle weiteren npm-Packages über npm-check-updates aktualisiert" },
+      { type: "fix", text: "`.npmrc` mit `legacy-peer-deps=true` hinzugefügt, um ERESOLVE-Fehler bei npm install zu vermeiden" },
+      { type: "fix", text: "`package.json` overrides für CVEs in transitiven Dependencies ergänzt (mocha, minimatch, codeceptjs)" },
+      { type: "fix", text: "ESLint 9 Flat-Config in `eslint.config.mjs` angepasst und `react-hooks/set-state-in-effect` projektweit deaktiviert" },
+      { type: "fix", text: "TypeScript-Typfehler in Tests nach Major-Updates behoben (parseResponse-Helfer, any in Test-Dateien)" },
+      { type: "internal", text: "`.env.local` aus Git-Index entfernt; `.gitignore` angepasst, damit lokale Geheimnisse nicht committet werden" },
+      { type: "internal", text: "Changelog-Eintrag `0.44.0-docs` auf gültiges Semver `0.44.2` korrigiert" },
+      { type: "internal", text: "AGENTS.md, CONCEPT.md und Skills (bill-of-materials, best-practices, testing, security, performance, architecture, code-review) mit aktuellen Versionen aktualisiert" },
+      { type: "internal", text: "Tests: 508 Unit-Tests bestanden, Build erfolgreich, Typecheck sauber" },
+    ],
+  },
+  {
     version: "0.46.1",
     date: "2026-06-12",
     title: "CSRF Validation: Requests ohne Origin/Referer erlaubt",
@@ -138,7 +162,7 @@ export const changelog: ChangelogEntry[] = [
     ],
   },
   {
-    version: "0.44.0-docs",
+    version: "0.44.2",
     date: "2026-06-12",
     title: "Dokumentation: README Test-Credentials und Projekt-Info",
     description: "README aktualisiert mit klaren Anweisungen zur Test-Benutzer-Erstellung und korrigierten Projekt-Informationen. Behebt Verwirrung um nicht funktionierende Test-Credentials.",

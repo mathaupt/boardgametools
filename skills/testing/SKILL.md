@@ -30,9 +30,9 @@ BoardGameTools folgt der klassischen Test-Pyramide. Die Basis bilden schnelle, i
 
 | Ebene       | Werkzeug              | Anzahl  | Ausfuehrungszeit | Wo                  |
 |-------------|-----------------------|---------|------------------|---------------------|
-| Unit        | Vitest 4.x            | 188+    | < 5 Sekunden     | `tests/unit/lib/`   |
-| Integration | Vitest (geplant)      | --      | --               | `tests/unit/api/`   |
-| E2E         | CodeceptJS + Playwright | wenige | 30-60 Sekunden   | `tests/e2e/`        |
+| Unit        | Vitest 4.1.10         | 500+    | < 15 Sekunden    | `tests/unit/lib/`   |
+| Integration | Vitest 4.1.10         | 20+     | --               | `tests/unit/api/`   |
+| E2E         | CodeceptJS 4.1.0 + Playwright 1.62.1 | wenige | 30-60 Sekunden   | `tests/e2e/`        |
 
 ### Kernprinzipien
 
@@ -105,7 +105,7 @@ describe("validateString", () => {
 | `utils.ts`         | Ja             | --                                                   |
 | `validation.ts`    | Ja             | Umfangreichste Suite (String, Number, Email, URL, Date, Enum) |
 | `security-check`   | Ja             | Shell-Script via Test-Wrapper                        |
-| `admin-create.ts`  | **Nein**       | Schwer testbar: externe Abhaengigkeiten (DB, Hashing)|
+| `admin-create.ts`  | **Nein**       | Schwer testbar: externe Abhaengigkeiten (DB, Hashing) |
 | `auth.ts`          | **Nein**       | Schwer testbar: NextAuth-Konfiguration, Session-Management |
 
 ### Vitest-Konfiguration
@@ -173,7 +173,7 @@ export default defineConfig({
 | `coverage.thresholds`| `src/lib/**`: 60% Lines/Stmts/Funcs        | Mindeststandard fuer Business-Logik       |
 | `alias @`            | `./src`                                     | Gleiche Pfadaufloesung wie in Next.js     |
 
-**Abhaengigkeiten:** `@vitest/coverage-v8` muss installiert sein (devDependency).
+**Abhaengigkeiten:** `vitest` ^4.1.10, `@vitejs/plugin-react` ^6.0.2, `@vitest/coverage-v8` ^4.1.10, `jsdom` ^29.1.1, `@testing-library/react` ^16.3.2, `@testing-library/jest-dom` ^7.0.0, `@testing-library/user-event` ^14.6.3, `jest-axe` ^11.0.0.
 
 ### Test-Befehle
 

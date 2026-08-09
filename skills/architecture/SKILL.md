@@ -23,16 +23,18 @@ metadata:
 
 | Aspekt | Technologie |
 |--------|-------------|
-| Framework | Next.js 16 (App Router, Turbopack dev, Webpack prod) |
-| Laufzeit | Node.js / Vercel Serverless |
-| Datenbank | PostgreSQL via Prisma ORM (Prisma Postgres) |
-| Auth | NextAuth.js v5 (Credentials Provider) |
-| Frontend | React 19, Tailwind CSS 4, shadcn/ui, Lucide Icons |
-| Charts | Recharts (lazy-loaded) |
-| Caching | Redis (@upstash/redis) |
-| Rate Limiting | @upstash/ratelimit (Redis-basiert) |
-| File Storage | @vercel/blob + lokaler Fallback |
-| Logging | Pino (strukturiert) + API-Logging in DB |
+| Framework | Next.js 16.3.0 (App Router, Turbopack dev, Webpack prod) |
+| Laufzeit | Node.js >=22.13.1 / Vercel Serverless |
+| Datenbank | PostgreSQL via Prisma ORM 7.9.1 (`@prisma/client`, `@prisma/adapter-pg`, `pg`) |
+| Auth | NextAuth.js v5 beta.32 (Credentials Provider) |
+| Frontend | React 19.2.8, Tailwind CSS 4.3.3 + `@tailwindcss/postcss`, shadcn/ui, Lucide Icons |
+| API Docs | swagger-ui-react 5.32.12 |
+| Charts | Recharts 3.10.1 (lazy-loaded) |
+| Caching | Redis (@upstash/redis 1.38.2) |
+| Rate Limiting | @upstash/ratelimit 2.0.8 (Redis-basiert) |
+| File Storage | @vercel/blob 2.7.0 + lokaler Fallback |
+| Logging | Pino 10.3.1 (strukturiert) + API-Logging in DB |
+| E-Mail | nodemailer 9.0.5 (SMTP) |
 | Deployment | Vercel (Serverless Functions) |
 
 ---
@@ -44,7 +46,7 @@ metadata:
 | Aspekt | Detail |
 |--------|--------|
 | Verantwortung | Darstellung, Benutzerinteraktion, clientseitige Validierung |
-| Technologien | React 19, Tailwind CSS 4, shadcn/ui, Lucide Icons, Recharts |
+| Technologien | React 19.2.8, Tailwind CSS 4.3.3, shadcn/ui, Lucide Icons, Recharts 3.10.1 |
 | Kommunikation | HTTP-Requests an Route Handlers via `fetch` |
 
 **Verzeichnisstruktur:**
@@ -115,10 +117,10 @@ src/app/
 
 | Aspekt | Detail |
 |--------|--------|
-| ORM | Prisma mit 27 Modellen |
-| Datenbank | PostgreSQL (Prisma Postgres) |
+| ORM | Prisma 7.9.1 mit 27 Modellen |
+| Datenbank | PostgreSQL (Prisma Postgres), `@prisma/adapter-pg` + `pg` |
 | Cache | Redis (Upstash) |
-| Datei-Storage | @vercel/blob + `public/uploads/` Fallback |
+| Datei-Storage | @vercel/blob 2.7.0 + `public/uploads/` Fallback |
 
 ---
 

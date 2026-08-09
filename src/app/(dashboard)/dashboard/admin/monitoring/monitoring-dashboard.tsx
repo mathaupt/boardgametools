@@ -99,7 +99,6 @@ export function MonitoringDashboard() {
 
   // Initial fetch & period change
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchStats();
     fetchAnomalies();
     fetchQuality();

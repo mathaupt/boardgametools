@@ -59,7 +59,7 @@ metadata:
 - [ ] SQL Injection: `$queryRaw` nur mit tagged templates
 - [ ] Debug-Routes in Produktion deaktiviert
 - [ ] Security Headers: CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy
-- [ ] Dependency Vulnerabilities: `npm audit` ohne kritische/hohe Findings
+- [ ] Dependency Vulnerabilities: `npm audit` ohne kritische/hohe Findings in Production-Dependencies; bekannte transitive Dev-Restrisiken muessen dokumentiert sein
 - [ ] CORS-Konfiguration: Nur erlaubte Origins
 - [ ] Cookie-Sicherheit: HttpOnly, Secure, SameSite Flags
 - [ ] XSS-Prävention: Kein `dangerouslySetInnerHTML` ohne Sanitization
@@ -365,7 +365,7 @@ Erstelle einen Report mit folgendem Format:
 - 0 Treffer für `user: true` / `createdBy: true` ohne `select` – kein passwordHash-Leak
 - 0 `dangerouslySetInnerHTML` – kein XSS-Risiko
 - Alle 9 `$queryRaw` nutzen Tagged Template Literals (parameterisiert, sicher)
-- npm audit production: **0 Vulnerabilities**
+- npm audit: **6 offene Vulnerabilities** (0 critical, 3 high, 3 moderate); production-relevant: 2 high in `swagger-ui-react` -> `js-yaml@4.3.0`; restliche 3 moderate/1 high in transitiven Dev-Dependencies (`codeceptjs` -> `ai` -> `undici`) - SEC-45 offen
 - Security Headers komplett: CSP, X-Frame-Options, HSTS (2 Jahre), Referrer-Policy, Permissions-Policy
 - CSRF-Schutz: Origin/Referer-Prüfung in proxy.ts für POST/PUT/DELETE/PATCH
 - bcrypt (cost 12) für Passwort-Hashing überall (User + Gruppen + Reset)
@@ -722,7 +722,7 @@ Fuer den aktuellen Nutzerkreis (Brettspiel-Gruppe) ist Sentry/Datadog overkill. 
 27. ~~**Prisma Transactions fehlen**~~ ✅ Behoben: $transaction wird verwendet.
 42. ~~**validation.ts Bugs**~~ ✅ Behoben: `min`/`max` nutzen beide `trim().length`, `min !== undefined` statt falsy-Check, `value === ""` in validateNumber abgefangen.
 43. ~~**Fehlende Validierungsfunktionen**~~ ✅ Behoben: `validateEmail`, `validateUrl`, `validateDate`, `validateEnum` in validation.ts ergänzt. Inline-Regex aus register/route.ts durch zentrales `validateEmail` ersetzt.
-45. ~~**npm audit: Bekannte Vulnerabilities**~~ ✅ Behoben: Keine Prod-Vulnerabilities (nur devDeps).
+45. **npm audit: Bekannte Vulnerabilities** ❌ Offen (v0.47.0): 0 critical, 3 high, 3 moderate. Produktiv-relevant: 2 high in `swagger-ui-react` -> `js-yaml@4.3.0`; restliche 3 moderate/1 high in transitiven Dev-Dependencies. Fix blockiert durch breaking `js-yaml` v5-API in `swagger-ui-react`.
 46. ~~**XSS: dangerouslySetInnerHTML**~~ ✅ Behoben: Kein dangerouslySetInnerHTML verwendet.
 47. ~~**Schwere Libraries ohne Dynamic Import**~~ ✅ Behoben: 4 dynamic() + 7 await import() Lazy-Loads.
 49. ~~**Keine API Caching Headers**~~ ✅ Behoben: 19 Caching-Konfigurationen gefunden.
@@ -866,14 +866,14 @@ const isValid = await compare(inputPassword, group.password);
 
 ## Evaluator-Feedback (automatisch generiert)
 
-> Letzter Lauf: 2026-03-31 17:16:45
-> Gesamt-Score: **10/10**
+> Letzter Lauf: 2026-08-09 14:26:54
+> Gesamt-Score: **9.9/10**
 
 ### Kategorie-Scores
 
 | Kategorie | Score | Treffsicherheit | Aktualität | Abdeckung | Umsetzung | Handlung |
 |-----------|-------|-----------------|------------|-----------|-----------|----------|
-| Sicherheit | **10/10** | 10 | 10 | 10 | 10 | 10 |
+| Sicherheit | **9.7/10** | 10 | 9.2 | 10 | 9.5 | 10 |
 | TypeScript | **10/10** | 10 | 10 | 10 | 10 | 10 |
 | Architektur | **10/10** | 10 | 10 | 10 | 10 | 10 |
 | Performance | **10/10** | 10 | 10 | 10 | 10 | 10 |
@@ -884,7 +884,7 @@ const isValid = await compare(inputPassword, group.password);
 | Best Practices | **10/10** | 10 | 10 | 10 | 10 | 10 |
 | Skalierung | **10/10** | 10 | 10 | 10 | 10 | 10 |
 
-### Erledigte Findings (50)
+### Erledigte Findings (49)
 
 - ✅ **P0-1** Debug-Routes in Produktion: NODE_ENV Guard vorhanden
 - ✅ **P0-2** DB-Init ohne Auth: Auth-Check vorhanden
@@ -920,7 +920,6 @@ const isValid = await compare(inputPassword, group.password);
 - ✅ **P3-33** Links zu /terms und /privacy fehlen: Beide Seiten vorhanden
 - ✅ **P3-35** Fehlende DB-Indices: 30 @@index Definitionen
 - ✅ **SEC-44** Fehlende Security Headers: CSP, X-Frame-Options, X-Content-Type-Options vorhanden
-- ✅ **SEC-45** npm audit: Bekannte Vulnerabilities: Keine Prod-Vulnerabilities (0 high nur in devDeps, 0 moderate)
 - ✅ **SEC-46** XSS: dangerouslySetInnerHTML ohne Sanitization: Kein dangerouslySetInnerHTML verwendet
 - ✅ **PERF-47** Schwere Libraries ohne Dynamic Import: 6 dynamic() + 7 await import() Lazy-Loads
 - ✅ **PERF-48** Keine Bundle-Analyse konfiguriert: @next/bundle-analyzer konfiguriert
@@ -936,3 +935,7 @@ const isValid = await compare(inputPassword, group.password);
 - ✅ **SCALE-58** Kein Caching-Layer: Redis Cache vorhanden
 - ✅ **SCALE-59** Kein strukturiertes Logging: Strukturiertes Logging-Framework vorhanden
 - ✅ **SCALE-60** DB Connection Pooling nicht konfiguriert: Connection Pool konfiguriert
+
+### Offene Findings (1)
+
+- ❌ **SEC-45** npm audit: Bekannte Vulnerabilities: 0 critical, 3 high, 3 moderate

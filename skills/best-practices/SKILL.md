@@ -60,16 +60,24 @@ metadata:
 
 ### Strict Mode
 
-Das Projekt verwendet `"strict": true` in `tsconfig.json`.
+Das Projekt verwendet `"strict": true` in `tsconfig.json` und TypeScript 6.0.3.
 
 ### Typregeln
 
 | Regel | Erlaubt | Verboten |
 |-------|---------|----------|
-| `any` | Niemals | `const data: any = ...` |
+| `any` | In `tests/**` und `scripts/**` (ausgewaehlte Hilfsfunktionen) | In `src/**` (Anwendungscode) |
 | `unknown` | Fuer unbekannte Typen | -- |
 | Prisma-generierte Typen | Bevorzugt | Manuelle Interfaces fuer DB-Entities |
 | Type Assertions (`as`) | Nur wenn unvermeidbar, mit Kommentar | Blindes `as any` |
+
+### ESLint 9 Flat Config
+
+- Konfiguration: `eslint.config.mjs`
+- Global deaktiviert: `react-hooks/set-state-in-effect` (viele bewusste State-Updates in Effekten)
+- Tests/Scripts: Erleichterte Regeln fuer `any`-Typen (`@typescript-eslint/no-explicit-any`, `@typescript-eslint/no-unsafe-function-type`)
+- Ignorierte Pfade: `node_modules`, `.next`, `src/generated/prisma`, Backup-Dateien (`*.bak`)
+- Befehl: `npm run lint`
 
 ### Nullish Coalescing statt Falsy-Checks
 

@@ -136,7 +136,6 @@ export function LogsTab({
   }, [logPage, logMethod, logPath, logStatus]);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchLogs();
   }, [fetchLogs]);
 

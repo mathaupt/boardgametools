@@ -120,23 +120,25 @@ BoardGameTools ist eine Next.js Webanwendung zur Verwaltung von Brettspielen, Sp
 
 | Komponente | Technologie |
 |------------|-------------|
-| **Framework** | Next.js 16 (App Router) |
-| **React** | React 19 |
-| **Sprache** | TypeScript |
-| **Datenbank** | PostgreSQL (Prisma Postgres) + Prisma 5 |
-| **Styling** | Tailwind CSS 4 + shadcn/ui + Radix UI |
-| **Icons** | Lucide React |
-| **Charts** | Recharts |
-| **Auth** | NextAuth.js v5 (Credentials Provider) |
-| **E-Mail** | Nodemailer (SMTP) |
-| **Barcode-Scan** | html5-qrcode |
-| **OCR** | Tesseract.js |
-| **Passwort-Hashing** | bcryptjs |
-| **E2E Tests** | CodeceptJS + Playwright |
-| **Unit Tests** | Vitest |
-| **Linting** | ESLint |
-| **Git Hooks** | Husky |
-| **Logging** | Pino (strukturiertes JSON-Logging) |
+| **Framework** | Next.js 16.3.0 (App Router, Turbopack dev, Webpack prod) |
+| **React** | React 19.2.8 |
+| **Sprache** | TypeScript 6.0.3 (strict) |
+| **Datenbank** | PostgreSQL (Prisma Postgres) + Prisma 7.9.1 (`@prisma/adapter-pg` + `pg`) |
+| **Styling** | Tailwind CSS 4.3.3 + `@tailwindcss/postcss` + shadcn/ui + Radix UI |
+| **Icons** | Lucide React 1.30.0 |
+| **Charts** | Recharts 3.10.1 |
+| **Auth** | NextAuth.js v5 beta.32 (Credentials Provider) |
+| **E-Mail** | Nodemailer 9.0.5 (SMTP) |
+| **Barcode-Scan** | html5-qrcode 2.3.8 |
+| **OCR** | Tesseract.js 7.0.0 |
+| **Passwort-Hashing** | bcryptjs 3.0.3 |
+| **E2E Tests** | CodeceptJS 4.1.0 + Playwright 1.62.1 |
+| **Unit Tests** | Vitest 4.1.10 + @vitejs/plugin-react 6.0.2 |
+| **Linting** | ESLint 9.39.5 (Flat Config) |
+| **Git Hooks** | Husky 9.1.7 |
+| **Logging** | Pino 10.3.1 (strukturiertes JSON-Logging) |
+| **API Docs** | swagger-ui-react 5.32.12 |
+| **Node-Engine** | >=22.13.1 |
 | **Rate Limiting** | @upstash/ratelimit + @upstash/redis |
 | **File Storage** | @vercel/blob (Cloud) + Local Fallback |
 | **Performance** | @vercel/speed-insights + @vercel/analytics |

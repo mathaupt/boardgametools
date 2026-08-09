@@ -66,7 +66,6 @@ export function AddGameDialog({
 
   useEffect(() => {
     if (open) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       loadGames();
       setSearch("");
       setBggSearch("");

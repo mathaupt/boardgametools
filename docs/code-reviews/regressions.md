@@ -89,3 +89,16 @@ Jeder Eintrag enthält Felder für Root-Cause-Analyse und Gegenmaßnahmen (manue
 **Verantwortlich:** <!-- Manuell ausfüllen -->
 
 ---
+
+## 2026-08-09 10:46:50
+
+| Finding | Priorität | Vorher | Jetzt | Detail |
+|---------|-----------|--------|-------|--------|
+| SEC-45: npm audit: Bekannte Vulnerabilities | P2 | resolved | open | 2 critical, 26 high, 7 moderate |
+| BP-51: Ungenutzte Dependencies in package.json | P3 | resolved | partially_resolved | Möglicherweise ungenutzt: @testing-library/dom |
+
+**Root-Cause:** Massives Dependency-Update (Next.js, React, TypeScript 6, Prisma 7, Tailwind 4, Vitest 4, ESLint 9) hat npm audit Vulnerabilities von 35 auf 6 reduziert. Verbleibend: `swagger-ui-react` zwingt `js-yaml@4.3.0` (2 high, Produktion) und `codeceptjs` -> `ai` haelt `undici@5.x` (transitiv, nur Dev/E2E). Ein Patch ohne Breaking-Change ist nicht verfuegbar (js-yaml v5 aendert Export-API, swagger-ui-react hat keine kompatible Version). BP-51 (`@testing-library/dom`) ist ein False Positive — die Bibliothek wird in Komponenten-Tests indirekt benoetigt.
+**Gegenmaßnahme:** 1) Monatlich `npm audit` und `npm outdated` pruefen. 2) Bei neuen `swagger-ui-react`-Versionen oder Alternativen (z.B. separate API-Docs-Seite ohne swagger-ui-react) evaluieren. 3) Bekannte Restrisiken in `skills/security/SKILL.md` und `skills/code-review/SKILL.md` (SEC-45) dokumentieren.
+**Verantwortlich:** BoardGameTools Team
+
+---

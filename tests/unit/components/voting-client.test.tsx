@@ -12,7 +12,6 @@ vi.mock("@/components/ui/use-toast", () => ({
 // Mock next/image to render a simple img
 vi.mock("next/image", () => ({
   default: (props: Record<string, unknown>) => {
-    // eslint-disable-next-line @next/next/no-img-element
     const { fill, priority, ...rest } = props;
     return <img {...rest} />;
   },

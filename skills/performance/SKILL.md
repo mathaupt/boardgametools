@@ -67,6 +67,7 @@ tatsaechlich benoetigt werden. Die folgenden Imports sind bereits konfiguriert u
 | `@upstash/ratelimit` | `src/lib/rate-limit.ts` | `await import()` | ~15 KB |
 | `@upstash/redis` | `src/lib/rate-limit.ts` | `await import()` | ~20 KB |
 | `@vercel/blob` | `src/lib/storage.ts` | `await import()` | ~10 KB |
+| `swagger-ui-react` | `src/app/(dashboard)/dashboard/admin/api-docs/page.tsx` | `next/dynamic` | ~500 KB (nur Admin-Route) |
 
 ### Regeln fuer neue Imports
 
@@ -357,8 +358,10 @@ ANALYZE=true npm run build
 
 | Befehl | Beschreibung |
 |--------|-------------|
-| `npm run dev` | Turbopack mit 4 GB Heap |
-| `npm run build` | Produktions-Build mit Webpack |
+| `npm run dev` | Turbopack dev mit 4 GB Heap (Node >=22.13.1) |
+| `npm run dev:webpack` | Webpack dev (Fallback bei Turbopack-Problemen) |
+| `npm run build` | Produktions-Build: Prisma-Migrationen + Webpack |
+| `npm run analyze` | Bundle-Analyse mit `@next/bundle-analyzer` |
 
 ---
 

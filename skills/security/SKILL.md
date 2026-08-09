@@ -127,11 +127,13 @@ export async function GET() {
 
 | Regel | Details |
 |-------|---------|
-| `.env` in `.gitignore` | `.env` und `.env.local` werden NICHT versioniert; `.env.example` als Vorlage |
+| `.env` in `.gitignore` | `.env*` ist ignoriert; nur `.env.example` und `.env.local.example` als Templates. `.env.local` wird NICHT versioniert. |
 | Keine hardcoded Secrets | Secrets kommen aus `process.env`, niemals als String-Literal im Code |
 | Security Headers aktiv | CSP, X-Frame-Options, X-Content-Type-Options konfiguriert in `next.config.ts` |
 | Kein Wildcard CORS | `Access-Control-Allow-Origin: *` ist verboten |
 | Server-Informationen verbergen | `X-Powered-By`-Header wird von Next.js standardmaessig entfernt |
+| Dependency-Overrides | `package.json` enthaelt gezielte `overrides`, um CVEs in transitiven Dependencies zu beheben |
+| Node-Engine | `package.json` engines: `node >=22.13.1`; aeltere Node-Versionen werden nicht unterstuetzt |
 
 Aktuelle Security Headers in `next.config.ts`:
 
@@ -151,10 +153,11 @@ Aktuelle Security Headers in `next.config.ts`:
 
 | Regel | Details |
 |-------|---------|
-| `npm audit` clean halten | Keine `high` oder `critical` Vulnerabilities in Production-Dependencies |
+| `npm audit` clean halten | Ziel: Keine `high`/`critical` Vulnerabilities in Production-Dependencies. Bekannte Restrisiken muessen dokumentiert sein. |
 | Regelmaessige Updates | Dependencies mindestens monatlich pruefen und aktualisieren |
 | Lockfile committen | `package-lock.json` MUSS im Repository sein |
 | Keine unnoetigen Packages | Nicht verwendete Dependencies entfernen |
+| Transitive CVEs patchen | `package.json` `overrides` verwenden, wenn ein Patch ohne Breaking-Change moeglich ist |
 
 ```bash
 # Pruefung ausfuehren
@@ -166,6 +169,8 @@ bash scripts/security-check.sh --only A06
 # Ohne npm audit (schneller, z.B. in Pre-Commit)
 bash scripts/security-check.sh --no-audit
 ```
+
+**Aktueller Stand (Post-Update):** Vulnerabilities von 35 auf 6 reduziert. Verbleibende 6 Vulnerabilities (3 moderate, 3 high) sind ausschliesslich in transitiven Dev-Dependencies (`swagger-ui-react` -> `js-yaml@4.3.0`, `codeceptjs` -> `ai` -> `@ai-sdk/provider-utils` -> `undici@5.x`) und koennen ohne Breaking-Change nicht gepatcht werden. Sie werden in `docs/code-reviews/security.md` (SEC-45) verfolgt.
 
 **Automatische Pruefung:** `security-check.sh --only A06` fuehrt `npm audit` aus.
 

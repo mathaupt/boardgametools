@@ -6,13 +6,25 @@ BoardGameTools ist eine Next.js 16 Webanwendung zur Verwaltung von Brettspielen,
 
 ## Tech Stack
 
-- **Framework**: Next.js 16 (App Router, Turbopack)
-- **Sprache**: TypeScript (strict)
-- **Datenbank**: PostgreSQL (Prisma Postgres) + Prisma ORM
-- **Styling**: Tailwind CSS 4 + shadcn/ui Komponenten
-- **Auth**: NextAuth.js v5 (beta) mit Credentials Provider
-- **Testing**: Vitest (Unit), CodeceptJS + Playwright (E2E)
-- **CI/Hooks**: Husky (pre-commit: Tests + Security + Review, pre-push: DB-Backup)
+- **Framework**: Next.js 16.3.0 (App Router, Turbopack dev, Webpack prod)
+- **Sprache**: TypeScript 6.0.3 (strict)
+- **Datenbank**: PostgreSQL (Prisma Postgres) + Prisma ORM 7.9.1
+- **Styling**: Tailwind CSS 4.3.3 + `@tailwindcss/postcss` 4.3.3 + shadcn/ui Komponenten
+- **Auth**: NextAuth.js v5 beta.32 mit Credentials Provider
+- **Testing**: Vitest 4.1.10 (Unit), CodeceptJS 4.1.0 + Playwright 1.62.1 (E2E)
+- **Lint**: ESLint 9.39.5 (Flat Config `eslint.config.mjs`)
+- **CI/Hooks**: Husky 9.1.7 (pre-commit: Tests + Security + Review, pre-push: DB-Backup)
+- **Node**: `>=22.13.1` (siehe `package.json` engines)
+- **Package Manager**: npm mit `legacy-peer-deps=true` (`.npmrc`) zur Auflösung von Peer-Dependency-Konflikten
+
+## Dependency-Management
+
+- `.npmrc` setzt `legacy-peer-deps=true`, um Breaking-Changes bei Peer-Dependencies zu vermeiden.
+- `package.json` enthält `overrides` zur sofortigen Behebung von CVEs in transitiven Abhängigkeiten:
+  - `mocha`: `diff ^8.0.4`, `serialize-javascript ^7.0.5`
+  - `minimatch@3.1.5`: `brace-expansion ^1.1.18`
+  - `codeceptjs`: `uuid ^11.1.1`, `axios ^1.19.0`
+- Verbleibende bekannte Schwachstellen: `swagger-ui-react` zwingt `js-yaml@4.3.0`; `@ai-sdk/provider-utils` hält `undici@5.x`. Beide sind bekannt und werden in `docs/code-reviews/security.md` verfolgt (SEC-45).
 
 ## PFLICHT-Regeln
 
@@ -357,9 +369,13 @@ export async function GET() {
 | `docs/code-reviews/regressions.md` | **Regressions-Log** (automatisch + manuell) |
 | `docs/code-reviews/history/` | Historische Review-Snapshots (JSON, fuer Regression-Diff) |
 | `prisma/schema.prisma` | Datenbank-Schema |
-| `.env` | Lokale Umgebungsvariablen |
+| `.npmrc` | npm-Konfiguration (`legacy-peer-deps=true`) |
+| `eslint.config.mjs` | ESLint 9 Flat-Config (regelbasiert) |
+| `vitest.config.ts` | Vitest-Konfiguration (React-Plugin, Aliase, Mocks) |
+| `.env` | Lokale Umgebungsvariablen (NICHT committen, wird von `.gitignore` ignoriert) |
 | `.env.prod` | Prod-DB-Credentials (NIEMALS committen!) |
 | `.env.local.example` | Template fuer lokale Entwicklung |
+| `.env.local` | Lokale Geheimnisse (wird NICHT versioniert; Kopie aus `.env.local.example` erstellen) |
 
 ## Umgebungsvariablen
 
@@ -375,4 +391,16 @@ NEXTAUTH_SECRET="<secret>"
 npx prisma generate          # Prisma Client nicht gefunden
 npx prisma migrate dev       # Schema out of sync
 npm run backup:prod          # Manuelles DB-Backup
+npm install --legacy-peer-deps  # Falls Peer-Dependency-Konflikte auftreten (alternativ `.npmrc` verwenden)
+npm run typecheck            # TypeScript-Fehler isolieren
+npm run lint                 # ESLint-Fehler prüfen
+npm run security-check:fast  # Security-Check ohne npm audit (schnell)
 ```
+
+### Nach einem Dependency-Update
+
+1. `npm run typecheck` ausführen (kritisch bei TypeScript-/Prisma-Major-Updates)
+2. `npm run lint` ausführen (ESLint-Regeln können sich mit Major-Versionen ändern)
+3. `npm run test` ausführen
+4. `npm run build` ausführen
+5. `npm audit` prüfen und bekannte Restrisiken in `docs/code-reviews/security.md` dokumentieren

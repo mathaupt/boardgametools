@@ -40,7 +40,6 @@ export function createRouteContext(
   return { params: Promise.resolve(params) };
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function parseResponse(response: any): { status: number; body: any } {
   return { status: response.status, body: response.body };
 }

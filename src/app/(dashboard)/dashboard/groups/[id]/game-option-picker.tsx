@@ -57,7 +57,6 @@ export function GameOptionPicker({
 
   useEffect(() => {
     if (optionsAreGames && collectionGames.length === 0) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setLoadingGames(true);
       fetch("/api/games")
         .then((res) => (res.ok ? res.json() : []))
