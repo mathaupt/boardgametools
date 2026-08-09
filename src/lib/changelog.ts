@@ -12,13 +12,22 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.47.3",
+    date: "2026-08-09",
+    title: "iOS-Client Implementierungsplan",
+    description: "Detaillierter iOS-Client-Implementierungsplan hinzugefügt. Er umfasst den Aufbau eines Xcode SwiftUI-Projekts, SwiftData-Modelle, APIClient, AuthManager, SyncEngine, Repositories, ViewModels, Views, Barcode-Scan, Cover-OCR, Sign in with Apple, Push-Benachrichtigungen und Deep Links. Zusätzlich wurde .gitignore so angepasst, dass `docs/superpowers/` mit Plänen und Specs versioniert werden kann.",
+    changes: [
+      { type: "internal", text: "iOS-Client-Implementierungsplan `docs/superpowers/plans/2026-08-09-ios-client.md` erstellt" },
+      { type: "internal", text: ".gitignore angepasst, damit `docs/superpowers/` in Git erfasst wird" },
+    ],
+  },
+  {
     version: "0.47.2",
     date: "2026-08-09",
     title: "Implementierungspläne für native iOS-App",
-    description: "Erstellte detaillierte Implementierungspläne für die iOS-App: Backend-Plan (Auth, Sync, CRUD-Endpunkte) und iOS-Client-Plan (SwiftUI, SwiftData, native Features). Design-Spec um Token-Typ und Apple-Sub-Feld ergänzt.",
+    description: "Erstellte den detaillierten Backend-Implementierungsplan für die iOS-App (Auth, Sync, CRUD-Endpunkte). Design-Spec um `type`-Feld in ApiToken und Apple-Sub-Ergänzungen aktualisiert.",
     changes: [
       { type: "internal", text: "Backend-Implementierungsplan `docs/superpowers/plans/2026-08-09-ios-backend.md` erstellt" },
-      { type: "internal", text: "iOS-Client-Implementierungsplan `docs/superpowers/plans/2026-08-09-ios-client.md` erstellt" },
       { type: "internal", text: "Design-Spec um `type`-Feld in ApiToken und Apple-Sub Ergänzungen aktualisiert" },
     ],
   },

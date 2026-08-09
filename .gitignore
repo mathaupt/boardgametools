@@ -42,8 +42,10 @@ security-report.md
 review-evaluation.json
 
 # documentation snapshots & evaluations (local, generated)
-/docs/
+/docs/*
 !docs/bugs.md
+!docs/superpowers/
+!docs/superpowers/**
 
 # database backups & dumps
 *.bak
