@@ -54,4 +54,7 @@ export const env = {
   get BLOB_READ_WRITE_TOKEN() { return optionalEnvOrUndefined("BLOB_READ_WRITE_TOKEN"); },
   get UPSTASH_REDIS_REST_URL() { return optionalEnvOrUndefined("UPSTASH_REDIS_REST_URL"); },
   get UPSTASH_REDIS_REST_TOKEN() { return optionalEnvOrUndefined("UPSTASH_REDIS_REST_TOKEN"); },
+
+  // ── Apple Sign In ──
+  get APPLE_CLIENT_ID() { return optionalEnvOrUndefined("APPLE_CLIENT_ID"); },
 };

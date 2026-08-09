@@ -1,0 +1,2487 @@
+openapi: 3.1.0
+info:
+  title: BoardGameTools API
+  description: |
+    REST API fuer BoardGameTools — Brettspiel-Verwaltung, Sessions, Events mit Voting, Gruppen und Spielereihen.
+
+    ## Authentifizierung
+    Die meisten Endpunkte erfordern eine gueltige NextAuth.js Session (Cookie-basiert).
+    Oeffentliche Endpunkte unter `/api/public/` und `/api/auth/` sind ohne Login erreichbar.
+
+    ## Fehlerformat
+    Alle Fehler folgen dem Format: `{ "error": "Deutsche Fehlermeldung" }`
+
+    ## Rate Limiting
+    Oeffentliche Endpunkte sind per IP rate-limited (Upstash Redis + In-Memory Fallback).
+  version: 0.40.1
+  contact:
+    name: BoardGameTools
+  license:
+    name: MIT
+
+servers:
+  - url: http://localhost:3000
+    description: Lokale Entwicklung
+  - url: https://boardgametools.vercel.app
+    description: Production
+
+tags:
+  - name: Auth
+    description: Registrierung, Login, Passwort-Reset
+  - name: Games
+    description: Spielesammlung (CRUD, Import, Tags)
+  - name: BGG
+    description: BoardGameGeek Integration (Suche, Import, Sammlung)
+  - name: Barcode
+    description: EAN/UPC Barcode-Lookup
+  - name: Sessions
+    description: Spielsessions erfassen und auswerten
+  - name: Series
+    description: Spielereihen (EXIT, Adventure Games, etc.)
+  - name: Events
+    description: Spieleabende planen und organisieren
+  - name: Event Voting
+    description: Spielvorschlaege und Abstimmung
+  - name: Event Invites
+    description: Einladungen verwalten
+  - name: Date Polling
+    description: Terminabstimmung (Doodle-aehnlich)
+  - name: Groups
+    description: Spielergruppen mit Umfragen und Kommentaren
+  - name: Group Polls
+    description: Gruppen-Umfragen
+  - name: Public
+    description: Oeffentliche Endpunkte (ohne Login)
+  - name: Users
+    description: Nutzerverwaltung und Profil
+  - name: Admin
+    description: Administration (nur ADMIN-Rolle)
+  - name: Admin Monitoring
+    description: API-Monitoring und Qualitaets-Dashboard
+  - name: Upload
+    description: Bild-Upload
+  - name: Mobile
+    description: Native iOS-App API (/api/mobile/v1)
+  - name: Mobile Auth
+    description: Authentifizierung fuer die iOS-App
+  - name: Mobile BGG
+    description: BGG-Integration fuer die iOS-App
+  - name: System
+    description: Health-Check, DB-Init
+
+components:
+  schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Nicht autorisiert"
+      required: [error]
+
+    Game:
+      type: object
+      properties:
+        id: { type: string, format: cuid }
+        name: { type: string }
+        description: { type: string, nullable: true }
+        minPlayers: { type: integer, default: 1 }
+        maxPlayers: { type: integer, default: 4 }
+        playTimeMinutes: { type: integer, nullable: true }
+        complexity: { type: integer, minimum: 1, maximum: 5, nullable: true }
+        bggId: { type: string, nullable: true }
+        ean: { type: string, nullable: true }
+        imageUrl: { type: string, nullable: true }
+        ownerId: { type: string }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+        deletedAt: { type: string, format: date-time, nullable: true }
+
+    GameSession:
+      type: object
+      properties:
+        id: { type: string, format: cuid }
+        gameId: { type: string }
+        playedAt: { type: string, format: date-time }
+        durationMinutes: { type: integer, nullable: true }
+        notes: { type: string, nullable: true }
+        createdById: { type: string }
+        game: { $ref: '#/components/schemas/Game' }
+        players:
+          type: array
+          items:
+            type: object
+            properties:
+              userId: { type: string }
+              score: { type: integer, nullable: true }
+              isWinner: { type: boolean }
+              placement: { type: integer, nullable: true }
+              user:
+                type: object
+                properties:
+                  id: { type: string }
+                  name: { type: string }
+                  email: { type: string }
+
+    Event:
+      type: object
+      properties:
+        id: { type: string, format: cuid }
+        title: { type: string }
+        description: { type: string, nullable: true }
+        eventDate: { type: string, format: date-time, nullable: true }
+        location: { type: string, nullable: true }
+        status: { type: string, enum: [draft, voting, closed] }
+        isPublic: { type: boolean }
+        shareToken: { type: string, nullable: true }
+        selectedGame: { type: string, nullable: true }
+        createdById: { type: string }
+
+    GameProposal:
+      type: object
+      properties:
+        id: { type: string, format: cuid }
+        eventId: { type: string }
+        gameId: { type: string, nullable: true }
+        bggId: { type: string, nullable: true }
+        bggName: { type: string, nullable: true }
+        proposedById: { type: string, nullable: true }
+        totalVotes: { type: integer }
+
+    Group:
+      type: object
+      properties:
+        id: { type: string, format: cuid }
+        name: { type: string }
+        description: { type: string, nullable: true }
+        ownerId: { type: string }
+        shareToken: { type: string, nullable: true }
+        hasPassword: { type: boolean }
+
+    GameSeries:
+      type: object
+      properties:
+        id: { type: string, format: cuid }
+        name: { type: string }
+        description: { type: string, nullable: true }
+        imageUrl: { type: string, nullable: true }
+        ownerId: { type: string }
+
+    GameSeriesEntry:
+      type: object
+      properties:
+        id: { type: string, format: cuid }
+        seriesId: { type: string }
+        gameId: { type: string }
+        sortOrder: { type: integer }
+        played: { type: boolean }
+        playedAt: { type: string, format: date-time, nullable: true }
+        rating: { type: integer, minimum: 1, maximum: 5, nullable: true }
+        difficulty: { type: string, nullable: true }
+        playTimeMinutes: { type: integer, nullable: true }
+        successful: { type: boolean, nullable: true }
+        playerCount: { type: integer, nullable: true }
+        score: { type: integer, nullable: true }
+
+    PaginatedResponse:
+      type: object
+      properties:
+        data: { type: array, items: {} }
+        total: { type: integer }
+        page: { type: integer }
+        limit: { type: integer }
+        totalPages: { type: integer }
+
+    UserPublic:
+      type: object
+      properties:
+        id: { type: string }
+        name: { type: string }
+        email: { type: string }
+
+  securitySchemes:
+    session:
+      type: apiKey
+      in: cookie
+      name: next-auth.session-token
+      description: NextAuth.js Session Cookie
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: API Access Token aus `POST /api/mobile/v1/auth/login` oder `refresh`
+
+  parameters:
+    PageParam:
+      name: page
+      in: query
+      schema: { type: integer, minimum: 0, default: 0 }
+    LimitParam:
+      name: limit
+      in: query
+      schema: { type: integer, minimum: 0, maximum: 100, default: 0 }
+    PeriodParam:
+      name: period
+      in: query
+      schema: { type: string, enum: [1h, 6h, 24h, 7d, 30d], default: 24h }
+
+security:
+  - session: []
+
+paths:
+  # ===== AUTH =====
+  /api/auth/register:
+    post:
+      tags: [Auth]
+      summary: Neuen Benutzer registrieren
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, email, password]
+              properties:
+                name: { type: string, minLength: 1, maxLength: 100 }
+                email: { type: string, format: email }
+                password: { type: string, minLength: 8, maxLength: 128 }
+      responses:
+        '201': { description: Benutzer erstellt, content: { application/json: { schema: { type: object, properties: { message: { type: string }, userId: { type: string } } } } } }
+        '400': { description: Validierungsfehler, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+
+  /api/auth/password-reset/request:
+    post:
+      tags: [Auth]
+      summary: Passwort-Reset anfordern
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email]
+              properties:
+                email: { type: string, format: email }
+      responses:
+        '200': { description: Immer success (verhindert User-Enumeration), content: { application/json: { schema: { type: object, properties: { success: { type: boolean } } } } } }
+
+  /api/auth/password-reset/confirm:
+    post:
+      tags: [Auth]
+      summary: Passwort zuruecksetzen (mit Token)
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [token, password]
+              properties:
+                token: { type: string }
+                password: { type: string, minLength: 8, maxLength: 128 }
+      responses:
+        '200': { description: Passwort geaendert, content: { application/json: { schema: { type: object, properties: { success: { type: boolean } } } } } }
+        '400': { description: Ungueltiger Token, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+
+  # ===== GAMES =====
+  /api/games:
+    get:
+      tags: [Games]
+      summary: Eigene Spiele auflisten
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+        - name: include
+          in: query
+          schema: { type: string, enum: [sessions] }
+          description: "'sessions' laedt die letzten 5 Sessions pro Spiel"
+      responses:
+        '200': { description: Spieleliste (mit Tags und Session-Count) }
+    post:
+      tags: [Games]
+      summary: Neues Spiel erstellen
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                name: { type: string, maxLength: 200 }
+                description: { type: string, maxLength: 2000 }
+                minPlayers: { type: integer, minimum: 1, maximum: 99, default: 1 }
+                maxPlayers: { type: integer, minimum: 1, maximum: 99, default: 4 }
+                playTimeMinutes: { type: integer, minimum: 0, maximum: 9999 }
+                complexity: { type: integer, minimum: 1, maximum: 5 }
+                bggId: { type: string }
+                ean: { type: string }
+                imageUrl: { type: string }
+                tagNames: { type: array, items: { type: string } }
+      responses:
+        '201': { description: Spiel erstellt }
+        '400': { description: Validierungsfehler, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+
+  /api/games/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: { type: string }
+    get:
+      tags: [Games]
+      summary: Spieldetails abrufen
+      responses:
+        '200': { description: Spiel mit Tags, Sessions und Session-Count }
+        '404': { description: Spiel nicht gefunden }
+    put:
+      tags: [Games]
+      summary: Spiel bearbeiten
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name: { type: string, maxLength: 200 }
+                description: { type: string, maxLength: 2000 }
+                minPlayers: { type: integer }
+                maxPlayers: { type: integer }
+                playTimeMinutes: { type: integer }
+                complexity: { type: integer, minimum: 1, maximum: 5 }
+                imageUrl: { type: string }
+                tagNames: { type: array, items: { type: string } }
+      responses:
+        '200': { description: Spiel aktualisiert }
+        '404': { description: Spiel nicht gefunden }
+    patch:
+      tags: [Games]
+      summary: Spiel teilweise bearbeiten (Alias fuer PUT)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200': { description: Spiel aktualisiert }
+    delete:
+      tags: [Games]
+      summary: Spiel loeschen (Soft-Delete)
+      responses:
+        '200': { description: Spiel geloescht }
+        '404': { description: Spiel nicht gefunden }
+
+  /api/games/bulk-delete:
+    delete:
+      tags: [Games]
+      summary: Mehrere Spiele loeschen
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [ids]
+              properties:
+                ids: { type: array, items: { type: string }, minItems: 1, maxItems: 500 }
+      responses:
+        '200': { description: Anzahl geloeschter Spiele, content: { application/json: { schema: { type: object, properties: { deleted: { type: integer } } } } } }
+
+  /api/games/import-bgg:
+    post:
+      tags: [Games]
+      summary: Spiel aus BGG importieren
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [bggId]
+              properties:
+                bggId: { type: string }
+                ean: { type: string }
+      responses:
+        '201': { description: Spiel importiert mit BGG-Daten }
+        '409': { description: Spiel existiert bereits }
+        '404': { description: Spiel auf BGG nicht gefunden }
+
+  # ===== BGG =====
+  /api/bgg:
+    get:
+      tags: [BGG]
+      summary: BGG-Spiel abrufen oder suchen
+      parameters:
+        - name: bggId
+          in: query
+          schema: { type: string }
+          description: BGG-ID fuer direkten Abruf
+        - name: query
+          in: query
+          schema: { type: string }
+          description: Suchbegriff fuer BGG-Suche
+      responses:
+        '200': { description: Spieldetails oder Suchergebnisse }
+
+  /api/bgg/{id}:
+    get:
+      tags: [BGG]
+      summary: BGG-Spiel nach ID abrufen
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: BGG-Spieldetails }
+        '404': { description: Spiel nicht gefunden }
+
+  /api/bgg/search:
+    get:
+      tags: [BGG]
+      summary: BGG nach Spielen durchsuchen
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema: { type: string, minLength: 2 }
+      responses:
+        '200': { description: Suchergebnisse }
+
+  /api/bgg/collection:
+    get:
+      tags: [BGG]
+      summary: BGG-Sammlung eines Nutzers laden
+      parameters:
+        - name: username
+          in: query
+          required: true
+          schema: { type: string, minLength: 1 }
+      responses:
+        '200': { description: Sammlung mit Spielen, content: { application/json: { schema: { type: object, properties: { collection: { type: array }, total: { type: integer } } } } } }
+
+  # ===== BARCODE =====
+  /api/barcode/lookup:
+    get:
+      tags: [Barcode]
+      summary: Spiel per EAN/Barcode suchen
+      parameters:
+        - name: ean
+          in: query
+          required: true
+          schema: { type: string, minLength: 8 }
+      responses:
+        '200': { description: "Ergebnis mit source (local/upcitemdb/not_found), localGame und bggResults" }
+
+  # ===== SESSIONS =====
+  /api/sessions:
+    get:
+      tags: [Sessions]
+      summary: Eigene Sessions auflisten
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200': { description: Sessions mit Spiel und Spielern }
+    post:
+      tags: [Sessions]
+      summary: Neue Session erstellen
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [gameId, playedAt, players]
+              properties:
+                gameId: { type: string }
+                playedAt: { type: string, format: date-time }
+                durationMinutes: { type: integer }
+                notes: { type: string, maxLength: 2000 }
+                players:
+                  type: array
+                  minItems: 1
+                  items:
+                    type: object
+                    required: [userId]
+                    properties:
+                      userId: { type: string }
+                      score: { type: integer, nullable: true }
+                      isWinner: { type: boolean, default: false }
+                      placement: { type: integer, nullable: true }
+      responses:
+        '201': { description: Session erstellt }
+
+  /api/sessions/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: { type: string }
+    get:
+      tags: [Sessions]
+      summary: Session-Details abrufen
+      responses:
+        '200': { description: Session mit Spiel, Spielern und Bewertungen }
+    put:
+      tags: [Sessions]
+      summary: Session bearbeiten
+      responses:
+        '200': { description: Session aktualisiert }
+    patch:
+      tags: [Sessions]
+      summary: Session teilweise bearbeiten (Alias fuer PUT)
+      responses:
+        '200': { description: Session aktualisiert }
+    delete:
+      tags: [Sessions]
+      summary: Session loeschen
+      responses:
+        '200': { description: Session geloescht }
+
+  /api/sessions/{id}/votes:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: { type: string }
+    get:
+      tags: [Sessions]
+      summary: Session-Bewertungen abrufen
+      responses:
+        '200': { description: Session mit Bewertungen }
+    post:
+      tags: [Sessions]
+      summary: Session bewerten (1-5 Sterne)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [rating]
+              properties:
+                rating: { type: integer, minimum: 1, maximum: 5 }
+                comment: { type: string }
+      responses:
+        '201': { description: Bewertung erstellt/aktualisiert (Upsert) }
+
+  # ===== SERIES =====
+  /api/series:
+    get:
+      tags: [Series]
+      summary: Eigene Spielereihen auflisten
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200': { description: Reihen mit Eintraegen und Fortschritt }
+    post:
+      tags: [Series]
+      summary: Neue Spielereihe erstellen
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                name: { type: string, minLength: 1, maxLength: 200 }
+                description: { type: string, maxLength: 1000 }
+                imageUrl: { type: string, maxLength: 2000 }
+      responses:
+        '201': { description: Reihe erstellt }
+
+  /api/series/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: { type: string }
+    get:
+      tags: [Series]
+      summary: Reihen-Details mit Eintraegen
+      responses:
+        '200': { description: Reihe mit Spielen, sortiert nach sortOrder }
+    put:
+      tags: [Series]
+      summary: Reihe bearbeiten
+      responses:
+        '200': { description: Reihe aktualisiert }
+    delete:
+      tags: [Series]
+      summary: Reihe loeschen
+      responses:
+        '200': { description: Reihe geloescht }
+
+  /api/series/{id}/entries:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: { type: string }
+    post:
+      tags: [Series]
+      summary: Spiel zur Reihe hinzufuegen
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                gameId: { type: string, description: Spiel-ID aus eigener Sammlung }
+                bggId: { type: string, description: BGG-ID (importiert automatisch) }
+                difficulty: { type: string }
+      responses:
+        '201': { description: Eintrag erstellt }
+        '409': { description: Spiel bereits in der Reihe }
+
+  /api/series/{id}/entries/{entryId}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: { type: string }
+      - name: entryId
+        in: path
+        required: true
+        schema: { type: string }
+    put:
+      tags: [Series]
+      summary: Reihen-Eintrag bearbeiten (Bewertung, Fortschritt)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                played: { type: boolean }
+                playedAt: { type: string, format: date-time, nullable: true }
+                rating: { type: integer, minimum: 1, maximum: 5, nullable: true }
+                difficulty: { type: string, maxLength: 50, nullable: true }
+                sortOrder: { type: integer, minimum: 0, maximum: 9999 }
+                playTimeMinutes: { type: integer, minimum: 0, maximum: 9999, nullable: true }
+                successful: { type: boolean, nullable: true }
+                playerCount: { type: integer, minimum: 1, maximum: 99, nullable: true }
+                score: { type: integer, minimum: 0, maximum: 999999, nullable: true }
+      responses:
+        '200': { description: Eintrag aktualisiert }
+    patch:
+      tags: [Series]
+      summary: Eintrag teilweise bearbeiten (Alias fuer PUT)
+      responses:
+        '200': { description: Eintrag aktualisiert }
+    delete:
+      tags: [Series]
+      summary: Eintrag aus Reihe entfernen
+      responses:
+        '200': { description: Eintrag entfernt }
+
+  /api/series/{id}/entries/reorder:
+    put:
+      tags: [Series]
+      summary: Reihenfolge der Eintraege aendern
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [entries]
+              properties:
+                entries:
+                  type: array
+                  items:
+                    type: object
+                    required: [id, sortOrder]
+                    properties:
+                      id: { type: string }
+                      sortOrder: { type: integer }
+      responses:
+        '200': { description: Reihenfolge aktualisiert }
+
+  # ===== EVENTS =====
+  /api/events:
+    get:
+      tags: [Events]
+      summary: Eigene Events auflisten
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+        - name: eventId
+          in: query
+          schema: { type: string }
+          description: Einzelnes Event nach ID laden
+      responses:
+        '200': { description: Events mit Einladungen und Vorschlaegen }
+    post:
+      tags: [Events]
+      summary: Neues Event erstellen
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title]
+              properties:
+                title: { type: string }
+                description: { type: string }
+                eventDate: { type: string, format: date-time }
+                location: { type: string }
+                inviteEmails: { type: array, items: { type: string, format: email } }
+      responses:
+        '201': { description: Event erstellt }
+
+  /api/events/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: { type: string }
+    get:
+      tags: [Events]
+      summary: Event-Details abrufen
+      description: Enthaelt Einladungen, Vorschlaege mit Stimmen, Gaeste, ausgewaehltes Spiel
+      responses:
+        '200': { description: Vollstaendiges Event }
+        '403': { description: Kein Zugriff }
+        '404': { description: Event nicht gefunden }
+
+  /api/events/{id}/proposals:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: { type: string }
+    post:
+      tags: [Event Voting]
+      summary: Spiel vorschlagen
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [gameId]
+              properties:
+                gameId: { type: string }
+      responses:
+        '201': { description: Vorschlag erstellt }
+        '400': { description: Spiel bereits vorgeschlagen }
+    delete:
+      tags: [Event Voting]
+      summary: Vorschlag zurueckziehen
+      parameters:
+        - name: proposalId
+          in: query
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: Vorschlag geloescht }
+
+  /api/events/{id}/votes:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: { type: string }
+    post:
+      tags: [Event Voting]
+      summary: Fuer einen Vorschlag stimmen
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [proposalId]
+              properties:
+                proposalId: { type: string }
+      responses:
+        '201': { description: Stimme abgegeben }
+    delete:
+      tags: [Event Voting]
+      summary: Stimme zurueckziehen
+      parameters:
+        - name: proposalId
+          in: query
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: Stimme entfernt }
+
+  /api/events/{id}/close:
+    post:
+      tags: [Events]
+      summary: Abstimmung schliessen und Gewinner festlegen
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      description: Setzt Status auf "closed" und waehlt das Spiel mit den meisten Stimmen
+      responses:
+        '200': { description: Event geschlossen mit Gewinnerspiel }
+
+  /api/events/{id}/publish:
+    post:
+      tags: [Events]
+      summary: Oeffentlichen Link generieren
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: Share-Token und Public-URL, content: { application/json: { schema: { type: object, properties: { shareToken: { type: string }, publicUrl: { type: string } } } } } }
+
+  /api/events/{id}/share:
+    post:
+      tags: [Event Invites]
+      summary: Event mit Nutzern teilen (Einladungen senden)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [userIds]
+              properties:
+                userIds: { type: array, items: { type: string } }
+      responses:
+        '200': { description: Einladungen erstellt und E-Mails gesendet }
+
+  /api/events/{id}/invites:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: { type: string }
+    post:
+      tags: [Event Invites]
+      summary: Einladung erstellen
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email: { type: string, format: email }
+                userId: { type: string }
+      responses:
+        '201': { description: Einladung erstellt und E-Mail gesendet }
+    put:
+      tags: [Event Invites]
+      summary: Einladung annehmen oder ablehnen
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status: { type: string, enum: [accepted, declined] }
+      responses:
+        '200': { description: Einladungsstatus aktualisiert }
+    patch:
+      tags: [Event Invites]
+      summary: Einladungsstatus aendern (Alias fuer PUT)
+      responses:
+        '200': { description: Status aktualisiert }
+    delete:
+      tags: [Event Invites]
+      summary: Einladung loeschen
+      parameters:
+        - name: inviteId
+          in: query
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: Einladung geloescht }
+
+  /api/events/{id}/invites/resend:
+    post:
+      tags: [Event Invites]
+      summary: Einladungs-Erinnerung erneut senden
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [inviteId]
+              properties:
+                inviteId: { type: string }
+      responses:
+        '200': { description: Erinnerung gesendet }
+
+  /api/events/{id}/mail:
+    post:
+      tags: [Events]
+      summary: E-Mail an Teilnehmer senden
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [type]
+              properties:
+                type: { type: string, enum: [custom, reminder] }
+                message: { type: string, maxLength: 5000, description: Pflicht bei type=custom }
+                subject: { type: string, maxLength: 200 }
+      responses:
+        '200': { description: E-Mails gesendet, content: { application/json: { schema: { type: object, properties: { sentCount: { type: integer }, failedCount: { type: integer }, totalRecipients: { type: integer } } } } } }
+
+  /api/events/{id}/calendar:
+    get:
+      tags: [Events]
+      summary: Kalender-Export (ICS-Datei)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: ICS-Datei zum Download
+          content:
+            text/calendar:
+              schema: { type: string }
+
+  # ===== DATE POLLING =====
+  /api/events/{id}/date-proposals:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: { type: string }
+    get:
+      tags: [Date Polling]
+      summary: Terminvorschlaege abrufen
+      responses:
+        '200': { description: Vorschlaege mit Stimmen }
+    post:
+      tags: [Date Polling]
+      summary: Terminvorschlaege erstellen
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - type: object
+                  required: [dates]
+                  properties:
+                    dates: { type: array, items: { type: string, format: date } }
+                - type: object
+                  required: [startDate, endDate]
+                  properties:
+                    startDate: { type: string, format: date }
+                    endDate: { type: string, format: date }
+                    weekdays: { type: array, items: { type: integer, minimum: 0, maximum: 6 } }
+      responses:
+        '201': { description: Vorschlaege erstellt }
+    delete:
+      tags: [Date Polling]
+      summary: Alle Terminvorschlaege loeschen
+      responses:
+        '200': { description: Vorschlaege geloescht }
+
+  /api/events/{id}/date-proposals/vote:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: { type: string }
+    post:
+      tags: [Date Polling]
+      summary: Einzelne Terminabstimmung
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [dateProposalId, availability]
+              properties:
+                dateProposalId: { type: string }
+                availability: { type: string, enum: [yes, maybe, no] }
+      responses:
+        '200': { description: Stimme abgegeben (Upsert) }
+    put:
+      tags: [Date Polling]
+      summary: Bulk-Terminabstimmung
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [votes]
+              properties:
+                votes:
+                  type: array
+                  items:
+                    type: object
+                    required: [dateProposalId, availability]
+                    properties:
+                      dateProposalId: { type: string }
+                      availability: { type: string, enum: [yes, maybe, no] }
+      responses:
+        '200': { description: Stimmen aktualisiert }
+
+  /api/events/{id}/date-proposals/select:
+    post:
+      tags: [Date Polling]
+      summary: Termin festlegen
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [dateProposalId]
+              properties:
+                dateProposalId: { type: string }
+      responses:
+        '200': { description: Termin ausgewaehlt und Event-Datum aktualisiert }
+
+  /api/events/{id}/date-proposals/reset:
+    post:
+      tags: [Date Polling]
+      summary: Terminabstimmung zuruecksetzen
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: Alle Vorschlaege geloescht, selectedDate zurueckgesetzt }
+
+  # ===== GROUPS =====
+  /api/groups:
+    get:
+      tags: [Groups]
+      summary: Eigene Gruppen auflisten
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200': { description: Gruppen mit Mitgliedern und Umfragen-Count }
+    post:
+      tags: [Groups]
+      summary: Neue Gruppe erstellen
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                name: { type: string, maxLength: 200 }
+                description: { type: string, maxLength: 2000 }
+      responses:
+        '201': { description: Gruppe erstellt }
+
+  /api/groups/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: { type: string }
+    get:
+      tags: [Groups]
+      summary: Gruppen-Details (Mitglieder, Umfragen, Kommentare)
+      responses:
+        '200': { description: Gruppe mit allen Details }
+    put:
+      tags: [Groups]
+      summary: Gruppe bearbeiten
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name: { type: string, minLength: 1, maxLength: 100 }
+                description: { type: string, maxLength: 1000 }
+                password: { type: string, maxLength: 100, nullable: true, description: "null zum Entfernen" }
+      responses:
+        '200': { description: Gruppe aktualisiert }
+    patch:
+      tags: [Groups]
+      summary: Gruppe teilweise bearbeiten (Alias fuer PUT)
+      responses:
+        '200': { description: Gruppe aktualisiert }
+    delete:
+      tags: [Groups]
+      summary: Gruppe loeschen
+      responses:
+        '200': { description: Gruppe geloescht }
+
+  /api/groups/{id}/members:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: { type: string }
+    post:
+      tags: [Groups]
+      summary: Mitglied hinzufuegen (per E-Mail)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email]
+              properties:
+                email: { type: string, format: email }
+      responses:
+        '201': { description: Mitglied hinzugefuegt }
+        '409': { description: Bereits Mitglied }
+    delete:
+      tags: [Groups]
+      summary: Mitglied entfernen
+      parameters:
+        - name: userId
+          in: query
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: Mitglied entfernt }
+
+  /api/groups/{id}/polls:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: { type: string }
+    get:
+      tags: [Group Polls]
+      summary: Umfragen der Gruppe auflisten
+      responses:
+        '200': { description: Umfragen mit Optionen und Stimmen }
+    post:
+      tags: [Group Polls]
+      summary: Neue Umfrage erstellen
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title, options]
+              properties:
+                title: { type: string }
+                type: { type: string, enum: [single, multiple], default: single }
+                options: { type: array, items: { type: string }, minItems: 2 }
+      responses:
+        '201': { description: Umfrage erstellt }
+
+  /api/groups/{id}/polls/{pollId}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: { type: string }
+      - name: pollId
+        in: path
+        required: true
+        schema: { type: string }
+    get:
+      tags: [Group Polls]
+      summary: Umfrage-Details
+      responses:
+        '200': { description: Umfrage mit Optionen, Stimmen und Kommentaren }
+    put:
+      tags: [Group Polls]
+      summary: Umfrage bearbeiten (Status aendern)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status: { type: string, enum: [open, closed] }
+      responses:
+        '200': { description: Umfrage aktualisiert }
+    delete:
+      tags: [Group Polls]
+      summary: Umfrage loeschen
+      responses:
+        '200': { description: Umfrage geloescht }
+
+  /api/groups/{id}/polls/{pollId}/vote:
+    post:
+      tags: [Group Polls]
+      summary: Fuer Umfrage-Optionen stimmen
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+        - name: pollId
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [optionIds]
+              properties:
+                optionIds: { type: array, items: { type: string }, maxItems: 50 }
+      responses:
+        '200': { description: Stimmen aktualisiert }
+
+  /api/groups/{id}/comments:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: { type: string }
+    get:
+      tags: [Groups]
+      summary: Gruppen-Kommentare abrufen
+      responses:
+        '200': { description: Kommentarliste }
+    post:
+      tags: [Groups]
+      summary: Kommentar schreiben
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [content]
+              properties:
+                content: { type: string }
+                pollId: { type: string, description: Optional — Kommentar zu einer Umfrage }
+      responses:
+        '201': { description: Kommentar erstellt }
+
+  /api/groups/{id}/publish:
+    post:
+      tags: [Groups]
+      summary: Oeffentlichen Gruppen-Link generieren
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: Share-Token und Public-URL }
+
+  /api/groups/{id}/statistics:
+    get:
+      tags: [Groups]
+      summary: Gruppen-Statistiken
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: Statistiken fuer Gruppenmitglieder }
+
+  # ===== PUBLIC (kein Login) =====
+  /api/public/event/{token}:
+    get:
+      tags: [Public]
+      summary: Oeffentliches Event abrufen
+      security: []
+      parameters:
+        - name: token
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: Event-Details fuer oeffentlichen Zugriff }
+        '404': { description: Event nicht gefunden oder nicht oeffentlich }
+
+  /api/public/event/{token}/join:
+    post:
+      tags: [Public]
+      summary: Als Gast an Event teilnehmen
+      security: []
+      parameters:
+        - name: token
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [nickname]
+              properties:
+                nickname: { type: string, minLength: 1, maxLength: 80 }
+      responses:
+        '201': { description: Gast-Teilnehmer erstellt }
+
+  /api/public/event/{token}/propose:
+    post:
+      tags: [Public]
+      summary: Spiel aus eigener Sammlung vorschlagen (Login erforderlich)
+      parameters:
+        - name: token
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [gameId]
+              properties:
+                gameId: { type: string }
+      responses:
+        '201': { description: Vorschlag erstellt }
+
+  /api/public/event/{token}/propose-bgg:
+    post:
+      tags: [Public]
+      summary: Spiel aus BGG vorschlagen (auch Gaeste)
+      security: []
+      parameters:
+        - name: token
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [bggId, bggName]
+              properties:
+                bggId: { type: string }
+                bggName: { type: string, maxLength: 500 }
+                bggImageUrl: { type: string }
+                guestId: { type: string, description: Optional — Gast-ID }
+      responses:
+        '201': { description: BGG-Vorschlag erstellt }
+
+  /api/public/event/{token}/vote:
+    post:
+      tags: [Public]
+      summary: Fuer Vorschlag stimmen (Gast oder angemeldet)
+      security: []
+      parameters:
+        - name: token
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [proposalId]
+              properties:
+                proposalId: { type: string }
+                guestId: { type: string }
+      responses:
+        '201': { description: Stimme abgegeben }
+    delete:
+      tags: [Public]
+      summary: Stimme zurueckziehen (Gast oder angemeldet)
+      security: []
+      parameters:
+        - name: token
+          in: path
+          required: true
+          schema: { type: string }
+        - name: proposalId
+          in: query
+          required: true
+          schema: { type: string }
+        - name: guestId
+          in: query
+          schema: { type: string }
+      responses:
+        '200': { description: Stimme entfernt }
+
+  /api/public/event/{token}/date-vote:
+    post:
+      tags: [Public]
+      summary: Gast-Terminabstimmung
+      security: []
+      parameters:
+        - name: token
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [guestId, votes]
+              properties:
+                guestId: { type: string }
+                votes:
+                  type: array
+                  items:
+                    type: object
+                    required: [dateProposalId, availability]
+                    properties:
+                      dateProposalId: { type: string }
+                      availability: { type: string, enum: [yes, maybe, no] }
+      responses:
+        '200': { description: Termin-Stimmen aktualisiert }
+
+  /api/public/group/{token}:
+    get:
+      tags: [Public]
+      summary: Oeffentliche Gruppe abrufen
+      security: []
+      parameters:
+        - name: token
+          in: path
+          required: true
+          schema: { type: string }
+        - name: password
+          in: query
+          schema: { type: string }
+          description: Alternativ via x-group-password Header
+      responses:
+        '200': { description: Gruppen-Details fuer oeffentlichen Zugriff }
+        '401': { description: Passwort erforderlich }
+
+  /api/public/group/{token}/vote:
+    post:
+      tags: [Public]
+      summary: Oeffentlich fuer Umfrage-Optionen stimmen
+      security: []
+      parameters:
+        - name: token
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [pollId, optionIds, voterName]
+              properties:
+                pollId: { type: string }
+                optionIds: { type: array, items: { type: string } }
+                voterName: { type: string }
+      responses:
+        '200': { description: Stimmen abgegeben }
+
+  /api/public/group/{token}/comment:
+    post:
+      tags: [Public]
+      summary: Oeffentlich kommentieren
+      security: []
+      parameters:
+        - name: token
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [content, authorName]
+              properties:
+                content: { type: string }
+                authorName: { type: string }
+                pollId: { type: string }
+      responses:
+        '201': { description: Kommentar erstellt }
+
+  /api/public/invite/{token}/respond:
+    post:
+      tags: [Public]
+      summary: Einladung annehmen oder ablehnen (per Token-Link)
+      security: []
+      parameters:
+        - name: token
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status: { type: string, enum: [accepted, declined] }
+      responses:
+        '200': { description: Einladungsstatus aktualisiert }
+
+  # ===== USERS =====
+  /api/users:
+    get:
+      tags: [Users]
+      summary: Alle Nutzer auflisten (fuer Einladungen)
+      responses:
+        '200': { description: Nutzerliste (id, name, email) }
+
+  /api/users/me:
+    get:
+      tags: [Users]
+      summary: Eigenes Profil abrufen
+      responses:
+        '200': { description: Eigene Nutzerdaten }
+    put:
+      tags: [Users]
+      summary: Profil bearbeiten (Name, E-Mail, Passwort)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name: { type: string, maxLength: 100 }
+                email: { type: string, maxLength: 254 }
+                currentPassword: { type: string, description: Pflicht bei Passwortaenderung }
+                newPassword: { type: string, minLength: 8, maxLength: 128 }
+      responses:
+        '200': { description: Profil aktualisiert }
+
+  /api/users/shareable:
+    get:
+      tags: [Users]
+      summary: Teilbare Nutzerliste (fuer Event-Sharing)
+      responses:
+        '200': { description: Nutzerliste mit id und name }
+
+  # ===== TAGS =====
+  /api/tags:
+    get:
+      tags: [Games]
+      summary: Eigene Tags auflisten
+      responses:
+        '200': { description: Tag-Liste }
+    post:
+      tags: [Games]
+      summary: Neuen Tag erstellen
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                name: { type: string }
+      responses:
+        '201': { description: Tag erstellt }
+    delete:
+      tags: [Games]
+      summary: Tag loeschen
+      parameters:
+        - name: id
+          in: query
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: Tag geloescht }
+
+  # ===== UPLOAD =====
+  /api/upload:
+    post:
+      tags: [Upload]
+      summary: Bild hochladen (JPEG, PNG, WebP, GIF, max 5 MB)
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [image]
+              properties:
+                image:
+                  type: string
+                  format: binary
+      responses:
+        '201':
+          description: Bild hochgeladen
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id: { type: string }
+                  url: { type: string }
+                  fileName: { type: string }
+                  mimeType: { type: string }
+                  sizeBytes: { type: integer }
+        '400': { description: Ungueltiger Dateityp oder zu gross }
+
+  # ===== STATISTICS =====
+  /api/statistics:
+    get:
+      tags: [Sessions]
+      summary: Persoenliche Statistiken
+      responses:
+        '200':
+          description: Statistik-Dashboard-Daten
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  overview: { type: object, properties: { totalGames: { type: integer }, totalSessions: { type: integer }, totalPlayTimeMinutes: { type: integer }, uniquePlayers: { type: integer } } }
+                  mostPlayed: { type: array }
+                  playerStats: { type: array }
+                  monthlyActivity: { type: array }
+                  weekdayDistribution: { type: array }
+                  complexityBreakdown: { type: array }
+
+  # ===== ADMIN =====
+  /api/admin/users:
+    post:
+      tags: [Admin]
+      summary: Neuen Nutzer anlegen
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, email, password]
+              properties:
+                name: { type: string, minLength: 1, maxLength: 100 }
+                email: { type: string, minLength: 1, maxLength: 254 }
+                password: { type: string, minLength: 8, maxLength: 128 }
+                role: { type: string, enum: [USER, ADMIN], default: USER }
+      responses:
+        '201': { description: Nutzer erstellt }
+        '409': { description: E-Mail bereits vergeben }
+
+  /api/admin/users/change-password:
+    post:
+      tags: [Admin]
+      summary: Nutzer-Passwort aendern
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [userId, newPassword]
+              properties:
+                userId: { type: string, maxLength: 100 }
+                newPassword: { type: string, minLength: 8, maxLength: 128 }
+      responses:
+        '200': { description: Passwort geaendert }
+
+  /api/admin/users/deactivate:
+    post:
+      tags: [Admin]
+      summary: Nutzer aktivieren/deaktivieren
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [userId, isActive]
+              properties:
+                userId: { type: string, maxLength: 100 }
+                isActive: { type: boolean }
+      responses:
+        '200': { description: Status geaendert }
+
+  /api/admin/monitoring/stats:
+    get:
+      tags: [Admin Monitoring]
+      summary: API-Statistiken
+      parameters:
+        - $ref: '#/components/parameters/PeriodParam'
+      responses:
+        '200': { description: Zusammenfassung, Endpunkte, Status-Verteilung }
+
+  /api/admin/monitoring/logs:
+    get:
+      tags: [Admin Monitoring]
+      summary: API-Logs abrufen
+      parameters:
+        - { name: page, in: query, schema: { type: integer, default: 1 } }
+        - { name: limit, in: query, schema: { type: integer, default: 50, maximum: 200 } }
+        - { name: method, in: query, schema: { type: string } }
+        - { name: path, in: query, schema: { type: string } }
+        - { name: statusCode, in: query, schema: { type: integer } }
+        - { name: userId, in: query, schema: { type: string } }
+        - { name: from, in: query, schema: { type: string, format: date-time } }
+        - { name: to, in: query, schema: { type: string, format: date-time } }
+      responses:
+        '200': { description: Paginierte Log-Liste }
+    delete:
+      tags: [Admin Monitoring]
+      summary: Alte Logs loeschen
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [olderThanDays]
+              properties:
+                olderThanDays: { type: integer, minimum: 7 }
+      responses:
+        '200': { description: Anzahl geloeschter Logs, content: { application/json: { schema: { type: object, properties: { deleted: { type: integer } } } } } }
+
+  /api/admin/monitoring/anomalies:
+    get:
+      tags: [Admin Monitoring]
+      summary: Anomalie-Erkennung
+      parameters:
+        - $ref: '#/components/parameters/PeriodParam'
+      responses:
+        '200':
+          description: Erkannte Anomalien und Health-Score
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  anomalies: { type: array }
+                  healthScore: { type: integer, minimum: 0, maximum: 100 }
+                  checkedAt: { type: string, format: date-time }
+
+  /api/admin/monitoring/quality:
+    get:
+      tags: [Admin Monitoring]
+      summary: Qualitaets-Dashboard
+      responses:
+        '200': { description: Review-Scores, Findings, Coverage, Tech-Stack }
+
+  # ===== SYSTEM =====
+  /api/health:
+    get:
+      tags: [System]
+      summary: Health-Check
+      security: []
+      responses:
+        '200':
+          description: System-Status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string, enum: [healthy, degraded] }
+                  database: { type: string }
+                  memory: { type: object }
+                  uptime: { type: number }
+                  version: { type: string }
+
+  /api/db/init:
+    post:
+      tags: [System]
+      summary: Datenbank-Status pruefen (nur Development + Admin)
+      description: Blockiert in Production. Erfordert ADMIN-Rolle auch in Development.
+      responses:
+        '200': { description: DB-Status }
+        '404': { description: Nicht verfuegbar (Production) }
+
+  /api/mobile/v1/auth/login:
+    post:
+      tags: [Mobile Auth]
+      summary: Mobile Login
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email: { type: string }
+                password: { type: string }
+                deviceName: { type: string }
+      responses:
+        '200': { description: Token-Paar und Nutzerprofil }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /api/mobile/v1/auth/refresh:
+    post:
+      tags: [Mobile Auth]
+      summary: Token-Paar erneuern
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refreshToken: { type: string }
+                deviceName: { type: string }
+      responses:
+        '200': { description: Neues Token-Paar }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /api/mobile/v1/auth/logout:
+    post:
+      tags: [Mobile Auth]
+      summary: Aktuelles Token-Paar widerrufen
+      security: [ bearerAuth: [] ]
+      responses:
+        '200': { description: Abgemeldet }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /api/mobile/v1/auth/logout-all:
+    post:
+      tags: [Mobile Auth]
+      summary: Alle API-Tokens des Nutzers widerrufen
+      security: [ bearerAuth: [] ]
+      responses:
+        '200': { description: Alle Sessions beendet }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /api/mobile/v1/auth/apple:
+    post:
+      tags: [Mobile Auth]
+      summary: Sign in with Apple
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                identityToken: { type: string }
+                authorizationCode: { type: string }
+                name: { type: string }
+                deviceName: { type: string }
+      responses:
+        '200': { description: Token-Paar und Nutzerprofil }
+        '400': { $ref: '#/components/responses/BadRequest' }
+
+  /api/mobile/v1/me:
+    get:
+      tags: [Mobile]
+      summary: Eigenes Profil und Totalen
+      security: [ bearerAuth: [] ]
+      responses:
+        '200': { description: Nutzerprofil und Statistik-Totalen }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /api/mobile/v1/dashboard:
+    get:
+      tags: [Mobile]
+      summary: Dashboard-Kacheln
+      security: [ bearerAuth: [] ]
+      responses:
+        '200': { description: Kacheldaten }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /api/mobile/v1/sync:
+    get:
+      tags: [Mobile]
+      summary: Vollstaendiger Offline-Snapshot
+      security: [ bearerAuth: [] ]
+      responses:
+        '200': { description: Synchronisations-Payload }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /api/mobile/v1/games:
+    get:
+      tags: [Mobile]
+      summary: Spiele-Liste
+      security: [ bearerAuth: [] ]
+      responses:
+        '200': { description: Spiele-Array }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+    post:
+      tags: [Mobile]
+      summary: Spiel anlegen
+      security: [ bearerAuth: [] ]
+      requestBody:
+        required: true
+        content:
+          application/json: { schema: { $ref: '#/components/schemas/Game' } }
+      responses:
+        '201': { description: Angelegtes Spiel }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /api/mobile/v1/games/{id}:
+    get:
+      tags: [Mobile]
+      summary: Spiel-Details
+      security: [ bearerAuth: [] ]
+      parameters: [{ $ref: '#/components/parameters/IdParam' }]
+      responses:
+        '200': { description: Spiel }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    put:
+      tags: [Mobile]
+      summary: Spiel aktualisieren
+      security: [ bearerAuth: [] ]
+      parameters: [{ $ref: '#/components/parameters/IdParam' }]
+      requestBody:
+        required: true
+        content:
+          application/json: { schema: { $ref: '#/components/schemas/Game' } }
+      responses:
+        '200': { description: Aktualisiertes Spiel }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+    delete:
+      tags: [Mobile]
+      summary: Spiel loeschen (Soft-Delete)
+      security: [ bearerAuth: [] ]
+      parameters: [{ $ref: '#/components/parameters/IdParam' }]
+      responses:
+        '200': { description: Geloescht }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /api/mobile/v1/games/{id}/sessions:
+    get:
+      tags: [Mobile]
+      summary: Sessions zu einem Spiel
+      security: [ bearerAuth: [] ]
+      parameters: [{ $ref: '#/components/parameters/IdParam' }]
+      responses:
+        '200': { description: Sessions-Array }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /api/mobile/v1/sessions:
+    get:
+      tags: [Mobile]
+      summary: Sessions-Liste
+      security: [ bearerAuth: [] ]
+      responses:
+        '200': { description: Sessions-Array }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+    post:
+      tags: [Mobile]
+      summary: Session anlegen
+      security: [ bearerAuth: [] ]
+      requestBody:
+        required: true
+        content:
+          application/json: { schema: { $ref: '#/components/schemas/Session' } }
+      responses:
+        '201': { description: Angelegte Session }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /api/mobile/v1/sessions/{id}:
+    get:
+      tags: [Mobile]
+      summary: Session-Details
+      security: [ bearerAuth: [] ]
+      parameters: [{ $ref: '#/components/parameters/IdParam' }]
+      responses:
+        '200': { description: Session }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    put:
+      tags: [Mobile]
+      summary: Session aktualisieren
+      security: [ bearerAuth: [] ]
+      parameters: [{ $ref: '#/components/parameters/IdParam' }]
+      requestBody:
+        required: true
+        content:
+          application/json: { schema: { $ref: '#/components/schemas/Session' } }
+      responses:
+        '200': { description: Aktualisierte Session }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+    delete:
+      tags: [Mobile]
+      summary: Session loeschen
+      security: [ bearerAuth: [] ]
+      parameters: [{ $ref: '#/components/parameters/IdParam' }]
+      responses:
+        '200': { description: Geloescht }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /api/mobile/v1/events:
+    get:
+      tags: [Mobile]
+      summary: Meine Events
+      security: [ bearerAuth: [] ]
+      responses:
+        '200': { description: Events-Array }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+    post:
+      tags: [Mobile]
+      summary: Event anlegen
+      security: [ bearerAuth: [] ]
+      requestBody:
+        required: true
+        content:
+          application/json: { schema: { $ref: '#/components/schemas/Event' } }
+      responses:
+        '201': { description: Angelegtes Event }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /api/mobile/v1/events/{id}:
+    get:
+      tags: [Mobile]
+      summary: Event-Details inkl. Vorschlaege und Termine
+      security: [ bearerAuth: [] ]
+      parameters: [{ $ref: '#/components/parameters/IdParam' }]
+      responses:
+        '200': { description: Event }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    put:
+      tags: [Mobile]
+      summary: Event aktualisieren
+      security: [ bearerAuth: [] ]
+      parameters: [{ $ref: '#/components/parameters/IdParam' }]
+      requestBody:
+        required: true
+        content:
+          application/json: { schema: { $ref: '#/components/schemas/Event' } }
+      responses:
+        '200': { description: Aktualisiertes Event }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+    delete:
+      tags: [Mobile]
+      summary: Event loeschen
+      security: [ bearerAuth: [] ]
+      parameters: [{ $ref: '#/components/parameters/IdParam' }]
+      responses:
+        '200': { description: Geloescht }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /api/mobile/v1/events/{id}/close:
+    post:
+      tags: [Mobile]
+      summary: Event-Voting schliessen
+      security: [ bearerAuth: [] ]
+      parameters: [{ $ref: '#/components/parameters/IdParam' }]
+      responses:
+        '200': { description: Geschlossenes Event }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /api/mobile/v1/events/{id}/proposals:
+    get:
+      tags: [Mobile]
+      summary: Spielvorschlaege
+      security: [ bearerAuth: [] ]
+      parameters: [{ $ref: '#/components/parameters/IdParam' }]
+      responses:
+        '200': { description: Vorschlaege }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+    post:
+      tags: [Mobile]
+      summary: Spielvorschlag hinzufuegen
+      security: [ bearerAuth: [] ]
+      parameters: [{ $ref: '#/components/parameters/IdParam' }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                gameId: { type: string }
+                bggId: { type: string }
+                bggName: { type: string }
+      responses:
+        '201': { description: Vorschlag erstellt }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /api/mobile/v1/events/{id}/votes:
+    post:
+      tags: [Mobile]
+      summary: Fuer Spielvorschlag abstimmen
+      security: [ bearerAuth: [] ]
+      parameters: [{ $ref: '#/components/parameters/IdParam' }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                proposalId: { type: string }
+      responses:
+        '200': { description: Abstimmung gespeichert }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /api/mobile/v1/events/{id}/date-proposals:
+    get:
+      tags: [Mobile]
+      summary: Terminvorschlaege
+      security: [ bearerAuth: [] ]
+      parameters: [{ $ref: '#/components/parameters/IdParam' }]
+      responses:
+        '200': { description: Terminvorschlaege }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+    post:
+      tags: [Mobile]
+      summary: Terminvorschlag hinzufuegen
+      security: [ bearerAuth: [] ]
+      parameters: [{ $ref: '#/components/parameters/IdParam' }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                dates: { type: array, items: { type: string, format: date } }
+      responses:
+        '201': { description: Terminvorschlag erstellt }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /api/mobile/v1/events/{id}/date-proposals/vote:
+    post:
+      tags: [Mobile]
+      summary: Termin abstimmen (Bulk)
+      security: [ bearerAuth: [] ]
+      parameters: [{ $ref: '#/components/parameters/IdParam' }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                votes: { type: array, items: { type: object } }
+      responses:
+        '200': { description: Termin-Stimmen gespeichert }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /api/mobile/v1/groups:
+    get:
+      tags: [Mobile]
+      summary: Gruppen-Liste
+      security: [ bearerAuth: [] ]
+      responses:
+        '200': { description: Gruppen-Array }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+    post:
+      tags: [Mobile]
+      summary: Gruppe anlegen
+      security: [ bearerAuth: [] ]
+      requestBody:
+        required: true
+        content:
+          application/json: { schema: { $ref: '#/components/schemas/Group' } }
+      responses:
+        '201': { description: Angelegte Gruppe }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /api/mobile/v1/groups/{id}:
+    get:
+      tags: [Mobile]
+      summary: Gruppendetails
+      security: [ bearerAuth: [] ]
+      parameters: [{ $ref: '#/components/parameters/IdParam' }]
+      responses:
+        '200': { description: Gruppe }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    put:
+      tags: [Mobile]
+      summary: Gruppe aktualisieren
+      security: [ bearerAuth: [] ]
+      parameters: [{ $ref: '#/components/parameters/IdParam' }]
+      requestBody:
+        required: true
+        content:
+          application/json: { schema: { $ref: '#/components/schemas/Group' } }
+      responses:
+        '200': { description: Aktualisierte Gruppe }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+    delete:
+      tags: [Mobile]
+      summary: Gruppe loeschen
+      security: [ bearerAuth: [] ]
+      parameters: [{ $ref: '#/components/parameters/IdParam' }]
+      responses:
+        '200': { description: Geloescht }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /api/mobile/v1/groups/{id}/join:
+    post:
+      tags: [Mobile]
+      summary: Gruppe per Share-Token beitreten
+      security: [ bearerAuth: [] ]
+      parameters: [{ $ref: '#/components/parameters/IdParam' }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                shareToken: { type: string }
+      responses:
+        '200': { description: Beigetreten }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /api/mobile/v1/groups/{id}/polls:
+    get:
+      tags: [Mobile]
+      summary: Gruppen-Umfragen
+      security: [ bearerAuth: [] ]
+      parameters: [{ $ref: '#/components/parameters/IdParam' }]
+      responses:
+        '200': { description: Umfragen-Array }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+    post:
+      tags: [Mobile]
+      summary: Umfrage erstellen
+      security: [ bearerAuth: [] ]
+      parameters: [{ $ref: '#/components/parameters/IdParam' }]
+      requestBody:
+        required: true
+        content:
+          application/json: { schema: { $ref: '#/components/schemas/GroupPoll' } }
+      responses:
+        '201': { description: Umfrage erstellt }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /api/mobile/v1/groups/{id}/polls/{pollId}/vote:
+    post:
+      tags: [Mobile]
+      summary: Umfrage-Option waehlen
+      security: [ bearerAuth: [] ]
+      parameters:
+        - { $ref: '#/components/parameters/IdParam' }
+        - name: pollId
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                optionId: { type: string }
+      responses:
+        '200': { description: Stimme gespeichert }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /api/mobile/v1/groups/{id}/comments:
+    get:
+      tags: [Mobile]
+      summary: Gruppen-Kommentare
+      security: [ bearerAuth: [] ]
+      parameters: [{ $ref: '#/components/parameters/IdParam' }]
+      responses:
+        '200': { description: Kommentare }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+    post:
+      tags: [Mobile]
+      summary: Kommentar hinzufuegen
+      security: [ bearerAuth: [] ]
+      parameters: [{ $ref: '#/components/parameters/IdParam' }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                content: { type: string }
+                pollId: { type: string }
+      responses:
+        '201': { description: Kommentar erstellt }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /api/mobile/v1/bgg/search:
+    get:
+      tags: [Mobile BGG]
+      summary: BGG-Suche
+      security: [ bearerAuth: [] ]
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: Suchergebnisse }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /api/mobile/v1/bgg/lookup:
+    post:
+      tags: [Mobile BGG]
+      summary: EAN/UPC via BGG aufloesen
+      security: [ bearerAuth: [] ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ean: { type: string }
+      responses:
+        '200': { description: Gefundenes BGG-Spiel }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /api/mobile/v1/bgg/import:
+    post:
+      tags: [Mobile BGG]
+      summary: Spiel aus BGG importieren
+      security: [ bearerAuth: [] ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                bggId: { type: string }
+      responses:
+        '201': { description: Importiertes Spiel }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /api/mobile/v1/uploads:
+    post:
+      tags: [Upload]
+      summary: Bild-Upload fuer Mobile
+      security: [ bearerAuth: [] ]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                image:
+                  type: string
+                  format: binary
+      responses:
+        '201': { description: Upload-URL und Pfad }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /api/mobile/v1/devices:
+    post:
+      tags: [Mobile]
+      summary: Push-Device-Token registrieren
+      security: [ bearerAuth: [] ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token: { type: string }
+                platform: { type: string, default: ios }
+      responses:
+        '200': { description: Registriert }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /api/mobile/v1/public/event/{token}:
+    get:
+      tags: [Mobile]
+      summary: Oeffentliches Event fuer Gaeste
+      security: []
+      parameters:
+        - name: token
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: Oeffentliches Event }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /api/mobile/v1/public/event/{token}/join:
+    post:
+      tags: [Mobile]
+      summary: Als Gast teilnehmen
+      security: []
+      parameters:
+        - name: token
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nickname: { type: string }
+      responses:
+        '201': { description: Gast-Teilnehmer }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /api/mobile/v1/public/event/{token}/vote:
+    post:
+      tags: [Mobile]
+      summary: Gast-Abstimmung
+      security: []
+      parameters:
+        - name: token
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                guestId: { type: string }
+                proposalId: { type: string }
+      responses:
+        '200': { description: Stimme gespeichert }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '404': { $ref: '#/components/responses/NotFound' }

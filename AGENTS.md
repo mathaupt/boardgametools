@@ -256,7 +256,7 @@ boardgametools/
 | `security` | OWASP Top 10, Auth-Härtung, Rate Limiting, CSP, Token-Sicherheit |
 | `performance` | Bundle-Optimierung, Caching, DB-Queries, Core Web Vitals, Loading States |
 | `best-practices` | Coding-Standards, TypeScript-Regeln, Komponenten-Richtlinien, API-Design |
-| `architecture` | Schichtenarchitektur, Datenfluss, 27 Prisma-Modelle, Deployment, State Management |
+| `architecture` | Schichtenarchitektur, Datenfluss, 29 Prisma-Modelle, Deployment, State Management |
 | `testing` | Unit Tests (Vitest), E2E Tests (CodeceptJS/Playwright), Test-Strategie |
 | `bill-of-materials` | Technologie-Inventar (53 Dependencies), Lizenz-Compliance, Update-Policy |
 

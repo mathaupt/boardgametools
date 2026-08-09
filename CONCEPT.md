@@ -145,9 +145,9 @@ BoardGameTools ist eine Next.js Webanwendung zur Verwaltung von Brettspielen, Sp
 
 ---
 
-## Native iOS-App (geplant)
+## Native iOS-App
 
-Eine native iOS-Companion-App (SwiftUI + SwiftData) ist geplant. Sie nutzt eine neue versionierte REST-API (`/api/mobile/v1/*`) auf dem bestehenden Next.js-Backend und wiederverwendet die Service-Schicht. Die App bietet Offline-Fähigkeit, nativen Barcode-Scan, Cover-OCR über Vision, Sign in with Apple, Push-Benachrichtigungen und Deep Links für öffentliche Share-Links.
+Das Mobile-API-Backend für die native iOS-Companion-App (SwiftUI + SwiftData) ist implementiert. Die versionierte REST-API `/api/mobile/v1/*` setzt auf dem bestehenden Next.js-Backend auf und verwendet die Service-Schicht. Unterstützt werden Bearer-Token-Authentifizierung, API-Token-Paar mit Refresh, Sync-Endpoint, CRUD für Spiele, Sessions, Events und Gruppen, BGG-Suche/EAN-Lookup, Bild-Upload, Push-Device-Registrierung, Sign in with Apple und Deep Links für öffentliche Share-Links.
 
 Das vollständige Design-Dokument befindet sich unter `docs/superpowers/specs/2026-08-09-ios-app-design.md`.
 
@@ -163,6 +163,29 @@ User
 ├── name
 ├── role ("USER" | "ADMIN")
 ├── isActive (Boolean)
+├── appleSub (unique, optional)
+├── createdAt
+└── updatedAt
+
+ApiToken
+├── id (CUID)
+├── userId (FK User)
+├── type ("access" | "refresh")
+├── name
+├── tokenHash (unique)
+├── lastUsedAt (optional)
+├── expiresAt (optional)
+├── revokedAt (optional)
+├── createdAt
+└── user (Relation)
+
+PushDevice
+├── id (CUID)
+├── userId (FK User)
+├── deviceToken
+├── platform
+├── appVersion (optional)
+├── locale (optional)
 ├── createdAt
 └── updatedAt
 
@@ -449,6 +472,42 @@ ApiLog
 - `POST /api/public/group/[token]/vote` - Gruppen-Poll abstimmen (Gast)
 - `POST /api/public/group/[token]/comment` - Gruppen-Kommentar (Gast)
 - `POST /api/public/invite/[token]/respond` - Einladung annehmen/ablehnen
+
+### Mobile API (iOS)
+- `POST /api/mobile/v1/auth/login` - Login, liefert Token-Paar
+- `POST /api/mobile/v1/auth/refresh` - Token-Paar erneuern
+- `POST /api/mobile/v1/auth/logout` - Token widerrufen
+- `POST /api/mobile/v1/auth/logout-all` - Alle Tokens widerrufen
+- `POST /api/mobile/v1/auth/apple` - Sign in with Apple
+- `GET  /api/mobile/v1/me` - Profil und Totalen
+- `GET  /api/mobile/v1/dashboard` - Statistik-Kacheln
+- `GET  /api/mobile/v1/sync` - Offline-Snapshot
+- `GET/POST /api/mobile/v1/games` - Spiele CRUD
+- `GET/PUT/DELETE /api/mobile/v1/games/[id]` - Spiel-Detail
+- `GET /api/mobile/v1/games/[id]/sessions` - Sessions zu einem Spiel
+- `GET/POST /api/mobile/v1/sessions` - Sessions CRUD
+- `GET/PUT/DELETE /api/mobile/v1/sessions/[id]` - Session-Detail
+- `GET/POST /api/mobile/v1/events` - Events CRUD
+- `GET/PUT/DELETE /api/mobile/v1/events/[id]` - Event-Detail
+- `POST /api/mobile/v1/events/[id]/close` - Voting schliessen
+- `GET/POST /api/mobile/v1/events/[id]/proposals` - Vorschlaege
+- `POST /api/mobile/v1/events/[id]/votes` - Fuer Spiel abstimmen
+- `GET/POST /api/mobile/v1/events/[id]/date-proposals` - Terminvorschlaege
+- `POST /api/mobile/v1/events/[id]/date-proposals/vote` - Termin abstimmen
+- `GET/POST /api/mobile/v1/groups` - Gruppen CRUD
+- `GET/PUT/DELETE /api/mobile/v1/groups/[id]` - Gruppen-Detail
+- `POST /api/mobile/v1/groups/[id]/join` - Gruppe beitreten
+- `GET/POST /api/mobile/v1/groups/[id]/polls` - Gruppen-Umfragen
+- `POST /api/mobile/v1/groups/[id]/polls/[pollId]/vote` - Umfrage-Option waehlen
+- `GET/POST /api/mobile/v1/groups/[id]/comments` - Gruppen-Kommentare
+- `GET /api/mobile/v1/bgg/search` - BGG-Suche
+- `POST /api/mobile/v1/bgg/lookup` - EAN/UPC-Lookup via BGG
+- `POST /api/mobile/v1/bgg/import` - Spiel aus BGG importieren
+- `POST /api/mobile/v1/uploads` - Bild-Upload
+- `POST /api/mobile/v1/devices` - Push-Device-Token registrieren
+- `GET /api/mobile/v1/public/event/[token]` - Oeffentliches Event (Gast)
+- `POST /api/mobile/v1/public/event/[token]/join` - Als Gast teilnehmen
+- `POST /api/mobile/v1/public/event/[token]/vote` - Gast-Abstimmung
 
 ### Groups
 - `GET /api/groups` - Alle Gruppen

@@ -365,4 +365,37 @@ export const faqSections: FaqSection[] = [
       },
     ],
   },
+  {
+    id: "mobile-app",
+    title: "iOS-App",
+    icon: "smartphone",
+    description: "Fragen zur nativen BoardGameTools iOS-Companion-App.",
+    items: [
+      {
+        question: "Gibt es eine mobile App?",
+        answer:
+          "Ja, es gibt eine native iOS-Companion-App (SwiftUI + SwiftData). Du kannst dich mit deinem bestehenden Konto anmelden, Spiele und Sessions verwalten, Events und Gruppen nutzen sowie Push-Benachrichtigungen erhalten.",
+      },
+      {
+        question: "Wie melde ich mich in der iOS-App an?",
+        answer:
+          "Du kannst dich mit E-Mail und Passwort anmelden oder Sign in with Apple verwenden. Nach der Anmeldung erhält die App ein sicheres Token-Paar, das automatisch erneuert wird.",
+      },
+      {
+        question: "Welche Daten werden synchronisiert?",
+        answer:
+          "Der Sync-Endpoint liefert deine Spiele, Sessions, Events, Gruppen und zugehörige Abstimmungen. Die iOS-App speichert sie lokal in SwiftData und synchronisiert Änderungen bei bestehender Verbindung.",
+      },
+      {
+        question: "Unterstützt die App Offline-Modus?",
+        answer:
+          "Ja, alle relevanten Daten werden in SwiftData zwischengespeichert. Lesen und einfache Schreiboperationen funktionieren offline und werden synchronisiert, sobald die Verbindung wieder hergestellt ist.",
+      },
+      {
+        question: "Wie funktioniert Sign in with Apple?",
+        answer:
+          "Apple übergibt ein Identity Token an die App. Das Backend prüft die Signatur mit den öffentlichen Apple-Keys und erstellt oder verknüpft ein BoardGameTools-Konto basierend auf der Apple-User-ID.",
+      },
+    ],
+  },
 ];
