@@ -18,6 +18,7 @@ export const changelog: ChangelogEntry[] = [
     description: "Implementierung der versionierten REST-API `/api/mobile/v1/*` für die native iOS-App: API-Token-Authentifizierung, Refresh-Token, Sync-Endpoint und CRUD-Routen für Spiele, Sessions, Events und Gruppen.",
     changes: [
       { type: "feature", text: "Prisma-Schema um `ApiToken`, `PushDevice` und `appleSub` erweitert und Migration durchgeführt" },
+      { type: "feature", text: "Token-Service mit `createTokenPair`, `rotateTokenPair` und `revokeToken` inkl. SHA-256-Hashing erstellt" },
     ],
   },
   {
