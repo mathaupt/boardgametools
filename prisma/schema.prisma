@@ -44,6 +44,43 @@ model User {
   sessionRatings  SessionRating[]  @relation("SessionRatings")
   tags            Tag[]
   uploads         Upload[]
+  apiTokens       ApiToken[]
+  pushDevices     PushDevice[]
+
+  appleSub        String?   @unique
+}
+
+model ApiToken {
+  id          String    @id @default(cuid())
+  userId      String
+  type        String    @default("access")
+  name        String    @default("iOS App")
+  tokenHash   String    @unique
+  lastUsedAt  DateTime?
+  expiresAt   DateTime?
+  revokedAt   DateTime?
+  createdAt   DateTime  @default(now())
+
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([tokenHash])
+}
+
+model PushDevice {
+  id          String    @id @default(cuid())
+  userId      String
+  deviceToken String
+  platform    String    @default("ios")
+  appVersion  String?
+  locale      String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, deviceToken])
+  @@index([userId])
 }
 
 // ============================================

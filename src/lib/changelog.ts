@@ -12,6 +12,15 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.48.0",
+    date: "2026-08-09",
+    title: "Mobile API-Backend für iOS-App",
+    description: "Implementierung der versionierten REST-API `/api/mobile/v1/*` für die native iOS-App: API-Token-Authentifizierung, Refresh-Token, Sync-Endpoint und CRUD-Routen für Spiele, Sessions, Events und Gruppen.",
+    changes: [
+      { type: "feature", text: "Prisma-Schema um `ApiToken`, `PushDevice` und `appleSub` erweitert und Migration durchgeführt" },
+    ],
+  },
+  {
     version: "0.47.4",
     date: "2026-08-09",
     title: "iOS-Client Plan Selbstreview",
