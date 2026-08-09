@@ -16,6 +16,7 @@ export const Errors = {
   USER_CREATED: "Benutzer erfolgreich erstellt",
   USER_ALREADY_EXISTS: "Benutzer existiert bereits",
   USER_NOT_FOUND: "Benutzer nicht gefunden",
+  INVALID_CREDENTIALS: "Ungültige Anmeldedaten",
   PASSWORD_MIN_LENGTH: "Passwort muss mindestens 8 Zeichen lang sein",
   PASSWORD_MAX_LENGTH: "Passwort darf maximal 128 Zeichen lang sein",
   INVALID_MIME_TYPE: "Dateityp stimmt nicht mit dem Dateiinhalt überein",
