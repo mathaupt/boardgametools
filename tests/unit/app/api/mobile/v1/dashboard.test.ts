@@ -20,7 +20,6 @@ import prisma from "@/lib/db";
 
 const mockedApiAuth = vi.mocked(apiAuth);
 const mockedTransaction = vi.mocked(prisma.$transaction);
-const mockedAggregate = vi.mocked(prisma.gameSession.aggregate);
 
 describe("GET /api/mobile/v1/dashboard", () => {
   beforeEach(() => {
@@ -31,7 +30,7 @@ describe("GET /api/mobile/v1/dashboard", () => {
   it("returns dashboard stats", async () => {
     mockedApiAuth.mockResolvedValue({ user: { id: "u1", name: "Max", email: "a@b.c", role: "USER" } } as never);
 
-    const res = await GET(new NextRequest("http://localhost:3000/api/mobile/v1/dashboard"));
+    const res = await GET(new NextRequest("http://localhost:3000/api/mobile/v1/dashboard"), {});
     const body = await res.json();
 
     expect(res.status).toBe(200);
@@ -41,7 +40,7 @@ describe("GET /api/mobile/v1/dashboard", () => {
   it("returns 401 when not authenticated", async () => {
     mockedApiAuth.mockResolvedValue(null as never);
 
-    const res = await GET(new NextRequest("http://localhost:3000/api/mobile/v1/dashboard"));
+    const res = await GET(new NextRequest("http://localhost:3000/api/mobile/v1/dashboard"), {});
     expect(res.status).toBe(401);
   });
 });

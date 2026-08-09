@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { NextRequest } from "next/server";
 
 vi.mock("@/lib/auth", () => ({
-  auth: vi.fn((handler: Function) => handler),
+  auth: vi.fn((handler: (req: NextRequest) => unknown) => handler),
 }));
 
 import { proxy } from "@/proxy";
@@ -18,7 +18,7 @@ describe("proxy", () => {
       headers: { authorization: "Bearer token123" },
     });
     (req as any).auth = null;
-    const res = await proxy(req);
+    const res = await (proxy as unknown as (req: NextRequest) => Promise<unknown>)(req);
     expect(res).toBeUndefined();
   });
 });

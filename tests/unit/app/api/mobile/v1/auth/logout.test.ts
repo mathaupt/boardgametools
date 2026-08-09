@@ -25,7 +25,8 @@ describe("POST /api/mobile/v1/auth/logout", () => {
       new NextRequest("http://localhost:3000/api/mobile/v1/auth/logout", {
         method: "POST",
         body: JSON.stringify({ accessToken: "token" }),
-      })
+      }),
+      {}
     );
 
     expect(res.status).toBe(200);

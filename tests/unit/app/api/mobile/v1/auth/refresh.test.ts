@@ -31,7 +31,8 @@ describe("POST /api/mobile/v1/auth/refresh", () => {
       new NextRequest("http://localhost:3000/api/mobile/v1/auth/refresh", {
         method: "POST",
         body: JSON.stringify({ refreshToken: "oldRefresh" }),
-      })
+      }),
+      {}
     );
 
     expect(res.status).toBe(200);
@@ -45,7 +46,8 @@ describe("POST /api/mobile/v1/auth/refresh", () => {
       new NextRequest("http://localhost:3000/api/mobile/v1/auth/refresh", {
         method: "POST",
         body: JSON.stringify({ refreshToken: "bad" }),
-      })
+      }),
+      {}
     );
 
     expect(res.status).toBe(401);

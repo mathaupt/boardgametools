@@ -15,12 +15,13 @@ export interface ApiSession {
 export async function apiAuth(request: NextRequest): Promise<ApiSession | null> {
   const webSession = await auth();
   if (webSession?.user?.id) {
+    const role = ((webSession.user as unknown as Record<string, unknown>).role as string | undefined) ?? "USER";
     return {
       user: {
         id: webSession.user.id,
         email: webSession.user.email ?? "",
         name: webSession.user.name ?? null,
-        role: (webSession.user as Record<string, unknown>).role as string | undefined ?? "USER",
+        role,
       },
     };
   }

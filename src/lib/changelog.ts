@@ -23,6 +23,7 @@ export const changelog: ChangelogEntry[] = [
       { type: "feature", text: "Mobile Auth-Routen `/api/mobile/v1/auth/login|refresh|logout|logout-all` mit Unit-Tests" },
       { type: "feature", text: "`/api/mobile/v1/me` und `/api/mobile/v1/dashboard` mit Profil, Totalen und Statistik" },
       { type: "feature", text: "`/api/mobile/v1/sync` fuer vollstaendigen Offline-Snapshot (Spiele, Sessions, Events, Gruppen, Votes)" },
+      { type: "internal", text: "Unit-Test-Typisierung und Route-Handler-Aufrufe fuer mobile API korrigiert" },
     ],
   },
   {

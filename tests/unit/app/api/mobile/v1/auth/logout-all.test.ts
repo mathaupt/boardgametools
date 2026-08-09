@@ -19,21 +19,21 @@ import { apiAuth } from "@/lib/api-auth";
 import prisma from "@/lib/db";
 
 const mockedApiAuth = vi.mocked(apiAuth);
-const mockedUpdateMany = vi.mocked(prisma.apiToken.updateMany);
 
 describe("POST /api/mobile/v1/auth/logout-all", () => {
   beforeEach(() => { vi.clearAllMocks(); });
 
   it("revokes all tokens for authenticated user", async () => {
     mockedApiAuth.mockResolvedValue({ user: { id: "u1", email: "a@b.c", name: "Max", role: "USER" } } as never);
-    mockedUpdateMany.mockResolvedValue({ count: 3 } as never);
+    vi.mocked(prisma.apiToken.updateMany).mockResolvedValue({ count: 3 } as never);
 
     const res = await POST(
-      new NextRequest("http://localhost:3000/api/mobile/v1/auth/logout-all", { method: "POST" })
+      new NextRequest("http://localhost:3000/api/mobile/v1/auth/logout-all", { method: "POST" }),
+      {}
     );
 
     expect(res.status).toBe(200);
-    expect(mockedUpdateMany).toHaveBeenCalledWith({
+    expect(vi.mocked(prisma.apiToken.updateMany)).toHaveBeenCalledWith({
       where: { userId: "u1", revokedAt: null },
       data: { revokedAt: expect.any(Date) },
     });
@@ -43,7 +43,8 @@ describe("POST /api/mobile/v1/auth/logout-all", () => {
     mockedApiAuth.mockResolvedValue(null as never);
 
     const res = await POST(
-      new NextRequest("http://localhost:3000/api/mobile/v1/auth/logout-all", { method: "POST" })
+      new NextRequest("http://localhost:3000/api/mobile/v1/auth/logout-all", { method: "POST" }),
+      {}
     );
 
     expect(res.status).toBe(401);

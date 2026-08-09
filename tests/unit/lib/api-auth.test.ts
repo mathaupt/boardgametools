@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { NextRequest } from "next/server";
-import { apiAuth } from "@/lib/api-auth";
 
 vi.mock("@/lib/auth", () => ({ auth: vi.fn() }));
 vi.mock("@/lib/db", () => ({
@@ -10,9 +9,9 @@ vi.mock("@/lib/token-service", () => ({ hashToken: vi.fn((t: string) => t) }));
 
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
+import { apiAuth } from "@/lib/api-auth";
 
 const mockedAuth = vi.mocked(auth);
-const mockedPrisma = vi.mocked(prisma);
 
 describe("apiAuth", () => {
   beforeEach(() => { vi.clearAllMocks(); });
@@ -33,7 +32,7 @@ describe("apiAuth", () => {
 
   it("resolves bearer token to user", async () => {
     mockedAuth.mockResolvedValue(null as never);
-    mockedPrisma.apiToken.findUnique.mockResolvedValue({
+    vi.mocked(prisma.apiToken.findUnique).mockResolvedValue({
       id: "t1",
       type: "access",
       revokedAt: null,
@@ -47,12 +46,12 @@ describe("apiAuth", () => {
     });
     const result = await apiAuth(req);
     expect(result?.user.id).toBe("u1");
-    expect(mockedPrisma.apiToken.update).toHaveBeenCalled();
+    expect(prisma.apiToken.update).toHaveBeenCalled();
   });
 
   it("returns null for an expired token", async () => {
     mockedAuth.mockResolvedValue(null as never);
-    mockedPrisma.apiToken.findUnique.mockResolvedValue({
+    vi.mocked(prisma.apiToken.findUnique).mockResolvedValue({
       id: "t1",
       type: "access",
       revokedAt: null,
