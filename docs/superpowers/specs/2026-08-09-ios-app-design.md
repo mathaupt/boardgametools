@@ -75,6 +75,7 @@ Neues Prisma-Modell in `prisma/schema.prisma`:
 model ApiToken {
   id          String    @id @default(cuid())
   userId      String
+  type        String    @default("access") // access | refresh
   name        String    @default("iOS App")
   tokenHash   String    @unique
   lastUsedAt  DateTime?
@@ -108,6 +109,7 @@ Im `User`-Modell wird die Gegenrelation ergänzt: `apiTokens ApiToken[]`.
 ### 5.2 Sign in with Apple
 
 - `AppleProvider` in `src/lib/auth.ts` ergänzen.
+- Im `User`-Prisma-Modell wird `appleSub String? @unique` hinzugefügt.
 - iOS nutzt `AuthenticationServices` (`ASAuthorizationController`) und sendet `identityToken` + `authorizationCode` an:
   - `POST /api/auth/callback/apple` (NextAuth-Callback) oder
   - dedizierter Mobile-Callback `POST /api/mobile/v1/auth/apple`.

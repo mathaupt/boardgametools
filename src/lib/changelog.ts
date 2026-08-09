@@ -12,6 +12,17 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.47.2",
+    date: "2026-08-09",
+    title: "Implementierungspläne für native iOS-App",
+    description: "Erstellte detaillierte Implementierungspläne für die iOS-App: Backend-Plan (Auth, Sync, CRUD-Endpunkte) und iOS-Client-Plan (SwiftUI, SwiftData, native Features). Design-Spec um Token-Typ und Apple-Sub-Feld ergänzt.",
+    changes: [
+      { type: "internal", text: "Backend-Implementierungsplan `docs/superpowers/plans/2026-08-09-ios-backend.md` erstellt" },
+      { type: "internal", text: "iOS-Client-Implementierungsplan `docs/superpowers/plans/2026-08-09-ios-client.md` erstellt" },
+      { type: "internal", text: "Design-Spec um `type`-Feld in ApiToken und Apple-Sub Ergänzungen aktualisiert" },
+    ],
+  },
+  {
     version: "0.47.1",
     date: "2026-08-09",
     title: "Konzept und Design-Spec für native iOS-App",
