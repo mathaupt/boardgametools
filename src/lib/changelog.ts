@@ -12,6 +12,17 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.47.4",
+    date: "2026-08-09",
+    title: "iOS-Client Plan Selbstreview",
+    description: "Den iOS-Client-Implementierungsplan selbstgeprüft: NavigationLink- und DTO-Inkonsistenzen, fehlende Hashable-Konformität, fehlerhafte Test-Mocks sowie fehlende Imports korrigiert. Akzeptanzkriterien und finaler Commit ergänzt.",
+    changes: [
+      { type: "internal", text: "iOS-Client-Plan `docs/superpowers/plans/2026-08-09-ios-client.md` auf Konsistenz geprüft und bereinigt" },
+      { type: "internal", text: "NavigationLink-Route- und Sheet-Handling in `GameEditView` konkretisiert" },
+      { type: "internal", text: "Fehlerhafte DashboardDTO-Testdaten, Sign-in-Button-Aufruf und fehlende Imports im Plan korrigiert" },
+    ],
+  },
+  {
     version: "0.47.3",
     date: "2026-08-09",
     title: "iOS-Client Implementierungsplan",

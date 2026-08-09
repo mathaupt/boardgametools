@@ -16,6 +16,7 @@ BoardGameTools ist eine Next.js 16 Webanwendung zur Verwaltung von Brettspielen,
 - **CI/Hooks**: Husky 9.1.7 (pre-commit: Tests + Security + Review, pre-push: DB-Backup)
 - **Node**: `>=22.13.1` (siehe `package.json` engines)
 - **Package Manager**: npm mit `legacy-peer-deps=true` (`.npmrc`) zur Auflösung von Peer-Dependency-Konflikten
+- **Native iOS-Client** (geplant): Xcode, Swift 6, SwiftUI, SwiftData, URLSession, Keychain, Sign in with Apple, Push-Benachrichtigungen, Deep Links
 
 ## Dependency-Management
 
@@ -206,12 +207,14 @@ include: { createdBy: { select: { id: true, name: true, email: true } } }
 boardgametools/
 ├── AGENTS.md              # Diese Datei (IMMER aktuell halten!)
 ├── CONCEPT.md             # Detailliertes Konzept
+├── BoardGameTools/        # Geplantes Xcode-Projekt für native iOS-App (SwiftUI/SwiftData)
 ├── skills/                # AgentSkills (siehe unten)
 ├── docs/                  # Projekt-Dokumentation
 │   ├── bugs.md            # **Bug-Tracking Liste (PFLICHT aktuell halten!)**
 │   ├── FEATURES.md        # **Feature-Dokumentation (PFLICHT aktuell halten!)**
 │   ├── DEVELOPMENT-PROCESS.md  # Entwicklungsprozess & Agent-Architektur
 │   ├── openapi.yaml       # **Swagger/OpenAPI Spec (PFLICHT aktuell halten!)**
+│   ├── superpowers/       # Design-Specs und Implementierungspläne
 │   ├── architecture/      # Architektur-Snapshots und Bewertungen
 │   ├── best-practices/    # Best-Practices-Snapshots und Bewertungen
 │   ├── bill-of-materials/ # BOM-Snapshots und Bewertungen
