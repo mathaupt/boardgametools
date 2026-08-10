@@ -69,7 +69,7 @@ struct DashboardView: View {
             }
             .background(Theme.background.ignoresSafeArea())
             .navigationTitle("Dashboard")
-            .task { await syncEngine.sync() }
+            .onAppear { Task { await syncEngine.sync() } }
             .refreshable { await syncEngine.sync() }
             .onChange(of: syncEngine.errorMessage) { _, new in
                 errorMessage = new

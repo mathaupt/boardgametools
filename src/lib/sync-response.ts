@@ -18,6 +18,12 @@ import {
 
 function asCreated<T>(items: T[]): SyncChanges<T> { return { created: items, updated: [], deleted: [] }; }
 
+function toChanges<T>(active: T[], deletedIds: string[]): SyncChanges<T> {
+  return { created: active, updated: [], deleted: deletedIds };
+}
+
+function deletedIdsOnly(items: { id: string }[]): string[] { return items.map((i) => i.id); }
+
 export async function buildSyncPayload(userId: string): Promise<SyncPayload> {
   const groupMembers = await prisma.groupMember.findMany({
     where: { userId },
@@ -36,26 +42,56 @@ export async function buildSyncPayload(userId: string): Promise<SyncPayload> {
     select: { eventId: true },
   });
 
-  const eventWhere = {
+  const activeEventWhere = {
     ...NOT_DELETED,
     OR: [{ createdById: userId }, { groupId: { in: groupIds } }, { id: { in: invitedEventIds.map((i) => i.eventId) } }],
   };
 
-  const eventIds = await prisma.event.findMany({ where: eventWhere, select: { id: true } });
+  const deletedEventWhere = {
+    deletedAt: { not: null },
+    OR: [{ createdById: userId }, { groupId: { in: groupIds } }, { id: { in: invitedEventIds.map((i) => i.eventId) } }],
+  };
+
+  const eventIds = await prisma.event.findMany({ where: activeEventWhere, select: { id: true } });
   const eventIdList = eventIds.map((e) => e.id);
 
-  const [games, sessions, events, dateProposalsRaw, eventProposalsRaw, votes, dateVotes, groups, groupMembersAll, groupPollsRaw, groupComments] = await Promise.all([
+  const [
+    games,
+    deletedGames,
+    sessions,
+    deletedSessions,
+    events,
+    deletedEvents,
+    dateProposalsRaw,
+    eventProposalsRaw,
+    votes,
+    dateVotes,
+    groups,
+    deletedGroups,
+    groupMembersAll,
+    groupPollsRaw,
+    groupComments,
+  ] = await Promise.all([
     prisma.game.findMany({
       where: { ownerId: userId, ...NOT_DELETED },
       include: { tags: { include: { tag: { select: { name: true } } } } },
       orderBy: { updatedAt: "desc" },
+    }),
+    prisma.game.findMany({
+      where: { ownerId: userId, deletedAt: { not: null } },
+      select: { id: true },
     }),
     prisma.gameSession.findMany({
       where: { createdById: userId, ...NOT_DELETED },
       include: { players: { select: { id: true, userId: true, score: true, isWinner: true, placement: true } } },
       orderBy: { playedAt: "desc" },
     }),
-    prisma.event.findMany({ where: eventWhere, orderBy: { eventDate: "desc" } }),
+    prisma.gameSession.findMany({
+      where: { createdById: userId, deletedAt: { not: null } },
+      select: { id: true },
+    }),
+    prisma.event.findMany({ where: activeEventWhere, orderBy: { eventDate: "desc" } }),
+    prisma.event.findMany({ where: deletedEventWhere, select: { id: true } }),
     prisma.dateProposal.findMany({
       where: { eventId: { in: eventIdList } },
       include: { votes: { select: { id: true, dateProposalId: true, userId: true, availability: true, createdAt: true } } },
@@ -69,6 +105,7 @@ export async function buildSyncPayload(userId: string): Promise<SyncPayload> {
     prisma.vote.findMany({ where: { proposal: { eventId: { in: eventIdList } } }, orderBy: { createdAt: "asc" } }),
     prisma.dateVote.findMany({ where: { dateProposal: { eventId: { in: eventIdList } } }, orderBy: { createdAt: "asc" } }),
     prisma.group.findMany({ where: { id: { in: groupIds }, ...NOT_DELETED }, orderBy: { updatedAt: "desc" } }),
+    prisma.group.findMany({ where: { id: { in: groupIds }, deletedAt: { not: null } }, select: { id: true } }),
     prisma.groupMember.findMany({ where: { groupId: { in: groupIds } }, orderBy: { joinedAt: "asc" } }),
     prisma.groupPoll.findMany({
       where: { groupId: { in: groupIds } },
@@ -80,11 +117,11 @@ export async function buildSyncPayload(userId: string): Promise<SyncPayload> {
 
   return {
     syncedAt: new Date().toISOString(),
-    games: asCreated(games.map(toGameDto)),
-    sessions: asCreated(sessions.map(toSessionDto)),
-    events: asCreated(events.map(toEventDto)),
+    games: toChanges(games.map(toGameDto), deletedIdsOnly(deletedGames)),
+    sessions: toChanges(sessions.map(toSessionDto), deletedIdsOnly(deletedSessions)),
+    events: toChanges(events.map(toEventDto), deletedIdsOnly(deletedEvents)),
+    groups: toChanges(groups.map(toGroupDto), deletedIdsOnly(deletedGroups)),
     dateProposals: asCreated(dateProposalsRaw.map(toDateProposalDto)),
-    groups: asCreated(groups.map(toGroupDto)),
     groupPolls: asCreated(groupPollsRaw.map(toGroupPollDto)),
     groupComments: asCreated(groupComments.map(toGroupCommentDto)),
     eventProposals: asCreated(eventProposalsRaw.map(toEventProposalDto)),

@@ -336,10 +336,48 @@ Version 0.50.8 - Fix: Spiel-Löschen idempotent; iOS Rücksprung + Erfolgsmeldun
 
 ---
 
+### [BUG-009] iOS-App: Listen werden nach Löschen/Hinzufügen/Editieren nicht aktualisiert
+
+**Status:** `fixed`
+**Schweregrad:** `high`
+**Entdeckt:** 2026-08-10
+**Behoben:** 2026-08-10
+**Behoben in Version:** 0.50.8
+**Test geschrieben:** Ja
+
+**Beschreibung:**
+Obwohl `DELETE /api/mobile/v1/games/{id}` mittlerweile 200 liefert, bleibt das gelöschte Spiel in der iOS-Spieleliste sichtbar. Gleiches gilt für Sessions, Events und Gruppen. Die Listen sollten sich nach Hinzufügen, Löschen oder Bearbeiten eines Datensatzes automatisch neu laden.
+
+**Reproduktion:**
+1. iOS-App öffnen und ein Spiel löschen.
+2. Server antwortet mit 200.
+3. Zurück zur Spieleliste navigieren.
+4. Das gelöschte Spiel ist weiterhin sichtbar.
+
+**Erwartetes Verhalten:**
+Liste zeigt nur noch die aktuell existierenden Datensätze.
+
+**Tatsächliches Verhalten:**
+Liste zeigt weiterhin den gelöschten Eintrag.
+
+**Ursache:**
+`buildSyncPayload` lieferte zwar alle aktiven Datensätze, aber keine IDs der gelöschten Datensätze. `SyncEngine.apply` konnte daher lokale SwiftData-Einträge nicht entfernen. Zusätzlich synchronisierten die Listen-Ansichten nur beim ersten Erscheinen (`.task`) und nicht beim Zurückkehren von einer Detail-/Bearbeiten-Ansicht.
+
+**Lösung:**
+- `buildSyncPayload` fragt aktiv und gelöscht (`deletedAt: { not: null }`) für Spiele, Sessions, Events und Gruppen ab und liefert `deleted: [...]`.
+- `SyncEngine.apply` löscht die betreffenden lokalen Einträge (war bereits implementiert, fehlte nur das Mapping aus dem Payload).
+- iOS-Listen und Dashboard verwenden `.onAppear` statt `.task`, sodass bei jedem Erscheinen der Ansicht eine Synchronisierung ausgeführt wird.
+- Unit-Test `tests/unit/lib/sync-response.test.ts` ergänzt, der prüft, dass gelöschte IDs im Payload enthalten sind.
+
+**Referenz im Changelog:**
+Version 0.50.8 - Fix: Synchronisierung liefert gelöschte IDs; iOS-Listen synchronisieren bei Erscheinen
+
+---
+
 ## Statistik
 
 - **Offene Bugs:** 0
 - **In Bearbeitung:** 0
-- **Behoben:** 8
+- **Behoben:** 9
 - **Wontfix:** 0
-- **Gesamt:** 8
+- **Gesamt:** 9

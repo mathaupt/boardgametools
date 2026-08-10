@@ -24,6 +24,8 @@ export const changelog: ChangelogEntry[] = [
       { type: "improvement", text: "Löschen eines Spiels in der iOS-App zeigt Erfolgsmeldung und kehrt zur Spieleliste zurück" },
       { type: "fix", text: "PostgreSQL SSL-Warnung (`sslmode=require/prefer/verify-ca`) wird auf `verify-full` normalisiert" },
       { type: "fix", text: "Spiel-Löschen ist idempotent: Bereits gelöschte Spiele erzeugen keinen 404-Fehler mehr" },
+      { type: "fix", text: "Synchronisierung liefert jetzt gelöschte IDs für Spiele, Sessions, Events und Gruppen, damit iOS-Listen aktualisiert werden" },
+      { type: "improvement", text: "iOS-Listen (Spiele, Sessions, Events, Gruppen, Dashboard) synchronisieren sich bei jedem Erscheinen der Ansicht neu" },
       { type: "internal", text: "Neuer PUT-Endpunkt /api/mobile/v1/me für Profil-Updates" },
     ],
   },

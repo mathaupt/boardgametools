@@ -44,7 +44,7 @@ struct GroupListView: View {
                 GroupEditView(existingGroup: nil)
                     .presentationDetents([.large])
             }
-            .task { await syncEngine.sync() }
+            .onAppear { Task { await syncEngine.sync() } }
             .refreshable { await syncEngine.sync() }
             .overlay {
                 if syncEngine.isSyncing && localGroups.isEmpty {
