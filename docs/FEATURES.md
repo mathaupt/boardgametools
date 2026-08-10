@@ -683,10 +683,10 @@ und alle Kernbereiche des Web-Frontends.
 | Login / Anmeldung | Anmelden per E-Mail/Passwort, Sign in with Apple vorbereitet |
 | Dashboard | Statistik-Kacheln (Spiele, Sessions, Events, Gruppen) |
 | Spiele | Liste, Detailansicht mit Tags/Komplexität, BGG-Import-Endpoint nutzbar |
-| Sessions | Liste gespielter Partien |
-| Events | Liste anstehender Events |
+| Sessions | Liste gespielter Partien mit Brettspiel-Thumbnail |
+| Events | Liste anstehender Events mit Brettspiel-Thumbnail |
 | Gruppen | Liste eigener Gruppen |
-| Einstellungen | API-URL konfigurierbar, Abmelden |
+| Einstellungen | API-URL konfigurierbar, Abmelden, Name und Passwort bearbeiten |
 
 ### Architektur
 

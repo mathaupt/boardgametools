@@ -79,6 +79,31 @@ components:
           example: "Nicht autorisiert"
       required: [error]
 
+    UserProfile:
+      type: object
+      properties:
+        id: { type: string, format: cuid }
+        email: { type: string, format: email }
+        name: { type: string, nullable: true }
+        role: { type: string }
+      required: [id, email, name, role]
+
+    ProfileUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 100
+          nullable: true
+        currentPassword:
+          type: string
+          nullable: true
+        newPassword:
+          type: string
+          minLength: 8
+          maxLength: 128
+          nullable: true
+
     Game:
       type: object
       properties:
@@ -1916,6 +1941,29 @@ paths:
       responses:
         '200': { description: Nutzerprofil und Statistik-Totalen }
         '401': { $ref: '#/components/responses/Unauthorized' }
+    put:
+      tags: [Mobile]
+      summary: Eigenes Profil aktualisieren
+      description: Aktualisiert Name und/oder Passwort. E-Mail kann nicht geändert werden.
+      security: [ bearerAuth: [] ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ProfileUpdate' }
+      responses:
+        '200':
+          description: Aktualisiertes Nutzerprofil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user: { $ref: '#/components/schemas/UserProfile' }
+        '400': { description: Validierungsfehler, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+        '401': { description: Nicht autorisiert, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+        '403': { description: Aktuelles Passwort falsch, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+        '404': { description: Benutzer nicht gefunden, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
 
   /api/mobile/v1/dashboard:
     get:

@@ -14,6 +14,10 @@ struct UserDTO: Codable, Identifiable, Sendable {
     let role: String
 }
 
+struct ProfileResponse: Decodable, Sendable {
+    let user: UserDTO
+}
+
 struct DashboardDTO: Decodable, Sendable {
     let games: Int
     let sessions: Int

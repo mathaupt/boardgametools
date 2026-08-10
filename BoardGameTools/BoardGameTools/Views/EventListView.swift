@@ -69,11 +69,10 @@ struct EventRow: View {
         HStack(spacing: 16) {
             ZStack {
                 Theme.roseGradient
-                    .overlay(
-                        Image(systemName: "calendar.badge.sparkles")
-                            .font(.title2)
-                            .foregroundStyle(.white.opacity(0.8))
-                    )
+                Image("EventIcon")
+                    .resizable()
+                    .scaledToFit()
+                    .padding(12)
             }
             .frame(width: 56, height: 56)
             .clipShape(.rect(cornerRadius: 14))

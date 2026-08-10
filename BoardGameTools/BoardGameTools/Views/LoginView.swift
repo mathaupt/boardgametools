@@ -12,15 +12,12 @@ struct LoginView: View {
         VStack(spacing: 24) {
             Spacer()
 
-            ZStack {
-                Theme.primaryGradient
-                Image(systemName: "dice.fill")
-                    .font(.system(size: 64))
-                    .foregroundStyle(.white.opacity(0.9))
-            }
-            .frame(width: 120, height: 120)
-            .clipShape(.rect(cornerRadius: 28))
-            .shadow(color: Theme.primary.opacity(0.4), radius: 16, x: 0, y: 8)
+            Image("AppIcon")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 120, height: 120)
+                .clipShape(.rect(cornerRadius: 28))
+                .shadow(color: Theme.primary.opacity(0.4), radius: 16, x: 0, y: 8)
 
             Text("BoardGameTools")
                 .font(.largeTitle)

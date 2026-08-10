@@ -866,7 +866,7 @@ const isValid = await compare(inputPassword, group.password);
 
 ## Evaluator-Feedback (automatisch generiert)
 
-> Letzter Lauf: 2026-08-10 11:01:15
+> Letzter Lauf: 2026-08-10 11:53:46
 > Gesamt-Score: **10/10**
 
 ### Kategorie-Scores
@@ -893,7 +893,7 @@ const isValid = await compare(inputPassword, group.password);
 - ✅ **P0-5** Kein Rate Limiting + keine proxy.ts: Proxy/Middleware + Rate Limiting vorhanden
 - ✅ **P0-6** passwordHash in API-Responses: passwordHash wird nicht exponiert
 - ✅ **P1-7** PII in Logs: Keine PII in API-Logs
-- ✅ **P1-8** Fehlende Input-Validierung: validation.ts in 24 Routes importiert
+- ✅ **P1-8** Fehlende Input-Validierung: validation.ts in 25 Routes importiert
 - ✅ **P1-9** Keine Pagination: Pagination auf allen Listen-Endpoints
 - ✅ **P1-10** Statistiken komplett fehlend: Statistiken-Seite + API vorhanden
 - ✅ **P1-11** Session-Detailseite fehlt: Session-Detailseite vorhanden
@@ -908,7 +908,7 @@ const isValid = await compare(inputPassword, group.password);
 - ✅ **P2-20** Duplikat: BGG-Logik: Kein dupliziertes XML-Parsing
 - ✅ **P2-21** next/image statt <img>: Keine <img> Tags
 - ✅ **P2-22** Fehlende Unit Tests: 67 Test-Dateien
-- ✅ **P2-23** Inkonsistente Error-Responses: Konsistent: 258 error, 23 message
+- ✅ **P2-23** Inkonsistente Error-Responses: Konsistent: 263 error, 23 message
 - ✅ **P2-24** CONCEPT.md aktualisieren: Tech-Stack aktuell
 - ✅ **P2-25** Pendende Invites dupliziert: Shared Query extrahiert
 - ✅ **P2-27** Prisma Transactions fehlen: $transaction wird verwendet

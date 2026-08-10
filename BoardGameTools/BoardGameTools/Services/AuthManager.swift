@@ -70,6 +70,23 @@ final class AuthManager {
         currentUser = nil
     }
 
+    func updateProfile(name: String? = nil, currentPassword: String? = nil, newPassword: String? = nil) async throws -> UserDTO {
+        struct Body: Encodable, Sendable {
+            let name: String?
+            let currentPassword: String?
+            let newPassword: String?
+        }
+
+        let response: ProfileResponse = try await APIClient.shared.request(
+            method: .put,
+            endpoint: .me,
+            body: Body(name: name, currentPassword: currentPassword, newPassword: newPassword)
+        )
+
+        currentUser = response.user
+        return response.user
+    }
+
     private func store(response: TokenResponse) async throws {
         try await KeychainManager.shared.saveAccessToken(response.accessToken)
         try await KeychainManager.shared.saveRefreshToken(response.refreshToken)

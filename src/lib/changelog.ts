@@ -12,6 +12,18 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.8",
+    date: "2026-08-10",
+    title: "iOS-App: Brettspiel-Logos und Account-Einstellungen",
+    description: "Die iOS-App erhält Brettspiel-basierte Logos für App-Icon, Event- und Session-Liste. Zusätzlich können Name und Passwort in den Einstellungen geändert werden.",
+    changes: [
+      { type: "feature", text: "iOS App-Icon und Login-Logo mit Brettspiel-Illustration (Würfel, Karten, Meeple)" },
+      { type: "feature", text: "Event- und Session-Listen verwenden neue Brettspiel-Thumbnail-Bilder" },
+      { type: "feature", text: "Account-Daten in iOS Einstellungen bearbeiten: Name und Passwort (E-Mail nicht änderbar)" },
+      { type: "internal", text: "Neuer PUT-Endpunkt /api/mobile/v1/me für Profil-Updates" },
+    ],
+  },
+  {
     version: "0.50.7",
     date: "2026-08-10",
     title: "iOS-App: Abmelden bei API-URL-Wechsel",
