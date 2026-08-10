@@ -3,8 +3,8 @@
 - Status: BESTANDEN
 - Fehler: 0
 - Warnungen: 4
-- Datum: 2026-08-10 11:00:36
+- Datum: 2026-08-10 12:06:01
 - Branch: preview/ios-scaffold
-- Commit: 9cee41b
+- Commit: d16020d
 
 Geprüfte Kategorien: A01, A02, A03, A04, A05, A06, A07, A08, A09, A10, PII (Datenschutz).
