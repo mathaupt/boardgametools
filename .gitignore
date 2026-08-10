@@ -61,6 +61,13 @@ review-evaluation.json
 # vercel
 .vercel
 
+# iOS / Xcode user-specific files
+BoardGameTools/**/*.xcodeproj/project.xcworkspace/xcuserdata
+BoardGameTools/**/*.xcodeproj/xcuserdata
+*.xcuserstate
+*.xcscmblueprint
+*.xccheckout
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

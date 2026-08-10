@@ -36,6 +36,16 @@ export const changelog: ChangelogEntry[] = [
     ],
   },
   {
+    version: "0.49.4",
+    date: "2026-08-10",
+    title: "iOS Xcode-Userdaten aus Git entfernt",
+    description: "Vom Xcode-Öffnen erzeugte `xcuserdata` und `xcuserstate`-Dateien wurden aus dem Repository entfernt und in `.gitignore` aufgenommen.",
+    changes: [
+      { type: "internal", text: "`.gitignore` um Xcode-Benutzerdateien erweitert" },
+      { type: "internal", text: "Bereits committete `xcuserdata` entfernt" },
+    ],
+  },
+  {
     version: "0.49.3",
     date: "2026-08-10",
     title: "iOS Login: API-URL direkt konfigurierbar",
