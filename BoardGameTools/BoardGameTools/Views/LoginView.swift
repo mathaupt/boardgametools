@@ -14,6 +14,26 @@ struct LoginView: View {
                 .font(.largeTitle)
                 .fontWeight(.bold)
 
+            VStack(alignment: .leading, spacing: 4) {
+                Text("API-URL")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                HStack {
+                    TextField("https://...", text: $apiURL)
+                        .autocapitalization(.none)
+                        .textContentType(.URL)
+                        .keyboardType(.URL)
+                        .textFieldStyle(.roundedBorder)
+                    Button("Speichern") {
+                        if let url = URL(string: apiURL), !apiURL.isEmpty {
+                            APIClient.shared.baseURL = url
+                        }
+                    }
+                    .disabled(apiURL.isEmpty)
+                }
+            }
+            .padding(.bottom)
+
             TextField("E-Mail", text: $email)
                 .textContentType(.emailAddress)
                 .autocapitalization(.none)
@@ -39,28 +59,6 @@ struct LoginView: View {
                 Text(errorMessage)
                     .foregroundStyle(.red)
             }
-
-            Spacer()
-
-            VStack(alignment: .leading, spacing: 4) {
-                Text("API-URL")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                HStack {
-                    TextField("https://...", text: $apiURL)
-                        .autocapitalization(.none)
-                        .textContentType(.URL)
-                        .keyboardType(.URL)
-                        .textFieldStyle(.roundedBorder)
-                    Button("Speichern") {
-                        if let url = URL(string: apiURL), !apiURL.isEmpty {
-                            APIClient.shared.baseURL = url
-                        }
-                    }
-                    .disabled(apiURL.isEmpty)
-                }
-            }
-            .padding(.top)
         }
         .padding()
         .onAppear {

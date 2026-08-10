@@ -36,6 +36,16 @@ export const changelog: ChangelogEntry[] = [
     ],
   },
   {
+    version: "0.49.5",
+    date: "2026-08-10",
+    title: "iOS Login: localhost als Default-Backend",
+    description: "Die iOS-App nutzt nun standardmäßig `http://localhost:3000` als Backend, und die API-URL-Eingabe steht im Login-Bildschirm an oberster Stelle.",
+    changes: [
+      { type: "improvement", text: "`APIClient`: Default-Base-URL auf `http://localhost:3000` gesetzt" },
+      { type: "improvement", text: "`LoginView`: API-URL-Feld nach oben verschoben" },
+    ],
+  },
+  {
     version: "0.49.4",
     date: "2026-08-10",
     title: "iOS Xcode-Userdaten aus Git entfernt",

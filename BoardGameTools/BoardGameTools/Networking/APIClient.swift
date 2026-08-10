@@ -20,7 +20,7 @@ final class APIClient: Sendable {
            let url = URL(string: saved) {
             self.baseURL = url
         } else {
-            self.baseURL = URL(string: "https://boardgametools.vercel.app")!
+            self.baseURL = URL(string: "http://localhost:3000")!
         }
         self.session = URLSession(configuration: .default)
     }
