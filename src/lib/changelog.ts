@@ -12,6 +12,16 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.7",
+    date: "2026-08-10",
+    title: "iOS-App: Abmelden bei API-URL-Wechsel",
+    description: "Logout in der iOS-App löscht den lokalen Sitzungszustand auch dann, wenn der Server den Token nicht anerkennt. Beim Ändern der API-URL wird automatisch ein lokales Abmelden durchgeführt.",
+    changes: [
+      { type: "fix", text: "iOS `AuthManager.logout()` und `logoutAll()` entfernen lokale Tokens unabhängig vom Server-Status", bugRef: "BUG-006" },
+      { type: "fix", text: "iOS Einstellungen: Speichern einer neuen API-URL führt automatisch zum lokalen Abmelden", bugRef: "BUG-006" },
+    ],
+  },
+  {
     version: "0.50.6",
     date: "2026-08-10",
     title: "iOS-Logout und Health-Version-Fix",

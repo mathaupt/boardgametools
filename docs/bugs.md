@@ -228,10 +228,48 @@ Version 0.50.6 - /api/health liest die App-Version direkt aus package.json
 
 ---
 
+### [BUG-006] iOS-App: Abmelden bei API-URL-Wechsel nicht möglich
+
+**Status:** `fixed`  
+**Schweregrad:** `high`  
+**Entdeckt:** 2026-08-10  
+**Behoben:** 2026-08-10  
+**Behoben in Version:** 0.50.7  
+**Test geschrieben:** Nein
+
+**Beschreibung:**
+Wenn die API-URL in den iOS-Einstellungen geändert wurde, war ein anschließendes Abmelden nicht möglich. Der Logout-Request lief gegen die neue URL mit dem alten Token, der Server antwortete mit 401, und die App blieb im authentifizierten Zustand hängen. Ohne Abmelden war kein erneutes Anmelden möglich.
+
+**Reproduktion:**
+1. iOS-App einloggen (z. B. gegen `http://localhost:3000`)
+2. Einstellungen öffnen
+3. API-URL auf `https://boardgametools.vercel.app` ändern
+4. "Speichern" tippen
+5. "Abmelden" tippen
+6. Fehlermeldung "Nicht autorisiert. Bitte melde dich erneut an."
+
+**Erwartetes Verhalten:**
+Beim Wechsel der API-URL oder bei ungültigem Token sollte die App den lokalen Sitzungszustand bereinigen und zur Login-Maske zurückkehren.
+
+**Tatsächliches Verhalten:**
+`AuthManager.logout()` versuchte zuerst den Server-Logout und warf einen Fehler, bevor die lokalen Tokens gelöscht und `isAuthenticated` auf `false` gesetzt wurden. Die App blieb im eingeloggten Zustand.
+
+**Ursache:**
+`AuthManager.logout()` und `logoutAll()` verlangten einen erfolgreichen Server-Request, bevor lokale Tokens und UI-Zustand zurückgesetzt wurden. Bei geänderter URL war das Token für den neuen Backend ungültig, sodass der Server-Request fehlschlug und die lokale Bereinigung nie ausgeführt wurde.
+
+**Lösung:**
+- `AuthManager.logout()` und `logoutAll()` verwenden `try?` für den Server-Request und löschen anschließend immer lokale Tokens sowie `isAuthenticated`/`currentUser`.
+- In `SettingsView` führt das Speichern einer neuen API-URL automatisch ein lokales Abmelden aus, bevor die neue URL gespeichert wird.
+
+**Referenz im Changelog:**
+Version 0.50.7 - iOS-App: Abmelden bei API-URL-Wechsel
+
+---
+
 ## Statistik
 
 - **Offene Bugs:** 0
 - **In Bearbeitung:** 0
-- **Behoben:** 5
+- **Behoben:** 6
 - **Wontfix:** 0
-- **Gesamt:** 5
+- **Gesamt:** 6

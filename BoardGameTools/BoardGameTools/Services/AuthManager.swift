@@ -54,14 +54,17 @@ final class AuthManager {
     }
 
     func logout() async throws {
-        try await APIClient.shared.request(method: .post, endpoint: .logout)
+        // Best-effort server-side revocation; always clear local state afterwards.
+        // This prevents users from getting stuck when the server is unreachable
+        // or the stored token is no longer valid (e.g. API URL changed).
+        try? await APIClient.shared.request(method: .post, endpoint: .logout)
         try await KeychainManager.shared.clearTokens()
         isAuthenticated = false
         currentUser = nil
     }
 
     func logoutAll() async throws {
-        try await APIClient.shared.request(method: .post, endpoint: .logoutAll)
+        try? await APIClient.shared.request(method: .post, endpoint: .logoutAll)
         try await KeychainManager.shared.clearTokens()
         isAuthenticated = false
         currentUser = nil

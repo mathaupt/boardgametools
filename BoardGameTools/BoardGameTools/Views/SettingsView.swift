@@ -16,9 +16,7 @@ struct SettingsView: View {
                         .keyboardType(.URL)
 
                     Button("Speichern") {
-                        if let url = URL(string: apiURL), !apiURL.isEmpty {
-                            APIClient.shared.baseURL = url
-                        }
+                        Task { await saveURL() }
                     }
                     .tint(Theme.primary)
 
@@ -59,10 +57,24 @@ struct SettingsView: View {
     private func logout() async {
         do {
             try await authManager.logout()
+            errorMessage = nil
         } catch let error as APIError {
             errorMessage = error.message
         } catch {
             errorMessage = error.localizedDescription
         }
+    }
+
+    private func saveURL() async {
+        guard let url = URL(string: apiURL), !apiURL.isEmpty else {
+            errorMessage = "Ungültige API-URL"
+            return
+        }
+
+        // Changing the backend usually invalidates the current session.
+        // Clear local auth state first so the user can log in again.
+        await logout()
+        APIClient.shared.baseURL = url
+        errorMessage = nil
     }
 }
