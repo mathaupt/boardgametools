@@ -36,6 +36,16 @@ export const changelog: ChangelogEntry[] = [
     ],
   },
   {
+    version: "0.49.3",
+    date: "2026-08-10",
+    title: "iOS Login: API-URL direkt konfigurierbar",
+    description: "Das Login-Fenster der iOS-App zeigt nun ein API-URL-Feld an, damit das Backend vor der Anmeldung auf localhost oder eine Preview-URL umgestellt werden kann.",
+    changes: [
+      { type: "improvement", text: "`LoginView`: API-URL-Eingabe direkt im Login-Bildschirm" },
+      { type: "improvement", text: "API-URL wird in `UserDefaults` gespeichert und bei App-Start wiederhergestellt" },
+    ],
+  },
+  {
     version: "0.49.2",
     date: "2026-08-10",
     title: "iOS Offline-First Daten-Layer",
