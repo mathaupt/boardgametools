@@ -15,6 +15,7 @@ import {
   getAvailabilityColor,
   countAvailability,
 } from "./date-poll-types";
+import { formatDateWithShortMonth } from "@/lib/date";
 
 export function DateVotingMatrix({
   proposals,
@@ -89,20 +90,11 @@ export function DateVotingMatrix({
                 <td className="p-2">
                   <div className="flex items-center gap-2">
                     {isSelected && (
-                      <Crown className="h-4 w-4 text-success" />
+                      <Crown className="h-4 w-4 text-success" aria-hidden="true" />
                     )}
                     <div>
                       <div className="font-medium">
-                        {d.toLocaleDateString("de-DE", {
-                          weekday: "short",
-                          day: "numeric",
-                          month: "short",
-                        })}
-                      </div>
-                      <div className="text-xs text-muted-foreground">
-                        {d.toLocaleDateString("de-DE", {
-                          year: "numeric",
-                        })}
+                        {formatDateWithShortMonth(d)}
                       </div>
                     </div>
                   </div>
@@ -177,51 +169,57 @@ export function DateVotingMatrix({
                   <td className="text-center p-2">
                     <div className="flex items-center justify-center gap-1">
                       {votingLoading === proposal.id ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
+                        <Loader2 className="h-4 w-4 animate-spin" aria-label="Wird geladen" />
                       ) : (
                         <>
-                          <button
+                          <Button
+                            variant="outline"
+                            size="icon"
                             onClick={() =>
                               onVote(proposal.id, "yes")
                             }
-                            className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition-colors ${
+                            className={`w-8 h-8 rounded-full ${
                               myVote === "yes"
-                                ? "border-success bg-success/10"
+                                ? "border-success bg-success/10 hover:bg-success/20"
                                 : "border-border hover:border-success/50"
                             }`}
                             title="Ja, passt"
                             aria-label="Ja, passt"
                           >
-                            <Check className="h-4 w-4 text-success" />
-                          </button>
-                          <button
+                            <Check className="h-4 w-4 text-success" aria-hidden="true" />
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="icon"
                             onClick={() =>
                               onVote(proposal.id, "maybe")
                             }
-                            className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition-colors ${
+                            className={`w-8 h-8 rounded-full ${
                               myVote === "maybe"
-                                ? "border-warning bg-warning/10"
+                                ? "border-warning bg-warning/10 hover:bg-warning/20"
                                 : "border-border hover:border-warning/50"
                             }`}
                             title="Vielleicht"
                             aria-label="Vielleicht"
                           >
-                            <HelpCircle className="h-4 w-4 text-warning" />
-                          </button>
-                          <button
+                            <HelpCircle className="h-4 w-4 text-warning" aria-hidden="true" />
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="icon"
                             onClick={() =>
                               onVote(proposal.id, "no")
                             }
-                            className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition-colors ${
+                            className={`w-8 h-8 rounded-full ${
                               myVote === "no"
-                                ? "border-destructive bg-destructive/10"
+                                ? "border-destructive bg-destructive/10 hover:bg-destructive/20"
                                 : "border-border hover:border-destructive/50"
                             }`}
                             title="Nein, geht nicht"
                             aria-label="Nein, geht nicht"
                           >
-                            <X className="h-4 w-4 text-destructive" />
-                          </button>
+                            <X className="h-4 w-4 text-destructive" aria-hidden="true" />
+                          </Button>
                         </>
                       )}
                     </div>
@@ -239,11 +237,12 @@ export function DateVotingMatrix({
                         size="sm"
                         onClick={() => onSelectDate(proposal.id)}
                         disabled={selectingDate === proposal.id}
+                        aria-label="Termin auswählen"
                       >
                         {selectingDate === proposal.id ? (
-                          <Loader2 className="h-3 w-3 animate-spin" />
+                          <Loader2 className="h-3 w-3 animate-spin" aria-hidden="true" />
                         ) : (
-                          <Crown className="h-3 w-3" />
+                          <Crown className="h-3 w-3" aria-hidden="true" />
                         )}
                       </Button>
                     )}

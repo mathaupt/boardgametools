@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus } from "lucide-react";
 
 interface Invite {
@@ -45,7 +46,7 @@ export function AddInviteForm({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Neue Einladung</CardTitle>
+        <CardTitle as="h2">Neue Einladung</CardTitle>
         <CardDescription>
           Lade weitere Personen per E-Mail ein oder wähle vorhandene Nutzer
         </CardDescription>
@@ -60,40 +61,39 @@ export function AddInviteForm({
               value={newEmail}
               onChange={(e) => onNewEmailChange(e.target.value)}
               placeholder="max@example.com"
-              onKeyPress={(e) => e.key === "Enter" && onAddInvite()}
+              onKeyDown={(e) => e.key === "Enter" && onAddInvite()}
             />
             <Button onClick={onAddInvite} disabled={saving || !newEmail.trim()} className="shrink-0">
-              <Plus className="h-4 w-4 mr-2" />
-              {saving ? "Wird hinzugefügt..." : "Hinzufügen"}
+              <Plus className="h-4 w-4 mr-2" aria-hidden="true" />
+              {saving ? "Wird hinzugefügt…" : "Hinzufügen"}
             </Button>
           </div>
         </div>
 
         <div className="pt-2 border-t">
-          <Label htmlFor="user-select">Bestehenden Nutzer auswählen</Label>
+          <Label>Bestehenden Nutzer auswählen</Label>
           <div className="flex gap-2 mt-1">
-            <select
-              id="user-select"
-              className="flex-1 border rounded px-3 py-2 text-sm"
-              value={selectedUserId}
-              onChange={(e) => onSelectedUserIdChange(e.target.value)}
-            >
-              <option value="">Nutzer auswählen...</option>
-              {users
-                .filter((user) => !invites.some((inv) => inv.userId === user.id))
-                .map((user) => (
-                  <option key={user.id} value={user.id}>
-                    {user.name} ({user.email})
-                  </option>
-                ))}
-            </select>
+            <Select value={selectedUserId} onValueChange={onSelectedUserIdChange}>
+              <SelectTrigger className="flex-1">
+                <SelectValue placeholder="Nutzer auswählen…" />
+              </SelectTrigger>
+              <SelectContent>
+                {users
+                  .filter((user) => !invites.some((inv) => inv.userId === user.id))
+                  .map((user) => (
+                    <SelectItem key={user.id} value={user.id}>
+                      {user.name} ({user.email})
+                    </SelectItem>
+                  ))}
+              </SelectContent>
+            </Select>
             <Button
               onClick={onAddUserInvite}
               disabled={userInviteSaving || !selectedUserId}
               className="shrink-0"
             >
-              <Plus className="h-4 w-4 mr-2" />
-              {userInviteSaving ? "Wird hinzugefügt..." : "Einladen"}
+              <Plus className="h-4 w-4 mr-2" aria-hidden="true" />
+              {userInviteSaving ? "Wird hinzugefügt…" : "Einladen"}
             </Button>
           </div>
         </div>

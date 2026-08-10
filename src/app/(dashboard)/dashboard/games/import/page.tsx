@@ -198,11 +198,11 @@ export default function ImportBGGPage() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex items-center gap-4">
-          <Link href="/dashboard/games">
-            <Button variant="ghost" size="icon">
-              <ArrowLeft className="h-4 w-4" />
-            </Button>
-          </Link>
+          <Button asChild variant="ghost" size="icon" aria-label="Zurück zur Spieleübersicht">
+            <Link href="/dashboard/games">
+              <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+            </Link>
+          </Button>
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold">Von BGG importieren</h1>
             <p className="text-muted-foreground">Importiere Spiele direkt von BoardGameGeek</p>
@@ -212,7 +212,7 @@ export default function ImportBGGPage() {
         {/* Action buttons */}
         <div className="flex flex-wrap gap-2">
           <Button variant="outline" className="flex items-center gap-2" onClick={() => setBarcodeScannerOpen(true)}>
-            <ScanBarcode className="h-4 w-4" />
+            <ScanBarcode className="h-4 w-4" aria-hidden="true" />
             <span className="hidden sm:inline">Barcode</span>
           </Button>
 
@@ -232,18 +232,19 @@ export default function ImportBGGPage() {
           )}
           <Card>
             <CardHeader>
-              <CardTitle>Spiel suchen</CardTitle>
+              <CardTitle as="h2">Spiel suchen</CardTitle>
               <CardDescription>Suche nach einem Spiel auf BoardGameGeek</CardDescription>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSearch} className="flex gap-2">
                 <Input
-                  placeholder="z.B. Catan, Wingspan..."
+                  placeholder="z.B. Catan, Wingspan…"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
+                  aria-label="Spiel suchen"
                 />
-                <Button type="submit" disabled={isSearching || searchQuery.length < 2}>
-                  {isSearching ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
+                <Button type="submit" disabled={isSearching || searchQuery.length < 2} aria-label={isSearching ? "Suche läuft" : "Suchen"}>
+                  {isSearching ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : <Search className="h-4 w-4" aria-hidden="true" />}
                 </Button>
               </form>
             </CardContent>
@@ -251,7 +252,7 @@ export default function ImportBGGPage() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Direkt per ID laden</CardTitle>
+              <CardTitle as="h2">Direkt per ID laden</CardTitle>
               <CardDescription>
                 Gib die BGG-ID direkt ein (findest du in der URL auf boardgamegeek.com)
               </CardDescription>
@@ -262,9 +263,10 @@ export default function ImportBGGPage() {
                   placeholder="z.B. 13 (für Catan)"
                   value={bggIdInput}
                   onChange={(e) => setBggIdInput(e.target.value)}
+                  aria-label="BGG-ID"
                 />
-                <Button type="submit" disabled={isLoading || !bggIdInput}>
-                  {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Laden"}
+                <Button type="submit" disabled={isLoading || !bggIdInput} aria-label={isLoading ? "Wird geladen" : "Laden"}>
+                  {isLoading ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : "Laden"}
                 </Button>
               </form>
             </CardContent>
@@ -273,21 +275,22 @@ export default function ImportBGGPage() {
           {searchResults.length > 0 && (
             <Card>
               <CardHeader>
-                <CardTitle>Suchergebnisse</CardTitle>
+                <CardTitle as="h2">Suchergebnisse</CardTitle>
               </CardHeader>
               <CardContent>
                 <ul className="space-y-2 max-h-80 overflow-y-auto">
                   {searchResults.map((result) => (
                     <li key={result.bggId}>
-                      <button
+                      <Button
+                        variant="ghost"
                         onClick={() => loadGameDetails(result.bggId)}
-                        className="w-full text-left p-2 rounded hover:bg-accent transition-colors"
+                        className="w-full justify-start h-auto p-2 text-left"
                       >
                         <span className="font-medium">{result.name}</span>
                         {result.yearPublished && (
                           <span className="text-muted-foreground ml-2">({result.yearPublished})</span>
                         )}
-                      </button>
+                      </Button>
                     </li>
                   ))}
                 </ul>

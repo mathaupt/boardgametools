@@ -40,7 +40,7 @@ export default function PublicPollCard({
   return (
     <Card className={!isOpen ? "opacity-75" : ""}>
       <CardHeader className="pb-3">
-        <CardTitle className="text-base flex items-center gap-2">
+        <CardTitle as="h2" className="text-base flex items-center gap-2">
           {poll.title}
           <Badge variant={isOpen ? "default" : "secondary"}>
             {isOpen ? "Offen" : "Geschlossen"}
@@ -61,20 +61,22 @@ export default function PublicPollCard({
           const voterNames = option.votes?.map((v) => v.voterName).join(", ") || "";
 
           return (
-            <button
+            <Button
               key={option.id}
+              type="button"
+              variant="outline"
               onClick={() => isOpen && nameSet && onVote(poll.id, option.id)}
               disabled={!isOpen || !nameSet || loading === `vote-${poll.id}`}
-              className={`w-full text-left p-3 rounded-lg border transition-colors ${
+              className={`w-full h-auto flex flex-col items-stretch justify-start gap-0 p-3 rounded-lg border font-normal text-left whitespace-normal transition-colors ${
                 isMyVote
-                  ? "border-primary bg-primary/5"
-                  : "border-border hover:border-primary/50"
+                  ? "border-primary bg-primary/5 hover:bg-primary/5 hover:text-foreground"
+                  : "border-border hover:border-primary/50 hover:bg-transparent hover:text-foreground"
               } ${!isOpen || !nameSet ? "cursor-default" : "cursor-pointer"}`}
             >
-              <div className="flex items-center justify-between mb-1">
+              <div className="flex items-center justify-between mb-1 w-full">
                 <span className="text-sm font-medium flex items-center gap-2">
                   {option.text}
-                  {isMyVote && <Check className="h-3 w-3 text-primary" />}
+                  {isMyVote && <Check className="h-3 w-3 text-primary" aria-hidden="true" />}
                 </span>
                 <span className="text-xs text-muted-foreground">
                   {voteCount} ({pct}%)
@@ -82,14 +84,14 @@ export default function PublicPollCard({
               </div>
               <div className="w-full bg-muted rounded-full h-2">
                 <div
-                  className="bg-primary rounded-full h-2 transition-all"
+                  className="bg-primary rounded-full h-2 transition-[width]"
                   style={{ width: `${pct}%` }}
                 />
               </div>
               {voterNames && (
-                <p className="text-xs text-muted-foreground mt-1">{voterNames}</p>
+                <p className="text-xs text-muted-foreground mt-1 w-full">{voterNames}</p>
               )}
-            </button>
+            </Button>
           );
         })}
 
@@ -108,7 +110,7 @@ export default function PublicPollCard({
         {nameSet && (
           <div className="flex gap-2 mt-2">
             <Input
-              placeholder="Kommentar..."
+              placeholder="Kommentar…"
               value={pollComment}
               onChange={(e) => onPollCommentChange(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && onComment(poll.id)}
@@ -119,8 +121,9 @@ export default function PublicPollCard({
               variant="outline"
               onClick={() => onComment(poll.id)}
               disabled={loading === `comment-${poll.id}`}
+              aria-label="Kommentar senden"
             >
-              <MessageSquare className="h-3 w-3" />
+              <MessageSquare className="h-3 w-3" aria-hidden="true" />
             </Button>
           </div>
         )}

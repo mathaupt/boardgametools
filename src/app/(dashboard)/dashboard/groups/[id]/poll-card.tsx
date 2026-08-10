@@ -6,11 +6,23 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import {
   Check,
   Trash2,
   CheckCircle,
   MessageSquare,
 } from "lucide-react";
+import { formatDate } from "@/lib/date";
 import { SerializedGroupPoll, SerializedGroupPollOption, SerializedGroupPollVote } from "@/types/group";
 
 interface PollCardProps {
@@ -24,6 +36,7 @@ interface PollCardProps {
 export function PollCard({ poll, groupId, userId, isOwner, onRefresh }: PollCardProps) {
   const [loading, setLoading] = useState("");
   const [commentText, setCommentText] = useState("");
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   const userVotedOption = (poll: SerializedGroupPoll) => {
     for (const option of poll.options) {
@@ -101,7 +114,7 @@ export function PollCard({ poll, groupId, userId, isOwner, onRefresh }: PollCard
       <CardHeader className="pb-3">
         <div className="flex flex-col sm:flex-row items-start sm:justify-between gap-2">
           <div>
-            <CardTitle className="text-base flex items-center flex-wrap gap-2">
+            <CardTitle as="h2" className="text-base flex items-center flex-wrap gap-2">
               {poll.title}
               <Badge variant={isOpen ? "default" : "secondary"}>
                 {isOpen ? "Offen" : "Geschlossen"}
@@ -114,7 +127,7 @@ export function PollCard({ poll, groupId, userId, isOwner, onRefresh }: PollCard
               <p className="text-sm text-muted-foreground mt-1">{poll.description}</p>
             )}
             <p className="text-xs text-muted-foreground mt-1">
-              von {poll.createdBy?.name} · {new Date(poll.createdAt).toLocaleDateString("de-DE")}
+              von {poll.createdBy?.name} · {formatDate(poll.createdAt)}
               {" · "}{totalVotes} Stimme{totalVotes !== 1 ? "n" : ""}
             </p>
           </div>
@@ -131,14 +144,42 @@ export function PollCard({ poll, groupId, userId, isOwner, onRefresh }: PollCard
                   Schließen
                 </Button>
               )}
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => handleDeletePoll(poll.id)}
-                disabled={loading === `delete-${poll.id}`}
-              >
-                <Trash2 className="h-3 w-3" />
-              </Button>
+              <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    aria-label="Abstimmung löschen"
+                    disabled={loading === `delete-${poll.id}`}
+                  >
+                    <Trash2 className="h-3 w-3" />
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Abstimmung löschen</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Möchtest du die Abstimmung „{poll.title}“ wirklich löschen?
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel type="button" onClick={() => setDeleteDialogOpen(false)}>
+                      Abbrechen
+                    </AlertDialogCancel>
+                    <AlertDialogAction
+                      type="button"
+                      variant="destructive"
+                      disabled={loading === `delete-${poll.id}`}
+                      onClick={() => {
+                        setDeleteDialogOpen(false);
+                        handleDeletePoll(poll.id);
+                      }}
+                    >
+                      Löschen
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </div>
           )}
         </div>
@@ -152,17 +193,19 @@ export function PollCard({ poll, groupId, userId, isOwner, onRefresh }: PollCard
           const voterNames = option.votes.map((v: SerializedGroupPollVote) => v.voterName).join(", ");
 
           return (
-            <button
+            <Button
               key={option.id}
+              type="button"
+              variant="outline"
               onClick={() => isOpen && handleVote(poll.id, option.id, poll.type)}
               disabled={!isOpen || loading === `vote-${poll.id}`}
-              className={`w-full text-left p-3 rounded-lg border transition-colors ${
+              className={`w-full h-auto flex flex-col items-stretch justify-start gap-0 p-3 rounded-lg border font-normal text-left whitespace-normal transition-colors ${
                 isMyVote
-                  ? "border-primary bg-primary/5"
-                  : "border-border hover:border-primary/50"
+                  ? "border-primary bg-primary/5 hover:bg-primary/5 hover:text-foreground"
+                  : "border-border hover:border-primary/50 hover:bg-transparent hover:text-foreground"
               } ${!isOpen ? "cursor-default" : "cursor-pointer"}`}
             >
-              <div className="flex items-center justify-between mb-1">
+              <div className="flex items-center justify-between mb-1 w-full">
                 <span className="text-sm font-medium flex items-center gap-2">
                   {option.text}
                   {isMyVote && (
@@ -175,14 +218,14 @@ export function PollCard({ poll, groupId, userId, isOwner, onRefresh }: PollCard
               </div>
               <div className="w-full bg-muted rounded-full h-2">
                 <div
-                  className="bg-primary rounded-full h-2 transition-all"
+                  className="bg-primary rounded-full h-2 transition-[width] duration-300"
                   style={{ width: `${pct}%` }}
                 />
               </div>
               {voterNames && (
-                <p className="text-xs text-muted-foreground mt-1">{voterNames}</p>
+                <p className="text-xs text-muted-foreground mt-1 w-full">{voterNames}</p>
               )}
-            </button>
+            </Button>
           );
         })}
 
@@ -197,7 +240,8 @@ export function PollCard({ poll, groupId, userId, isOwner, onRefresh }: PollCard
         )}
         <div className="flex gap-2 mt-2">
           <Input
-            placeholder="Kommentar zur Abstimmung..."
+            placeholder="Kommentar zur Abstimmung…"
+            aria-label="Kommentar zur Abstimmung"
             value={commentText}
             onChange={(e) => setCommentText(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleComment(poll.id)}
@@ -208,6 +252,7 @@ export function PollCard({ poll, groupId, userId, isOwner, onRefresh }: PollCard
             variant="outline"
             onClick={() => handleComment(poll.id)}
             disabled={loading === `comment-${poll.id}`}
+            aria-label="Kommentar senden"
           >
             <MessageSquare className="h-3 w-3" />
           </Button>

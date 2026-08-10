@@ -46,19 +46,19 @@ export function EventProposalsCard({
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle className="flex items-center gap-2">
-              <Vote className="h-5 w-5" />
+            <CardTitle as="h2" className="flex items-center gap-2">
+              <Vote className="h-5 w-5" aria-hidden="true" />
               Spielvorschläge ({proposals.length})
             </CardTitle>
             <CardDescription>Vorgeschlagene Spiele für dieses Event</CardDescription>
           </div>
           {isCreator && !isPast && (
-            <Link href={`/dashboard/events/${eventId}/voting`}>
-              <Button>
-                <Plus className="h-4 w-4 mr-2" />
+            <Button asChild>
+              <Link href={`/dashboard/events/${eventId}/voting`}>
+                <Plus className="h-4 w-4 mr-2" aria-hidden="true" />
                 Spiel vorschlagen
-              </Button>
-            </Link>
+              </Link>
+            </Button>
           )}
         </div>
       </CardHeader>
@@ -71,12 +71,12 @@ export function EventProposalsCard({
               Es wurden noch keine Spiele für dieses Event vorgeschlagen.
             </p>
             {isCreator && !isPast && (
-              <Link href={`/dashboard/events/${eventId}/voting`}>
-                <Button>
-                  <Plus className="h-4 w-4 mr-2" />
+              <Button asChild>
+                <Link href={`/dashboard/events/${eventId}/voting`}>
+                  <Plus className="h-4 w-4 mr-2" aria-hidden="true" />
                   Ersten Vorschlag machen
-                </Button>
-              </Link>
+                </Link>
+              </Button>
             )}
           </div>
         ) : (

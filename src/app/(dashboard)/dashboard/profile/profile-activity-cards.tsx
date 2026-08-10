@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { formatDate, formatShortMonth, formatShortDateWithWeekday } from "@/lib/date";
 import { Mail, CalendarDays, Vote, Users, ArrowRight, Check } from "lucide-react";
 
 interface Invite {
@@ -60,7 +61,7 @@ export function ProfileActivityCards({ invites, events, groups }: ProfileActivit
       {pendingInvites.length > 0 && (
         <Card className="border-warning/30">
           <CardHeader className="pb-3">
-            <CardTitle className="flex items-center gap-2 text-base">
+            <CardTitle as="h2" className="flex items-center gap-2 text-base">
               <Mail className="h-4 w-4 text-warning" />
               Offene Einladungen
               <span className="ml-auto rounded-full bg-warning/10 px-2 py-0.5 text-xs font-semibold text-warning-foreground">
@@ -74,17 +75,13 @@ export function ProfileActivityCards({ invites, events, groups }: ProfileActivit
                 <li key={inv.id}>
                   <Link
                     href={`/dashboard/events/${inv.eventId}`}
-                    className="flex items-center gap-3 py-2.5 rounded-md transition-colors hover:bg-muted/50"
+                    className="flex items-center gap-3 py-2.5 rounded-md transition-colors hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   >
                     <CalendarDays className="h-4 w-4 text-muted-foreground shrink-0" />
                     <div className="min-w-0 flex-1">
                       <p className="text-sm font-medium truncate">{inv.eventTitle}</p>
                       <p className="text-xs text-muted-foreground">
-                        {new Date(inv.eventDate).toLocaleDateString("de-DE", {
-                          weekday: "short",
-                          day: "2-digit",
-                          month: "short",
-                        })}
+                        {formatShortDateWithWeekday(inv.eventDate)}
                         {inv.eventLocation && ` · ${inv.eventLocation}`}
                       </p>
                     </div>
@@ -100,7 +97,7 @@ export function ProfileActivityCards({ invites, events, groups }: ProfileActivit
       {/* Events */}
       <Card>
         <CardHeader className="pb-3">
-          <CardTitle className="flex items-center gap-2 text-base">
+          <CardTitle as="h2" className="flex items-center gap-2 text-base">
             <Vote className="h-4 w-4 text-primary" />
             Meine Events
           </CardTitle>
@@ -119,14 +116,14 @@ export function ProfileActivityCards({ invites, events, groups }: ProfileActivit
                   <li key={evt.id}>
                     <Link
                       href={`/dashboard/events/${evt.id}`}
-                      className="flex items-center gap-3 py-2.5 rounded-md transition-colors hover:bg-muted/50"
+                      className="flex items-center gap-3 py-2.5 rounded-md transition-colors hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                     >
                       <span className={`shrink-0 text-center w-9 ${isPast ? "opacity-50" : ""}`}>
                         <span className="block text-base font-bold leading-tight">
                           {new Date(evt.eventDate).getDate()}
                         </span>
                         <span className="block text-[9px] uppercase text-muted-foreground font-medium">
-                          {new Date(evt.eventDate).toLocaleDateString("de-DE", { month: "short" })}
+                          {formatShortMonth(evt.eventDate)}
                         </span>
                       </span>
                       <div className="min-w-0 flex-1">
@@ -153,7 +150,7 @@ export function ProfileActivityCards({ invites, events, groups }: ProfileActivit
             </ul>
           )}
           {events.length > 8 && (
-            <Link href="/dashboard/events" className="block mt-3 text-xs text-primary font-medium hover:underline">
+            <Link href="/dashboard/events" className="block mt-3 text-xs text-primary font-medium hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm">
               Alle Events anzeigen
             </Link>
           )}
@@ -164,7 +161,7 @@ export function ProfileActivityCards({ invites, events, groups }: ProfileActivit
       {invites.length > 0 && (
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="flex items-center gap-2 text-base">
+            <CardTitle as="h2" className="flex items-center gap-2 text-base">
               <Mail className="h-4 w-4 text-muted-foreground" />
               Einladungen
             </CardTitle>
@@ -175,12 +172,12 @@ export function ProfileActivityCards({ invites, events, groups }: ProfileActivit
                 <li key={inv.id}>
                   <Link
                     href={`/dashboard/events/${inv.eventId}`}
-                    className="flex items-center gap-3 py-2 rounded-md transition-colors hover:bg-muted/50"
+                    className="flex items-center gap-3 py-2 rounded-md transition-colors hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   >
                     <div className="min-w-0 flex-1">
                       <p className="text-sm truncate">{inv.eventTitle}</p>
                       <p className="text-xs text-muted-foreground">
-                        {new Date(inv.eventDate).toLocaleDateString("de-DE")}
+                        {formatDate(inv.eventDate)}
                       </p>
                     </div>
                     <span className={`shrink-0 rounded-md px-2 py-0.5 text-xs font-medium ${statusColor[inv.status] || ""}`}>
@@ -197,7 +194,7 @@ export function ProfileActivityCards({ invites, events, groups }: ProfileActivit
       {/* Groups */}
       <Card>
         <CardHeader className="pb-3">
-          <CardTitle className="flex items-center gap-2 text-base">
+          <CardTitle as="h2" className="flex items-center gap-2 text-base">
             <Users className="h-4 w-4 text-info" />
             Meine Gruppen
           </CardTitle>
@@ -211,7 +208,7 @@ export function ProfileActivityCards({ invites, events, groups }: ProfileActivit
                 <li key={g.id}>
                   <Link
                     href={`/dashboard/groups/${g.id}`}
-                    className="flex items-center gap-3 py-2.5 rounded-md transition-colors hover:bg-muted/50"
+                    className="flex items-center gap-3 py-2.5 rounded-md transition-colors hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   >
                     <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-info/10 shrink-0">
                       <Users className="h-4 w-4 text-info" />

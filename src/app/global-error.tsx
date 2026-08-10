@@ -1,5 +1,7 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
+
 export default function GlobalError({
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   error,
@@ -9,17 +11,14 @@ export default function GlobalError({
   reset: () => void;
 }) {
   return (
-    <html>
-      <body>
-        <div style={{ display: "flex", minHeight: "100vh", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "1rem", fontFamily: "system-ui, sans-serif" }}>
-          <h2 style={{ fontSize: "1.25rem", fontWeight: 600 }}>Kritischer Fehler</h2>
-          <p style={{ color: "#666" }}>Die Anwendung konnte nicht geladen werden.</p>
-          <button
-            onClick={reset}
-            style={{ padding: "0.5rem 1rem", border: "1px solid #ccc", borderRadius: "0.375rem", cursor: "pointer", background: "white" }}
-          >
-            Erneut versuchen
-          </button>
+    <html lang="de">
+      <body className="min-h-screen flex flex-col items-center justify-center gap-6 bg-background text-foreground p-4">
+        <div className="max-w-md text-center space-y-4">
+          <h1 className="text-2xl font-bold tracking-tight">Kritischer Fehler</h1>
+          <p className="text-muted-foreground">
+            Die Anwendung konnte nicht geladen werden.
+          </p>
+          <Button onClick={reset}>Erneut versuchen</Button>
         </div>
       </body>
     </html>

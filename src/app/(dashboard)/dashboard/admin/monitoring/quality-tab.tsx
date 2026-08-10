@@ -9,6 +9,8 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, LineChart, Line,
 } from "recharts";
 import { useState } from "react";
+import { formatShortDateTime } from "@/lib/date";
+import { Button } from "@/components/ui/button";
 
 // --- Types ---
 
@@ -64,8 +66,8 @@ export interface QualityData {
 // --- Sub-Components ---
 
 function ScoreCircle({ score, label, size = "lg" }: { score: number; label: string; size?: "sm" | "lg" }) {
-  const color = score >= 9 ? "text-green-500" : score >= 7 ? "text-yellow-500" : "text-red-500";
-  const bgColor = score >= 9 ? "bg-green-500/10" : score >= 7 ? "bg-yellow-500/10" : "bg-red-500/10";
+  const color = score >= 9 ? "text-success" : score >= 7 ? "text-warning" : "text-destructive";
+  const bgColor = score >= 9 ? "bg-success/10" : score >= 7 ? "bg-warning/10" : "bg-destructive/10";
   const sz = size === "lg" ? "w-24 h-24" : "w-16 h-16";
   const textSz = size === "lg" ? "text-3xl" : "text-xl";
 
@@ -104,16 +106,18 @@ const CATEGORY_ICONS: Record<string, React.ElementType> = {
 
 function FindingRow({ finding }: { finding: Finding }) {
   const prioColors: Record<string, string> = {
-    P0: "bg-red-500 text-white", P1: "bg-orange-500 text-white",
-    P2: "bg-yellow-500 text-black", P3: "bg-blue-500 text-white",
+    P0: "bg-destructive text-destructive-foreground",
+    P1: "bg-warning text-warning-foreground",
+    P2: "bg-warning/80 text-warning-foreground",
+    P3: "bg-primary text-primary-foreground",
   };
 
   return (
     <div className={`flex items-center gap-3 py-2 px-3 rounded-lg ${finding.status === "resolved" ? "opacity-60" : ""}`}>
       {finding.status === "resolved"
-        ? <CheckCircle className="h-4 w-4 text-green-500 shrink-0" />
+        ? <CheckCircle className="h-4 w-4 text-success shrink-0" />
         : <XCircle className="h-4 w-4 text-muted-foreground shrink-0" />}
-      <Badge className={`${prioColors[finding.priority] || "bg-gray-500 text-white"} text-[10px] px-1.5 py-0 shrink-0`}>
+      <Badge className={`${prioColors[finding.priority] || "bg-muted text-muted-foreground"} text-[10px] px-1.5 py-0 shrink-0`}>
         {finding.priority}
       </Badge>
       <span className={`text-sm flex-1 ${finding.status === "resolved" ? "line-through" : ""}`}>
@@ -154,7 +158,7 @@ export function QualityTab({ data, loading }: { data: QualityData | null; loadin
   }
 
   const radarData = data.categoryScores.map((c) => ({
-    category: c.category.length > 12 ? c.category.substring(0, 10) + ".." : c.category,
+    category: c.category.length > 12 ? c.category.substring(0, 10) + "…" : c.category,
     score: c.score,
     fullMark: 10,
   }));
@@ -183,12 +187,12 @@ export function QualityTab({ data, loading }: { data: QualityData | null; loadin
           <CardContent className="pt-4 flex flex-col items-center justify-center">
             <ScoreCircle score={data.overallScore} label="Deep-Dive Score" />
             <div className="flex items-center gap-1 mt-2">
-              <TrendingUp className="h-3 w-3 text-green-500" />
-              <span className="text-xs text-green-500 font-medium">+{delta.toFixed(1)} seit Review</span>
+              <TrendingUp className="h-3 w-3 text-success" />
+              <span className="text-xs text-success font-medium">+{delta.toFixed(1)} seit Review</span>
             </div>
             {data.lastReviewDate && (
               <p className="text-[10px] text-muted-foreground mt-1">
-                Letztes Review: {new Date(data.lastReviewDate).toLocaleDateString("de-DE", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })}
+                Letztes Review: {formatShortDateTime(data.lastReviewDate)}
               </p>
             )}
           </CardContent>
@@ -203,7 +207,7 @@ export function QualityTab({ data, loading }: { data: QualityData | null; loadin
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Kategorie-Bewertung</CardTitle>
+            <CardTitle as="h2" className="text-base">Kategorie-Bewertung</CardTitle>
             <CardDescription>Deep-Dive Score pro Kategorie (0-10)</CardDescription>
           </CardHeader>
           <CardContent>
@@ -220,7 +224,7 @@ export function QualityTab({ data, loading }: { data: QualityData | null; loadin
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Kategorie-Details</CardTitle>
+            <CardTitle as="h2" className="text-base">Kategorie-Details</CardTitle>
             <CardDescription>Klicken fuer Findings pro Kategorie</CardDescription>
           </CardHeader>
           <CardContent className="space-y-2">
@@ -229,25 +233,27 @@ export function QualityTab({ data, loading }: { data: QualityData | null; loadin
               const catFindings = data.findings.byCategory[cat.category];
               const isSelected = selectedCategory === cat.category;
               return (
-                <button
+                <Button
+                  type="button"
                   key={cat.category}
+                  variant="ghost"
                   onClick={() => setSelectedCategory(isSelected ? null : cat.category)}
-                  className={`w-full flex items-center gap-3 p-2 rounded-lg text-left transition-colors ${isSelected ? "bg-primary/10 border border-primary/20" : "hover:bg-muted/50"}`}
+                  className={`h-auto w-full justify-start gap-3 p-2 text-left font-normal transition-colors ${isSelected ? "bg-primary/10 border border-primary/20 hover:bg-primary/10" : "hover:bg-muted/50"}`}
                 >
                   <Icon className="h-4 w-4 text-muted-foreground shrink-0" />
                   <span className="text-sm flex-1">{cat.category}</span>
-                  <span className={`text-sm font-bold ${cat.score >= 9 ? "text-green-500" : cat.score >= 7 ? "text-yellow-500" : "text-red-500"}`}>
+                  <span className={`text-sm font-bold ${cat.score >= 9 ? "text-success" : cat.score >= 7 ? "text-warning" : "text-destructive"}`}>
                     {cat.score.toFixed(1)}
                   </span>
                   {cat.score > cat.previous && (
-                    <span className="text-xs text-green-500">+{(cat.score - cat.previous).toFixed(1)}</span>
+                    <span className="text-xs text-success">+{(cat.score - cat.previous).toFixed(1)}</span>
                   )}
                   {catFindings && (
                     <Badge variant="outline" className="text-[10px]">
                       {catFindings.resolved}/{catFindings.total}
                     </Badge>
                   )}
-                </button>
+                </Button>
               );
             })}
           </CardContent>
@@ -258,7 +264,7 @@ export function QualityTab({ data, loading }: { data: QualityData | null; loadin
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Findings nach Prioritaet</CardTitle>
+            <CardTitle as="h2" className="text-base">Findings nach Prioritaet</CardTitle>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={200}>
@@ -277,7 +283,7 @@ export function QualityTab({ data, loading }: { data: QualityData | null; loadin
         {data.scoreHistory.length > 1 && (
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">Score-Verlauf (Evaluator)</CardTitle>
+              <CardTitle as="h2" className="text-base">Score-Verlauf (Evaluator)</CardTitle>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={200}>
@@ -297,7 +303,7 @@ export function QualityTab({ data, loading }: { data: QualityData | null; loadin
       {/* Code Quality Cards */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Code-Qualitaet</CardTitle>
+          <CardTitle as="h2" className="text-base">Code-Qualitaet</CardTitle>
           <CardDescription>TypeScript, ESLint, Coverage, Architektur</CardDescription>
         </CardHeader>
         <CardContent>
@@ -327,7 +333,7 @@ export function QualityTab({ data, loading }: { data: QualityData | null; loadin
       {selectedCategory === "Architecture" && (
         <Card>
           <CardHeader>
-            <CardTitle className="text-base flex items-center gap-2">
+            <CardTitle as="h2" className="text-base flex items-center gap-2">
               <Layers className="h-4 w-4" />
               Architektur-Uebersicht
             </CardTitle>
@@ -336,14 +342,14 @@ export function QualityTab({ data, loading }: { data: QualityData | null; loadin
           <CardContent>
             <div className="space-y-3">
               {/* Client Layer */}
-              <div className="rounded-lg border-2 border-blue-400/40 bg-blue-500/5 p-3">
+              <div className="rounded-lg border-2 border-info/40 bg-info/5 p-3">
                 <div className="flex items-center gap-2 mb-2">
-                  <div className="w-2.5 h-2.5 rounded-full bg-blue-500" />
-                  <span className="text-xs font-semibold text-blue-600 uppercase tracking-wider">Client (Browser)</span>
+                  <div className="w-2.5 h-2.5 rounded-full bg-info" />
+                  <span className="text-xs font-semibold text-info uppercase tracking-wider">Client (Browser)</span>
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                   {["React 19 + Tailwind", "shadcn/ui Komponenten", "Server Components (14)", "Client Wrappers (108)"].map((c) => (
-                    <div key={c} className="text-[11px] bg-blue-500/10 rounded px-2 py-1.5 text-center">{c}</div>
+                    <div key={c} className="text-[11px] bg-info/10 rounded px-2 py-1.5 text-center">{c}</div>
                   ))}
                 </div>
               </div>
@@ -352,10 +358,10 @@ export function QualityTab({ data, loading }: { data: QualityData | null; loadin
               <div className="flex justify-center"><div className="w-0.5 h-4 bg-muted-foreground/30" /><span className="text-[10px] text-muted-foreground ml-2">SSR / RSC + API Calls</span></div>
 
               {/* Next.js Layer */}
-              <div className="rounded-lg border-2 border-purple-400/40 bg-purple-500/5 p-3">
+              <div className="rounded-lg border-2 border-primary/40 bg-primary/5 p-3">
                 <div className="flex items-center gap-2 mb-2">
-                  <div className="w-2.5 h-2.5 rounded-full bg-purple-500" />
-                  <span className="text-xs font-semibold text-purple-600 uppercase tracking-wider">Next.js 16 (App Router)</span>
+                  <div className="w-2.5 h-2.5 rounded-full bg-primary" />
+                  <span className="text-xs font-semibold text-primary uppercase tracking-wider">Next.js 16 (App Router)</span>
                 </div>
                 <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
                   {[
@@ -365,7 +371,7 @@ export function QualityTab({ data, loading }: { data: QualityData | null; loadin
                     { label: "10 Error Boundaries", sub: "Fehlerbehandlung" },
                     { label: "14 Loading States", sub: "Skeleton UX" },
                   ].map((c) => (
-                    <div key={c.label} className="text-center bg-purple-500/10 rounded px-2 py-1.5">
+                    <div key={c.label} className="text-center bg-primary/10 rounded px-2 py-1.5">
                       <div className="text-[11px] font-medium">{c.label}</div>
                       <div className="text-[9px] text-muted-foreground">{c.sub}</div>
                     </div>
@@ -377,10 +383,10 @@ export function QualityTab({ data, loading }: { data: QualityData | null; loadin
               <div className="flex justify-center"><div className="w-0.5 h-4 bg-muted-foreground/30" /><span className="text-[10px] text-muted-foreground ml-2">Service Layer + Validation</span></div>
 
               {/* Business Logic Layer */}
-              <div className="rounded-lg border-2 border-green-400/40 bg-green-500/5 p-3">
+              <div className="rounded-lg border-2 border-success/40 bg-success/5 p-3">
                 <div className="flex items-center gap-2 mb-2">
-                  <div className="w-2.5 h-2.5 rounded-full bg-green-500" />
-                  <span className="text-xs font-semibold text-green-600 uppercase tracking-wider">Business Logic (src/lib/)</span>
+                  <div className="w-2.5 h-2.5 rounded-full bg-success" />
+                  <span className="text-xs font-semibold text-success uppercase tracking-wider">Business Logic (src/lib/)</span>
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                   {[
@@ -393,7 +399,7 @@ export function QualityTab({ data, loading }: { data: QualityData | null; loadin
                     { label: "Mailer", sub: "6 E-Mail-Templates" },
                     { label: "Logger", sub: "Pino Structured JSON" },
                   ].map((c) => (
-                    <div key={c.label} className="text-center bg-green-500/10 rounded px-2 py-1.5">
+                    <div key={c.label} className="text-center bg-success/10 rounded px-2 py-1.5">
                       <div className="text-[11px] font-medium">{c.label}</div>
                       <div className="text-[9px] text-muted-foreground">{c.sub}</div>
                     </div>
@@ -405,10 +411,10 @@ export function QualityTab({ data, loading }: { data: QualityData | null; loadin
               <div className="flex justify-center"><div className="w-0.5 h-4 bg-muted-foreground/30" /><span className="text-[10px] text-muted-foreground ml-2">Prisma ORM + Redis + Blob</span></div>
 
               {/* Data Layer */}
-              <div className="rounded-lg border-2 border-orange-400/40 bg-orange-500/5 p-3">
+              <div className="rounded-lg border-2 border-warning/40 bg-warning/5 p-3">
                 <div className="flex items-center gap-2 mb-2">
-                  <div className="w-2.5 h-2.5 rounded-full bg-orange-500" />
-                  <span className="text-xs font-semibold text-orange-600 uppercase tracking-wider">Datenschicht</span>
+                  <div className="w-2.5 h-2.5 rounded-full bg-warning" />
+                  <span className="text-xs font-semibold text-warning uppercase tracking-wider">Datenschicht</span>
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                   {[
@@ -417,7 +423,7 @@ export function QualityTab({ data, loading }: { data: QualityData | null; loadin
                     { label: "Upstash Redis", sub: "Cache + Rate Limits" },
                     { label: "Vercel Blob", sub: "File Storage" },
                   ].map((c) => (
-                    <div key={c.label} className="text-center bg-orange-500/10 rounded px-2 py-1.5">
+                    <div key={c.label} className="text-center bg-warning/10 rounded px-2 py-1.5">
                       <div className="text-[11px] font-medium">{c.label}</div>
                       <div className="text-[9px] text-muted-foreground">{c.sub}</div>
                     </div>
@@ -446,7 +452,7 @@ export function QualityTab({ data, loading }: { data: QualityData | null; loadin
       {selectedCategory === "Testing" && data.tests.byArea && (
         <Card>
           <CardHeader>
-            <CardTitle className="text-base flex items-center gap-2">
+            <CardTitle as="h2" className="text-base flex items-center gap-2">
               <TestTube className="h-4 w-4" />
               Test-Uebersicht
             </CardTitle>
@@ -462,7 +468,7 @@ export function QualityTab({ data, loading }: { data: QualityData | null; loadin
                     <span className="text-sm font-medium">{area.area}</span>
                     <div className="flex items-center gap-2">
                       <Badge variant="outline" className="text-xs">{area.files} Dateien</Badge>
-                      <Badge className="text-xs bg-green-500/10 text-green-600 border-green-500/20">{area.tests} Tests</Badge>
+                      <Badge className="text-xs bg-success/10 text-success border-success/20">{area.tests} Tests</Badge>
                     </div>
                   </div>
                   <div className="flex flex-wrap gap-1.5">
@@ -472,7 +478,7 @@ export function QualityTab({ data, loading }: { data: QualityData | null; loadin
                   </div>
                   <div className="mt-2 h-1.5 bg-muted rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-green-500 rounded-full transition-all"
+                      className="h-full bg-success rounded-full transition-[width]"
                       style={{ width: `${(area.tests / data.tests.total) * 100}%` }}
                     />
                   </div>
@@ -487,7 +493,7 @@ export function QualityTab({ data, loading }: { data: QualityData | null; loadin
       {selectedCategory === "BOM/Dependencies" && data.techStack && data.techStack.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle className="text-base flex items-center gap-2">
+            <CardTitle as="h2" className="text-base flex items-center gap-2">
               <Package className="h-4 w-4" />
               Tech-Stack / Bill of Materials
             </CardTitle>
@@ -537,30 +543,33 @@ export function QualityTab({ data, loading }: { data: QualityData | null; loadin
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="text-base">
+              <CardTitle as="h2" className="text-base">
                 {selectedCategory ? `Findings: ${selectedCategory}` : "Alle Findings"}
               </CardTitle>
               <CardDescription>
                 {displayFindings.length} {showResolved ? "gesamt" : "offen"} angezeigt
                 {selectedCategory && (
-                  <button onClick={() => setSelectedCategory(null)} className="ml-2 text-primary hover:underline">
+                  <Button type="button" variant="link" size="sm" className="ml-2 h-auto px-0 py-0" onClick={() => setSelectedCategory(null)}>
                     Alle zeigen
-                  </button>
+                  </Button>
                 )}
               </CardDescription>
             </div>
-            <button
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
               onClick={() => setShowResolved(!showResolved)}
-              className="text-xs text-muted-foreground hover:text-foreground border rounded px-2 py-1"
+              className="h-auto px-2 py-1 text-xs text-muted-foreground hover:text-foreground"
             >
               {showResolved ? "Nur offene" : "Alle anzeigen"}
-            </button>
+            </Button>
           </div>
         </CardHeader>
         <CardContent>
           {displayFindings.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
-              <CheckCircle className="h-8 w-8 mx-auto mb-2 text-green-500" />
+              <CheckCircle className="h-8 w-8 mx-auto mb-2 text-success" />
               <p>{selectedCategory ? `Keine offenen Findings in ${selectedCategory}` : "Keine offenen Findings"}</p>
             </div>
           ) : (
@@ -579,15 +588,15 @@ export function QualityTab({ data, loading }: { data: QualityData | null; loadin
 function QualityBadge({ label, value, good, unit, inverse }: { label: string; value: number; good: number; unit: string; inverse?: boolean }) {
   const isGood = inverse ? value >= good : value <= good;
   return (
-    <div className={`p-3 rounded-lg text-center ${isGood ? "bg-green-500/10" : "bg-yellow-500/10"}`}>
-      <p className={`text-lg font-bold ${isGood ? "text-green-600" : "text-yellow-600"}`}>{value}{unit}</p>
+    <div className={`p-3 rounded-lg text-center ${isGood ? "bg-success/10" : "bg-warning/10"}`}>
+      <p className={`text-lg font-bold ${isGood ? "text-success" : "text-warning-foreground"}`}>{value}{unit}</p>
       <p className="text-xs text-muted-foreground">{label}</p>
     </div>
   );
 }
 
 function CoverageBar({ label, value, previous }: { label: string; value: number; previous?: number }) {
-  const color = value >= 60 ? "bg-green-500" : value >= 40 ? "bg-yellow-500" : "bg-red-500";
+  const color = value >= 60 ? "bg-success" : value >= 40 ? "bg-warning" : "bg-destructive";
   const delta = previous != null ? value - previous : null;
   return (
     <div>
@@ -596,14 +605,14 @@ function CoverageBar({ label, value, previous }: { label: string; value: number;
         <div className="flex items-center gap-1.5">
           <span className="font-medium">{value.toFixed(1)}%</span>
           {delta != null && delta !== 0 && (
-            <span className={`text-[10px] ${delta > 0 ? "text-green-500" : "text-red-500"}`}>
+            <span className={`text-[10px] ${delta > 0 ? "text-success" : "text-destructive"}`}>
               {delta > 0 ? "+" : ""}{delta.toFixed(1)}
             </span>
           )}
         </div>
       </div>
       <div className="h-2 bg-muted rounded-full overflow-hidden">
-        <div className={`h-full ${color} rounded-full transition-all`} style={{ width: `${Math.min(value, 100)}%` }} />
+        <div className={`h-full ${color} rounded-full transition-[width]`} style={{ width: `${Math.min(value, 100)}%` }} />
       </div>
     </div>
   );

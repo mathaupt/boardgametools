@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import {
   Loader2,
@@ -13,6 +14,7 @@ import {
   Crown,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { formatLongDateWithWeekday, formatShortDateWithWeekday, formatYear } from "@/lib/date";
 import type { DateProposal, StoredGuestState } from "./types";
 
 interface DateVotingSectionProps {
@@ -120,20 +122,15 @@ export function DateVotingSection({
     <section data-testid="date-voting-section">
       <Card className="border-border/60 bg-background/60">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-lg text-foreground">
-            <Calendar className="h-5 w-5" />
+          <CardTitle className="flex items-center gap-2 text-lg text-foreground" as="h2">
+            <Calendar className="h-5 w-5" aria-hidden="true" />
             Terminabstimmung
           </CardTitle>
           <CardDescription>
             Stimme ab, welche Termine für dich passen.
             {selectedDate && (
               <span className="ml-2 text-success font-medium">
-                Gewählter Termin: {new Date(selectedDate).toLocaleDateString("de-DE", {
-                  weekday: "long",
-                  day: "numeric",
-                  month: "long",
-                  year: "numeric",
-                })}
+                Gewählter Termin: {formatLongDateWithWeekday(selectedDate)}
               </span>
             )}
           </CardDescription>
@@ -184,17 +181,13 @@ export function DateVotingSection({
                     >
                       <td className="p-2">
                         <div className="flex items-center gap-2">
-                          {isSelected && <Crown className="h-4 w-4 text-success" />}
+                          {isSelected && <Crown className="h-4 w-4 text-success" aria-hidden="true" />}
                           <div>
                             <div className="font-medium text-foreground">
-                              {d.toLocaleDateString("de-DE", {
-                                weekday: "short",
-                                day: "numeric",
-                                month: "short",
-                              })}
+                              {formatShortDateWithWeekday(d)}
                             </div>
                             <div className="text-xs text-muted-foreground">
-                              {d.toLocaleDateString("de-DE", { year: "numeric" })}
+                              {formatYear(d)}
                             </div>
                           </div>
                         </div>
@@ -214,26 +207,28 @@ export function DateVotingSection({
                       {(activeGuest || currentUserId) && !isPast && (
                         <td className="text-center p-2">
                           {dateVotingLoading === dp.id ? (
-                            <Loader2 className="h-4 w-4 animate-spin mx-auto" />
+                            <Loader2 className="h-4 w-4 animate-spin mx-auto" aria-hidden="true" />
                           ) : (
                             <div className="flex items-center justify-center gap-1">
                               {(["yes", "maybe", "no"] as const).map((avail) => {
                                 const icon =
-                                  avail === "yes" ? <Check className="h-4 w-4 text-success" /> :
-                                  avail === "maybe" ? <HelpCircle className="h-4 w-4 text-warning" /> :
-                                  <X className="h-4 w-4 text-destructive" />;
+                                  avail === "yes" ? <Check className="h-4 w-4 text-success" aria-hidden="true" /> :
+                                  avail === "maybe" ? <HelpCircle className="h-4 w-4 text-warning" aria-hidden="true" /> :
+                                  <X className="h-4 w-4 text-destructive" aria-hidden="true" />;
                                 const colors =
                                   avail === "yes" ? "border-success bg-success/40" :
                                   avail === "maybe" ? "border-warning bg-warning/40" :
                                   "border-destructive bg-destructive/40";
                                 const isActive = myAvailability === avail;
                                 return (
-                                  <button
+                                  <Button
                                     key={avail}
+                                    variant="outline"
+                                    size="icon"
                                     data-testid={`date-vote-${avail}-${dp.id}`}
                                     onClick={() => handleDateVote(dp.id, avail)}
                                     className={cn(
-                                      "w-8 h-8 rounded-full border-2 flex items-center justify-center transition-colors",
+                                      "h-8 w-8 rounded-full border-2",
                                       isActive ? colors : "border-border hover:border-border/80"
                                     )}
                                     title={
@@ -248,7 +243,7 @@ export function DateVotingSection({
                                     }
                                   >
                                     {icon}
-                                  </button>
+                                  </Button>
                                 );
                               })}
                             </div>

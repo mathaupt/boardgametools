@@ -43,38 +43,42 @@ export default async function GroupsPage() {
           <h1 className="text-2xl sm:text-3xl font-bold">Gruppen</h1>
           <p className="text-muted-foreground">Spielergruppen mit Abstimmungen und Diskussionen</p>
         </div>
-        <Link href="/dashboard/groups/new">
-          <Button>
+        <Button asChild>
+          <Link href="/dashboard/groups/new">
             <Plus className="h-4 w-4 mr-2" />
             Gruppe erstellen
-          </Button>
-        </Link>
+          </Link>
+        </Button>
       </div>
 
       {groups.length === 0 ? (
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12">
             <div className="text-6xl mb-4">👥</div>
-            <h3 className="text-lg font-semibold mb-2">Noch keine Gruppen</h3>
+            <h2 className="text-lg font-semibold mb-2">Noch keine Gruppen</h2>
             <p className="text-muted-foreground mb-4 text-center">
               Erstelle eine Gruppe, um mit deinen Mitspieler:innen Abstimmungen durchzuführen.
             </p>
-            <Link href="/dashboard/groups/new">
-              <Button>
+            <Button asChild>
+              <Link href="/dashboard/groups/new">
                 <Plus className="h-4 w-4 mr-2" />
                 Erste Gruppe erstellen
-              </Button>
-            </Link>
+              </Link>
+            </Button>
           </CardContent>
         </Card>
       ) : (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {groups.map((group) => (
-            <Link key={group.id} href={`/dashboard/groups/${group.id}`}>
+            <Link
+              key={group.id}
+              href={`/dashboard/groups/${group.id}`}
+              className="block rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
               <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
                 <CardHeader>
                   <div className="flex items-start justify-between">
-                    <CardTitle className="flex items-center gap-2">
+                    <CardTitle as="h2" className="flex items-center gap-2">
                       <div className="w-8 h-8 bg-primary/10 rounded flex items-center justify-center">
                         👥
                       </div>

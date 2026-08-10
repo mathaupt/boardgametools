@@ -23,16 +23,20 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
+import { formatShortDateTime } from "@/lib/date";
 import { useToast } from "@/components/ui/use-toast";
 
 // ── Types ───────────────────────────────────────────────────────
@@ -75,24 +79,18 @@ function MethodBadge({ method }: { method: string }) {
 
 function StatusBadge({ status }: { status: number }) {
   const color = status < 300
-    ? "text-emerald-600 dark:text-emerald-400"
+    ? "text-success"
     : status < 400
-      ? "text-blue-600 dark:text-blue-400"
+      ? "text-info"
       : status < 500
-        ? "text-amber-600 dark:text-amber-400"
+        ? "text-warning"
         : "text-destructive";
 
   return <span className={cn("font-mono font-semibold", color)}>{status}</span>;
 }
 
 const formatTime = (iso: string) => {
-  const d = new Date(iso);
-  return d.toLocaleString("de-DE", {
-    day: "2-digit",
-    month: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  return formatShortDateTime(iso);
 };
 
 // ── Component ───────────────────────────────────────────────────
@@ -178,7 +176,7 @@ export function LogsTab({
                 </Select>
 
                 <Input
-                  placeholder="Pfad suchen..."
+                  placeholder="Pfad suchen…"
                   value={logPath}
                   onChange={(e) => { setLogPath(e.target.value); setLogPage(1); }}
                   className="w-full sm:w-[200px]"
@@ -196,20 +194,24 @@ export function LogsTab({
                   </SelectContent>
                 </Select>
 
-                <Dialog open={purgeOpen} onOpenChange={setPurgeOpen}>
-                  <DialogTrigger asChild>
-                    <Button variant="outline" size="sm" className="ml-auto">
+                <AlertDialog open={purgeOpen} onOpenChange={setPurgeOpen}>
+                  <AlertDialogTrigger asChild>
+                    <Button type="button" variant="outline" size="sm" className="ml-auto">
                       <Trash2 className="h-4 w-4 mr-2" /> Alte Logs löschen
                     </Button>
-                  </DialogTrigger>
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>Alte Logs löschen</DialogTitle>
-                    </DialogHeader>
-                    <div className="space-y-4 pt-4">
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Alte Logs löschen</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Logs älter als {parseInt(purgeDays || "0", 10)} Tage werden endgültig gelöscht.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <div className="space-y-4 py-4">
                       <div className="space-y-2">
-                        <Label>Logs älter als (Tage)</Label>
+                        <Label htmlFor="purge-days">Logs älter als (Tage)</Label>
                         <Input
+                          id="purge-days"
                           type="number"
                           min={7}
                           value={purgeDays}
@@ -217,17 +219,22 @@ export function LogsTab({
                         />
                         <p className="text-xs text-muted-foreground">Minimum: 7 Tage</p>
                       </div>
-                      <Button
-                        onClick={handlePurge}
-                        disabled={purging || parseInt(purgeDays) < 7}
-                        variant="destructive"
-                        className="w-full"
-                      >
-                        {purging ? "Wird gelöscht..." : "Logs endgültig löschen"}
-                      </Button>
                     </div>
-                  </DialogContent>
-                </Dialog>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel type="button" onClick={() => setPurgeOpen(false)}>
+                        Abbrechen
+                      </AlertDialogCancel>
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        disabled={purging || parseInt(purgeDays || "0", 10) < 7}
+                        onClick={handlePurge}
+                      >
+                        {purging ? "Wird gelöscht…" : "Logs endgültig löschen"}
+                      </Button>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               </div>
             </CardContent>
           </Card>

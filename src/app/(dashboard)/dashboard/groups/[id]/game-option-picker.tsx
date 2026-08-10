@@ -142,13 +142,16 @@ export function GameOptionPicker({
             >
               {optionsAreGames && <Gamepad2 className="h-3 w-3" />}
               {opt}
-              <button
+              <Button
                 type="button"
+                variant="ghost"
+                size="icon-xs"
+                aria-label={`${opt} entfernen`}
                 onClick={() => onOptionsChange(pollOptions.filter((_, j) => j !== i))}
-                className="hover:text-destructive"
+                className="h-5 w-5 p-0 hover:text-destructive"
               >
                 <X className="h-3 w-3" />
-              </button>
+              </Button>
             </span>
           ))}
         </div>
@@ -158,9 +161,10 @@ export function GameOptionPicker({
         <div className="border rounded-lg overflow-hidden">
           {/* Sammlung / BGG Import Tabs */}
           <div className="flex border-b">
-            <button
+            <Button
               type="button"
-              className={`flex-1 px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+              variant="ghost"
+              className={`flex-1 h-auto rounded-none px-4 py-2 text-sm font-medium border-b-2 justify-center transition-colors ${
                 gameTab === "collection"
                   ? "border-primary text-foreground"
                   : "border-transparent text-muted-foreground hover:text-foreground"
@@ -168,10 +172,11 @@ export function GameOptionPicker({
               onClick={() => setGameTab("collection")}
             >
               Aus Sammlung
-            </button>
-            <button
+            </Button>
+            <Button
               type="button"
-              className={`flex-1 px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+              variant="ghost"
+              className={`flex-1 h-auto rounded-none px-4 py-2 text-sm font-medium border-b-2 justify-center transition-colors ${
                 gameTab === "bgg"
                   ? "border-primary text-foreground"
                   : "border-transparent text-muted-foreground hover:text-foreground"
@@ -182,7 +187,7 @@ export function GameOptionPicker({
                 <ExternalLink className="h-3 w-3" />
                 BGG Import
               </span>
-            </button>
+            </Button>
           </div>
 
           <div className="p-3 max-h-56 overflow-y-auto">
@@ -191,7 +196,8 @@ export function GameOptionPicker({
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
-                    placeholder="Spiel suchen..."
+                    placeholder="Spiel suchen…"
+                    aria-label="Spiel suchen"
                     value={gameSearch}
                     onChange={(e) => setGameSearch(e.target.value)}
                     className="pl-9"
@@ -207,11 +213,12 @@ export function GameOptionPicker({
                   </p>
                 ) : (
                   filteredCollectionGames.map((game) => (
-                    <button
+                    <Button
                       key={game.id}
                       type="button"
+                      variant="ghost"
                       onClick={() => addGameAsOption(game.name)}
-                      className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-accent transition-colors text-left"
+                      className="h-auto w-full justify-start gap-3 p-2 text-left font-normal hover:bg-accent"
                     >
                       <div className="relative w-8 h-8 rounded bg-muted flex-shrink-0 overflow-hidden">
                         {game.imageUrl ? (
@@ -238,7 +245,7 @@ export function GameOptionPicker({
                         </div>
                       </div>
                       <Plus className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-                    </button>
+                    </Button>
                   ))
                 )}
               </div>
@@ -248,7 +255,8 @@ export function GameOptionPicker({
                   <div className="relative flex-1">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input
-                      placeholder="Spiel auf BGG suchen..."
+                      placeholder="Spiel auf BGG suchen…"
+                      aria-label="Spiel auf BGG suchen"
                       value={bggSearch}
                       onChange={(e) => setBggSearch(e.target.value)}
                       onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), handleSearchBGG())}
@@ -276,11 +284,12 @@ export function GameOptionPicker({
                   </p>
                 ) : (
                   bggResults.map((result) => (
-                    <button
+                    <Button
                       key={result.bggId}
                       type="button"
+                      variant="ghost"
                       onClick={() => addBGGGameAsOption(result.bggId)}
-                      className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-accent transition-colors text-left"
+                      className="h-auto w-full justify-start gap-3 p-2 text-left font-normal hover:bg-accent"
                     >
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium truncate">{result.name}</p>
@@ -289,7 +298,7 @@ export function GameOptionPicker({
                         )}
                       </div>
                       <Plus className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-                    </button>
+                    </Button>
                   ))
                 )}
               </div>

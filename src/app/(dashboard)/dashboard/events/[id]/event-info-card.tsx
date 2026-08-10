@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, MapPin, Users, Gamepad } from "lucide-react";
+import { formatDate, formatShortDateTime } from "@/lib/date";
 import Image from "next/image";
 
 interface Invite {
@@ -33,32 +34,25 @@ export function EventInfoCard({ event, isPast }: EventInfoCardProps) {
       <CardHeader>
         <div className="flex items-start justify-between">
           <div>
-            <CardTitle className="flex items-center gap-2 text-xl sm:text-2xl text-foreground">
-              <div className="w-10 h-10 bg-primary/10 rounded flex items-center justify-center" aria-label="Event Icon">
+            <CardTitle as="h2" className="flex items-center gap-2 text-xl sm:text-2xl text-foreground">
+              <div className="w-10 h-10 bg-primary/10 rounded flex items-center justify-center" aria-hidden="true">
                 📅
               </div>
               {event.title}
             </CardTitle>
             <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-3 text-sm sm:text-base text-muted-foreground">
               <div className="flex items-center gap-1">
-                <Calendar className="h-4 w-4" />
-                {eventDate.toLocaleDateString("de-DE", {
-                  weekday: "long",
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
+                <Calendar className="h-4 w-4" aria-hidden="true" />
+                {formatShortDateTime(eventDate)}
               </div>
               {event.location && (
                 <div className="flex items-center gap-1">
-                  <MapPin className="h-4 w-4" />
+                  <MapPin className="h-4 w-4" aria-hidden="true" />
                   {event.location}
                 </div>
               )}
               <div className="flex items-center gap-1">
-                <Users className="h-4 w-4" />
+                <Users className="h-4 w-4" aria-hidden="true" />
                 {event.invites.length} Eingeladene
               </div>
               <Badge variant={isPast ? "secondary" : "default"}>
@@ -81,7 +75,7 @@ export function EventInfoCard({ event, isPast }: EventInfoCardProps) {
           {/* Einladungen */}
           <div>
             <h3 className="font-semibold mb-3 flex items-center gap-2">
-              <Users className="h-4 w-4" />
+              <Users className="h-4 w-4" aria-hidden="true" />
               Einladungen ({event.invites.length})
             </h3>
             <div className="space-y-2">
@@ -127,7 +121,7 @@ export function EventInfoCard({ event, isPast }: EventInfoCardProps) {
               </div>
               <div className="flex justify-between">
                 <span>Erstellt am:</span>
-                <span>{new Date(event.createdAt).toLocaleDateString("de-DE")}</span>
+                <span>{formatDate(event.createdAt)}</span>
               </div>
               {(event.selectedGame || event.winningProposal) && (
                 <div className="flex items-center gap-3">
@@ -143,7 +137,7 @@ export function EventInfoCard({ event, isPast }: EventInfoCardProps) {
                       />
                     ) : (
                       <div className="w-8 h-8 rounded bg-muted border border-border flex items-center justify-center">
-                        <Gamepad className="h-4 w-4 text-muted-foreground" />
+                        <Gamepad className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
                       </div>
                     )}
                     <span className="font-medium">

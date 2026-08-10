@@ -79,14 +79,14 @@ export function EventMailDialog({ eventId, eventTitle, totalInvites, acceptedCou
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <Button variant="outline">
-          <Mail className="h-4 w-4 mr-2" />
+          <Mail className="h-4 w-4 mr-2" aria-hidden="true" />
           Nachricht
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Mail className="h-5 w-5" />
+            <Mail className="h-5 w-5" aria-hidden="true" />
             Teilnehmer anschreiben
           </DialogTitle>
           <DialogDescription>
@@ -97,18 +97,18 @@ export function EventMailDialog({ eventId, eventTitle, totalInvites, acceptedCou
         <Tabs defaultValue="custom" className="mt-2">
           <TabsList className="w-full">
             <TabsTrigger value="custom" className="flex-1">
-              <Send className="h-4 w-4 mr-1" />
+              <Send className="h-4 w-4 mr-1" aria-hidden="true" />
               Nachricht
             </TabsTrigger>
             <TabsTrigger value="reminder" className="flex-1">
-              <Bell className="h-4 w-4 mr-1" />
+              <Bell className="h-4 w-4 mr-1" aria-hidden="true" />
               Erinnerung
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="custom" className="space-y-4 pt-4">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Users className="h-4 w-4" />
+              <Users className="h-4 w-4" aria-hidden="true" />
               <span>
                 Wird an <strong className="text-foreground">{customRecipients}</strong> eingeladene
                 Personen gesendet (alle ausser dir)
@@ -127,7 +127,7 @@ export function EventMailDialog({ eventId, eventTitle, totalInvites, acceptedCou
               <Label htmlFor="mail-message">Nachricht</Label>
               <Textarea
                 id="mail-message"
-                placeholder="Deine Nachricht an alle Teilnehmer..."
+                placeholder="Deine Nachricht an alle Teilnehmer…"
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 rows={5}
@@ -140,9 +140,9 @@ export function EventMailDialog({ eventId, eventTitle, totalInvites, acceptedCou
               className="w-full"
             >
               {sending ? (
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" aria-hidden="true" />
               ) : (
-                <Send className="h-4 w-4 mr-2" />
+                <Send className="h-4 w-4 mr-2" aria-hidden="true" />
               )}
               Nachricht senden
             </Button>
@@ -151,7 +151,7 @@ export function EventMailDialog({ eventId, eventTitle, totalInvites, acceptedCou
           <TabsContent value="reminder" className="space-y-4 pt-4">
             <div className="rounded-lg border border-border bg-muted/50 p-4 space-y-3">
               <div className="flex items-center gap-2 text-sm">
-                <Users className="h-4 w-4 text-muted-foreground" />
+                <Users className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
                 <span>
                   Wird an <strong className="text-foreground">{acceptedCount}</strong> zugesagte
                   Teilnehmer gesendet
@@ -164,7 +164,7 @@ export function EventMailDialog({ eventId, eventTitle, totalInvites, acceptedCou
             </div>
             {acceptedCount === 0 ? (
               <div className="text-center py-4">
-                <AlertCircle className="mx-auto h-8 w-8 text-muted-foreground mb-2" />
+                <AlertCircle className="mx-auto h-8 w-8 text-muted-foreground mb-2" aria-hidden="true" />
                 <p className="text-sm text-muted-foreground">
                   Noch niemand hat zugesagt. Erinnerungen werden nur an zugesagte Teilnehmer
                   verschickt.
@@ -177,9 +177,9 @@ export function EventMailDialog({ eventId, eventTitle, totalInvites, acceptedCou
                 className="w-full"
               >
                 {sending ? (
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" aria-hidden="true" />
                 ) : (
-                  <Bell className="h-4 w-4 mr-2" />
+                  <Bell className="h-4 w-4 mr-2" aria-hidden="true" />
                 )}
                 Erinnerung senden
               </Button>
@@ -191,15 +191,15 @@ export function EventMailDialog({ eventId, eventTitle, totalInvites, acceptedCou
           <div
             className={`rounded-lg border p-3 text-sm ${
               result.success
-                ? "border-green-200 bg-green-50 text-green-800 dark:border-green-800 dark:bg-green-950 dark:text-green-200"
-                : "border-red-200 bg-red-50 text-red-800 dark:border-red-800 dark:bg-red-950 dark:text-red-200"
+                ? "border-success/50 bg-success/10 text-success"
+                : "border-destructive/50 bg-destructive/10 text-destructive"
             }`}
           >
             <div className="flex items-center gap-2">
               {result.success ? (
-                <CheckCircle className="h-4 w-4 shrink-0" />
+                <CheckCircle className="h-4 w-4 shrink-0" aria-hidden="true" />
               ) : (
-                <AlertCircle className="h-4 w-4 shrink-0" />
+                <AlertCircle className="h-4 w-4 shrink-0" aria-hidden="true" />
               )}
               {result.text}
             </div>

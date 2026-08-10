@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import { Copy, Globe, Link as LinkIcon, Loader2, RefreshCcw } from "lucide-react";
 
@@ -96,8 +97,8 @@ export function PublicShareCard({
   return (
     <Card className="border-border/70">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-lg">
-          <Globe className="h-5 w-5" />
+        <CardTitle className="flex items-center gap-2 text-lg" as="h2">
+          <Globe className="h-5 w-5" aria-hidden="true" />
           Öffentlicher Event-Link
         </CardTitle>
         <CardDescription>
@@ -121,9 +122,9 @@ export function PublicShareCard({
         )}
 
         <div className="space-y-2">
-          <label className="text-sm font-medium text-muted-foreground" htmlFor="public-link">
+          <Label className="text-muted-foreground" htmlFor="public-link">
             Öffentlicher Link
-          </label>
+          </Label>
           <div className="flex flex-col gap-2 sm:flex-row">
             <Input
               id="public-link"
@@ -138,8 +139,9 @@ export function PublicShareCard({
                 disabled={!publicUrl || isCopying}
                 onClick={handleCopy}
                 data-testid="copy-public-link"
+                aria-label="Öffentlichen Link kopieren"
               >
-                {isCopying ? <Loader2 className="h-4 w-4 animate-spin" /> : <Copy className="h-4 w-4" />}
+                {isCopying ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : <Copy className="h-4 w-4" aria-hidden="true" />}
                 <span className="ml-2 hidden sm:inline">Kopieren</span>
               </Button>
               <Button
@@ -147,13 +149,14 @@ export function PublicShareCard({
                 onClick={handlePublish}
                 disabled={isPublishing || !canManage}
                 data-testid="publish-public-link"
+                aria-label={publicUrl ? "Öffentlichen Link erneuern" : "Öffentlichen Link erstellen"}
               >
                 {isPublishing ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
                 ) : publicUrl ? (
-                  <RefreshCcw className="h-4 w-4" />
+                  <RefreshCcw className="h-4 w-4" aria-hidden="true" />
                 ) : (
-                  <LinkIcon className="h-4 w-4" />
+                  <LinkIcon className="h-4 w-4" aria-hidden="true" />
                 )}
                 <span className="ml-2 hidden sm:inline">
                   {publicUrl ? "Link erneuern" : "Link erstellen"}

@@ -49,7 +49,7 @@ export function SeriesDeleteDialogs({
               disabled={deleting}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              {deleting ? "Wird entfernt..." : "Entfernen"}
+              {deleting ? "Wird entfernt…" : "Entfernen"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -71,7 +71,7 @@ export function SeriesDeleteDialogs({
               disabled={deleting}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              {deleting ? "Wird gelöscht..." : "Reihe löschen"}
+              {deleting ? "Wird gelöscht…" : "Reihe löschen"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

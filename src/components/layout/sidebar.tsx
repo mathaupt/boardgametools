@@ -39,9 +39,9 @@ export function Sidebar() {
     <aside className="w-64 hidden lg:flex flex-col bg-sidebar text-sidebar-foreground">
       {/* Logo */}
       <div className="p-5 pb-6">
-        <Link href="/dashboard" className="flex items-center gap-2.5">
+        <Link href="/dashboard" className="flex items-center gap-2.5 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring">
           <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-sidebar-primary/20">
-            <Dice6 className="h-5 w-5 text-sidebar-primary" />
+            <Dice6 className="h-5 w-5 text-sidebar-primary" aria-hidden="true" />
           </div>
           <span className="font-bold text-lg tracking-tight text-sidebar-foreground">
             BoardGameTools
@@ -58,14 +58,13 @@ export function Sidebar() {
               key={item.name}
               href={item.href}
               className={cn(
-                "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
+                "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring",
                 isActive
                   ? "bg-sidebar-primary text-sidebar-primary-foreground shadow-sm"
                   : "text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
               )}
-              aria-label={`Navigate to ${item.name}`}
             >
-              <item.icon className="h-[18px] w-[18px] shrink-0" />
+              <item.icon className="h-[18px] w-[18px] shrink-0" aria-hidden="true" />
               {item.name}
             </Link>
           );
@@ -85,14 +84,13 @@ export function Sidebar() {
                   key={item.name}
                   href={item.href}
                   className={cn(
-                    "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
+                    "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring",
                     isActive
                       ? "bg-sidebar-primary text-sidebar-primary-foreground shadow-sm"
                       : "text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                   )}
-                  aria-label={`Navigate to ${item.name}`}
                 >
-                  <item.icon className="h-[18px] w-[18px] shrink-0" />
+                  <item.icon className="h-[18px] w-[18px] shrink-0" aria-hidden="true" />
                   {item.name}
                 </Link>
               );

@@ -63,8 +63,8 @@ export default function CloseVotingButton({ eventId }: CloseVotingButtonProps) {
         disabled={loading}
         variant="destructive"
       >
-        <CheckCircle className="h-4 w-4 mr-2" />
-        {loading ? "Wird beendet..." : "Abstimmung beenden"}
+        <CheckCircle className="h-4 w-4 mr-2" aria-hidden="true" />
+        {loading ? "Wird beendet…" : "Abstimmung beenden"}
       </Button>
 
       <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>

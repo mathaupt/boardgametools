@@ -52,11 +52,11 @@ export default function NewSeriesPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-3">
-        <Link href="/dashboard/series">
-          <Button variant="ghost" size="icon" className="shrink-0">
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-        </Link>
+        <Button asChild variant="ghost" size="icon" className="shrink-0" aria-label="Zurück zur Reihenübersicht">
+          <Link href="/dashboard/series">
+            <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+          </Link>
+        </Button>
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold">Neue Spielereihe</h1>
           <p className="text-muted-foreground">Erstelle eine neue Reihe zum Tracken</p>
@@ -67,10 +67,10 @@ export default function NewSeriesPage() {
         <CardHeader>
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
-              <Library className="h-5 w-5 text-primary" />
+              <Library className="h-5 w-5 text-primary" aria-hidden="true" />
             </div>
             <div>
-              <CardTitle>Reihen-Details</CardTitle>
+              <CardTitle as="h2">Reihen-Details</CardTitle>
               <CardDescription>z.B. EXIT - Das Spiel, Adventure Games, Murder Mystery</CardDescription>
             </div>
           </div>
@@ -90,7 +90,6 @@ export default function NewSeriesPage() {
                 name="name"
                 required
                 placeholder="z.B. EXIT - Das Spiel"
-                autoFocus
               />
             </div>
 
@@ -99,14 +98,14 @@ export default function NewSeriesPage() {
               <Textarea
                 id="description"
                 name="description"
-                placeholder="z.B. Escape-Room-Spiele von Kosmos..."
+                placeholder="z.B. Escape-Room-Spiele von Kosmos…"
                 className="min-h-20"
               />
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="imageUrl">Bild-URL</Label>
-              <Input id="imageUrl" name="imageUrl" type="url" placeholder="https://..." />
+              <Input id="imageUrl" name="imageUrl" type="url" placeholder="https://…" />
               <p className="text-xs text-muted-foreground">
                 Optional: URL zu einem Cover-Bild der Reihe
               </p>
@@ -114,11 +113,11 @@ export default function NewSeriesPage() {
 
             <div className="flex gap-3 pt-4">
               <Button type="submit" disabled={isLoading}>
-                {isLoading ? "Wird erstellt..." : "Reihe erstellen"}
+                {isLoading ? "Wird erstellt…" : "Reihe erstellen"}
               </Button>
-              <Link href="/dashboard/series">
-                <Button type="button" variant="outline">Abbrechen</Button>
-              </Link>
+              <Button asChild variant="outline">
+                <Link href="/dashboard/series">Abbrechen</Link>
+              </Button>
             </div>
           </form>
         </CardContent>

@@ -63,12 +63,12 @@ export default async function EventDetailPage({
           <div className="text-destructive text-6xl mb-4">📅</div>
           <h1 className="text-2xl font-bold text-foreground mb-2">Event nicht gefunden</h1>
           <p className="text-muted-foreground mb-4">Das gesuchte Event existiert nicht.</p>
-          <Link href="/dashboard/events">
-            <Button>
-              <ArrowLeft className="h-4 w-4 mr-2" />
+          <Button asChild>
+            <Link href="/dashboard/events">
+              <ArrowLeft className="h-4 w-4 mr-2" aria-hidden="true" />
               Zurück zu Events
-            </Button>
-          </Link>
+            </Link>
+          </Button>
         </div>
       </div>
     );
@@ -107,13 +107,16 @@ export default async function EventDetailPage({
 
   return (
     <div className="space-y-6">
+      <h1 className="sr-only">Event: {event.title}</h1>
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div className="flex items-center gap-4">
-          <Link href="/dashboard/events" className="text-muted-foreground hover:text-foreground flex items-center gap-2">
-            <ArrowLeft className="h-4 w-4" />
-            Zurück zu Events
-          </Link>
+          <Button variant="ghost" asChild>
+            <Link href="/dashboard/events" className="flex items-center gap-2">
+              <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+              Zurück zu Events
+            </Link>
+          </Button>
         </div>
         <div className="flex flex-wrap gap-2">
           {isCreator && !isPast && (
@@ -124,35 +127,35 @@ export default async function EventDetailPage({
                 totalInvites={event.invites.length}
                 acceptedCount={acceptedCount}
               />
-              <Link href={`/dashboard/events/${event.id}/invite`}>
-                <Button variant="outline">
-                  <Mail className="h-4 w-4 mr-2" />
+              <Button asChild variant="outline">
+                <Link href={`/dashboard/events/${event.id}/invite`}>
+                  <Mail className="h-4 w-4 mr-2" aria-hidden="true" />
                   Einladungen
-                </Button>
-              </Link>
-              <Link href={`/dashboard/events/${event.id}/share`}>
-                <Button variant="outline">
-                  <Share2 className="h-4 w-4 mr-2" />
+                </Link>
+              </Button>
+              <Button asChild variant="outline">
+                <Link href={`/dashboard/events/${event.id}/share`}>
+                  <Share2 className="h-4 w-4 mr-2" aria-hidden="true" />
                   Teilen
-                </Button>
-              </Link>
-              <Link href={`/dashboard/events/${event.id}/voting`}>
-                <Button>
-                  <Vote className="h-4 w-4 mr-2" />
+                </Link>
+              </Button>
+              <Button asChild>
+                <Link href={`/dashboard/events/${event.id}/voting`}>
+                  <Vote className="h-4 w-4 mr-2" aria-hidden="true" />
                   Voting
-                </Button>
-              </Link>
+                </Link>
+              </Button>
               {event.status !== "closed" && (
                 <CloseVotingButton eventId={event.id} />
               )}
             </>
           )}
-          <Link href={`/api/events/${event.id}/calendar`} target="_blank">
-            <Button variant="outline">
-              <Download className="h-4 w-4 mr-2" />
+          <Button asChild variant="outline">
+            <Link href={`/api/events/${event.id}/calendar`} target="_blank">
+              <Download className="h-4 w-4 mr-2" aria-hidden="true" />
               Kalender
-            </Button>
-          </Link>
+            </Link>
+          </Button>
         </div>
       </div>
 

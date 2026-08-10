@@ -48,7 +48,10 @@ export default function NewGroupPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4">
-        <Link href="/dashboard/groups" className="text-muted-foreground hover:text-foreground flex items-center gap-2">
+        <Link
+          href="/dashboard/groups"
+          className="text-muted-foreground hover:text-foreground flex items-center gap-2 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        >
           <ArrowLeft className="h-4 w-4" />
           Zurück zu Gruppen
         </Link>
@@ -56,7 +59,7 @@ export default function NewGroupPage() {
 
       <Card className="max-w-lg">
         <CardHeader>
-          <CardTitle>Neue Gruppe erstellen</CardTitle>
+          <CardTitle as="h1">Neue Gruppe erstellen</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -81,7 +84,7 @@ export default function NewGroupPage() {
               <p className="text-sm text-destructive">{error}</p>
             )}
             <Button type="submit" disabled={loading} className="w-full">
-              {loading ? "Erstelle..." : "Gruppe erstellen"}
+              {loading ? "Erstelle…" : "Gruppe erstellen"}
             </Button>
           </form>
         </CardContent>

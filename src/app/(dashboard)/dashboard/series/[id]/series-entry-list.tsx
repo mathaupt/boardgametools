@@ -92,7 +92,7 @@ export function SeriesEntryList({
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-semibold">Spiele</h2>
         <Button onClick={onAddClick}>
-          <Plus className="h-4 w-4 mr-2" />
+          <Plus className="h-4 w-4 mr-2" aria-hidden="true" />
           Spiel hinzufügen
         </Button>
       </div>
@@ -119,14 +119,14 @@ export function SeriesEntryList({
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-16">
             <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-              <Plus className="h-8 w-8 text-primary" />
+              <Plus className="h-8 w-8 text-primary" aria-hidden="true" />
             </div>
             <h3 className="text-lg font-semibold mb-2">Noch keine Spiele</h3>
             <p className="text-muted-foreground mb-6 text-center max-w-sm">
               Füge Spiele aus deiner Sammlung oder per BGG-Import hinzu.
             </p>
             <Button onClick={onAddClick}>
-              <Plus className="h-4 w-4 mr-2" />
+              <Plus className="h-4 w-4 mr-2" aria-hidden="true" />
               Erstes Spiel hinzufügen
             </Button>
           </CardContent>
@@ -134,17 +134,14 @@ export function SeriesEntryList({
       ) : filteredEntries.length === 0 ? (
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12">
-            <Search className="h-10 w-10 text-muted-foreground/50 mb-4" />
+            <Search className="h-10 w-10 text-muted-foreground/50 mb-4" aria-hidden="true" />
             <h3 className="text-lg font-semibold mb-2">Keine Treffer</h3>
             <p className="text-muted-foreground mb-4 text-center max-w-sm">
               Kein Spiel entspricht deinen Filterkriterien.
             </p>
-            <button
-              onClick={resetFilters}
-              className="text-sm text-primary hover:underline"
-            >
+            <Button variant="link" size="sm" onClick={resetFilters}>
               Filter zurücksetzen
-            </button>
+            </Button>
           </CardContent>
         </Card>
       ) : (

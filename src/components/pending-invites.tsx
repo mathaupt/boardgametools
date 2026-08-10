@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Calendar, MapPin, Check, X, Mail } from "lucide-react";
+import { formatShortDateTime } from "@/lib/date";
 
 interface PendingInvite {
   id: string;
@@ -48,8 +49,8 @@ export function PendingInvites({ invites: initialInvites }: { invites: PendingIn
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-base">
-          <Mail className="h-4 w-4 text-primary" />
+        <CardTitle as="h2" className="flex items-center gap-2 text-base">
+          <Mail className="h-4 w-4 text-primary" aria-hidden="true" />
           Offene Einladungen ({invites.length})
         </CardTitle>
         <CardDescription>Einladungen zu Spieleabenden, die auf deine Antwort warten</CardDescription>
@@ -64,24 +65,18 @@ export function PendingInvites({ invites: initialInvites }: { invites: PendingIn
               <div className="min-w-0 flex-1">
                 <Link
                   href={`/dashboard/events/${inv.event.id}`}
-                  className="font-semibold text-sm hover:underline"
+                  className="font-semibold text-sm hover:underline rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   {inv.event.title}
                 </Link>
                 <div className="flex flex-wrap items-center gap-3 mt-1 text-xs text-muted-foreground">
                   <span className="flex items-center gap-1">
-                    <Calendar className="h-3 w-3" />
-                    {new Date(inv.event.eventDate).toLocaleDateString("de-DE", {
-                      weekday: "short",
-                      day: "2-digit",
-                      month: "short",
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
+                    <Calendar className="h-3 w-3" aria-hidden="true" />
+                    {formatShortDateTime(inv.event.eventDate)}
                   </span>
                   {inv.event.location && (
                     <span className="flex items-center gap-1">
-                      <MapPin className="h-3 w-3" />
+                      <MapPin className="h-3 w-3" aria-hidden="true" />
                       {inv.event.location}
                     </span>
                   )}
@@ -95,7 +90,7 @@ export function PendingInvites({ invites: initialInvites }: { invites: PendingIn
                   disabled={loading === inv.eventId}
                   onClick={() => respond(inv.eventId, "accepted")}
                 >
-                  <Check className="h-3.5 w-3.5 mr-1" />
+                  <Check className="h-3.5 w-3.5 mr-1" aria-hidden="true" />
                   Zusagen
                 </Button>
                 <Button
@@ -104,7 +99,7 @@ export function PendingInvites({ invites: initialInvites }: { invites: PendingIn
                   disabled={loading === inv.eventId}
                   onClick={() => respond(inv.eventId, "declined")}
                 >
-                  <X className="h-3.5 w-3.5 mr-1" />
+                  <X className="h-3.5 w-3.5 mr-1" aria-hidden="true" />
                   Absagen
                 </Button>
               </div>

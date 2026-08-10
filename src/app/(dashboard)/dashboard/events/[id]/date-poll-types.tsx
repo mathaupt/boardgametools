@@ -32,11 +32,11 @@ export const WEEKDAY_LABELS = [
 export function getAvailabilityIcon(availability: string) {
   switch (availability) {
     case "yes":
-      return <Check className="h-4 w-4 text-success" />;
+      return <Check className="h-4 w-4 text-success" aria-hidden="true" />;
     case "maybe":
-      return <HelpCircle className="h-4 w-4 text-warning" />;
+      return <HelpCircle className="h-4 w-4 text-warning" aria-hidden="true" />;
     case "no":
-      return <X className="h-4 w-4 text-destructive" />;
+      return <X className="h-4 w-4 text-destructive" aria-hidden="true" />;
     default:
       return null;
   }

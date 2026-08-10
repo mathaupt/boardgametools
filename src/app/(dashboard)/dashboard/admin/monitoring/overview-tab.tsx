@@ -16,6 +16,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { TabsContent } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
+import { formatDate } from "@/lib/date";
 import {
   ResponsiveContainer,
   AreaChart,
@@ -64,11 +65,11 @@ const CHART_COLORS = [
 
 function StatusBadge({ status }: { status: number }) {
   const color = status < 300
-    ? "text-emerald-600 dark:text-emerald-400"
+    ? "text-success"
     : status < 400
-      ? "text-blue-600 dark:text-blue-400"
+      ? "text-info"
       : status < 500
-        ? "text-amber-600 dark:text-amber-400"
+        ? "text-warning"
         : "text-destructive";
 
   return <span className={cn("font-mono font-semibold", color)}>{status}</span>;
@@ -115,12 +116,9 @@ function StatCard({
 
 const formatHour = (iso: string) => {
   const d = new Date(iso);
-  return d.toLocaleString("de-DE", {
-    day: "2-digit",
-    month: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  const hours = String(d.getHours()).padStart(2, "0");
+  const minutes = String(d.getMinutes()).padStart(2, "0");
+  return `${formatDate(d)}, ${hours}:${minutes}`;
 };
 
 // ── Component ───────────────────────────────────────────────────
@@ -178,7 +176,7 @@ export function OverviewTab({
               {/* Requests per hour */}
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-base">Requests pro Stunde</CardTitle>
+                  <CardTitle as="h2" className="text-base">Requests pro Stunde</CardTitle>
                   <CardDescription>Anfragen und Fehler im Zeitverlauf</CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -233,7 +231,7 @@ export function OverviewTab({
               {/* Top Endpoints */}
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-base">Top Endpoints</CardTitle>
+                  <CardTitle as="h2" className="text-base">Top Endpoints</CardTitle>
                   <CardDescription>Die 10 meistgenutzten Endpunkte</CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -252,7 +250,7 @@ export function OverviewTab({
                           width={80}
                           className="text-xs fill-muted-foreground"
                           tick={{ fontSize: 10 }}
-                          tickFormatter={(v: string) => v.length > 20 ? v.slice(0, 20) + "..." : v}
+                          tickFormatter={(v: string) => v.length > 20 ? v.slice(0, 20) + "…" : v}
                         />
                         <Tooltip
                           contentStyle={{
@@ -276,7 +274,7 @@ export function OverviewTab({
               {/* Method Distribution */}
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-base">HTTP-Methoden</CardTitle>
+                  <CardTitle as="h2" className="text-base">HTTP-Methoden</CardTitle>
                   <CardDescription>Verteilung der Anfragemethoden</CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -319,7 +317,7 @@ export function OverviewTab({
               {/* Status Distribution */}
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-base">Status Codes</CardTitle>
+                  <CardTitle as="h2" className="text-base">Status Codes</CardTitle>
                   <CardDescription>Verteilung der HTTP-Statuscodes</CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -335,9 +333,9 @@ export function OverviewTab({
                             <div
                               className={cn(
                                 "h-full rounded-full",
-                                s.statusCode < 300 ? "bg-emerald-500" :
-                                s.statusCode < 400 ? "bg-blue-500" :
-                                s.statusCode < 500 ? "bg-amber-500" : "bg-destructive"
+                                s.statusCode < 300 ? "bg-success" :
+                                s.statusCode < 400 ? "bg-info" :
+                                s.statusCode < 500 ? "bg-warning" : "bg-destructive"
                               )}
                               style={{ width: `${Math.max(pct, 1)}%` }}
                             />

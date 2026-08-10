@@ -7,6 +7,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus, Trash2, Trophy, Users } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 
@@ -115,27 +117,26 @@ export default function SessionFormClient({ games, users }: SessionFormClientPro
       <form onSubmit={handleSubmit} className="space-y-6">
         <Card>
           <CardHeader>
-            <CardTitle>Session Details</CardTitle>
+            <CardTitle as="h2">Session Details</CardTitle>
             <CardDescription>Grundlegende Informationen zur Session</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="gameId">Spiel *</Label>
-                <select
-                  id="gameId"
-                  value={formData.gameId}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, gameId: e.target.value }))}
-                  required
-                  className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
-                >
-                  <option value="">Spiel auswaehlen</option>
-                  {games.map((game) => (
-                    <option key={game.id} value={game.id}>
-                      {game.name} ({game.minPlayers}-{game.maxPlayers} Spieler)
-                    </option>
-                  ))}
-                </select>
+                <Select value={formData.gameId} onValueChange={(value) => setFormData((prev) => ({ ...prev, gameId: value }))}>
+                  <SelectTrigger id="gameId">
+                    <SelectValue placeholder="Spiel auswählen…" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {games.map((game) => (
+                      <SelectItem key={game.id} value={game.id}>
+                        {game.name} ({game.minPlayers}-{game.maxPlayers} Spieler)
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <input type="hidden" name="gameId" value={formData.gameId} required />
               </div>
               <div>
                 <Label htmlFor="playedAt">Gespielt am *</Label>
@@ -155,7 +156,7 @@ export default function SessionFormClient({ games, users }: SessionFormClientPro
 
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2"><Users className="h-5 w-5" />Spieler & Ergebnisse</CardTitle>
+            <CardTitle className="flex items-center gap-2" as="h2"><Users className="h-5 w-5" aria-hidden="true" />Spieler & Ergebnisse</CardTitle>
             <CardDescription>Wer hat gespielt und wie waren die Ergebnisse?</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -163,41 +164,46 @@ export default function SessionFormClient({ games, users }: SessionFormClientPro
               <div key={index} className="flex items-center gap-4 p-4 border rounded-lg">
                 <div className="flex-1 grid grid-cols-1 md:grid-cols-4 gap-4">
                   <div>
-                    <Label>Spieler *</Label>
-                    <select value={player.userId} onChange={(e) => updatePlayer(index, "userId", e.target.value)} required className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-ring">
-                      <option value="">Spieler auswaehlen</option>
-                      {users.map((user) => (
-                        <option key={user.id} value={user.id}>{user.name}</option>
-                      ))}
-                    </select>
+                    <Label htmlFor={`player-${index}`}>Spieler *</Label>
+                    <Select value={player.userId} onValueChange={(value) => updatePlayer(index, "userId", value)}>
+                      <SelectTrigger id={`player-${index}`}>
+                        <SelectValue placeholder="Spieler auswählen…" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {users.map((user) => (
+                          <SelectItem key={user.id} value={user.id}>{user.name}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <input type="hidden" name={`player-${index}`} value={player.userId} required />
                   </div>
                   <div>
-                    <Label>Platzierung</Label>
-                    <Input type="number" value={player.placement || ""} onChange={(e) => updatePlayer(index, "placement", parseInt(e.target.value) || null)} placeholder="1" min="1" />
+                    <Label htmlFor={`placement-${index}`}>Platzierung</Label>
+                    <Input id={`placement-${index}`} type="number" value={player.placement || ""} onChange={(e) => updatePlayer(index, "placement", parseInt(e.target.value) || null)} placeholder="1" min="1" />
                   </div>
                   <div>
-                    <Label>Punkte</Label>
-                    <Input type="number" value={player.score || ""} onChange={(e) => updatePlayer(index, "score", parseInt(e.target.value) || null)} placeholder="z.B. 100" />
+                    <Label htmlFor={`score-${index}`}>Punkte</Label>
+                    <Input id={`score-${index}`} type="number" value={player.score || ""} onChange={(e) => updatePlayer(index, "score", parseInt(e.target.value) || null)} placeholder="z.B. 100" />
                   </div>
                   <div className="flex items-center gap-2">
                     <div className="flex items-center gap-2 mt-6">
-                      <input type="checkbox" id={`winner-${index}`} checked={player.isWinner} onChange={(e) => updatePlayer(index, "isWinner", e.target.checked)} className="rounded" />
-                      <Label htmlFor={`winner-${index}`} className="flex items-center gap-1"><Trophy className="h-4 w-4 text-warning" />Gewinner</Label>
+                      <Checkbox id={`winner-${index}`} checked={player.isWinner} onChange={(e) => updatePlayer(index, "isWinner", e.target.checked)} />
+                      <Label htmlFor={`winner-${index}`} className="flex items-center gap-1"><Trophy className="h-4 w-4 text-warning" aria-hidden="true" />Gewinner</Label>
                     </div>
                   </div>
                 </div>
                 {players.length > 1 && (
-                  <Button type="button" variant="outline" size="sm" onClick={() => removePlayer(index)}><Trash2 className="h-4 w-4" /></Button>
+                  <Button type="button" variant="outline" size="sm" onClick={() => removePlayer(index)} aria-label="Spieler entfernen"><Trash2 className="h-4 w-4" aria-hidden="true" /></Button>
                 )}
               </div>
             ))}
-            <Button type="button" variant="outline" onClick={addPlayer} className="w-full"><Plus className="h-4 w-4 mr-2" />Spieler hinzufuegen</Button>
+            <Button type="button" variant="outline" onClick={addPlayer} className="w-full"><Plus className="h-4 w-4 mr-2" aria-hidden="true" />Spieler hinzufügen</Button>
           </CardContent>
         </Card>
 
         <div className="flex gap-3">
           <Button type="button" variant="outline" onClick={() => router.push("/dashboard/sessions")} disabled={saving}>Abbrechen</Button>
-          <Button type="submit" disabled={saving}>{saving ? "Wird gespeichert..." : "Session speichern"}</Button>
+          <Button type="submit" disabled={saving}>{saving ? "Wird gespeichert…" : "Session speichern"}</Button>
         </div>
       </form>
     </div>

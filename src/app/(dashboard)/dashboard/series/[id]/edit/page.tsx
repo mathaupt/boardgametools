@@ -94,11 +94,11 @@ export default function EditSeriesPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-3">
-        <Link href={`/dashboard/series/${seriesId}`}>
-          <Button variant="ghost" size="icon" className="shrink-0">
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-        </Link>
+        <Button variant="ghost" size="icon" className="shrink-0" asChild aria-label="Zurück zur Reihe">
+          <Link href={`/dashboard/series/${seriesId}`}>
+            <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+          </Link>
+        </Button>
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold">Reihe bearbeiten</h1>
           <p className="text-muted-foreground">{name}</p>
@@ -109,10 +109,10 @@ export default function EditSeriesPage() {
         <CardHeader>
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
-              <Pencil className="h-5 w-5 text-primary" />
+              <Pencil className="h-5 w-5 text-primary" aria-hidden="true" />
             </div>
             <div>
-              <CardTitle>Reihen-Details</CardTitle>
+              <CardTitle as="h2">Reihen-Details</CardTitle>
               <CardDescription>Name, Beschreibung und Bild der Reihe anpassen</CardDescription>
             </div>
           </div>
@@ -152,7 +152,7 @@ export default function EditSeriesPage() {
                 type="url"
                 value={imageUrl}
                 onChange={(e) => setImageUrl(e.target.value)}
-                placeholder="https://..."
+                placeholder="https://…"
               />
               <p className="text-xs text-muted-foreground">
                 Optional: URL zu einem Cover-Bild der Reihe
@@ -161,11 +161,11 @@ export default function EditSeriesPage() {
 
             <div className="flex gap-3 pt-4">
               <Button type="submit" disabled={isLoading}>
-                {isLoading ? "Wird gespeichert..." : "Speichern"}
+                {isLoading ? "Wird gespeichert…" : "Speichern"}
               </Button>
-              <Link href={`/dashboard/series/${seriesId}`}>
-                <Button type="button" variant="outline">Abbrechen</Button>
-              </Link>
+              <Button type="button" variant="outline" asChild>
+                <Link href={`/dashboard/series/${seriesId}`}>Abbrechen</Link>
+              </Button>
             </div>
           </form>
         </CardContent>

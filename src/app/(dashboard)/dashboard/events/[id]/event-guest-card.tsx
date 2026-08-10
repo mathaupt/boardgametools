@@ -1,6 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Users, UserCircle } from "lucide-react";
+import { formatDate } from "@/lib/date";
 
 interface GuestParticipant {
   id: string;
@@ -18,8 +19,8 @@ export function EventGuestCard({ guestParticipants, guestVoteCount }: EventGuest
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Users className="h-5 w-5" />
+        <CardTitle as="h2" className="flex items-center gap-2">
+          <Users className="h-5 w-5" aria-hidden="true" />
           Öffentliche Gäste ({guestParticipants.length})
         </CardTitle>
         <CardDescription>
@@ -39,12 +40,12 @@ export function EventGuestCard({ guestParticipants, guestVoteCount }: EventGuest
             >
               <div className="flex items-center gap-2">
                 <div className="rounded-full bg-muted px-2 py-1 text-muted-foreground">
-                  <UserCircle className="h-4 w-4" />
+                  <UserCircle className="h-4 w-4" aria-hidden="true" />
                 </div>
                 <div>
                   <p className="text-sm font-medium">{guest.nickname}</p>
                   <p className="text-xs text-muted-foreground">
-                    Seit {new Date(guest.createdAt).toLocaleDateString("de-DE")}
+                    Seit {formatDate(guest.createdAt)}
                   </p>
                 </div>
               </div>

@@ -1,7 +1,15 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Search,
   ArrowUpDown,
@@ -68,65 +76,68 @@ export function FilterSortBar({
             <div className="flex flex-col sm:flex-row gap-3">
               {/* Search */}
               <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" aria-hidden="true" />
                 <Input
-                  placeholder="Spiel suchen..."
+                  placeholder="Spiel suchen…"
                   value={search}
                   onChange={(e) => onSearchChange(e.target.value)}
                   className="pl-9 h-9"
+                  aria-label="Spiel suchen"
                 />
                 {search && (
-                  <button
+                  <Button
+                    variant="ghost"
+                    size="icon-xs"
                     onClick={() => onSearchChange("")}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                     aria-label="Suche leeren"
                   >
-                    <X className="h-3.5 w-3.5" />
-                  </button>
+                    <X className="h-3.5 w-3.5" aria-hidden="true" />
+                  </Button>
                 )}
               </div>
 
               {/* Status Filter */}
               <div className="flex items-center gap-2">
-                <Filter className="h-4 w-4 text-muted-foreground shrink-0 hidden sm:block" />
-                <select
-                  value={playedFilter}
-                  onChange={(e) => onPlayedFilterChange(e.target.value as PlayedFilter)}
-                  className="h-9 border rounded-md px-3 text-sm bg-background text-foreground w-full sm:min-w-[100px] sm:w-auto"
-                  aria-label="Status filtern"
-                >
-                  {PLAYED_OPTIONS.map((opt) => (
-                    <option key={opt.value} value={opt.value}>{opt.label}</option>
-                  ))}
-                </select>
+                <Filter className="h-4 w-4 text-muted-foreground shrink-0 hidden sm:block" aria-hidden="true" />
+                <Select value={playedFilter} onValueChange={(v) => onPlayedFilterChange(v as PlayedFilter)}>
+                  <SelectTrigger className="h-9 w-full sm:min-w-[100px] sm:w-auto" aria-label="Status filtern">
+                    <SelectValue placeholder="Status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {PLAYED_OPTIONS.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
               {/* Difficulty Filter */}
-              <select
-                value={difficultyFilter}
-                onChange={(e) => onDifficultyFilterChange(e.target.value as DifficultyFilter)}
-                className="h-9 border rounded-md px-3 text-sm bg-background text-foreground w-full sm:min-w-[130px] sm:w-auto"
-                aria-label="Schwierigkeit filtern"
-              >
-                <option value="alle">Schwierigkeit</option>
-                {DIFFICULTY_FILTER_OPTIONS.slice(1).map((opt) => (
-                  <option key={opt.value} value={opt.value}>{opt.label}</option>
-                ))}
-              </select>
+              <Select value={difficultyFilter} onValueChange={(v) => onDifficultyFilterChange(v as DifficultyFilter)}>
+                <SelectTrigger className="h-9 w-full sm:min-w-[130px] sm:w-auto" aria-label="Schwierigkeit filtern">
+                  <SelectValue placeholder="Schwierigkeit" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="alle">Schwierigkeit</SelectItem>
+                  {DIFFICULTY_FILTER_OPTIONS.slice(1).map((opt) => (
+                    <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
 
               {/* Sort */}
               <div className="flex items-center gap-2">
-                <ArrowUpDown className="h-4 w-4 text-muted-foreground shrink-0 hidden sm:block" />
-                <select
-                  value={sortOption}
-                  onChange={(e) => onSortOptionChange(e.target.value as EntrySortOption)}
-                  className="h-9 border rounded-md px-3 text-sm bg-background text-foreground w-full sm:min-w-[160px] sm:w-auto"
-                  aria-label="Sortierung"
-                >
-                  {SORT_OPTIONS.map((opt) => (
-                    <option key={opt.value} value={opt.value}>{opt.label}</option>
-                  ))}
-                </select>
+                <ArrowUpDown className="h-4 w-4 text-muted-foreground shrink-0 hidden sm:block" aria-hidden="true" />
+                <Select value={sortOption} onValueChange={(v) => onSortOptionChange(v as EntrySortOption)}>
+                  <SelectTrigger className="h-9 w-full sm:min-w-[160px] sm:w-auto" aria-label="Sortierung">
+                    <SelectValue placeholder="Sortierung" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {SORT_OPTIONS.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 
@@ -137,12 +148,14 @@ export function FilterSortBar({
                   {filteredCount} von {totalCount} Spiele
                 </span>
                 {hasActiveFilters && (
-                  <button
+                  <Button
+                    variant="link"
+                    size="xs"
                     onClick={onResetFilters}
-                    className="text-xs text-primary hover:underline"
+                    className="text-xs text-primary h-auto p-0"
                   >
                     Filter zurücksetzen
-                  </button>
+                  </Button>
                 )}
               </div>
             )}

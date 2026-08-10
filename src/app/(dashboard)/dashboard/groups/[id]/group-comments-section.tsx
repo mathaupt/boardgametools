@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { MessageSquare } from "lucide-react";
+import { formatShortDateTime } from "@/lib/date";
 import { SerializedGroupComment } from "@/types/group";
 
 interface GroupCommentsSectionProps {
@@ -24,7 +25,7 @@ export function GroupCommentsSection({
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
+        <CardTitle as="h2" className="flex items-center gap-2">
           <MessageSquare className="h-5 w-5" />
           Diskussion
         </CardTitle>
@@ -33,7 +34,8 @@ export function GroupCommentsSection({
       <CardContent className="space-y-3">
         <div className="flex gap-2">
           <Input
-            placeholder="Schreibe einen Kommentar..."
+            placeholder="Schreibe einen Kommentar…"
+            aria-label="Kommentar"
             value={comment}
             onChange={(e) => onCommentChange(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && onSubmitComment()}
@@ -56,12 +58,7 @@ export function GroupCommentsSection({
                 <div className="flex items-center justify-between mb-1">
                   <span className="text-sm font-medium">{c.authorName}</span>
                   <span className="text-xs text-muted-foreground">
-                    {new Date(c.createdAt).toLocaleDateString("de-DE", {
-                      day: "2-digit",
-                      month: "2-digit",
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
+                    {formatShortDateTime(c.createdAt)}
                   </span>
                 </div>
                 <p className="text-sm text-muted-foreground">{c.content}</p>

@@ -86,7 +86,7 @@ export function BarcodeResultsPanel({
             <div className="space-y-4">
               {/* EAN info */}
               <div className="flex items-center gap-2 p-2 rounded-lg bg-muted/50 text-sm">
-                <ScanBarcode className="h-4 w-4 text-muted-foreground shrink-0" />
+                <ScanBarcode className="h-4 w-4 text-muted-foreground shrink-0" aria-hidden="true" />
                 <span className="font-mono">{result.ean}</span>
                 {result.productName && (
                   <span className="text-muted-foreground truncate">
@@ -99,7 +99,7 @@ export function BarcodeResultsPanel({
               {result.source === "local" && result.localGame && (
                 <Card className="border-success/30 bg-success/5">
                   <CardContent className="p-4 flex items-center gap-3">
-                    <CheckCircle2 className="h-5 w-5 text-success shrink-0" />
+                    <CheckCircle2 className="h-5 w-5 text-success shrink-0" aria-hidden="true" />
                     <div className="flex-1 min-w-0">
                       <p className="font-medium">{result.localGame.name}</p>
                       <p className="text-sm text-muted-foreground">Bereits in deiner Sammlung</p>
@@ -141,8 +141,9 @@ export function BarcodeResultsPanel({
                         <Button
                           size="sm"
                           onClick={() => handleSelectBGGResult(bgg.bggId)}
+                          aria-label="Importieren"
                         >
-                          <Plus className="h-4 w-4 mr-1" />
+                          <Plus className="h-4 w-4 mr-1" aria-hidden="true" />
                           Import
                         </Button>
                       </div>
@@ -167,7 +168,7 @@ export function BarcodeResultsPanel({
               {result.source === "not_found" && (
                 <div className="space-y-3">
                   <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/50 text-sm">
-                    <AlertCircle className="h-5 w-5 shrink-0 mt-0.5 text-muted-foreground" />
+                    <AlertCircle className="h-5 w-5 shrink-0 mt-0.5 text-muted-foreground" aria-hidden="true" />
                     <div>
                       <p className="font-medium">Barcode nicht in der Produktdatenbank gefunden</p>
                       <p className="text-muted-foreground mt-0.5">
@@ -183,23 +184,24 @@ export function BarcodeResultsPanel({
                 <div className="space-y-3">
                   <form onSubmit={handleFallbackSearch} className="flex gap-2">
                     <div className="relative flex-1">
-                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" aria-hidden="true" />
                       <Input
                         value={fallbackName}
                         onChange={(e) => setFallbackName(e.target.value)}
-                        placeholder="Spielname eingeben..."
+                        placeholder="Spielname eingeben…"
                         className="pl-9"
+                        aria-label="Spielname eingeben"
                       />
                     </div>
-                    <Button type="submit" disabled={fallbackSearching || fallbackName.trim().length < 2}>
-                      {fallbackSearching ? <Loader2 className="h-4 w-4 animate-spin" /> : "Suchen"}
+                    <Button type="submit" disabled={fallbackSearching || fallbackName.trim().length < 2} aria-label={fallbackSearching ? "Suche läuft" : "Suchen"}>
+                      {fallbackSearching ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : "Suchen"}
                     </Button>
                   </form>
 
                   {fallbackSearching && (
                     <div className="flex flex-col items-center justify-center py-6 gap-2">
-                      <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-                      <p className="text-xs text-muted-foreground">Suche auf BoardGameGeek...</p>
+                      <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" aria-hidden="true" />
+                      <p className="text-xs text-muted-foreground">Suche auf BoardGameGeek…</p>
                     </div>
                   )}
 
@@ -219,8 +221,9 @@ export function BarcodeResultsPanel({
                           <Button
                             size="sm"
                             onClick={() => handleSelectFallbackResult(bgg.bggId)}
+                            aria-label="Importieren"
                           >
-                            <Plus className="h-4 w-4 mr-1" />
+                            <Plus className="h-4 w-4 mr-1" aria-hidden="true" />
                             Import
                           </Button>
                         </div>
@@ -242,7 +245,7 @@ export function BarcodeResultsPanel({
                 className="w-full"
                 onClick={onScanAgain}
               >
-                <ScanBarcode className="h-4 w-4 mr-2" />
+                <ScanBarcode className="h-4 w-4 mr-2" aria-hidden="true" />
                 Neuen Barcode scannen
               </Button>
             </div>

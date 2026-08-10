@@ -60,8 +60,9 @@ export function CreatePollForm({ groupId, loading, setLoading, onCreated, onCanc
       <CardContent className="pt-4">
         <form onSubmit={handleCreatePoll} className="space-y-3">
           <div className="space-y-2">
-            <Label>Frage / Titel *</Label>
+            <Label htmlFor="poll-title">Frage / Titel *</Label>
             <Input
+              id="poll-title"
               value={pollTitle}
               onChange={(e) => setPollTitle(e.target.value)}
               placeholder="z.B. Welches Legacy-Spiel als nächstes?"
@@ -69,8 +70,9 @@ export function CreatePollForm({ groupId, loading, setLoading, onCreated, onCanc
             />
           </div>
           <div className="space-y-2">
-            <Label>Beschreibung</Label>
+            <Label htmlFor="poll-description">Beschreibung</Label>
             <Input
+              id="poll-description"
               value={pollDescription}
               onChange={(e) => setPollDescription(e.target.value)}
               placeholder="Optionale Details zur Abstimmung"
@@ -79,8 +81,9 @@ export function CreatePollForm({ groupId, loading, setLoading, onCreated, onCanc
           <div className="space-y-2">
             <Label>Typ</Label>
             <div className="flex gap-3">
-              <label className="flex items-center gap-2 text-sm">
+              <label htmlFor="poll-type-single" className="flex items-center gap-2 text-sm">
                 <input
+                  id="poll-type-single"
                   type="radio"
                   value="single"
                   checked={pollType === "single"}
@@ -88,8 +91,9 @@ export function CreatePollForm({ groupId, loading, setLoading, onCreated, onCanc
                 />
                 Einzelwahl
               </label>
-              <label className="flex items-center gap-2 text-sm">
+              <label htmlFor="poll-type-multiple" className="flex items-center gap-2 text-sm">
                 <input
+                  id="poll-type-multiple"
                   type="radio"
                   value="multiple"
                   checked={pollType === "multiple"}
@@ -124,6 +128,7 @@ export function CreatePollForm({ groupId, loading, setLoading, onCreated, onCanc
                         type="button"
                         variant="ghost"
                         size="sm"
+                        aria-label={`Option ${i + 1} entfernen`}
                         onClick={() => setPollOptions(pollOptions.filter((_, j) => j !== i))}
                       >
                         <X className="h-4 w-4" />
@@ -146,7 +151,7 @@ export function CreatePollForm({ groupId, loading, setLoading, onCreated, onCanc
           {pollError && <p className="text-sm text-destructive">{pollError}</p>}
           <div className="flex gap-2">
             <Button type="submit" disabled={loading === "poll"}>
-              {loading === "poll" ? "Erstelle..." : "Abstimmung erstellen"}
+              {loading === "poll" ? "Erstelle…" : "Abstimmung erstellen"}
             </Button>
             <Button type="button" variant="outline" onClick={onCancel}>
               Abbrechen

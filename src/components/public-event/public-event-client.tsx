@@ -230,15 +230,16 @@ export function PublicEventClient({ token, event }: PublicEventClientProps) {
                             />
                           ) : (
                             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted/40 md:h-14 md:w-14">
-                              <Gamepad2 className="h-5 w-5 text-muted-foreground md:h-6 md:w-6" />
+                              <Gamepad2 className="h-5 w-5 text-muted-foreground md:h-6 md:w-6" aria-hidden="true" />
                             </div>
                           )}
                         </div>
                         <div>
-                          <CardTitle className="text-lg text-foreground">
+                          <CardTitle className="text-lg text-foreground" as="h2">
                             {index < 3 && (
                               <Trophy
                                 className={cn("mr-2 inline h-4 w-4", index === 0 && "text-warning", index === 1 && "text-muted-foreground", index === 2 && "text-warning")}
+                                aria-hidden="true"
                               />
                             )}
                             {proposal.game.name}
@@ -260,8 +261,8 @@ export function PublicEventClient({ token, event }: PublicEventClientProps) {
                           <p className="text-xs text-muted-foreground">Gesamt</p>
                         </div>
                         <div className="text-xs text-muted-foreground">
-                          <div>👤 {proposal.voteCounts.registered} Nutzer</div>
-                          <div>🎟️ {proposal.voteCounts.guests} Gäste</div>
+                          <div><span aria-hidden="true">👤</span> {proposal.voteCounts.registered} Nutzer</div>
+                          <div><span aria-hidden="true">🎟️</span> {proposal.voteCounts.guests} Gäste</div>
                         </div>
                       </div>
                     </div>
@@ -278,11 +279,11 @@ export function PublicEventClient({ token, event }: PublicEventClientProps) {
                             className={cn("gap-2", userHasVoted && "border-success text-success")}
                           >
                             {userVoting === proposal.id ? (
-                              <Loader2 className="h-4 w-4 animate-spin" />
+                              <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
                             ) : userHasVoted ? (
-                              <ThumbsDown className="h-4 w-4" />
+                              <ThumbsDown className="h-4 w-4" aria-hidden="true" />
                             ) : (
-                              <ThumbsUp className="h-4 w-4" />
+                              <ThumbsUp className="h-4 w-4" aria-hidden="true" />
                             )}
                             {userHasVoted ? "Vote entfernen" : "Als User voten"}
                           </Button>
@@ -299,9 +300,9 @@ export function PublicEventClient({ token, event }: PublicEventClientProps) {
                           )}
                         >
                           {guestVoting === proposal.id ? (
-                            <Loader2 className="h-4 w-4 animate-spin" />
+                            <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
                           ) : (
-                            <Vote className="h-4 w-4" />
+                            <Vote className="h-4 w-4" aria-hidden="true" />
                           )}
                           {guestHasVoted ? "Gast-Stimme entfernen" : activeGuest ? "Als Gast voten" : "Gastmodus nötig"}
                         </Button>

@@ -118,7 +118,7 @@ export function CreateUserModal() {
           </div>
           <DialogFooter>
             <Button type="submit" disabled={isLoading}>
-              {isLoading ? "Erstellen..." : "Erstellen"}
+              {isLoading ? "Erstellen…" : "Erstellen"}
             </Button>
           </DialogFooter>
         </form>

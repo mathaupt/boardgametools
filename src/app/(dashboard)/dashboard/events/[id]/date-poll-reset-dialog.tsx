@@ -2,14 +2,17 @@
 
 import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Loader2, RefreshCcw } from "lucide-react";
+import { formatLongDate } from "@/lib/date";
 
 export function PollClosedBanner({
   finalDate,
@@ -27,15 +30,9 @@ export function PollClosedBanner({
   return (
     <div className="space-y-4">
       <div className="rounded-lg border border-success/50 bg-success/10 p-4 text-sm text-success">
-        Die Terminabstimmung ist abgeschlossen. Der ausgewählte Termin ist
+        Die Terminabstimmung ist abgeschlossen. Der ausgewählte Termin ist{" "}
         <span className="font-semibold">
-          {" "}
-          {new Date(finalDate).toLocaleDateString("de-DE", {
-            weekday: "long",
-            day: "numeric",
-            month: "long",
-            year: "numeric",
-          })}
+          {formatLongDate(finalDate)}
         </span>
         .
       </div>
@@ -47,9 +44,9 @@ export function PollClosedBanner({
           data-testid="date-poll-reset"
         >
           {resetting ? (
-            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+            <Loader2 className="h-4 w-4 mr-2 animate-spin" aria-hidden="true" />
           ) : (
-            <RefreshCcw className="h-4 w-4 mr-2" />
+            <RefreshCcw className="h-4 w-4 mr-2" aria-hidden="true" />
           )}
           Neue Terminabstimmung starten
         </Button>
@@ -70,37 +67,27 @@ export function ResetPollDialog({
   onReset: () => void;
 }) {
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Abstimmung zurücksetzen?</DialogTitle>
-          <DialogDescription>
+    <AlertDialog open={open} onOpenChange={onOpenChange}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Abstimmung zurücksetzen?</AlertDialogTitle>
+          <AlertDialogDescription>
             Dadurch werden alle Terminvorschläge und Stimmen gelöscht. Du kannst im
             Anschluss eine neue Abstimmung starten.
-          </DialogDescription>
-        </DialogHeader>
-        <DialogFooter className="flex gap-2 sm:justify-end">
-          <Button
-            variant="outline"
-            onClick={() => onOpenChange(false)}
-            disabled={resetting}
-          >
-            Abbrechen
-          </Button>
-          <Button
-            variant="destructive"
-            onClick={onReset}
-            disabled={resetting}
-          >
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel disabled={resetting}>Abbrechen</AlertDialogCancel>
+          <AlertDialogAction onClick={onReset} disabled={resetting}>
             {resetting ? (
-              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" aria-hidden="true" />
             ) : (
-              <RefreshCcw className="h-4 w-4 mr-2" />
+              <RefreshCcw className="h-4 w-4 mr-2" aria-hidden="true" />
             )}
             Abstimmung zurücksetzen
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 }

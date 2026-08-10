@@ -35,7 +35,7 @@ export function GroupPollsSection({
       <CardHeader>
         <div className="flex flex-col sm:flex-row items-start sm:items-center sm:justify-between gap-3">
           <div>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle as="h2" className="flex items-center gap-2">
               <Vote className="h-5 w-5" />
               Abstimmungen ({group.polls.length})
             </CardTitle>

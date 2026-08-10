@@ -3,6 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { formatShortDateTime, formatDateWithShortMonth } from "@/lib/date";
 import { Users, MessageSquare, Gamepad2, ChevronDown, ChevronUp } from "lucide-react";
 
 interface CommentItem {
@@ -35,10 +37,13 @@ export function ProfileMessagesCard({ comments, sessionNotes }: ProfileMessagesC
 
   return (
     <Card>
-      <button
+      <Button
         type="button"
+        variant="ghost"
         onClick={() => setCommOpen(!commOpen)}
-        className="flex w-full items-center justify-between px-6 py-4 text-left transition-colors hover:bg-muted/30 rounded-t-lg"
+        aria-expanded={commOpen}
+        aria-controls="messages-content"
+        className="flex w-full h-auto items-center justify-between px-6 py-4 text-left transition-colors hover:bg-muted/30 rounded-t-lg"
       >
         <div className="flex items-center gap-2">
           <MessageSquare className="h-4 w-4 text-primary" />
@@ -52,10 +57,10 @@ export function ProfileMessagesCard({ comments, sessionNotes }: ProfileMessagesC
         ) : (
           <ChevronDown className="h-4 w-4 text-muted-foreground" />
         )}
-      </button>
+      </Button>
 
       {commOpen && (
-        <CardContent className="pt-0 space-y-6">
+        <CardContent id="messages-content" className="pt-0 space-y-6">
           {/* Gruppen-Kommentare */}
           {comments.length > 0 && (
             <div>
@@ -68,7 +73,7 @@ export function ProfileMessagesCard({ comments, sessionNotes }: ProfileMessagesC
                   <li key={c.id} className="py-3">
                     <Link
                       href={`/dashboard/groups/${c.groupId}`}
-                      className="block rounded-md transition-colors hover:bg-muted/50 -mx-2 px-2 py-1"
+                      className="block rounded-md transition-colors hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring -mx-2 px-2 py-1"
                     >
                       <div className="flex items-start gap-3">
                         <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-info/10 shrink-0 mt-0.5">
@@ -79,16 +84,10 @@ export function ProfileMessagesCard({ comments, sessionNotes }: ProfileMessagesC
                           <p className="text-xs text-muted-foreground mt-1">
                             in <span className="font-medium text-foreground">{c.groupName}</span>
                             {c.pollTitle && (
-                              <> &middot; Umfrage: &ldquo;{c.pollTitle}&rdquo;</>
+                              <> &middot; Umfrage: „{c.pollTitle}“</>
                             )}
                             {" · "}
-                            {new Date(c.createdAt).toLocaleDateString("de-DE", {
-                              day: "2-digit",
-                              month: "short",
-                              year: "numeric",
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })}
+                            {formatShortDateTime(c.createdAt)}
                           </p>
                         </div>
                       </div>
@@ -111,7 +110,7 @@ export function ProfileMessagesCard({ comments, sessionNotes }: ProfileMessagesC
                   <li key={s.id} className="py-3">
                     <Link
                       href={`/dashboard/sessions`}
-                      className="block rounded-md transition-colors hover:bg-muted/50 -mx-2 px-2 py-1"
+                      className="block rounded-md transition-colors hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring -mx-2 px-2 py-1"
                     >
                       <div className="flex items-start gap-3">
                         <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10 shrink-0 mt-0.5">
@@ -122,11 +121,7 @@ export function ProfileMessagesCard({ comments, sessionNotes }: ProfileMessagesC
                           <p className="text-xs text-muted-foreground mt-1">
                             <span className="font-medium text-foreground">{s.gameName}</span>
                             {" · "}
-                            {new Date(s.playedAt).toLocaleDateString("de-DE", {
-                              day: "2-digit",
-                              month: "short",
-                              year: "numeric",
-                            })}
+                            {formatDateWithShortMonth(s.playedAt)}
                           </p>
                         </div>
                       </div>

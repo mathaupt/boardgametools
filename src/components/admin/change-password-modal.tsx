@@ -163,7 +163,7 @@ export function ChangePasswordModal({
               Abbrechen
             </Button>
             <Button type="submit" disabled={isLoading}>
-              {isLoading ? "Wird geändert..." : "Passwort ändern"}
+              {isLoading ? "Wird geändert…" : "Passwort ändern"}
             </Button>
           </DialogFooter>
         </form>

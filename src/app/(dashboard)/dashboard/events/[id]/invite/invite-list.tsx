@@ -27,10 +27,10 @@ export function InviteList({ invites, onResendInvite, onRemoveInvite }: InviteLi
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Users className="h-5 w-5" />
+        <CardTitle className="flex items-center gap-2" as="h2">
+          <Users className="h-5 w-5" aria-hidden="true" />
           Bestehende Einladungen ({invites.length})
-        </CardTitle>
+          </CardTitle>
       </CardHeader>
       <CardContent>
         {invites.length === 0 ? (
@@ -63,9 +63,9 @@ export function InviteList({ invites, onResendInvite, onRemoveInvite }: InviteLi
                     invite.status === "declined" ? "destructive" : "secondary"
                   }>
                     {invite.status === "accepted" ? (
-                      <><Check className="h-3 w-3 mr-1" />Zugesagt</>
+                      <><Check className="h-3 w-3 mr-1" aria-hidden="true" />Zugesagt</>
                     ) : invite.status === "declined" ? (
-                      <><X className="h-3 w-3 mr-1" />Abgelehnt</>
+                      <><X className="h-3 w-3 mr-1" aria-hidden="true" />Abgelehnt</>
                     ) : (
                       "Ausstehend"
                     )}
@@ -77,15 +77,17 @@ export function InviteList({ invites, onResendInvite, onRemoveInvite }: InviteLi
                         size="sm"
                         variant="outline"
                         onClick={() => onResendInvite(invite.id!)}
+                        aria-label="Erinnerung erneut senden"
                       >
-                        <Mail className="h-3 w-3" />
+                        <Mail className="h-3 w-3" aria-hidden="true" />
                       </Button>
                       <Button
                         size="sm"
                         variant="outline"
                         onClick={() => onRemoveInvite(invite.id!)}
+                        aria-label="Einladung entfernen"
                       >
-                        <Trash2 className="h-3 w-3" />
+                        <Trash2 className="h-3 w-3" aria-hidden="true" />
                       </Button>
                     </>
                   )}
@@ -107,7 +109,7 @@ export function InviteStatusSummary({ invites }: InviteStatusSummaryProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Einladungs-Status</CardTitle>
+        <CardTitle as="h2">Einladungs-Status</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

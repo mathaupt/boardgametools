@@ -1,4 +1,5 @@
 import { changelog } from "@/lib/changelog";
+import { formatLongDate } from "@/lib/date";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Sparkles, Wrench, TrendingUp, Settings } from "lucide-react";
@@ -19,7 +20,7 @@ export default function ChangelogPage() {
       <div className="flex items-center gap-4">
         <Link
           href="/dashboard"
-          className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
+          className="flex items-center gap-2 text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm"
         >
           <ArrowLeft className="h-4 w-4" />
           Dashboard
@@ -57,18 +58,14 @@ export default function ChangelogPage() {
             <Card className="flex-1 border-border bg-card">
               <CardHeader className="pb-3">
                 <div className="flex flex-wrap items-center gap-3">
-                  <CardTitle className="text-lg text-foreground">
+                  <CardTitle as="h2" className="text-lg text-foreground">
                     {entry.title}
                   </CardTitle>
                   <Badge variant={index === 0 ? "default" : "outline"} className="text-xs">
                     v{entry.version}
                   </Badge>
                   <span className="text-xs text-muted-foreground">
-                    {new Date(entry.date).toLocaleDateString("de-DE", {
-                      day: "numeric",
-                      month: "long",
-                      year: "numeric",
-                    })}
+                    {formatLongDate(entry.date)}
                   </span>
                 </div>
                 <p className="mt-1 text-sm text-muted-foreground">{entry.description}</p>

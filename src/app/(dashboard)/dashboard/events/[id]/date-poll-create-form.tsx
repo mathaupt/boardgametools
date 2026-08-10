@@ -51,7 +51,7 @@ export function DateCreateForm({
       </div>
 
       <div>
-        <Label>Nur bestimmte Wochentage (optional)</Label>
+        <span className="text-sm font-medium">Nur bestimmte Wochentage (optional)</span>
         <div className="flex flex-wrap gap-2 mt-2">
           {WEEKDAY_LABELS.map((day) => (
             <label
@@ -78,9 +78,9 @@ export function DateCreateForm({
         disabled={loading || !startDate || !endDate}
       >
         {loading ? (
-          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+          <Loader2 className="h-4 w-4 mr-2 animate-spin" aria-hidden="true" />
         ) : (
-          <Calendar className="h-4 w-4 mr-2" />
+          <Calendar className="h-4 w-4 mr-2" aria-hidden="true" />
         )}
         Termine erstellen
       </Button>

@@ -1,3 +1,5 @@
+import { formatDate } from "@/lib/date";
+
 export function validateString(
   value: unknown,
   field: string,
@@ -77,8 +79,8 @@ export function validateDate(
   if (typeof value !== "string" && !(value instanceof Date)) return `${field} muss ein Datum sein`;
   const date = value instanceof Date ? value : new Date(value);
   if (isNaN(date.getTime())) return `${field} ist kein gültiges Datum`;
-  if (min && date < min) return `${field} darf nicht vor ${min.toLocaleDateString("de-DE")} liegen`;
-  if (max && date > max) return `${field} darf nicht nach ${max.toLocaleDateString("de-DE")} liegen`;
+  if (min && date < min) return `${field} darf nicht vor ${formatDate(min)} liegen`;
+  if (max && date > max) return `${field} darf nicht nach ${formatDate(max)} liegen`;
   return null;
 }
 

@@ -1,10 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Game } from "@/generated/prisma/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
+import { formatDate } from "@/lib/date";
 import { useToast } from "@/components/ui/use-toast";
 import { ProposalWithDetails, EventResponse } from "./voting-types";
 import ProposalRankingList from "./proposal-ranking-list";
@@ -25,7 +27,6 @@ interface VotingClientProps {
 }
 
 export default function VotingClient({ initialEvent, initialGames, eventId }: VotingClientProps) {
-  const router = useRouter();
   const { toast } = useToast();
 
   const [event] = useState<EventResponse>(initialEvent);
@@ -95,7 +96,7 @@ export default function VotingClient({ initialEvent, initialGames, eventId }: Vo
       const res = await fetch(`/api/events/${eventId}/proposals?proposalId=${proposalId}`, { method: "DELETE" });
       if (!res.ok) { const d = await res.json().catch(() => null); throw new Error(d?.error || "Fehler"); }
       setProposals((prev) => prev.filter((p) => p.id !== proposalId));
-      toast({ title: "Vorschlag geloescht" });
+      toast({ title: "Vorschlag gelöscht" });
     } catch (error) {
       console.error("Delete proposal error:", error);
       toast({ title: "Fehler", description: error instanceof Error ? error.message : "Bitte versuche es erneut.", variant: "destructive" });
@@ -137,7 +138,7 @@ export default function VotingClient({ initialEvent, initialGames, eventId }: Vo
       setGames((prev) => [...prev, newGame]);
       await handleAddProposal(newGame.id);
       setActiveTab("collection"); setSearchQuery(""); setBggResults([]);
-      toast({ title: "Spiel importiert", description: `"${bggGame.name}" wurde importiert und vorgeschlagen!` });
+      toast({ title: "Spiel importiert", description: `„${bggGame.name}" wurde importiert und vorgeschlagen!` });
     } catch (error) {
       console.error("BGG import error:", error);
       toast({ title: "Fehler beim Importieren", description: "Bitte versuche es erneut.", variant: "destructive" });
@@ -148,16 +149,20 @@ export default function VotingClient({ initialEvent, initialGames, eventId }: Vo
 
   return (
     <div className="space-y-6">
+      <h1 className="sr-only">Voting: {event.title}</h1>
       <div className="flex items-center gap-4">
-        <button onClick={() => router.push(`/dashboard/events/${eventId}`)} className="text-muted-foreground hover:text-foreground flex items-center gap-2">
-          <ArrowLeft className="h-4 w-4" />Zurueck zum Event
-        </button>
+        <Button variant="ghost" asChild>
+          <Link href={`/dashboard/events/${eventId}`} className="flex items-center gap-2">
+            <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+            Zurück zum Event
+          </Link>
+        </Button>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>{event.title}</CardTitle>
-          <CardDescription>{new Date(event.eventDate).toLocaleDateString("de-DE")} - {event.location || "Kein Ort"}</CardDescription>
+          <CardTitle as="h2">{event.title}</CardTitle>
+          <CardDescription>{formatDate(event.eventDate)} - {event.location || "Kein Ort"}</CardDescription>
         </CardHeader>
         {event.description && <CardContent><p>{event.description}</p></CardContent>}
       </Card>

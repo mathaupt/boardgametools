@@ -8,6 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { BarChart3 } from "lucide-react";
+import { formatShortMonth } from "@/lib/date";
 import {
   ResponsiveContainer,
   BarChart,
@@ -33,12 +34,9 @@ const tooltipStyle = {
 };
 
 function formatMonthLabel(month: string): string {
-  const [year, m] = month.split("-");
-  const monthNames = [
-    "Jan", "Feb", "Mär", "Apr", "Mai", "Jun",
-    "Jul", "Aug", "Sep", "Okt", "Nov", "Dez",
-  ];
-  return `${monthNames[parseInt(m, 10) - 1]} ${year.slice(2)}`;
+  const [year] = month.split("-");
+  const date = new Date(`${month}-01`);
+  return `${formatShortMonth(date)} ${year.slice(2)}`;
 }
 
 export function GroupStatisticsCharts({
@@ -52,7 +50,7 @@ export function GroupStatisticsCharts({
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-base">
+        <CardTitle as="h2" className="flex items-center gap-2 text-base">
           <BarChart3 className="h-4 w-4" />
           Monatliche Aktivität
         </CardTitle>

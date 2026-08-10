@@ -59,12 +59,12 @@ export default async function GroupDetailPage({
           <div className="text-6xl mb-4">👥</div>
           <h1 className="text-2xl font-bold text-foreground mb-2">Gruppe nicht gefunden</h1>
           <p className="text-muted-foreground mb-4">Die Gruppe existiert nicht oder du bist kein Mitglied.</p>
-          <Link href="/dashboard/groups">
-            <Button>
+          <Button asChild>
+            <Link href="/dashboard/groups">
               <ArrowLeft className="h-4 w-4 mr-2" />
               Zurück zu Gruppen
-            </Button>
-          </Link>
+            </Link>
+          </Button>
         </div>
       </div>
     );
@@ -105,16 +105,19 @@ export default async function GroupDetailPage({
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <Link href="/dashboard/groups" className="text-muted-foreground hover:text-foreground flex items-center gap-2">
+        <Link
+          href="/dashboard/groups"
+          className="text-muted-foreground hover:text-foreground flex items-center gap-2 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        >
           <ArrowLeft className="h-4 w-4" />
           Zurück zu Gruppen
         </Link>
-        <Link href={`/dashboard/groups/${id}/statistics`}>
-          <Button variant="outline" size="sm">
+        <Button asChild variant="outline" size="sm">
+          <Link href={`/dashboard/groups/${id}/statistics`}>
             <BarChart3 className="h-4 w-4 mr-2" />
             Statistiken
-          </Button>
-        </Link>
+          </Link>
+        </Button>
       </div>
 
       <GroupDetailClient

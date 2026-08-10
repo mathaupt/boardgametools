@@ -1,6 +1,7 @@
 "use client";
 
 import { User, Shield } from "lucide-react";
+import { formatMonthYear } from "@/lib/date";
 import { ProfileEditForm } from "./profile-edit-form";
 import { PasswordChangeForm } from "./password-change-form";
 import { ProfileActivityCards } from "./profile-activity-cards";
@@ -88,7 +89,7 @@ export function ProfileClient({ user, invites, events, groups, comments, session
             )}
           </p>
           <p className="text-xs text-muted-foreground mt-0.5">
-            Mitglied seit {new Date(user.createdAt).toLocaleDateString("de-DE", { month: "long", year: "numeric" })}
+            Mitglied seit {formatMonthYear(user.createdAt)}
           </p>
         </div>
       </div>

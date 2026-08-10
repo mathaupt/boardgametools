@@ -155,36 +155,44 @@ export function AddGameDialog({
             className="mt-2 flex items-center gap-2"
             onClick={() => setBarcodeScannerOpen(true)}
           >
-            <ScanBarcode className="h-4 w-4" />
+            <ScanBarcode className="h-4 w-4" aria-hidden="true" />
             Barcode scannen
           </Button>
         </DialogHeader>
 
         {/* Tab navigation */}
-        <div className="flex border-b -mx-1">
-          <button
-            className={`flex-1 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
+        <div className="flex border-b -mx-1" role="tablist">
+          <Button
+            type="button"
+            variant="ghost"
+            className={`flex-1 rounded-none border-b-2 px-4 py-2.5 h-auto text-sm font-medium transition-colors ${
               tab === "collection"
                 ? "border-primary text-foreground"
                 : "border-transparent text-muted-foreground hover:text-foreground"
             }`}
             onClick={() => setTab("collection")}
+            role="tab"
+            aria-selected={tab === "collection"}
+            aria-label="Aus Sammlung"
           >
             Aus Sammlung
-          </button>
-          <button
-            className={`flex-1 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
+          </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            className={`flex-1 rounded-none border-b-2 px-4 py-2.5 h-auto text-sm font-medium transition-colors gap-1.5 ${
               tab === "bgg"
                 ? "border-primary text-foreground"
                 : "border-transparent text-muted-foreground hover:text-foreground"
             }`}
             onClick={() => setTab("bgg")}
+            role="tab"
+            aria-selected={tab === "bgg"}
+            aria-label="BGG Import"
           >
-            <span className="flex items-center justify-center gap-1.5">
-              <ExternalLink className="h-3.5 w-3.5" />
-              BGG Import
-            </span>
-          </button>
+            <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
+            BGG Import
+          </Button>
         </div>
 
         {/* Tab content */}
@@ -192,23 +200,24 @@ export function AddGameDialog({
           {tab === "collection" ? (
             <div className="space-y-3">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" aria-hidden="true" />
                 <Input
-                  placeholder="Spiel suchen..."
+                  placeholder="Spiel suchen…"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   className="pl-9"
+                  aria-label="Spiel suchen"
                 />
               </div>
 
               {loadingGames ? (
                 <div className="flex flex-col items-center justify-center py-10 gap-2">
-                  <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-                  <p className="text-sm text-muted-foreground">Lade Sammlung...</p>
+                  <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" aria-hidden="true" />
+                  <p className="text-sm text-muted-foreground">Lade Sammlung…</p>
                 </div>
               ) : filteredGames.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-10 gap-2">
-                  <ImageIcon className="h-8 w-8 text-muted-foreground/50" />
+                  <ImageIcon className="h-8 w-8 text-muted-foreground/50" aria-hidden="true" />
                   <p className="text-sm text-muted-foreground text-center">
                     {search
                       ? "Keine passenden Spiele gefunden."
@@ -226,10 +235,10 @@ export function AddGameDialog({
                     >
                       <div className="relative w-10 h-10 rounded-lg bg-muted flex-shrink-0 overflow-hidden">
                         {game.imageUrl ? (
-                          <Image src={game.imageUrl} alt="" className="object-cover" fill />
+                          <Image src={game.imageUrl} alt="" className="object-cover" fill sizes="40px" />
                         ) : (
                           <div className="h-full w-full flex items-center justify-center text-muted-foreground">
-                            <ImageIcon className="h-4 w-4" />
+                            <ImageIcon className="h-4 w-4" aria-hidden="true" />
                           </div>
                         )}
                       </div>
@@ -237,12 +246,12 @@ export function AddGameDialog({
                         <p className="text-sm font-medium truncate">{game.name}</p>
                         <div className="flex items-center gap-2 text-xs text-muted-foreground">
                           <span className="flex items-center gap-0.5">
-                            <Users className="h-3 w-3" />
+                            <Users className="h-3 w-3" aria-hidden="true" />
                             {game.minPlayers}-{game.maxPlayers}
                           </span>
                           {game.playTimeMinutes && (
                             <span className="flex items-center gap-0.5">
-                              <Clock className="h-3 w-3" />
+                              <Clock className="h-3 w-3" aria-hidden="true" />
                               {game.playTimeMinutes} Min.
                             </span>
                           )}
@@ -254,12 +263,13 @@ export function AddGameDialog({
                         onClick={() => handleAddFromCollection(game.id)}
                         disabled={adding === game.id}
                         className="shrink-0"
+                        aria-label={adding === game.id ? "Wird hinzugefügt" : "Hinzufügen"}
                       >
                         {adding === game.id ? (
-                          <Loader2 className="h-4 w-4 animate-spin" />
+                          <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
                         ) : (
                           <>
-                            <Plus className="h-4 w-4 mr-1" />
+                            <Plus className="h-4 w-4 mr-1" aria-hidden="true" />
                             <span className="hidden sm:inline">Hinzufügen</span>
                           </>
                         )}
@@ -276,27 +286,28 @@ export function AddGameDialog({
                 className="flex gap-2"
               >
                 <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" aria-hidden="true" />
                   <Input
-                    placeholder="Spiel auf BGG suchen..."
+                    placeholder="Spiel auf BGG suchen…"
                     value={bggSearch}
                     onChange={(e) => setBggSearch(e.target.value)}
                     className="pl-9"
+                    aria-label="Spiel auf BGG suchen"
                   />
                 </div>
-                <Button type="submit" disabled={bggSearching || bggSearch.length < 2}>
-                  {bggSearching ? <Loader2 className="h-4 w-4 animate-spin" /> : "Suchen"}
+                <Button type="submit" disabled={bggSearching || bggSearch.length < 2} aria-label="Suchen">
+                  {bggSearching ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : "Suchen"}
                 </Button>
               </form>
 
               {bggSearching ? (
                 <div className="flex flex-col items-center justify-center py-10 gap-2">
-                  <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-                  <p className="text-sm text-muted-foreground">Suche auf BoardGameGeek...</p>
+                  <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" aria-hidden="true" />
+                  <p className="text-sm text-muted-foreground">Suche auf BoardGameGeek…</p>
                 </div>
               ) : bggResults.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-10 gap-2">
-                  <ExternalLink className="h-8 w-8 text-muted-foreground/50" />
+                  <ExternalLink className="h-8 w-8 text-muted-foreground/50" aria-hidden="true" />
                   <p className="text-sm text-muted-foreground text-center">
                     {bggSearch.length >= 2
                       ? "Keine Ergebnisse. Versuche einen anderen Suchbegriff."
@@ -322,12 +333,13 @@ export function AddGameDialog({
                         onClick={() => handleAddFromBGG(result.bggId)}
                         disabled={adding === result.bggId}
                         className="shrink-0"
+                        aria-label={adding === result.bggId ? "Wird importiert" : "Importieren"}
                       >
                         {adding === result.bggId ? (
-                          <Loader2 className="h-4 w-4 animate-spin" />
+                          <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
                         ) : (
                           <>
-                            <Plus className="h-4 w-4 mr-1" />
+                            <Plus className="h-4 w-4 mr-1" aria-hidden="true" />
                             Import
                           </>
                         )}

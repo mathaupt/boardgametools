@@ -60,12 +60,12 @@ export default async function GroupStatisticsPage({
           <p className="text-muted-foreground mb-4">
             Die Gruppe existiert nicht oder du bist kein Mitglied.
           </p>
-          <Link href="/dashboard/groups">
-            <Button>
+          <Button asChild>
+            <Link href="/dashboard/groups">
               <ArrowLeft className="h-4 w-4 mr-2" />
               Zurück zu Gruppen
-            </Button>
-          </Link>
+            </Link>
+          </Button>
         </div>
       </div>
     );
@@ -140,7 +140,7 @@ export default async function GroupStatisticsPage({
       <div className="flex items-center gap-4">
         <Link
           href={`/dashboard/groups/${id}`}
-          className="text-muted-foreground hover:text-foreground flex items-center gap-2"
+          className="text-muted-foreground hover:text-foreground flex items-center gap-2 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
           <ArrowLeft className="h-4 w-4" />
           Zurück zur Gruppe
@@ -160,7 +160,7 @@ export default async function GroupStatisticsPage({
       <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Mitglieder</CardTitle>
+            <CardTitle as="h2" className="text-sm font-medium">Mitglieder</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -170,7 +170,7 @@ export default async function GroupStatisticsPage({
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Umfragen</CardTitle>
+            <CardTitle as="h2" className="text-sm font-medium">Umfragen</CardTitle>
             <Vote className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -182,7 +182,7 @@ export default async function GroupStatisticsPage({
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Kommentare</CardTitle>
+            <CardTitle as="h2" className="text-sm font-medium">Kommentare</CardTitle>
             <MessageCircle className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -194,7 +194,7 @@ export default async function GroupStatisticsPage({
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Events</CardTitle>
+            <CardTitle as="h2" className="text-sm font-medium">Events</CardTitle>
             <CalendarDays className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -210,7 +210,7 @@ export default async function GroupStatisticsPage({
 
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-base">
+            <CardTitle as="h2" className="flex items-center gap-2 text-base">
               <MessageCircle className="h-4 w-4" />
               Top Kommentierer
             </CardTitle>

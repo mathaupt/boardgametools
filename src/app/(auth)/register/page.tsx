@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dice6, Eye, EyeOff, Check, X, Shield, Mail, User, Lock } from "lucide-react";
 
 export default function RegisterPage() {
@@ -117,7 +117,7 @@ export default function RegisterPage() {
         {/* Registration Card */}
         <Card className="shadow-xl border-border/50">
           <CardHeader className="space-y-1">
-            <h2 className="text-2xl text-center font-semibold leading-none tracking-tight">Konto erstellen</h2>
+            <CardTitle as="h2" className="text-2xl text-center">Konto erstellen</CardTitle>
             <CardDescription className="text-center">
               Registriere dich für BoardGameTools
             </CardDescription>
@@ -126,7 +126,7 @@ export default function RegisterPage() {
           <form onSubmit={handleSubmit} data-testid="register-form">
             <CardContent className="space-y-4">
               {error && (
-                <div data-testid="register-error" className="p-3 text-sm text-destructive bg-destructive/10 rounded-md border border-destructive/20">
+                <div data-testid="register-error" role="alert" aria-live="polite" className="p-3 text-sm text-destructive bg-destructive/10 rounded-md border border-destructive/20">
                   {error}
                 </div>
               )}
@@ -134,7 +134,7 @@ export default function RegisterPage() {
               {/* Name Field */}
               <div className="space-y-2">
                 <Label htmlFor="name" className="flex items-center gap-2">
-                  <User className="h-4 w-4" />
+                  <User className="h-4 w-4" aria-hidden="true" />
                   Name
                 </Label>
                 <Input
@@ -154,7 +154,7 @@ export default function RegisterPage() {
               {/* Email Field */}
               <div className="space-y-2">
                 <Label htmlFor="email" className="flex items-center gap-2">
-                  <Mail className="h-4 w-4" />
+                  <Mail className="h-4 w-4" aria-hidden="true" />
                   E-Mail
                 </Label>
                 <Input
@@ -174,7 +174,7 @@ export default function RegisterPage() {
               {/* Password Field */}
               <div className="space-y-2">
                 <Label htmlFor="password" className="flex items-center gap-2">
-                  <Lock className="h-4 w-4" />
+                  <Lock className="h-4 w-4" aria-hidden="true" />
                   Passwort
                 </Label>
                 <div className="relative">
@@ -189,7 +189,7 @@ export default function RegisterPage() {
                     autoComplete="new-password"
                     minLength={8}
                     data-testid="register-password"
-                    className="pr-10 transition-colors focus:border-primary"
+                    className="pr-10"
                   />
                   <Button
                     type="button"
@@ -200,9 +200,9 @@ export default function RegisterPage() {
                     aria-label={showPassword ? "Passwort verbergen" : "Passwort anzeigen"}
                   >
                     {showPassword ? (
-                      <EyeOff className="h-4 w-4 text-muted-foreground" />
+                      <EyeOff className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
                     ) : (
-                      <Eye className="h-4 w-4 text-muted-foreground" />
+                      <Eye className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
                     )}
                   </Button>
                 </div>
@@ -242,7 +242,7 @@ export default function RegisterPage() {
               {/* Confirm Password Field */}
               <div className="space-y-2">
                 <Label htmlFor="confirmPassword" className="flex items-center gap-2">
-                  <Shield className="h-4 w-4" />
+                  <Shield className="h-4 w-4" aria-hidden="true" />
                   Passwort bestätigen
                 </Label>
                 <div className="relative">
@@ -256,7 +256,7 @@ export default function RegisterPage() {
                     required
                     autoComplete="new-password"
                     data-testid="register-confirm-password"
-                    className="pr-10 transition-colors focus:border-primary"
+                    className="pr-10"
                   />
                   <Button
                     type="button"
@@ -267,9 +267,9 @@ export default function RegisterPage() {
                     aria-label={showConfirmPassword ? "Passwort-Bestätigung verbergen" : "Passwort-Bestätigung anzeigen"}
                   >
                     {showConfirmPassword ? (
-                      <EyeOff className="h-4 w-4 text-muted-foreground" />
+                      <EyeOff className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
                     ) : (
-                      <Eye className="h-4 w-4 text-muted-foreground" />
+                      <Eye className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
                     )}
                   </Button>
                 </div>
@@ -279,12 +279,12 @@ export default function RegisterPage() {
                   <div className="flex items-center gap-2 text-sm">
                     {formData.password === formData.confirmPassword ? (
                       <>
-                        <Check className="h-4 w-4 text-success" />
+                        <Check className="h-4 w-4 text-success" aria-hidden="true" />
                         <span className="text-success">Passwörter stimmen überein</span>
                       </>
                     ) : (
                       <>
-                        <X className="h-4 w-4 text-destructive" />
+                        <X className="h-4 w-4 text-destructive" aria-hidden="true" />
                         <span className="text-destructive">Passwörter stimmen nicht überein</span>
                       </>
                     )}
@@ -331,23 +331,23 @@ export default function RegisterPage() {
                 disabled={isLoading || passwordStrength < 2}
                 data-testid="register-submit"
               >
-                {isLoading ? "Registrieren..." : "Konto erstellen"}
+                {isLoading ? "Registrieren…" : "Konto erstellen"}
               </Button>
               
               <div className="text-center space-y-2">
                 <p className="text-sm text-muted-foreground">
                   Bereits ein Konto?{" "}
-                  <Link href="/login" className="text-primary hover:underline font-medium">
+                  <Link href="/login" className="text-primary hover:underline font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm">
                     Anmelden
                   </Link>
                 </p>
                 <p className="text-xs text-muted-foreground">
                   Mit der Registrierung stimmst du unseren{" "}
-                  <Link href="/terms" className="text-primary hover:underline">
+                  <Link href="/terms" className="text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm">
                     Nutzungsbedingungen
                   </Link>{" "}
                   und{" "}
-                  <Link href="/privacy" className="text-primary hover:underline">
+                  <Link href="/privacy" className="text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm">
                     Datenschutzrichtlinien
                   </Link>{" "}
                   zu.

@@ -93,8 +93,8 @@ export function CollectionGameProposer({
     <section>
       <Card className="border-border/60 bg-background/70">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-lg">
-            <Plus className="h-5 w-5" />
+          <CardTitle className="flex items-center gap-2 text-lg" as="h2">
+            <Plus className="h-5 w-5" aria-hidden="true" />
             Spiel aus Sammlung vorschlagen
           </CardTitle>
           <CardDescription>
@@ -104,7 +104,7 @@ export function CollectionGameProposer({
         <CardContent className="space-y-4">
           <div className="flex flex-col gap-2 sm:flex-row">
             <Input
-              placeholder="Spiel suchen ..."
+              placeholder="Spiel suchen…"
               value={gameSearch}
               onChange={(event) => setGameSearch(event.target.value)}
               className="bg-background"
@@ -113,8 +113,9 @@ export function CollectionGameProposer({
               variant="outline"
               onClick={() => setGameSearch("")}
               title="Suche zurücksetzen"
+              aria-label="Suche zurücksetzen"
             >
-              <Search className="mr-2 h-4 w-4" />
+              <Search className="mr-2 h-4 w-4" aria-hidden="true" />
               Reset
             </Button>
           </div>
@@ -122,8 +123,8 @@ export function CollectionGameProposer({
           <div className="space-y-3 max-h-[320px] overflow-y-auto pr-1">
             {gamesLoading ? (
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Loader2 className="h-4 w-4 animate-spin" />
-                Sammlung wird geladen...
+                <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+                Sammlung wird geladen…
               </div>
             ) : filteredGames.length === 0 ? (
               <p className="text-sm text-muted-foreground">
@@ -150,9 +151,10 @@ export function CollectionGameProposer({
                     onClick={() => handleProposeGame(game.id)}
                     data-testid={`propose-${game.id}`}
                     title="Spiel vorschlagen"
+                    aria-label="Spiel vorschlagen"
                     className="h-8 w-8 sm:h-8 sm:w-auto sm:px-3"
                   >
-                    <Plus className="h-4 w-4 sm:mr-1 sm:h-3 sm:w-3" />
+                    <Plus className="h-4 w-4 sm:mr-1 sm:h-3 sm:w-3" aria-hidden="true" />
                     <span className="hidden sm:inline text-xs">Vorschlagen</span>
                   </Button>
                 </div>

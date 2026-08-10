@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -8,7 +9,7 @@ import {
   Loader2,
   AlertCircle,
   Plus,
-  Image,
+  Image as ImageIcon,
   Search,
   Type,
 } from "lucide-react";
@@ -163,12 +164,11 @@ export function CoverScanTab({ onGameSelected }: CoverScanTabProps) {
               </p>
               <div className="flex gap-2">
                 <Button className="flex-1" onClick={startCoverCamera}>
-                  <Camera className="h-4 w-4 mr-2" />
+                  <Camera className="h-4 w-4 mr-2" aria-hidden="true" />
                   Kamera
                 </Button>
                 <Button className="flex-1" variant="outline" onClick={() => coverInputRef.current?.click()}>
-                  {/* eslint-disable-next-line jsx-a11y/alt-text */}
-                  <Image aria-hidden className="h-4 w-4 mr-2" />
+                  <ImageIcon className="h-4 w-4 mr-2" aria-hidden="true" />
                   Foto wählen
                 </Button>
                 <input
@@ -214,11 +214,13 @@ export function CoverScanTab({ onGameSelected }: CoverScanTabProps) {
           {coverImage && (
             <div className="space-y-3">
               <div className="relative rounded-lg overflow-hidden bg-muted aspect-[4/3]">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+                <Image
                   src={coverImage}
                   alt="Cover-Foto"
-                  className="w-full h-full object-contain"
+                  fill
+                  unoptimized
+                  sizes="(max-width: 640px) 100vw, 50vw"
+                  className="object-contain"
                 />
               </div>
               <Button variant="outline" size="sm" className="w-full" onClick={resetCover}>
@@ -230,15 +232,15 @@ export function CoverScanTab({ onGameSelected }: CoverScanTabProps) {
           {/* OCR processing */}
           {ocrProcessing && (
             <div className="flex flex-col items-center justify-center py-6 gap-2">
-              <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-              <p className="text-xs text-muted-foreground">Texterkennung läuft...</p>
+              <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" aria-hidden="true" />
+              <p className="text-xs text-muted-foreground">Texterkennung läuft…</p>
             </div>
           )}
 
           {/* OCR error */}
           {ocrError && (
             <div className="flex items-start gap-3 p-3 rounded-lg bg-destructive/10 text-sm text-destructive">
-              <AlertCircle className="h-5 w-5 shrink-0 mt-0.5" />
+              <AlertCircle className="h-5 w-5 shrink-0 mt-0.5" aria-hidden="true" />
               <p>{ocrError}</p>
             </div>
           )}
@@ -247,21 +249,22 @@ export function CoverScanTab({ onGameSelected }: CoverScanTabProps) {
           {!ocrProcessing && ocrText && (
             <div className="space-y-3">
               <p className="text-sm font-medium flex items-center gap-1.5">
-                <Type className="h-4 w-4" />
+                <Type className="h-4 w-4" aria-hidden="true" />
                 Erkannter Text
               </p>
               <form onSubmit={handleOcrSearch} className="flex gap-2">
                 <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" aria-hidden="true" />
                   <Input
                     value={ocrText}
                     onChange={(e) => setOcrText(e.target.value)}
-                    placeholder="Spielname bearbeiten..."
+                    placeholder="Spielname bearbeiten…"
+                    aria-label="Erkannter Spielname"
                     className="pl-9"
                   />
                 </div>
-                <Button type="submit" disabled={ocrSearching || ocrText.trim().length < 2}>
-                  {ocrSearching ? <Loader2 className="h-4 w-4 animate-spin" /> : "Suchen"}
+                <Button type="submit" disabled={ocrSearching || ocrText.trim().length < 2} aria-label={ocrSearching ? "Suche läuft" : "Auf BoardGameGeek suchen"}>
+                  {ocrSearching ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : "Suchen"}
                 </Button>
               </form>
             </div>
@@ -270,8 +273,8 @@ export function CoverScanTab({ onGameSelected }: CoverScanTabProps) {
           {/* OCR searching */}
           {ocrSearching && (
             <div className="flex flex-col items-center justify-center py-6 gap-2">
-              <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-              <p className="text-xs text-muted-foreground">Suche auf BoardGameGeek...</p>
+              <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" aria-hidden="true" />
+              <p className="text-xs text-muted-foreground">Suche auf BoardGameGeek…</p>
             </div>
           )}
 
@@ -295,7 +298,7 @@ export function CoverScanTab({ onGameSelected }: CoverScanTabProps) {
                       size="sm"
                       onClick={() => handleSelectOcrResult(bgg.bggId)}
                     >
-                      <Plus className="h-4 w-4 mr-1" />
+                      <Plus className="h-4 w-4 mr-1" aria-hidden="true" />
                       Import
                     </Button>
                   </div>

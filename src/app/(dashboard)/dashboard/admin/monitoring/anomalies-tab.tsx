@@ -36,7 +36,7 @@ export interface AnomaliesData {
 
 function SeverityBadge({ severity }: { severity: "low" | "medium" | "high" }) {
   if (severity === "high") return <Badge variant="destructive">Hoch</Badge>;
-  if (severity === "medium") return <Badge className="bg-amber-500/15 text-amber-700 dark:text-amber-400 border-amber-500/30">Mittel</Badge>;
+  if (severity === "medium") return <Badge className="bg-warning/15 text-warning-foreground border-warning/30">Mittel</Badge>;
   return <Badge variant="secondary">Niedrig</Badge>;
 }
 
@@ -46,15 +46,15 @@ function AnomalyIcon({ type }: { type: string }) {
     case "error-spike":
       return <AlertTriangle className="h-5 w-5 text-destructive" />;
     case "slow-endpoint":
-      return <Clock className="h-5 w-5 text-amber-600" />;
+      return <Clock className="h-5 w-5 text-warning" />;
     case "auth-failures":
-      return <Shield className="h-5 w-5 text-amber-600" />;
+      return <Shield className="h-5 w-5 text-warning" />;
     case "unusual-activity":
       return <UserX className="h-5 w-5 text-muted-foreground" />;
     case "server-errors":
       return <Zap className="h-5 w-5 text-destructive" />;
     default:
-      return <AlertTriangle className="h-5 w-5" />;
+      return <AlertTriangle className="h-5 w-5 text-warning" />;
   }
 }
 
@@ -84,9 +84,9 @@ export function AnomaliesTab({
                     <div className={cn(
                       "flex items-center justify-center w-24 h-24 rounded-full border-4",
                       anomalies.healthScore >= 80
-                        ? "border-emerald-500 text-emerald-600"
+                        ? "border-success text-success"
                         : anomalies.healthScore >= 50
-                          ? "border-amber-500 text-amber-600"
+                          ? "border-warning text-warning"
                           : "border-destructive text-destructive"
                     )}>
                       <span className="text-3xl font-bold">{anomalies.healthScore}</span>
@@ -106,9 +106,9 @@ export function AnomaliesTab({
                         className={cn(
                           "mt-2",
                           anomalies.healthScore >= 80
-                            ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-400"
+                            ? "bg-success/15 text-success-foreground"
                             : anomalies.healthScore >= 50
-                              ? "bg-amber-500/15 text-amber-700 dark:text-amber-400"
+                              ? "bg-warning/15 text-warning-foreground"
                               : "bg-destructive/15 text-destructive"
                         )}
                       >
@@ -153,7 +153,7 @@ export function AnomaliesTab({
                 <Card>
                   <CardContent className="pt-6">
                     <div className="flex flex-col items-center gap-3 py-8">
-                      <CheckCircle className="h-12 w-12 text-emerald-500" />
+                      <CheckCircle className="h-12 w-12 text-success" />
                       <p className="text-lg font-medium text-foreground">
                         Keine Anomalien erkannt
                       </p>

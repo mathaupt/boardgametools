@@ -7,23 +7,23 @@ export function SeriesNotFound() {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4">
-        <Link href="/dashboard/series">
-          <Button variant="ghost" size="icon">
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-        </Link>
+        <Button variant="ghost" size="icon" asChild aria-label="Zurück zur Reihenübersicht">
+          <Link href="/dashboard/series">
+            <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+          </Link>
+        </Button>
         <h1 className="text-3xl font-bold">Reihe nicht gefunden</h1>
       </div>
       <Card>
         <CardContent className="flex flex-col items-center justify-center py-12">
-          <Library className="h-12 w-12 text-muted-foreground mb-4" />
+          <Library className="h-12 w-12 text-muted-foreground mb-4" aria-hidden="true" />
           <p className="text-muted-foreground mb-4">Die gesuchte Reihe existiert nicht oder wurde gelöscht.</p>
-          <Link href="/dashboard/series">
-            <Button variant="outline">
-              <ArrowLeft className="h-4 w-4 mr-2" />
+          <Button variant="outline" asChild>
+            <Link href="/dashboard/series">
+              <ArrowLeft className="h-4 w-4 mr-2" aria-hidden="true" />
               Zurück zur Übersicht
-            </Button>
-          </Link>
+            </Link>
+          </Button>
         </CardContent>
       </Card>
     </div>

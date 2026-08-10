@@ -132,7 +132,7 @@ export function GroupDetailClient({ group, userId, isOwner, initialPublicUrl }: 
         <CardHeader>
           <div className="flex flex-col sm:flex-row items-start sm:justify-between gap-3">
             <div>
-              <CardTitle className="flex items-center gap-2 text-2xl text-foreground">
+              <CardTitle as="h1" className="flex items-center gap-2 text-2xl text-foreground">
                 <div className="w-10 h-10 bg-primary/10 rounded flex items-center justify-center">
                   👥
                 </div>
@@ -178,7 +178,7 @@ export function GroupDetailClient({ group, userId, isOwner, initialPublicUrl }: 
                     onClick={handleSavePassword}
                     disabled={loading === "password"}
                   >
-                    {loading === "password" ? "..." : "Speichern"}
+                    {loading === "password" ? "…" : "Speichern"}
                   </Button>
                 </div>
                 <p className="text-xs text-muted-foreground">
@@ -195,7 +195,7 @@ export function GroupDetailClient({ group, userId, isOwner, initialPublicUrl }: 
         {/* Share Card */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle as="h2" className="flex items-center gap-2">
               <Share2 className="h-5 w-5" />
               Öffentlicher Link
             </CardTitle>
@@ -208,7 +208,12 @@ export function GroupDetailClient({ group, userId, isOwner, initialPublicUrl }: 
               <div className="space-y-3">
                 <div className="flex gap-2">
                   <Input value={publicUrl} readOnly className="text-sm" />
-                  <Button variant="outline" size="sm" onClick={handleCopy}>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleCopy}
+                    aria-label={copied ? "Link kopiert" : "Link kopieren"}
+                  >
                     {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
                   </Button>
                 </div>
@@ -226,7 +231,7 @@ export function GroupDetailClient({ group, userId, isOwner, initialPublicUrl }: 
                 className="w-full"
               >
                 <Share2 className="h-4 w-4 mr-2" />
-                {loading === "publish" ? "Wird veröffentlicht..." : "Öffentlichen Link erstellen"}
+                {loading === "publish" ? "Wird veröffentlicht…" : "Öffentlichen Link erstellen"}
               </Button>
             )}
           </CardContent>

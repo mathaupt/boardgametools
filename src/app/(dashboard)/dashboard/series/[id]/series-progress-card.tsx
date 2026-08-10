@@ -18,9 +18,9 @@ export function SeriesProgressCard({ entries }: SeriesProgressCardProps) {
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             {isComplete ? (
-              <CheckCircle2 className="h-5 w-5 text-success" />
+              <CheckCircle2 className="h-5 w-5 text-success" aria-hidden="true" />
             ) : (
-              <Library className="h-5 w-5 text-muted-foreground" />
+              <Library className="h-5 w-5 text-muted-foreground" aria-hidden="true" />
             )}
             <span className="font-medium">
               {isComplete ? "Alle Spiele durchgespielt!" : `${played} von ${total} gespielt`}
@@ -30,7 +30,7 @@ export function SeriesProgressCard({ entries }: SeriesProgressCardProps) {
         </div>
         <div className="w-full bg-muted rounded-full h-3 overflow-hidden">
           <div
-            className={`rounded-full h-3 transition-all duration-500 ${
+            className={`rounded-full h-3 transition-[width] duration-500 ${
               isComplete ? "bg-success" : "bg-primary"
             }`}
             style={{ width: `${progress}%` }}

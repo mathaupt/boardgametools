@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Plus, Calendar, Users, Clock, Trophy } from "lucide-react";
 import Link from "next/link";
+import { formatDate } from "@/lib/date";
 
 export default async function SessionsPage() {
   const session = await auth();
@@ -34,29 +35,29 @@ export default async function SessionsPage() {
           <h1 className="text-2xl sm:text-3xl font-bold">Gespielte Sessions</h1>
           <p className="text-muted-foreground">Verfolge deine Brettspiel-Sessions</p>
         </div>
-        <Link href="/dashboard/sessions/new">
-          <Button>
-            <Plus className="h-4 w-4 mr-2" />
+        <Button asChild>
+          <Link href="/dashboard/sessions/new">
+            <Plus className="h-4 w-4 mr-2" aria-hidden="true" />
             Session eintragen
-          </Button>
-        </Link>
+          </Link>
+        </Button>
       </div>
 
       {sessions.length === 0 ? (
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12">
             <div className="text-6xl mb-4">🎲</div>
-            <h3 className="text-lg font-semibold mb-2">Noch keine Sessions</h3>
+            <h2 className="text-lg font-semibold mb-2">Noch keine Sessions</h2>
             <p className="text-muted-foreground mb-4 text-center">
               Du hast noch keine Brettspiel-Sessions eingetragen. 
               Beginne damit, deine ersten Sessions zu dokumentieren!
             </p>
-            <Link href="/dashboard/sessions/new">
-              <Button>
-                <Plus className="h-4 w-4 mr-2" />
+            <Button asChild>
+              <Link href="/dashboard/sessions/new">
+                <Plus className="h-4 w-4 mr-2" aria-hidden="true" />
                 Erste Session eintragen
-              </Button>
-            </Link>
+              </Link>
+            </Button>
           </CardContent>
         </Card>
       ) : (
@@ -66,40 +67,40 @@ export default async function SessionsPage() {
               <CardHeader>
                 <div className="flex flex-col sm:flex-row items-start sm:justify-between gap-2">
                   <div>
-                    <CardTitle className="flex items-center gap-2">
-                      <div className="w-8 h-8 bg-primary/10 rounded flex items-center justify-center">
+                    <CardTitle as="h2" className="flex items-center gap-2">
+                      <div className="w-8 h-8 bg-primary/10 rounded flex items-center justify-center" aria-hidden="true">
                         🎲
                       </div>
                       {session.game.name}
                     </CardTitle>
                     <CardDescription className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2">
                       <div className="flex items-center gap-1">
-                        <Calendar className="h-4 w-4" />
-                        {new Date(session.playedAt).toLocaleDateString('de-DE')}
+                        <Calendar className="h-4 w-4" aria-hidden="true" />
+                        {formatDate(session.playedAt)}
                       </div>
                       {session.durationMinutes && (
                         <div className="flex items-center gap-1">
-                          <Clock className="h-4 w-4" />
+                          <Clock className="h-4 w-4" aria-hidden="true" />
                           {session.durationMinutes} Min.
                         </div>
                       )}
                       <div className="flex items-center gap-1">
-                        <Users className="h-4 w-4" />
+                        <Users className="h-4 w-4" aria-hidden="true" />
                         {session.players.length} Spieler
                       </div>
                     </CardDescription>
                   </div>
                   <div className="flex gap-2">
-                    <Link href={`/dashboard/sessions/${session.id}`}>
-                      <Button variant="outline" size="sm">
+                    <Button asChild variant="outline" size="sm">
+                      <Link href={`/dashboard/sessions/${session.id}`}>
                         Details
-                      </Button>
-                    </Link>
-                    <Link href={`/dashboard/sessions/${session.id}/edit`}>
-                      <Button variant="outline" size="sm">
+                      </Link>
+                    </Button>
+                    <Button asChild variant="outline" size="sm">
+                      <Link href={`/dashboard/sessions/${session.id}/edit`}>
                         Bearbeiten
-                      </Button>
-                    </Link>
+                      </Link>
+                    </Button>
                   </div>
                 </div>
               </CardHeader>
@@ -120,7 +121,7 @@ export default async function SessionsPage() {
                         .map((player) => (
                           <div key={player.id} className="flex items-center justify-between text-sm">
                             <div className="flex items-center gap-2">
-                              {player.isWinner && <Trophy className="h-4 w-4 text-warning" />}
+                              {player.isWinner && <Trophy className="h-4 w-4 text-warning" aria-label="Gewinner" />}
                               {player.placement && (
                                 <span className="font-medium">#{player.placement}</span>
                               )}

@@ -4,6 +4,18 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Game } from "@/generated/prisma/client";
 import { useToast } from "@/components/ui/use-toast";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface EditGameFormProps {
   game: Game;
@@ -17,10 +29,10 @@ export default function EditGameForm({ game, onSave, onCancel }: EditGameFormPro
   const [formData, setFormData] = useState({
     name: game.name,
     description: game.description || "",
-    minPlayers: game.minPlayers,
-    maxPlayers: game.maxPlayers,
-    playTimeMinutes: game.playTimeMinutes || "",
-    complexity: game.complexity || 1,
+    minPlayers: String(game.minPlayers),
+    maxPlayers: String(game.maxPlayers),
+    playTimeMinutes: game.playTimeMinutes ? String(game.playTimeMinutes) : "",
+    complexity: String(game.complexity ?? 1),
     bggId: game.bggId || "",
     imageUrl: game.imageUrl || "",
   });
@@ -32,187 +44,169 @@ export default function EditGameForm({ game, onSave, onCancel }: EditGameFormPro
 
     try {
       const response = await fetch(`/api/games/${game.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          ...formData,
-          playTimeMinutes: formData.playTimeMinutes ? parseInt(formData.playTimeMinutes.toString()) : null,
-          complexity: parseInt(formData.complexity.toString()),
+          name: formData.name,
+          description: formData.description || undefined,
+          minPlayers: parseInt(formData.minPlayers) || 1,
+          maxPlayers: parseInt(formData.maxPlayers) || 4,
+          playTimeMinutes: formData.playTimeMinutes ? parseInt(formData.playTimeMinutes) : null,
+          complexity: parseInt(formData.complexity) || 1,
+          bggId: formData.bggId || undefined,
+          imageUrl: formData.imageUrl || undefined,
         }),
       });
 
       if (!response.ok) {
-        throw new Error('Fehler beim Speichern');
+        throw new Error("Fehler beim Speichern");
       }
 
       const updatedGame = await response.json();
       onSave?.(updatedGame);
       router.push(`/dashboard/games/${game.id}`);
-    } catch (error) {
-      console.error('Save error:', error);
+    } catch {
       toast({ title: "Fehler", description: "Fehler beim Speichern des Spiels", variant: "destructive" });
     } finally {
       setIsSaving(false);
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleCancel = onCancel ?? (() => router.push(`/dashboard/games/${game.id}`));
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="max-w-2xl mx-auto">
-        <div className="bg-card rounded-lg shadow-lg p-6">
-          <h1 className="text-2xl font-bold text-foreground mb-6">Spiel bearbeiten</h1>
-          
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-1">
-                Spielname *
-              </label>
-              <input
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                required
-                className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
-              />
-            </div>
+      <div className="max-w-2xl mx-auto space-y-6">
+        <h1 className="text-2xl sm:text-3xl font-bold">Spiel bearbeiten</h1>
 
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-1">
-                Beschreibung
-              </label>
-              <textarea
-                name="description"
-                value={formData.description}
-                onChange={handleChange}
-                rows={3}
-                className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
-              />
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-foreground mb-1">
-                  Min. Spieler *
-                </label>
-                <input
-                  type="number"
-                  name="minPlayers"
-                  value={formData.minPlayers}
+        <Card>
+          <CardHeader>
+            <CardTitle as="h2">Spieldetails</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="name">Spielname *</Label>
+                <Input
+                  id="name"
+                  type="text"
+                  name="name"
+                  value={formData.name}
                   onChange={handleChange}
-                  min="1"
                   required
-                  className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
                 />
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-foreground mb-1">
-                  Max. Spieler *
-                </label>
-                <input
-                  type="number"
-                  name="maxPlayers"
-                  value={formData.maxPlayers}
+              <div className="space-y-2">
+                <Label htmlFor="description">Beschreibung</Label>
+                <Textarea
+                  id="description"
+                  name="description"
+                  value={formData.description}
                   onChange={handleChange}
-                  min="1"
-                  required
-                  className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-foreground mb-1">
-                  Spieldauer (Minuten)
-                </label>
-                <input
-                  type="number"
-                  name="playTimeMinutes"
-                  value={formData.playTimeMinutes}
-                  onChange={handleChange}
-                  min="1"
-                  className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
+                  rows={3}
                 />
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-foreground mb-1">
-                  Komplexität
-                </label>
-                <select
-                  name="complexity"
-                  value={formData.complexity}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="minPlayers">Min. Spieler *</Label>
+                  <Input
+                    id="minPlayers"
+                    type="number"
+                    name="minPlayers"
+                    value={formData.minPlayers}
+                    onChange={handleChange}
+                    min={1}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="maxPlayers">Max. Spieler *</Label>
+                  <Input
+                    id="maxPlayers"
+                    type="number"
+                    name="maxPlayers"
+                    value={formData.maxPlayers}
+                    onChange={handleChange}
+                    min={1}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="playTimeMinutes">Spieldauer (Minuten)</Label>
+                  <Input
+                    id="playTimeMinutes"
+                    type="number"
+                    name="playTimeMinutes"
+                    value={formData.playTimeMinutes}
+                    onChange={handleChange}
+                    min={1}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="complexity">Komplexität</Label>
+                  <Select value={formData.complexity} onValueChange={(v) => setFormData((prev) => ({ ...prev, complexity: v }))}>
+                    <SelectTrigger id="complexity" className="w-full">
+                      <SelectValue placeholder="Komplexität auswählen" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="1">1 - Sehr einfach</SelectItem>
+                      <SelectItem value="2">2 - Einfach</SelectItem>
+                      <SelectItem value="3">3 - Mittel</SelectItem>
+                      <SelectItem value="4">4 - Komplex</SelectItem>
+                      <SelectItem value="5">5 - Sehr komplex</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="bggId">BGG ID</Label>
+                <Input
+                  id="bggId"
+                  type="text"
+                  name="bggId"
+                  value={formData.bggId}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="imageUrl">Bild URL</Label>
+                <Input
+                  id="imageUrl"
+                  type="url"
+                  name="imageUrl"
+                  value={formData.imageUrl}
+                  onChange={handleChange}
+                />
+              </div>
+
+              <div className="flex gap-3 justify-end pt-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleCancel}
+                  disabled={isSaving}
                 >
-                  <option value={1}>1 - Sehr einfach</option>
-                  <option value={2}>2 - Einfach</option>
-                  <option value={3}>3 - Mittel</option>
-                  <option value={4}>4 - Komplex</option>
-                  <option value={5}>5 - Sehr komplex</option>
-                </select>
+                  Abbrechen
+                </Button>
+                <Button type="submit" disabled={isSaving}>
+                  {isSaving ? "Wird gespeichert…" : "Speichern"}
+                </Button>
               </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-1">
-                BGG ID
-              </label>
-              <input
-                type="text"
-                name="bggId"
-                value={formData.bggId}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-1">
-                Bild URL
-              </label>
-              <input
-                type="url"
-                name="imageUrl"
-                value={formData.imageUrl}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
-              />
-            </div>
-
-            <div className="flex gap-3 justify-end pt-4">
-              <button
-                type="button"
-                onClick={handleCancel}
-                className="px-4 py-2 text-muted-foreground border border-border rounded-md hover:bg-muted/50"
-                disabled={isSaving}
-              >
-                Abbrechen
-              </button>
-              <button
-                type="submit"
-                className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 disabled:opacity-50"
-                disabled={isSaving}
-              >
-                {isSaving ? 'Wird gespeichert...' : 'Speichern'}
-              </button>
-            </div>
-          </form>
-        </div>
+            </form>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

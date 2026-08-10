@@ -17,7 +17,7 @@ import {
   ScanBarcode,
   X,
   AlertCircle,
-  Image,
+  Image as ImageIcon,
 } from "lucide-react";
 import { CoverScanTab } from "@/components/cover-scan-tab";
 import { BarcodeResultsPanel } from "@/components/barcode-results-panel";
@@ -190,8 +190,11 @@ export function BarcodeScanner({
       <DialogContent className="max-w-lg max-h-[85vh] flex flex-col">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            {/* eslint-disable-next-line jsx-a11y/alt-text */}
-            {tab === "barcode" ? <ScanBarcode className="h-5 w-5" /> : <Image aria-hidden className="h-5 w-5" />}
+            {tab === "barcode" ? (
+              <ScanBarcode className="h-5 w-5" aria-hidden="true" />
+            ) : (
+              <ImageIcon className="h-5 w-5" aria-hidden="true" />
+            )}
             Spiel scannen
           </DialogTitle>
           <DialogDescription>
@@ -200,34 +203,39 @@ export function BarcodeScanner({
         </DialogHeader>
 
         {/* Tab navigation */}
-        <div className="flex border-b -mx-1">
-          <button
-            className={`flex-1 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
+        <div className="flex border-b -mx-1" role="tablist">
+          <Button
+            type="button"
+            variant="ghost"
+            className={`flex-1 rounded-none border-b-2 px-4 py-2.5 h-auto text-sm font-medium transition-colors gap-1.5 ${
               tab === "barcode"
                 ? "border-primary text-foreground"
                 : "border-transparent text-muted-foreground hover:text-foreground"
             }`}
             onClick={() => { setTab("barcode"); }}
+            role="tab"
+            aria-selected={tab === "barcode"}
+            aria-label="Barcode"
           >
-            <span className="flex items-center justify-center gap-1.5">
-              <ScanBarcode className="h-3.5 w-3.5" />
-              Barcode
-            </span>
-          </button>
-          <button
-            className={`flex-1 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
+            <ScanBarcode className="h-3.5 w-3.5" aria-hidden="true" />
+            Barcode
+          </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            className={`flex-1 rounded-none border-b-2 px-4 py-2.5 h-auto text-sm font-medium transition-colors gap-1.5 ${
               tab === "cover"
                 ? "border-primary text-foreground"
                 : "border-transparent text-muted-foreground hover:text-foreground"
             }`}
             onClick={() => { setTab("cover"); stopScanner(); }}
+            role="tab"
+            aria-selected={tab === "cover"}
+            aria-label="Cover-Foto"
           >
-            <span className="flex items-center justify-center gap-1.5">
-              {/* eslint-disable-next-line jsx-a11y/alt-text */}
-              <Image aria-hidden className="h-3.5 w-3.5" />
-              Cover-Foto
-            </span>
-          </button>
+            <ImageIcon className="h-3.5 w-3.5" aria-hidden="true" />
+            Cover-Foto
+          </Button>
         </div>
 
         <div className="flex-1 overflow-y-auto space-y-4">
@@ -243,10 +251,10 @@ export function BarcodeScanner({
                 {!scanning && !looking && (
                   <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
                     <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center">
-                      <Camera className="h-8 w-8 text-primary" />
+                      <Camera className="h-8 w-8 text-primary" aria-hidden="true" />
                     </div>
                     <Button onClick={startScanner} size="sm">
-                      <Camera className="h-4 w-4 mr-2" />
+                      <Camera className="h-4 w-4 mr-2" aria-hidden="true" />
                       Kamera starten
                     </Button>
                   </div>
@@ -254,8 +262,8 @@ export function BarcodeScanner({
                 {scanning && (
                   <div className="absolute bottom-2 left-0 right-0 text-center">
                     <Badge variant="secondary" className="bg-background/80 backdrop-blur-sm">
-                      <Loader2 className="h-3 w-3 mr-1 animate-spin" />
-                      Barcode suchen...
+                      <Loader2 className="h-3 w-3 mr-1 animate-spin" aria-hidden="true" />
+                      Barcode suchen…
                     </Badge>
                   </div>
                 )}
@@ -268,7 +276,7 @@ export function BarcodeScanner({
                   className="w-full"
                   onClick={stopScanner}
                 >
-                  <X className="h-4 w-4 mr-2" />
+                  <X className="h-4 w-4 mr-2" aria-hidden="true" />
                   Scanner stoppen
                 </Button>
               )}
@@ -284,9 +292,10 @@ export function BarcodeScanner({
                     className="flex-1"
                     inputMode="numeric"
                     pattern="[0-9]*"
+                    aria-label="EAN eingeben"
                   />
-                  <Button type="submit" disabled={looking || !manualEan.trim()}>
-                    {looking ? <Loader2 className="h-4 w-4 animate-spin" /> : "Suchen"}
+                  <Button type="submit" disabled={looking || !manualEan.trim()} aria-label={looking ? "Suche läuft" : "Suchen"}>
+                    {looking ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : "Suchen"}
                   </Button>
                 </form>
               </div>
@@ -296,24 +305,27 @@ export function BarcodeScanner({
           {/* Loading state */}
           {looking && (
             <div className="flex flex-col items-center justify-center py-8 gap-3">
-              <Loader2 className="h-8 w-8 animate-spin text-primary" />
-              <p className="text-sm text-muted-foreground">Suche Barcode in Produktdatenbank...</p>
+              <Loader2 className="h-8 w-8 animate-spin text-primary" aria-hidden="true" />
+              <p className="text-sm text-muted-foreground">Suche Barcode in Produktdatenbank…</p>
             </div>
           )}
 
           {/* Error state */}
           {error && (
             <div className="flex items-start gap-3 p-3 rounded-lg bg-destructive/10 text-destructive text-sm">
-              <AlertCircle className="h-5 w-5 shrink-0 mt-0.5" />
+              <AlertCircle className="h-5 w-5 shrink-0 mt-0.5" aria-hidden="true" />
               <div>
                 <p>{error}</p>
                 {result === null && !scanning && !looking && (
-                  <button
+                  <Button
+                    type="button"
+                    variant="link"
+                    size="xs"
                     onClick={() => { setError(null); setResult(null); }}
-                    className="text-xs underline mt-1"
+                    className="text-xs h-auto p-0 mt-1"
                   >
                     Erneut versuchen
-                  </button>
+                  </Button>
                 )}
               </div>
             </div>

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Calendar, Trash2 } from "lucide-react";
+import { formatLongDate } from "@/lib/date";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -240,8 +241,8 @@ export default function DatePollClient({
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle className="flex items-center gap-2">
-              <Calendar className="h-5 w-5" />
+            <CardTitle as="h2" className="flex items-center gap-2">
+              <Calendar className="h-5 w-5" aria-hidden="true" />
               Terminabstimmung
             </CardTitle>
             <CardDescription>
@@ -250,12 +251,7 @@ export default function DatePollClient({
                 : `${proposals.length} Terminvorschläge`}
               {finalDate && (
                 <span className="ml-2 text-success font-medium">
-                  — Termin gewählt: {new Date(finalDate).toLocaleDateString("de-DE", {
-                    weekday: "long",
-                    day: "numeric",
-                    month: "long",
-                    year: "numeric",
-                  })}
+                  — Termin gewählt: {formatLongDate(finalDate)}
                 </span>
               )}
             </CardDescription>
@@ -269,7 +265,7 @@ export default function DatePollClient({
                   onClick={() => setShowDeleteAllDialog(true)}
                   disabled={loading}
                 >
-                  <Trash2 className="h-4 w-4 mr-1" />
+                  <Trash2 className="h-4 w-4 mr-1" aria-hidden="true" />
                   Alle löschen
                 </Button>
               )}
@@ -278,7 +274,7 @@ export default function DatePollClient({
                 onClick={() => setShowCreateForm(!showCreateForm)}
                 disabled={loading}
               >
-                <Calendar className="h-4 w-4 mr-1" />
+                <Calendar className="h-4 w-4 mr-1" aria-hidden="true" />
                 {showCreateForm ? "Abbrechen" : "Termine erstellen"}
               </Button>
             </div>

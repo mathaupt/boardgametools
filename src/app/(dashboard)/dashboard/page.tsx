@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Gamepad2, CalendarDays, Users, Vote, ArrowRight } from "lucide-react";
 import { PendingInvites } from "@/components/pending-invites";
+import { formatDate, formatShortMonth } from "@/lib/date";
 import type { GameSession, Event, Game, GameProposal } from "@/generated/prisma/client";
 
 type UpcomingEvent = Event & {
@@ -129,41 +130,41 @@ export default async function DashboardPage() {
       {/* Quick Actions */}
       <Card>
         <CardHeader className="pb-3">
-          <CardTitle className="text-base">Schnell-Aktionen</CardTitle>
+          <CardTitle as="h2" className="text-base">Schnell-Aktionen</CardTitle>
           <CardDescription>Direkt zu deinen wichtigsten Funktionen</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
-            <Link href="/dashboard/games/new">
-              <Button variant="outline" className="w-full justify-start h-10">
+            <Button asChild variant="outline" className="w-full justify-start h-10">
+              <Link href="/dashboard/games/new">
                 <Gamepad2 className="h-4 w-4 mr-2" />
                 Spiel hinzufügen
-              </Button>
-            </Link>
-            <Link href="/dashboard/bgg">
-              <Button variant="outline" className="w-full justify-start h-10">
+              </Link>
+            </Button>
+            <Button asChild variant="outline" className="w-full justify-start h-10">
+              <Link href="/dashboard/bgg">
                 <Gamepad2 className="h-4 w-4 mr-2" />
                 BGG Import
-              </Button>
-            </Link>
-            <Link href="/dashboard/sessions/new">
-              <Button variant="outline" className="w-full justify-start h-10">
+              </Link>
+            </Button>
+            <Button asChild variant="outline" className="w-full justify-start h-10">
+              <Link href="/dashboard/sessions/new">
                 <CalendarDays className="h-4 w-4 mr-2" />
                 Session erstellen
-              </Button>
-            </Link>
-            <Link href="/dashboard/groups/new">
-              <Button variant="outline" className="w-full justify-start h-10">
+              </Link>
+            </Button>
+            <Button asChild variant="outline" className="w-full justify-start h-10">
+              <Link href="/dashboard/groups/new">
                 <Users className="h-4 w-4 mr-2" />
                 Gruppe erstellen
-              </Button>
-            </Link>
-            <Link href="/dashboard/events/new">
-              <Button variant="outline" className="w-full justify-start h-10">
+              </Link>
+            </Button>
+            <Button asChild variant="outline" className="w-full justify-start h-10">
+              <Link href="/dashboard/events/new">
                 <Vote className="h-4 w-4 mr-2" />
                 Event planen
-              </Button>
-            </Link>
+              </Link>
+            </Button>
           </div>
         </CardContent>
       </Card>
@@ -190,7 +191,7 @@ export default async function DashboardPage() {
           const content = (
             <Card
               key={stat.label}
-              className={`h-full transition-all ${stat.href ? "hover:shadow-md cursor-pointer" : "opacity-60"}`}
+              className={`h-full transition-[colors,box-shadow] ${stat.href ? "hover:shadow-md" : "opacity-60"}`}
             >
               <CardContent className="p-5">
                 <div className="flex items-start justify-between">
@@ -218,7 +219,9 @@ export default async function DashboardPage() {
             </Card>
           );
           return stat.href ? (
-            <Link key={stat.label} href={stat.href}>{content}</Link>
+            <Link key={stat.label} href={stat.href} className="block rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+              {content}
+            </Link>
           ) : (
             <div key={stat.label}>{content}</div>
           );
@@ -230,17 +233,17 @@ export default async function DashboardPage() {
         <Card className="border-primary/20 bg-primary/[0.02]">
           <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
             <div>
-              <CardTitle className="flex items-center gap-2 text-base">
+              <CardTitle as="h2" className="flex items-center gap-2 text-base">
                 <Vote className="h-4 w-4 text-primary" />
                 Kommende Events
               </CardTitle>
               <CardDescription>Deine nächsten Spieleabende</CardDescription>
             </div>
-            <Link href="/dashboard/events/new">
-              <Button size="sm" variant="outline">
+            <Button asChild size="sm" variant="outline">
+              <Link href="/dashboard/events/new">
                 Neues Event planen
-              </Button>
-            </Link>
+              </Link>
+            </Button>
           </CardHeader>
           <CardContent>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -248,7 +251,7 @@ export default async function DashboardPage() {
                 <Link
                   key={evt.id}
                   href={`/dashboard/events/${evt.id}`}
-                  className="group block rounded-lg border bg-card p-4 transition-all hover:border-primary/40 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  className="group block rounded-lg border bg-card p-4 transition-[colors,box-shadow] hover:border-primary/40 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   <div className="flex items-start gap-3">
                     <div className="shrink-0 flex flex-col items-center justify-center rounded-lg bg-primary/10 px-2.5 py-1.5 text-center leading-tight">
@@ -256,7 +259,7 @@ export default async function DashboardPage() {
                         {new Date(evt.eventDate).getDate()}
                       </span>
                       <span className="text-[10px] uppercase font-semibold text-primary/70">
-                        {new Date(evt.eventDate).toLocaleDateString("de-DE", { month: "short" })}
+                        {formatShortMonth(evt.eventDate)}
                       </span>
                     </div>
                     <div className="min-w-0 flex-1">
@@ -289,7 +292,7 @@ export default async function DashboardPage() {
         {/* Recent Sessions */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Letzte Sessions</CardTitle>
+            <CardTitle as="h2" className="text-base">Letzte Sessions</CardTitle>
             <CardDescription>Deine zuletzt gespielten Partien</CardDescription>
           </CardHeader>
           <CardContent>
@@ -301,7 +304,7 @@ export default async function DashboardPage() {
                   <li key={s.id} className="flex justify-between items-center">
                     <span className="font-medium text-sm">{s.game.name}</span>
                     <span className="text-xs text-muted-foreground">
-                      {new Date(s.playedAt).toLocaleDateString("de-DE")}
+                      {formatDate(s.playedAt)}
                     </span>
                   </li>
                 ))}
@@ -313,7 +316,7 @@ export default async function DashboardPage() {
         {/* Placeholder for future content */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Letzte Aktivität</CardTitle>
+            <CardTitle as="h2" className="text-base">Letzte Aktivität</CardTitle>
             <CardDescription>Neueste Änderungen in deinen Gruppen</CardDescription>
           </CardHeader>
           <CardContent>

@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/components/ui/use-toast";
 import { Users, UserPlus, Loader2, UserCircle } from "lucide-react";
+import { formatDate } from "@/lib/date";
 import { cn } from "@/lib/utils";
 import type { Guest, StoredGuestState } from "./types";
 
@@ -75,8 +76,8 @@ export function GuestRegistrationPanel({
     <section className="grid gap-6 lg:grid-cols-2">
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-lg">
-            <UserPlus className="h-5 w-5" />
+          <CardTitle className="flex items-center gap-2 text-lg" as="h2">
+            <UserPlus className="h-5 w-5" aria-hidden="true" />
             Als Gast teilnehmen
           </CardTitle>
           <CardDescription>
@@ -111,8 +112,8 @@ export function GuestRegistrationPanel({
                 disabled={joining || nickname.trim().length < 2}
                 className="w-full"
               >
-                {joining ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <UserPlus className="mr-2 h-4 w-4" />}
-                {joining ? "Beitritt läuft..." : "Als Gast registrieren"}
+                {joining ? <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" /> : <UserPlus className="mr-2 h-4 w-4" aria-hidden="true" />}
+                {joining ? "Beitritt läuft…" : "Als Gast registrieren"}
               </Button>
             </>
           )}
@@ -121,8 +122,8 @@ export function GuestRegistrationPanel({
 
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-lg">
-            <Users className="h-5 w-5" />
+          <CardTitle className="flex items-center gap-2 text-lg" as="h2">
+            <Users className="h-5 w-5" aria-hidden="true" />
             Gästeliste ({guestList.length})
           </CardTitle>
           <CardDescription>
@@ -143,12 +144,12 @@ export function GuestRegistrationPanel({
               >
                 <div className="flex items-center gap-2">
                   <div className="rounded-full bg-muted p-2 text-muted-foreground">
-                    <UserCircle className="h-4 w-4" />
+                    <UserCircle className="h-4 w-4" aria-hidden="true" />
                   </div>
                   <div>
                     <p className="text-sm font-medium">{guest.nickname}</p>
                     <p className="text-xs text-muted-foreground">
-                      Beigetreten am {new Date(guest.createdAt).toLocaleDateString("de-DE")}
+                      Beigetreten am {formatDate(guest.createdAt)}
                     </p>
                   </div>
                 </div>

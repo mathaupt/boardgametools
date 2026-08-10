@@ -136,7 +136,7 @@ export default function VotingClient({
           <div key={proposal.id} data-testid={`proposal-${proposal.id}`} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 border border-border rounded-lg hover:bg-accent/50 focus-within:ring-2 focus-within:ring-ring transition-colors bg-card gap-4 sm:gap-0">
             <div className="flex items-start sm:items-center gap-3 flex-1">
               {index === 0 && (selectedGameId || winningProposalId) && (
-                <Trophy className="h-5 w-5 text-warning flex-shrink-0 mt-0.5 sm:mt-0" aria-label="Trophy für führendes Spiel" />
+                <Trophy className="h-5 w-5 text-warning flex-shrink-0 mt-0.5 sm:mt-0" aria-hidden="true" />
               )}
               {/* Game Image */}
               <div className="flex-shrink-0">
@@ -150,7 +150,7 @@ export default function VotingClient({
                   />
                 ) : (
                   <div className="w-16 h-16 rounded-lg bg-muted border border-border flex items-center justify-center">
-                    <Gamepad className="h-8 w-8 text-muted-foreground" />
+                    <Gamepad className="h-8 w-8 text-muted-foreground" aria-hidden="true" />
                   </div>
                 )}
               </div>
@@ -163,7 +163,7 @@ export default function VotingClient({
                 {/* Spiel-Details */}
                 <div className="flex flex-wrap gap-2">
                   <Badge variant="outline" className="flex items-center gap-1 border-border bg-card">
-                    <Users className="h-3 w-3" />
+                    <Users className="h-3 w-3" aria-hidden="true" />
                     {proposal.game.minPlayers}-{proposal.game.maxPlayers} Spieler
                   </Badge>
                   
@@ -175,7 +175,7 @@ export default function VotingClient({
                   
                   {proposal.game.complexity && (
                     <Badge variant="outline" className="flex items-center gap-1 border-border bg-card">
-                      <Star className="h-3 w-3" />
+                      <Star className="h-3 w-3" aria-hidden="true" />
                       {"★".repeat(proposal.game.complexity)}{"☆".repeat(5 - proposal.game.complexity)}
                     </Badge>
                   )}
@@ -203,9 +203,9 @@ export default function VotingClient({
                       aria-label={`Vote für ${proposal.game.name} entfernen`}
                       data-testid={`remove-vote-${proposal.id}`}
                     >
-                      <ThumbsDown className="h-4 w-4" />
-                      <span className="hidden sm:inline">{voting === proposal.id ? 'Wird entfernt...' : 'Entfernen'}</span>
-                      <span className="sm:hidden">{voting === proposal.id ? '...' : '✕'}</span>
+                      <ThumbsDown className="h-4 w-4" aria-hidden="true" />
+                      <span className="hidden sm:inline">{voting === proposal.id ? 'Wird entfernt…' : 'Entfernen'}</span>
+                      <span className="sm:hidden">{voting === proposal.id ? '…' : '✕'}</span>
                     </Button>
                   ) : (
                     <Button
@@ -216,9 +216,9 @@ export default function VotingClient({
                       aria-label={`Für ${proposal.game.name} stimmen`}
                       data-testid={`vote-${proposal.id}`}
                     >
-                      <ThumbsUp className="h-4 w-4" />
-                      <span className="hidden sm:inline">{voting === proposal.id ? 'Wird abgestimmt...' : 'Vote'}</span>
-                      <span className="sm:hidden">{voting === proposal.id ? '...' : '✓'}</span>
+                      <ThumbsUp className="h-4 w-4" aria-hidden="true" />
+                      <span className="hidden sm:inline">{voting === proposal.id ? 'Wird abgestimmt…' : 'Vote'}</span>
+                      <span className="sm:hidden">{voting === proposal.id ? '…' : '✓'}</span>
                     </Button>
                   )}
                 </div>

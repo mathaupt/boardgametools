@@ -50,16 +50,16 @@ export default function LoginPage() {
         <CardHeader className="text-center pb-2">
           <div className="flex justify-center mb-3">
             <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary shadow-md">
-              <Dice6 className="h-7 w-7 text-primary-foreground" />
+              <Dice6 className="h-7 w-7 text-primary-foreground" aria-hidden="true" />
             </div>
           </div>
-          <CardTitle className="text-2xl tracking-tight">BoardGameTools</CardTitle>
+          <CardTitle as="h1" className="text-2xl tracking-tight">BoardGameTools</CardTitle>
           <CardDescription>Melde dich an, um fortzufahren</CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit} data-testid="login-form">
           <CardContent className="space-y-4">
             {error && (
-              <div data-testid="login-error" className="p-3 text-sm text-destructive bg-destructive/10 rounded-lg">
+              <div data-testid="login-error" role="alert" aria-live="polite" className="p-3 text-sm text-destructive bg-destructive/10 rounded-lg">
                 {error}
               </div>
             )}
@@ -80,8 +80,7 @@ export default function LoginPage() {
                 <Label htmlFor="password">Passwort</Label>
                 <Link
                   href="/passwort-vergessen"
-                  className="text-xs text-primary hover:underline"
-                  tabIndex={-1}
+                  className="text-xs text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm"
                 >
                   Passwort vergessen?
                 </Link>
@@ -98,11 +97,11 @@ export default function LoginPage() {
           </CardContent>
           <CardFooter className="flex flex-col gap-4">
             <Button type="submit" className="w-full" disabled={isLoading} data-testid="login-submit">
-              {isLoading ? "Anmelden..." : "Anmelden"}
+              {isLoading ? "Anmelden…" : "Anmelden"}
             </Button>
             <p className="text-sm text-muted-foreground text-center">
               Noch kein Konto?{" "}
-              <Link href="/register" className="text-primary font-medium hover:underline">
+              <Link href="/register" className="text-primary font-medium hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm">
                 Registrieren
               </Link>
             </p>

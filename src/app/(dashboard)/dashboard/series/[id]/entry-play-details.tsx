@@ -1,6 +1,8 @@
 "use client";
 
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import type { SeriesEntry } from "./types";
 
 interface EntryPlayDetailsProps {
@@ -14,10 +16,11 @@ export function EntryPlayDetails({ entry, onPlayDetailChange }: EntryPlayDetails
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         {/* Play time */}
         <div>
-          <label className="text-xs font-medium text-muted-foreground mb-1 block">
+          <Label htmlFor={`playTime-${entry.id}`} className="text-xs font-medium text-muted-foreground mb-1 block">
             Spielzeit (Minuten)
-          </label>
+          </Label>
           <Input
+            id={`playTime-${entry.id}`}
             type="number"
             min={0}
             max={9999}
@@ -33,10 +36,11 @@ export function EntryPlayDetails({ entry, onPlayDetailChange }: EntryPlayDetails
 
         {/* Player count */}
         <div>
-          <label className="text-xs font-medium text-muted-foreground mb-1 block">
+          <Label htmlFor={`playerCount-${entry.id}`} className="text-xs font-medium text-muted-foreground mb-1 block">
             Anzahl Spieler
-          </label>
+          </Label>
           <Input
+            id={`playerCount-${entry.id}`}
             type="number"
             min={1}
             max={99}
@@ -52,10 +56,11 @@ export function EntryPlayDetails({ entry, onPlayDetailChange }: EntryPlayDetails
 
         {/* Score */}
         <div>
-          <label className="text-xs font-medium text-muted-foreground mb-1 block">
+          <Label htmlFor={`score-${entry.id}`} className="text-xs font-medium text-muted-foreground mb-1 block">
             Punkte
-          </label>
+          </Label>
           <Input
+            id={`score-${entry.id}`}
             type="number"
             min={0}
             max={999999}
@@ -71,17 +76,18 @@ export function EntryPlayDetails({ entry, onPlayDetailChange }: EntryPlayDetails
 
         {/* Successful checkbox */}
         <div className="flex items-end pb-1">
-          <label className="flex items-center gap-2 cursor-pointer">
-            <input
-              type="checkbox"
+          <div className="flex items-center gap-2">
+            <Checkbox
+              id={`successful-${entry.id}`}
               checked={entry.successful === true}
               onChange={(e) => {
                 onPlayDetailChange(entry, "successful", e.target.checked ? true : null);
               }}
-              className="h-4 w-4 rounded border-input accent-success"
             />
-            <span className="text-sm">Erfolgreich abgeschlossen</span>
-          </label>
+            <Label htmlFor={`successful-${entry.id}`} className="text-sm cursor-pointer">
+              Erfolgreich abgeschlossen
+            </Label>
+          </div>
         </div>
       </div>
     </div>

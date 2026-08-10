@@ -13,11 +13,11 @@ export function SeriesDetailHeader({ series, seriesId, onDeleteClick }: SeriesDe
   return (
     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
       <div className="flex items-center gap-3">
-        <Link href="/dashboard/series">
-          <Button variant="ghost" size="icon" className="shrink-0">
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-        </Link>
+        <Button asChild variant="ghost" size="icon" className="shrink-0" aria-label="Zurück zur Reihenübersicht">
+          <Link href="/dashboard/series">
+            <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+          </Link>
+        </Button>
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold">{series.name}</h1>
           {series.description && (
@@ -26,19 +26,19 @@ export function SeriesDetailHeader({ series, seriesId, onDeleteClick }: SeriesDe
         </div>
       </div>
       <div className="flex gap-2 ml-11 sm:ml-0">
-        <Link href={`/dashboard/series/${seriesId}/edit`}>
-          <Button variant="outline" size="sm">
-            <Pencil className="h-4 w-4 mr-2" />
+        <Button asChild variant="outline" size="sm">
+          <Link href={`/dashboard/series/${seriesId}/edit`}>
+            <Pencil className="h-4 w-4 mr-2" aria-hidden="true" />
             Bearbeiten
-          </Button>
-        </Link>
+          </Link>
+        </Button>
         <Button
           variant="outline"
           size="sm"
           className="text-destructive border-destructive hover:bg-destructive hover:text-destructive-foreground"
           onClick={onDeleteClick}
         >
-          <Trash2 className="h-4 w-4 mr-2" />
+          <Trash2 className="h-4 w-4 mr-2" aria-hidden="true" />
           Löschen
         </Button>
       </div>

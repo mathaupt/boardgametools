@@ -6,6 +6,7 @@ import { getPendingInvites } from "@/lib/queries/pending-invites";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Plus, Calendar, MapPin, Users, Vote, Trophy } from "lucide-react";
+import { formatDate } from "@/lib/date";
 import Image from "next/image";
 import Link from "next/link";
 import { PendingInvites } from "@/components/pending-invites";
@@ -63,12 +64,12 @@ export default async function EventsPage() {
           <h1 className="text-2xl sm:text-3xl font-bold">Events & Voting</h1>
           <p className="text-muted-foreground">Plane Spieleabende mit Abstimmung</p>
         </div>
-        <Link href="/dashboard/events/new">
-          <Button>
-            <Plus className="h-4 w-4 mr-2" />
+        <Button asChild>
+          <Link href="/dashboard/events/new">
+            <Plus className="h-4 w-4 mr-2" aria-hidden="true" />
             Event erstellen
-          </Button>
-        </Link>
+          </Link>
+        </Button>
       </div>
 
       {/* Offene Einladungen */}
@@ -91,17 +92,17 @@ export default async function EventsPage() {
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12">
             <div className="text-6xl mb-4">📅</div>
-            <h3 className="text-lg font-semibold mb-2">Noch keine Events</h3>
+            <h2 className="text-lg font-semibold mb-2">Noch keine Events</h2>
             <p className="text-muted-foreground mb-4 text-center">
               Du hast noch keine Spiele-Events erstellt. 
               Erstelle dein erstes Event mit Voting-System!
             </p>
-            <Link href="/dashboard/events/new">
-              <Button>
-                <Plus className="h-4 w-4 mr-2" />
+            <Button asChild>
+              <Link href="/dashboard/events/new">
+                <Plus className="h-4 w-4 mr-2" aria-hidden="true" />
                 Erstes Event erstellen
-              </Button>
-            </Link>
+              </Link>
+            </Button>
           </CardContent>
         </Card>
       ) : (
@@ -111,44 +112,44 @@ export default async function EventsPage() {
               <CardHeader>
                 <div className="flex flex-col sm:flex-row items-start sm:justify-between gap-3">
                   <div>
-                    <CardTitle className="flex items-center gap-2">
-                      <div className="w-8 h-8 bg-primary/10 rounded flex items-center justify-center">
+                    <CardTitle as="h2" className="flex items-center gap-2">
+                      <div className="w-8 h-8 bg-primary/10 rounded flex items-center justify-center" aria-hidden="true">
                         📅
                       </div>
                       {event.title}
                     </CardTitle>
                     <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2 text-sm text-muted-foreground">
                       <div className="flex items-center gap-1">
-                        <Calendar className="h-4 w-4" />
-                        {new Date(event.eventDate).toLocaleDateString('de-DE')}
+                        <Calendar className="h-4 w-4" aria-hidden="true" />
+                        {formatDate(event.eventDate)}
                       </div>
                       {event.location && (
                         <div className="flex items-center gap-1">
-                          <MapPin className="h-4 w-4" />
+                          <MapPin className="h-4 w-4" aria-hidden="true" />
                           {event.location}
                         </div>
                       )}
                       <div className="flex items-center gap-1">
-                        <Users className="h-4 w-4" />
+                        <Users className="h-4 w-4" aria-hidden="true" />
                         {event._count.invites} Eingeladene
                       </div>
                       <div className="flex items-center gap-1">
-                        <Vote className="h-4 w-4" />
+                        <Vote className="h-4 w-4" aria-hidden="true" />
                         {event._count.proposals} Vorschläge
                       </div>
                     </div>
                   </div>
                   <div className="flex gap-2">
-                    <Link href={`/dashboard/events/${event.id}`}>
-                      <Button variant="outline" size="sm">
+                    <Button asChild variant="outline" size="sm">
+                      <Link href={`/dashboard/events/${event.id}`}>
                         Details
-                      </Button>
-                    </Link>
-                    <Link href={`/dashboard/events/${event.id}/voting`}>
-                      <Button variant="outline" size="sm">
+                      </Link>
+                    </Button>
+                    <Button asChild variant="outline" size="sm">
+                      <Link href={`/dashboard/events/${event.id}/voting`}>
                         Voting
-                      </Button>
-                    </Link>
+                      </Link>
+                    </Button>
                   </div>
                 </div>
               </CardHeader>
@@ -162,7 +163,7 @@ export default async function EventsPage() {
               {(event.selectedGame || event.winningProposal) && (
                 <CardContent className="pt-0">
                   <div className="flex items-center gap-2 text-sm">
-                    <Trophy className="h-4 w-4 text-warning" aria-label="Trophy Icon" />
+                    <Trophy className="h-4 w-4 text-warning" aria-hidden="true" />
                     <span className="font-medium text-foreground">Ausgewähltes Spiel:</span>
                     <span className="text-muted-foreground">{event.selectedGame?.name || event.winningProposal?.bggName}</span>
                   </div>

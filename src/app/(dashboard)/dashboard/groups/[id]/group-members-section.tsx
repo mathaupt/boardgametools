@@ -1,9 +1,20 @@
 "use client";
 
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Users, X, UserPlus } from "lucide-react";
 import { SerializedGroupMember } from "@/types/group";
 
@@ -32,14 +43,17 @@ export function GroupMembersSection({
   onRemoveMember,
   loading,
 }: GroupMembersSectionProps) {
+  const [removeTarget, setRemoveTarget] = useState<SerializedGroupMember | null>(null);
+
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2">
-            <Users className="h-5 w-5" />
-            Mitglieder ({members.length})
-          </CardTitle>
+    <>
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <CardTitle as="h2" className="flex items-center gap-2">
+              <Users className="h-5 w-5" />
+              Mitglieder ({members.length})
+            </CardTitle>
           {isOwner && (
             <Button
               variant="outline"
@@ -57,12 +71,13 @@ export function GroupMembersSection({
           <form onSubmit={onAddMember} className="flex gap-2 mb-3">
             <Input
               placeholder="E-Mail-Adresse"
+              aria-label="E-Mail-Adresse des neuen Mitglieds"
               value={memberEmail}
               onChange={(e) => onMemberEmailChange(e.target.value)}
               className="flex-1"
             />
             <Button size="sm" type="submit" disabled={loading === "member"}>
-              {loading === "member" ? "..." : "Einladen"}
+              {loading === "member" ? "…" : "Einladen"}
             </Button>
           </form>
         )}
@@ -82,7 +97,8 @@ export function GroupMembersSection({
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => onRemoveMember(member.user.id)}
+                onClick={() => setRemoveTarget(member)}
+                aria-label={`${member.user.name} entfernen`}
                 disabled={loading === `remove-${member.user.id}`}
               >
                 <X className="h-3 w-3" />
@@ -92,5 +108,35 @@ export function GroupMembersSection({
         ))}
       </CardContent>
     </Card>
+
+    <AlertDialog open={removeTarget !== null} onOpenChange={() => setRemoveTarget(null)}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Mitglied entfernen</AlertDialogTitle>
+          <AlertDialogDescription>
+            Möchtest du {removeTarget?.user.name} wirklich aus der Gruppe entfernen?
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel type="button" onClick={() => setRemoveTarget(null)}>
+            Abbrechen
+          </AlertDialogCancel>
+          <AlertDialogAction
+            type="button"
+            variant="destructive"
+            disabled={removeTarget ? loading === `remove-${removeTarget.user.id}` : false}
+            onClick={() => {
+              if (removeTarget) {
+                setRemoveTarget(null);
+                onRemoveMember(removeTarget.user.id);
+              }
+            }}
+          >
+            Entfernen
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  </>
   );
 }

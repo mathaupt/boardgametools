@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -127,63 +127,72 @@ export default function GamesListClient({ games: initialGames }: GamesListClient
               className="text-destructive border-destructive hover:bg-destructive hover:text-destructive-foreground"
               onClick={() => setDeleteAllOpen(true)}
               data-testid="games-delete-all"
+              aria-label="Alle Spiele entfernen"
             >
-              <Trash className="h-4 w-4 sm:mr-2" />
+              <Trash className="h-4 w-4 sm:mr-2" aria-hidden="true" />
               <span className="hidden sm:inline">Alle entfernen</span>
             </Button>
           )}
-          <Link href="/dashboard/games/import">
-            <Button variant="outline">
-              <Download className="h-4 w-4 sm:mr-2" />
+          <Button asChild variant="outline" aria-label="Von BGG importieren">
+            <Link href="/dashboard/games/import">
+              <Download className="h-4 w-4 sm:mr-2" aria-hidden="true" />
               <span className="hidden sm:inline">Von BGG importieren</span>
-            </Button>
-          </Link>
-          <Button variant="outline" onClick={() => setBarcodeScannerOpen(true)}>
-            <ScanBarcode className="h-4 w-4 sm:mr-2" />
-            <span className="hidden sm:inline">Barcode</span>
+            </Link>
           </Button>
-          <Link href="/dashboard/games/new">
-            <Button>
-              <Plus className="h-4 w-4 sm:mr-2" />
-              <span className="hidden sm:inline">Spiel hinzuf&uuml;gen</span>
-            </Button>
-          </Link>
+          <Button variant="outline" onClick={() => setBarcodeScannerOpen(true)}>
+            <ScanBarcode className="h-4 w-4 sm:mr-2" aria-hidden="true" />
+            <span className="hidden sm:inline">Barcode scannen</span>
+            <span className="sm:hidden">Barcode</span>
+          </Button>
+          <Button asChild aria-label="Spiel hinzufügen">
+            <Link href="/dashboard/games/new">
+              <Plus className="h-4 w-4 sm:mr-2" aria-hidden="true" />
+              <span className="hidden sm:inline">Spiel hinzufügen</span>
+            </Link>
+          </Button>
         </div>
       </div>
 
       {games.length > 0 && (
         <div className="space-y-3">
           <Input
-            placeholder="Spiele durchsuchen..."
+            placeholder="Spiele durchsuchen…"
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
             className="max-w-sm"
+            aria-label="Spiele durchsuchen"
           />
           {allTags.length > 0 && (
             <div className="flex flex-wrap gap-2">
-              <button
-                onClick={() => setActiveTag(null)}
-                className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+              <Button
+                type="button"
+                variant={!activeTag ? "default" : "secondary"}
+                size="xs"
+                className={`rounded-full ${
                   !activeTag
                     ? "bg-primary text-primary-foreground"
                     : "bg-muted text-muted-foreground hover:bg-muted/80"
                 }`}
+                onClick={() => setActiveTag(null)}
               >
                 Alle
-              </button>
+              </Button>
               {allTags.map(([id, name]) => (
-                <button
+                <Button
+                  type="button"
                   key={id}
-                  onClick={() => setActiveTag(activeTag === id ? null : id)}
-                  className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                  variant={activeTag === id ? "default" : "secondary"}
+                  size="xs"
+                  className={`rounded-full ${
                     activeTag === id
                       ? "bg-primary text-primary-foreground"
                       : "bg-muted text-muted-foreground hover:bg-muted/80"
                   }`}
+                  onClick={() => setActiveTag(activeTag === id ? null : id)}
                 >
-                  <Tag className="h-3 w-3" />
+                  <Tag className="h-3 w-3" aria-hidden="true" />
                   {name}
-                </button>
+                </Button>
               ))}
             </div>
           )}
@@ -194,12 +203,12 @@ export default function GamesListClient({ games: initialGames }: GamesListClient
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12">
             <p className="text-muted-foreground mb-4">Du hast noch keine Spiele in deiner Sammlung.</p>
-            <Link href="/dashboard/games/new">
-              <Button>
-                <Plus className="h-4 w-4 mr-2" />
+            <Button asChild>
+              <Link href="/dashboard/games/new">
+                <Plus className="h-4 w-4 mr-2" aria-hidden="true" />
                 Erstes Spiel hinzufügen
-              </Button>
-            </Link>
+              </Link>
+            </Button>
           </CardContent>
         </Card>
       ) : filteredGames.length === 0 ? (
@@ -212,25 +221,29 @@ export default function GamesListClient({ games: initialGames }: GamesListClient
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {filteredGames.map((game) => (
             <div key={game.id} className="relative group">
-              <Link href={`/dashboard/games/${game.id}`}>
-                <Card className="hover:shadow-md transition-shadow cursor-pointer h-full overflow-hidden">
+              <Link
+                href={`/dashboard/games/${game.id}`}
+                className="group block rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                <Card className="hover:shadow-md transition-shadow h-full overflow-hidden">
                   <div className="relative w-full h-48 bg-muted">
                     {game.imageUrl ? (
                       <Image
                         src={game.imageUrl}
                         alt={game.name}
                         fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                         className="object-cover"
                       />
                     ) : (
                       <div className="h-full w-full flex flex-col items-center justify-center text-muted-foreground gap-2">
-                        <ImageIcon className="h-6 w-6" />
+                        <ImageIcon className="h-6 w-6" aria-hidden="true" />
                         <span className="text-xs">Kein Bild</span>
                       </div>
                     )}
                   </div>
                   <CardHeader>
-                    <CardTitle className="line-clamp-1 pr-8">{game.name}</CardTitle>
+                    <CardTitle as="h2" className="line-clamp-1 pr-8">{game.name}</CardTitle>
                     {game.description && (
                       <CardDescription className="line-clamp-2">{game.description}</CardDescription>
                     )}
@@ -238,18 +251,18 @@ export default function GamesListClient({ games: initialGames }: GamesListClient
                   <CardContent>
                     <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
                       <div className="flex items-center gap-1">
-                        <Users className="h-4 w-4" />
+                        <Users className="h-4 w-4" aria-hidden="true" />
                         <span>{game.minPlayers}-{game.maxPlayers}</span>
                       </div>
                       {game.playTimeMinutes && (
                         <div className="flex items-center gap-1">
-                          <Clock className="h-4 w-4" />
+                          <Clock className="h-4 w-4" aria-hidden="true" />
                           <span>{game.playTimeMinutes} Min.</span>
                         </div>
                       )}
                       {game.complexity && (
                         <div className="flex items-center gap-1">
-                          <Star className="h-4 w-4" />
+                          <Star className="h-4 w-4" aria-hidden="true" />
                           <span>{game.complexity}/5</span>
                         </div>
                       )}
@@ -272,14 +285,18 @@ export default function GamesListClient({ games: initialGames }: GamesListClient
                   </CardContent>
                 </Card>
               </Link>
-              <button
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon-sm"
                 onClick={(e) => { e.preventDefault(); setDeleteTarget(game); }}
-                className="absolute top-2 right-2 p-1.5 rounded-full bg-background/80 backdrop-blur-sm border opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive hover:text-destructive-foreground hover:border-destructive"
+                className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 focus-visible:opacity-100 transition-opacity hover:bg-destructive hover:text-destructive-foreground rounded-full"
+                aria-label="Spiel entfernen"
                 title="Spiel entfernen"
                 data-testid={`game-delete-${game.id}`}
               >
-                <Trash2 className="h-4 w-4" />
-              </button>
+                <Trash2 className="h-4 w-4" aria-hidden="true" />
+              </Button>
             </div>
           ))}
         </div>
@@ -291,8 +308,8 @@ export default function GamesListClient({ games: initialGames }: GamesListClient
           <AlertDialogHeader>
             <AlertDialogTitle>Spiel entfernen</AlertDialogTitle>
             <AlertDialogDescription>
-              M&ouml;chtest du <strong>{deleteTarget?.name}</strong> wirklich aus deiner Sammlung entfernen?
-              Alle zugeh&ouml;rigen Sessions werden ebenfalls gel&ouml;scht.
+              Möchtest du <strong>{deleteTarget?.name}</strong> wirklich aus deiner Sammlung entfernen?
+              Alle zugehörigen Sessions werden ebenfalls gelöscht.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -319,8 +336,8 @@ export default function GamesListClient({ games: initialGames }: GamesListClient
           <AlertDialogHeader>
             <AlertDialogTitle>Alle Spiele entfernen</AlertDialogTitle>
             <AlertDialogDescription>
-              M&ouml;chtest du wirklich alle <strong>{games.length} Spiele</strong> aus deiner Sammlung entfernen?
-              Diese Aktion kann nicht r&uuml;ckg&auml;ngig gemacht werden.
+              Möchtest du wirklich alle <strong>{games.length} Spiele</strong> aus deiner Sammlung entfernen?
+              Diese Aktion kann nicht rückgängig gemacht werden.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

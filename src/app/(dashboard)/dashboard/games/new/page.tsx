@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, ScanBarcode, X } from "lucide-react";
 import Link from "next/link";
@@ -116,18 +117,18 @@ export default function NewGamePage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-4">
-          <Link href="/dashboard/games">
-            <Button variant="ghost" size="icon">
-              <ArrowLeft className="h-4 w-4" />
-            </Button>
-          </Link>
+          <Button asChild variant="ghost" size="icon" aria-label="Zurück zur Spieleübersicht">
+            <Link href="/dashboard/games">
+              <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+            </Link>
+          </Button>
           <div>
             <h1 className="text-3xl font-bold">Neues Spiel</h1>
             <p className="text-muted-foreground">Füge ein Spiel zu deiner Sammlung hinzu</p>
           </div>
         </div>
         <Button variant="outline" onClick={() => setBarcodeScannerOpen(true)}>
-          <ScanBarcode className="h-4 w-4 mr-2" />
+          <ScanBarcode className="h-4 w-4 mr-2" aria-hidden="true" />
           <span className="hidden sm:inline">Barcode scannen</span>
           <span className="sm:hidden">Barcode</span>
         </Button>
@@ -135,7 +136,7 @@ export default function NewGamePage() {
 
       <Card className="max-w-2xl">
         <CardHeader>
-          <CardTitle>Spieldetails</CardTitle>
+          <CardTitle as="h2">Spieldetails</CardTitle>
           <CardDescription>Gib die Informationen zum Spiel ein</CardDescription>
         </CardHeader>
         <CardContent>
@@ -153,12 +154,12 @@ export default function NewGamePage() {
 
             <div className="space-y-2">
               <Label htmlFor="description">Beschreibung</Label>
-              <textarea
+              <Textarea
                 id="description"
                 name="description"
                 data-testid="game-description"
-                className="flex min-h-20 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-                placeholder="Kurze Beschreibung des Spiels..."
+                className="min-h-20"
+                placeholder="Kurze Beschreibung des Spiels…"
               />
             </div>
 
@@ -188,14 +189,23 @@ export default function NewGamePage() {
               <Label htmlFor="image">Spielbild</Label>
               {imageUrl ? (
                 <div className="relative w-full h-48 rounded-md overflow-hidden border">
-                  <Image src={imageUrl} alt="Vorschau" fill className="object-cover" />
-                  <button
+                  <Image
+                    src={imageUrl}
+                    alt="Vorschau"
+                    fill
+                    sizes="(max-width: 768px) 100vw, 672px"
+                    className="object-cover"
+                  />
+                  <Button
                     type="button"
+                    variant="ghost"
+                    size="icon-xs"
                     onClick={() => setImageUrl(null)}
-                    className="absolute top-2 right-2 p-1.5 rounded-full bg-background/80 backdrop-blur-sm border hover:bg-destructive hover:text-destructive-foreground"
+                    className="absolute top-2 right-2 rounded-full bg-background/80 backdrop-blur-sm border hover:bg-destructive hover:text-destructive-foreground"
+                    aria-label="Bild entfernen"
                   >
-                    <X className="h-4 w-4" />
-                  </button>
+                    <X className="h-4 w-4" aria-hidden="true" />
+                  </Button>
                 </div>
               ) : (
                 <div className="flex items-center gap-4">
@@ -207,7 +217,7 @@ export default function NewGamePage() {
                     disabled={uploading}
                     className="max-w-sm"
                   />
-                  {uploading && <span className="text-sm text-muted-foreground">Wird hochgeladen...</span>}
+                  {uploading && <span className="text-sm text-muted-foreground">Wird hochgeladen…</span>}
                 </div>
               )}
               <p className="text-xs text-muted-foreground">
@@ -225,11 +235,11 @@ export default function NewGamePage() {
 
             <div className="flex gap-4 pt-4">
               <Button type="submit" disabled={isLoading} data-testid="game-submit">
-                {isLoading ? "Speichern..." : "Spiel speichern"}
+                {isLoading ? "Speichern…" : "Spiel speichern"}
               </Button>
-              <Link href="/dashboard/games">
-                <Button type="button" variant="outline">Abbrechen</Button>
-              </Link>
+              <Button asChild variant="outline">
+                <Link href="/dashboard/games">Abbrechen</Link>
+              </Button>
             </div>
           </form>
         </CardContent>

@@ -11,6 +11,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { ArrowLeft, Share2, Users, Search, Check, X } from "lucide-react";
 import { PublicShareCard } from "../public-share-card";
 import { getClientBaseUrl } from "@/lib/public-link";
+import { formatDate } from "@/lib/date";
+import Link from "next/link";
 import { useToast } from "@/components/ui/use-toast";
 
 interface User {
@@ -138,7 +140,7 @@ export default function EventSharePage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex items-center justify-center min-h-screen" role="status" aria-label="Wird geladen">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
       </div>
     );
@@ -150,12 +152,9 @@ export default function EventSharePage() {
         <div className="text-center">
           <div className="text-destructive text-6xl mb-4">📅</div>
           <h1 className="text-2xl font-bold text-foreground mb-2">Event nicht gefunden</h1>
-          <button
-            onClick={() => router.push("/dashboard/events")}
-            className="bg-primary text-primary-foreground px-4 py-2 rounded hover:bg-primary/90"
-          >
+          <Button onClick={() => router.push("/dashboard/events")}>
             Zurück zu Events
-          </button>
+          </Button>
         </div>
       </div>
     );
@@ -165,26 +164,26 @@ export default function EventSharePage() {
 
   return (
     <div className="space-y-6">
+      <h1 className="sr-only">Event teilen: {event?.title}</h1>
       {/* Header */}
       <div className="flex items-center gap-4">
-        <button
-          onClick={() => router.push(`/dashboard/events/${eventId}`)}
-          className="text-muted-foreground hover:text-foreground flex items-center gap-2"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Zurück zum Event
-        </button>
+        <Button variant="ghost" asChild>
+          <Link href={`/dashboard/events/${eventId}`} className="flex items-center gap-2">
+            <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+            Zurück zum Event
+          </Link>
+        </Button>
       </div>
 
       {/* Event Info */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Share2 className="h-5 w-5" />
+          <CardTitle className="flex items-center gap-2" as="h2">
+            <Share2 className="h-5 w-5" aria-hidden="true" />
             Event teilen
           </CardTitle>
           <CardDescription>
-            {event.title} • {new Date(event.eventDate).toLocaleDateString('de-DE')}
+            {event.title} • {formatDate(event.eventDate)}
           </CardDescription>
         </CardHeader>
       </Card>
@@ -203,8 +202,8 @@ export default function EventSharePage() {
         {/* User Auswahl */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Users className="h-5 w-5" />
+            <CardTitle className="flex items-center gap-2" as="h2">
+              <Users className="h-5 w-5" aria-hidden="true" />
               User auswählen
             </CardTitle>
             <CardDescription>
@@ -216,10 +215,10 @@ export default function EventSharePage() {
             <div>
               <Label htmlFor="search">User suchen</Label>
               <div className="relative">
-                <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" aria-hidden="true" />
                 <Input
                   id="search"
-                  placeholder="Name oder E-Mail..."
+                  placeholder="Name oder E-Mail…"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="pl-10"
@@ -258,8 +257,8 @@ export default function EventSharePage() {
               disabled={sharing || selectedUsers.length === 0}
               className="w-full"
             >
-              <Share2 className="h-4 w-4 mr-2" />
-              {sharing ? 'Wird geteilt...' : `Mit ${selectedUsers.length} Usern teilen`}
+              <Share2 className="h-4 w-4 mr-2" aria-hidden="true" />
+              {sharing ? 'Wird geteilt…' : `Mit ${selectedUsers.length} Usern teilen`}
             </Button>
           </CardContent>
         </Card>
@@ -267,8 +266,8 @@ export default function EventSharePage() {
         {/* Bestehende Einladungen */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Users className="h-5 w-5" />
+            <CardTitle className="flex items-center gap-2" as="h2">
+              <Users className="h-5 w-5" aria-hidden="true" />
               Bereits eingeladen ({existingInvites.length})
             </CardTitle>
             <CardDescription>
@@ -299,9 +298,9 @@ export default function EventSharePage() {
                       invite.status === "declined" ? "destructive" : "secondary"
                     }>
                       {invite.status === "accepted" ? (
-                        <><Check className="h-3 w-3 mr-1" />Zugesagt</>
+                        <><Check className="h-3 w-3 mr-1" aria-hidden="true" />Zugesagt</>
                       ) : invite.status === "declined" ? (
-                        <><X className="h-3 w-3 mr-1" />Abgelehnt</>
+                        <><X className="h-3 w-3 mr-1" aria-hidden="true" />Abgelehnt</>
                       ) : (
                         "Ausstehend"
                       )}
@@ -317,7 +316,7 @@ export default function EventSharePage() {
       {/* Zusammenfassung */}
       <Card>
         <CardHeader>
-          <CardTitle>Sharing Status</CardTitle>
+          <CardTitle as="h2">Sharing Status</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

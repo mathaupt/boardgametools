@@ -16,8 +16,8 @@ export default function EventsError({
   }, [error]);
 
   return (
-    <div className="flex min-h-[50vh] flex-col items-center justify-center gap-4">
-      <AlertTriangle className="h-12 w-12 text-destructive" />
+    <div className="flex min-h-[50vh] flex-col items-center justify-center gap-4" role="alert" aria-live="assertive">
+      <AlertTriangle className="h-12 w-12 text-destructive" aria-hidden="true" />
       <h2 className="text-xl font-semibold">Fehler in der Eventverwaltung</h2>
       <p className="text-muted-foreground text-center max-w-md">
         Beim Laden der Events ist ein Fehler aufgetreten. Bitte versuche es erneut.

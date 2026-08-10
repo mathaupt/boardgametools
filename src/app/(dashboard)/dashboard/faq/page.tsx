@@ -40,7 +40,7 @@ export default function FaqPage() {
       <div className="flex items-center gap-4">
         <Link
           href="/dashboard"
-          className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
+          className="flex items-center gap-2 text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm"
         >
           <ArrowLeft className="h-4 w-4" />
           Dashboard
@@ -74,14 +74,14 @@ export default function FaqPage() {
             {faqSections.map((section) => {
               const Icon = iconMap[section.icon] || HelpCircle;
               return (
-                <a
+                <Link
                   key={section.id}
                   href={`#${section.id}`}
-                  className="inline-flex items-center gap-1.5 rounded-md border border-border bg-muted/50 px-3 py-1.5 text-sm text-foreground hover:bg-muted transition-colors"
+                  className="inline-flex items-center gap-1.5 rounded-md border border-border bg-muted/50 px-3 py-1.5 text-sm text-foreground hover:bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   <Icon className="h-3.5 w-3.5 text-primary" />
                   {section.title}
-                </a>
+                </Link>
               );
             })}
           </div>
@@ -104,7 +104,7 @@ export default function FaqPage() {
                     <Icon className="h-4 w-4 text-primary" />
                   </div>
                   <div>
-                    <CardTitle className="text-lg text-foreground">
+                    <CardTitle as="h2" className="text-lg text-foreground">
                       {section.title}
                     </CardTitle>
                     <p className="text-sm text-muted-foreground">

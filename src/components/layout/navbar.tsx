@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import {
   Dice6,
   LayoutDashboard,
@@ -50,18 +51,19 @@ export function Navbar() {
         {/* Logo */}
         <Link
           href="/dashboard"
-          className="mr-1 flex shrink-0 items-center gap-2 no-underline"
+          aria-label="Dashboard"
+          className="mr-1 flex shrink-0 items-center gap-2 no-underline rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
-            <Dice6 className="h-[18px] w-[18px] text-primary" />
+            <Dice6 className="h-[18px] w-[18px] text-primary" aria-hidden="true" />
           </div>
         </Link>
 
         {/* Version badge */}
         <Link
           href="/dashboard/changelog"
-          title="Versionshistorie"
-          className="shrink-0 rounded bg-muted px-1.5 py-0.5 text-[10px] font-semibold leading-4 text-muted-foreground no-underline"
+          aria-label={`Versionshistorie v${currentVersion}`}
+          className="shrink-0 rounded bg-muted px-1.5 py-0.5 text-[10px] font-semibold leading-4 text-muted-foreground no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           suppressHydrationWarning
         >
           v{currentVersion}
@@ -77,16 +79,15 @@ export function Navbar() {
               <Link
                 key={item.name}
                 href={item.href}
-                title={item.name}
                 aria-label={item.name}
                 className={cn(
-                  "navbar-link flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-md px-2.5 py-[7px] text-[13px] font-medium no-underline transition-colors",
+                  "navbar-link flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-md px-2.5 py-[7px] text-[13px] font-medium no-underline transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                   isActive
                     ? "navbar-link-active bg-primary text-primary-foreground"
                     : "bg-transparent text-muted-foreground"
                 )}
               >
-                <item.icon className="h-4 w-4 shrink-0" />
+                <item.icon className="h-4 w-4 shrink-0" aria-hidden="true" />
                 <span className="nav-label">{item.name}</span>
               </Link>
             );
@@ -104,16 +105,15 @@ export function Navbar() {
                   <Link
                     key={item.name}
                     href={item.href}
-                    title={item.name}
                     aria-label={item.name}
                     className={cn(
-                      "flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-md px-2.5 py-[7px] text-[13px] font-medium no-underline transition-colors",
+                      "flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-md px-2.5 py-[7px] text-[13px] font-medium no-underline transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                       isActive
                         ? "bg-primary text-primary-foreground"
                         : "bg-transparent text-muted-foreground"
                     )}
                   >
-                    <item.icon className="h-4 w-4 shrink-0" />
+                    <item.icon className="h-4 w-4 shrink-0" aria-hidden="true" />
                     <span className="nav-label">{item.name}</span>
                   </Link>
                 );
@@ -128,9 +128,9 @@ export function Navbar() {
             <>
               <Link
                 href="/dashboard/profile"
-                title="Mein Profil"
+                aria-label="Mein Profil"
                 className={cn(
-                  "flex items-center gap-1.5 rounded-md px-2 py-1 text-[13px] no-underline transition-colors",
+                  "flex items-center gap-1.5 rounded-md px-2 py-1 text-[13px] no-underline transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                   pathname.startsWith("/dashboard/profile")
                     ? "text-primary"
                     : "text-foreground"
@@ -144,20 +144,21 @@ export function Navbar() {
                       : "bg-primary/10"
                   )}
                 >
-                  <User className="h-3.5 w-3.5 text-primary" />
+                  <User className="h-3.5 w-3.5 text-primary" aria-hidden="true" />
                 </div>
                 <span className="nav-label font-medium">
                   {session.user.name || session.user.email}
                 </span>
               </Link>
-              <button
+              <Button
+                variant="ghost"
+                size="sm"
                 onClick={() => signOut({ callbackUrl: "/login" })}
-                title="Abmelden"
                 aria-label="Abmelden"
-                className="flex cursor-pointer items-center gap-1.5 rounded-md border-none bg-transparent px-2.5 py-[7px] text-[13px] font-medium text-muted-foreground transition-colors"
+                className="text-muted-foreground hover:text-foreground"
               >
-                <LogOut className="h-4 w-4" />
-              </button>
+                <LogOut className="h-4 w-4" aria-hidden="true" />
+              </Button>
             </>
           )}
         </div>

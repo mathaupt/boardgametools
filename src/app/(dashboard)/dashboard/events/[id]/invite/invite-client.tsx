@@ -1,10 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { ArrowLeft, Mail } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+import { formatDate } from "@/lib/date";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
@@ -28,7 +30,6 @@ interface InviteClientProps {
 }
 
 export default function InviteClient({ initialEvent, initialUsers, eventId }: InviteClientProps) {
-  const router = useRouter();
   const { toast } = useToast();
 
   const [event] = useState<EventData>(initialEvent);
@@ -104,15 +105,18 @@ export default function InviteClient({ initialEvent, initialUsers, eventId }: In
 
   return (
     <div className="space-y-6">
+      <h1 className="sr-only">Einladungen verwalten: {event.title}</h1>
       <div className="flex items-center gap-4">
-        <button onClick={() => router.push(`/dashboard/events/${eventId}`)} className="text-muted-foreground hover:text-foreground flex items-center gap-2">
-          <ArrowLeft className="h-4 w-4" />Zurueck zum Event
-        </button>
+        <Button variant="ghost" asChild>
+          <Link href={`/dashboard/events/${eventId}`} className="flex items-center gap-2">
+            <ArrowLeft className="h-4 w-4" aria-hidden="true" />Zurück zum Event
+          </Link>
+        </Button>
       </div>
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2"><Mail className="h-5 w-5" />Einladungen verwalten</CardTitle>
-          <CardDescription>{event.title} - {new Date(event.eventDate).toLocaleDateString("de-DE")}</CardDescription>
+          <CardTitle className="flex items-center gap-2" as="h2"><Mail className="h-5 w-5" aria-hidden="true" />Einladungen verwalten</CardTitle>
+          <CardDescription>{event.title} - {formatDate(event.eventDate)}</CardDescription>
         </CardHeader>
       </Card>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -122,7 +126,7 @@ export default function InviteClient({ initialEvent, initialUsers, eventId }: In
       <InviteStatusSummary invites={invites} />
       <AlertDialog open={removeDialogOpen} onOpenChange={setRemoveDialogOpen}>
         <AlertDialogContent>
-          <AlertDialogHeader><AlertDialogTitle>Einladung entfernen</AlertDialogTitle><AlertDialogDescription>Moechtest du diese Einladung wirklich entfernen?</AlertDialogDescription></AlertDialogHeader>
+          <AlertDialogHeader><AlertDialogTitle>Einladung entfernen</AlertDialogTitle><AlertDialogDescription>Möchtest du diese Einladung wirklich entfernen?</AlertDialogDescription></AlertDialogHeader>
           <AlertDialogFooter><AlertDialogCancel>Abbrechen</AlertDialogCancel><AlertDialogAction onClick={confirmRemoveInvite}>Entfernen</AlertDialogAction></AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

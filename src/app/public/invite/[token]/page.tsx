@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, MapPin, Users, Gamepad2, Check, X, Loader2 } from "lucide-react";
+import { formatLongDateWithWeekday, formatTime } from "@/lib/date";
 
 interface InviteData {
   id: string;
@@ -83,8 +84,8 @@ export default function PublicInvitePage() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-background text-foreground">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      <div className="flex min-h-screen items-center justify-center bg-background text-foreground" role="status" aria-label="Wird geladen">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" aria-hidden="true" />
       </div>
     );
   }
@@ -94,7 +95,7 @@ export default function PublicInvitePage() {
       <div className="flex min-h-screen items-center justify-center bg-background px-4 text-foreground">
         <Card className="w-full max-w-md border-border bg-card">
           <CardContent className="py-12 text-center">
-            <X className="mx-auto mb-4 h-12 w-12 text-destructive" />
+            <X className="mx-auto mb-4 h-12 w-12 text-destructive" aria-label="Fehler" />
             <h2 className="text-lg font-semibold text-foreground">Einladung nicht gefunden</h2>
             <p className="mt-2 text-sm text-muted-foreground">{error}</p>
           </CardContent>
@@ -115,7 +116,7 @@ export default function PublicInvitePage() {
         {/* Header */}
         <div className="rounded-3xl border border-border bg-card p-6 shadow-2xl">
           <div className="inline-flex items-center gap-2 rounded-full border border-border bg-muted px-3 py-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-            <Users className="h-4 w-4" /> Einladung zum Spieleabend
+            <Users className="h-4 w-4" aria-hidden="true" /> Einladung zum Spieleabend
           </div>
           <h1 className="mt-4 text-3xl font-bold tracking-tight text-foreground">
             {invite.event.title}
@@ -131,32 +132,26 @@ export default function PublicInvitePage() {
         {/* Event Details */}
         <Card className="mt-6 border-border bg-card">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-lg text-foreground">
-              <Calendar className="h-5 w-5" /> Details
+            <CardTitle className="flex items-center gap-2 text-lg text-foreground" as="h2">
+              <Calendar className="h-5 w-5" aria-hidden="true" /> Details
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="flex items-center gap-3 text-sm">
-              <Calendar className="h-4 w-4 text-muted-foreground" />
+              <Calendar className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
               <span>
-                {eventDate.toLocaleDateString("de-DE", {
-                  weekday: "long",
-                  day: "numeric",
-                  month: "long",
-                  year: "numeric",
-                })}
-                {" um "}
-                {eventDate.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" })}
+                {formatLongDateWithWeekday(eventDate)}{" "}
+                {formatTime(eventDate)}
               </span>
             </div>
             {invite.event.location && (
               <div className="flex items-center gap-3 text-sm">
-                <MapPin className="h-4 w-4 text-muted-foreground" />
+                <MapPin className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
                 <span>{invite.event.location}</span>
               </div>
             )}
             <div className="flex items-center gap-3 text-sm">
-              <Users className="h-4 w-4 text-muted-foreground" />
+              <Users className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
               <span>{invite.event.inviteCount} eingeladene Personen</span>
             </div>
             <div className="pt-2">
@@ -171,8 +166,8 @@ export default function PublicInvitePage() {
         {invite.event.proposals.length > 0 && (
           <Card className="mt-6 border-border bg-card">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-lg text-foreground">
-                <Gamepad2 className="h-5 w-5" /> Spielvorschläge
+              <CardTitle className="flex items-center gap-2 text-lg text-foreground" as="h2">
+                <Gamepad2 className="h-5 w-5" aria-hidden="true" /> Spielvorschläge
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -203,7 +198,7 @@ export default function PublicInvitePage() {
           <CardContent className="py-8">
             {responseMessage ? (
               <div className="text-center">
-                <Check className="mx-auto mb-3 h-12 w-12 text-success" />
+                <Check className="mx-auto mb-3 h-12 w-12 text-success" aria-hidden="true" />
                 <h3 className="text-lg font-semibold text-foreground">{responseMessage}</h3>
                 <p className="mt-2 text-sm text-muted-foreground">
                   Der Organisator wurde benachrichtigt.
@@ -234,9 +229,9 @@ export default function PublicInvitePage() {
                     className="w-full sm:min-w-[140px] sm:w-auto"
                   >
                     {responding ? (
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
                     ) : (
-                      <Check className="mr-2 h-4 w-4" />
+                      <Check className="mr-2 h-4 w-4" aria-hidden="true" />
                     )}
                     Zusagen
                   </Button>
@@ -248,9 +243,9 @@ export default function PublicInvitePage() {
                     className="w-full sm:min-w-[140px] sm:w-auto"
                   >
                     {responding ? (
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
                     ) : (
-                      <X className="mr-2 h-4 w-4" />
+                      <X className="mr-2 h-4 w-4" aria-hidden="true" />
                     )}
                     Absagen
                   </Button>

@@ -46,10 +46,10 @@ export default function ForgotPasswordPage() {
           <CardHeader className="text-center pb-2">
             <div className="flex justify-center mb-3">
               <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-success/10">
-                <CheckCircle2 className="h-7 w-7 text-success" />
+                <CheckCircle2 className="h-7 w-7 text-success" aria-hidden="true" />
               </div>
             </div>
-            <CardTitle className="text-2xl tracking-tight">E-Mail gesendet</CardTitle>
+            <CardTitle as="h1" className="text-2xl tracking-tight">E-Mail gesendet</CardTitle>
             <CardDescription className="pt-2">
               Falls ein Konto mit <strong>{email}</strong> existiert, erhältst du in Kürze eine E-Mail mit einem Link zum Zurücksetzen deines Passworts.
             </CardDescription>
@@ -62,13 +62,14 @@ export default function ForgotPasswordPage() {
           </CardContent>
           <CardFooter className="flex flex-col gap-3">
             <Button
+              type="button"
               variant="outline"
               className="w-full"
               onClick={() => { setSent(false); setEmail(""); }}
             >
               Erneut senden
             </Button>
-            <Link href="/login" className="text-sm text-primary font-medium hover:underline">
+            <Link href="/login" className="text-sm text-primary font-medium hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm">
               Zurück zur Anmeldung
             </Link>
           </CardFooter>
@@ -83,10 +84,10 @@ export default function ForgotPasswordPage() {
         <CardHeader className="text-center pb-2">
           <div className="flex justify-center mb-3">
             <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary shadow-md">
-              <Dice6 className="h-7 w-7 text-primary-foreground" />
+              <Dice6 className="h-7 w-7 text-primary-foreground" aria-hidden="true" />
             </div>
           </div>
-          <CardTitle className="text-2xl tracking-tight">Passwort vergessen?</CardTitle>
+          <CardTitle as="h1" className="text-2xl tracking-tight">Passwort vergessen?</CardTitle>
           <CardDescription>
             Gib deine E-Mail-Adresse ein und wir senden dir einen Link zum Zurücksetzen.
           </CardDescription>
@@ -94,13 +95,13 @@ export default function ForgotPasswordPage() {
         <form onSubmit={handleSubmit}>
           <CardContent className="space-y-4">
             {error && (
-              <div className="p-3 text-sm text-destructive bg-destructive/10 rounded-lg">
+              <div className="p-3 text-sm text-destructive bg-destructive/10 rounded-lg" role="alert" aria-live="polite">
                 {error}
               </div>
             )}
             <div className="space-y-2">
               <Label htmlFor="email" className="flex items-center gap-2">
-                <Mail className="h-4 w-4" />
+                <Mail className="h-4 w-4" aria-hidden="true" />
                 E-Mail-Adresse
               </Label>
               <Input
@@ -111,19 +112,18 @@ export default function ForgotPasswordPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 autoComplete="email"
-                autoFocus
               />
             </div>
           </CardContent>
           <CardFooter className="flex flex-col gap-4">
             <Button type="submit" className="w-full" disabled={isLoading || !email.trim()}>
-              {isLoading ? "Wird gesendet..." : "Link senden"}
+              {isLoading ? "Wird gesendet…" : "Link senden"}
             </Button>
             <Link
               href="/login"
-              className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+              className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm"
             >
-              <ArrowLeft className="h-3.5 w-3.5" />
+              <ArrowLeft className="h-3.5 w-3.5" aria-hidden="true" />
               Zurück zur Anmeldung
             </Link>
           </CardFooter>

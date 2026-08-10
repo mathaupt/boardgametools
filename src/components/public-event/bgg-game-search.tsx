@@ -147,8 +147,8 @@ export function BggGameSearch({
     <section>
       <Card className="border-border/60 bg-background/70">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-lg">
-            <Globe className="h-5 w-5" />
+          <CardTitle className="flex items-center gap-2 text-lg" as="h2">
+            <Globe className="h-5 w-5" aria-hidden="true" />
             Spiel von BoardGameGeek vorschlagen
           </CardTitle>
           <CardDescription>
@@ -164,7 +164,7 @@ export function BggGameSearch({
 
           <div className="flex flex-col gap-2 sm:flex-row">
             <Input
-              placeholder="Spielname eingeben (z.B. Catan, Azul, ...)"
+              placeholder="Spielname eingeben (z.B. Catan, Azul, …)"
               value={bggQuery}
               onChange={(e) => setBggQuery(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleBggSearch()}
@@ -176,11 +176,11 @@ export function BggGameSearch({
               disabled={bggLoading || bggQuery.trim().length < 2}
             >
               {bggLoading ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
               ) : (
-                <Search className="mr-2 h-4 w-4" />
+                <Search className="mr-2 h-4 w-4" aria-hidden="true" />
               )}
-              {bggLoading ? "Suche..." : "BGG Suchen"}
+              {bggLoading ? "Suche…" : "BGG Suchen"}
             </Button>
           </div>
 
@@ -225,32 +225,34 @@ export function BggGameSearch({
                   className="flex-1"
                 >
                   {bggProposing ? (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
                   ) : (
-                    <Plus className="mr-2 h-4 w-4" />
+                    <Plus className="mr-2 h-4 w-4" aria-hidden="true" />
                   )}
-                  {bggProposing ? "Wird vorgeschlagen..." : "Vorschlagen"}
+                  {bggProposing ? "Wird vorgeschlagen…" : "Vorschlagen"}
                 </Button>
                 <Button
                   variant="outline"
                   size="icon"
                   onClick={() => setBggDetail(null)}
                   title="Schließen"
+                  aria-label="Details schließen"
                 >
-                  <X className="h-4 w-4" />
+                  <X className="h-4 w-4" aria-hidden="true" />
                 </Button>
                 <Button
                   variant="outline"
                   size="icon"
                   asChild
                   title="Auf BGG ansehen"
+                  aria-label="Auf BoardGameGeek ansehen"
                 >
                   <a
                     href={`https://boardgamegeek.com/boardgame/${bggDetail.bggId}`}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    <ExternalLink className="h-4 w-4" />
+                    <ExternalLink className="h-4 w-4" aria-hidden="true" />
                   </a>
                 </Button>
               </div>
@@ -279,7 +281,7 @@ export function BggGameSearch({
                       />
                     ) : (
                       <div className="flex h-10 w-10 items-center justify-center rounded bg-muted/40">
-                        <Gamepad2 className="h-5 w-5 text-muted-foreground" />
+                        <Gamepad2 className="h-5 w-5 text-muted-foreground" aria-hidden="true" />
                       </div>
                     )}
                   </div>
@@ -298,12 +300,13 @@ export function BggGameSearch({
                       onClick={() => handleBggDetail(result.bggId)}
                       disabled={bggDetailLoading === result.bggId}
                       title="Details anzeigen"
+                      aria-label="Details anzeigen"
                       className="h-8 w-8 sm:h-8 sm:w-auto sm:px-3"
                     >
                       {bggDetailLoading === result.bggId ? (
-                        <Loader2 className="h-4 w-4 animate-spin sm:mr-1 sm:h-3 sm:w-3" />
+                        <Loader2 className="h-4 w-4 animate-spin sm:mr-1 sm:h-3 sm:w-3" aria-hidden="true" />
                       ) : (
-                        <Search className="h-4 w-4 sm:mr-1 sm:h-3 sm:w-3" />
+                        <Search className="h-4 w-4 sm:mr-1 sm:h-3 sm:w-3" aria-hidden="true" />
                       )}
                       <span className="hidden sm:inline text-xs">Details</span>
                     </Button>
@@ -313,12 +316,13 @@ export function BggGameSearch({
                       onClick={() => handleBggPropose(result.bggId)}
                       disabled={bggProposing || (!activeGuestId && !currentUserId)}
                       title="Spiel vorschlagen"
+                      aria-label="Spiel vorschlagen"
                       className="h-8 w-8 sm:h-8 sm:w-auto sm:px-3"
                     >
                       {bggProposing ? (
-                        <Loader2 className="h-4 w-4 animate-spin sm:mr-1 sm:h-3 sm:w-3" />
+                        <Loader2 className="h-4 w-4 animate-spin sm:mr-1 sm:h-3 sm:w-3" aria-hidden="true" />
                       ) : (
-                        <Plus className="h-4 w-4 sm:mr-1 sm:h-3 sm:w-3" />
+                        <Plus className="h-4 w-4 sm:mr-1 sm:h-3 sm:w-3" aria-hidden="true" />
                       )}
                       <span className="hidden sm:inline text-xs">Vorschlagen</span>
                     </Button>

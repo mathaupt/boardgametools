@@ -31,7 +31,7 @@ export default function ProposalRankingList({
   return (
     <>
       <h2 className="text-xl font-bold flex items-center gap-2">
-        <Trophy className="h-5 w-5 text-warning" />
+        <Trophy className="h-5 w-5 text-warning" aria-hidden="true" />
         Voting-Rangliste
       </h2>
       
@@ -64,7 +64,7 @@ export default function ProposalRankingList({
                         />
                       ) : (
                         <div className="w-12 h-12 rounded-lg bg-muted border border-border flex items-center justify-center">
-                          <Gamepad2 className="h-6 w-6 text-muted-foreground" />
+                          <Gamepad2 className="h-6 w-6 text-muted-foreground" aria-hidden="true" />
                         </div>
                       )}
                     </div>
@@ -75,13 +75,13 @@ export default function ProposalRankingList({
                     }`}>
                       {index + 1}
                     </div>
-                    <CardTitle className="text-lg">{proposal.game.name}</CardTitle>
+                    <CardTitle className="text-lg" as="h2">{proposal.game.name}</CardTitle>
                   </div>
                   
                   {/* Spiel-Details */}
                   <div className="flex flex-wrap gap-2 mb-3">
                     <Badge variant="outline" className="flex items-center gap-1">
-                      <Users className="h-3 w-3" />
+                      <Users className="h-3 w-3" aria-hidden="true" />
                       {proposal.game.minPlayers}-{proposal.game.maxPlayers} Spieler
                     </Badge>
                     
@@ -93,7 +93,7 @@ export default function ProposalRankingList({
                     
                     {proposal.game.complexity && (
                       <Badge variant="outline" className="flex items-center gap-1">
-                        <Star className="h-3 w-3" />
+                        <Star className="h-3 w-3" aria-hidden="true" />
                         {"★".repeat(proposal.game.complexity)}{"☆".repeat(5 - proposal.game.complexity)}
                       </Badge>
                     )}
@@ -119,9 +119,9 @@ export default function ProposalRankingList({
                       aria-label="Vorschlag löschen"
                     >
                       {deletingProposal === proposal.id ? (
-                        <span className="text-xs">...</span>
+                        <span className="text-xs">…</span>
                       ) : (
-                        <Trash2 className="h-4 w-4" />
+                        <Trash2 className="h-4 w-4" aria-hidden="true" />
                       )}
                     </Button>
                   )}
@@ -145,13 +145,13 @@ export default function ProposalRankingList({
                 >
                   {proposal.userVoted ? (
                     <>
-                      <X className="h-4 w-4" />
+                      <X className="h-4 w-4" aria-hidden="true" />
                       Vote entfernen
                     </>
                   ) : (
                     <>
-                      <Vote className="h-4 w-4" />
-                      {voting === proposal.id ? 'Wird abgestimmt...' : 'Vote'}
+                      <Vote className="h-4 w-4" aria-hidden="true" />
+                      {voting === proposal.id ? 'Wird abgestimmt…' : 'Vote'}
                     </>
                   )}
                 </Button>

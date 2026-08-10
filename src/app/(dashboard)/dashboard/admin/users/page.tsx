@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Shield, Mail, User } from "lucide-react";
+import { formatDate } from "@/lib/date";
 import { CreateUserModal } from "@/components/admin/create-user-modal";
 import { UserActions } from "@/components/admin/user-actions";
 
@@ -47,7 +48,7 @@ export default async function AdminUsersPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle as="h2" className="flex items-center gap-2">
             <Shield className="h-5 w-5" />
             Alle Benutzer ({users.length})
           </CardTitle>
@@ -79,7 +80,7 @@ export default async function AdminUsersPage() {
                         {user.email}
                       </div>
                       <span>•</span>
-                      <span>Seit {user.createdAt.toLocaleDateString("de-DE")}</span>
+                      <span>Seit {formatDate(user.createdAt)}</span>
                       <span>•</span>
                       <span>{user._count.ownedGames} Spiele</span>
                       <span>•</span>

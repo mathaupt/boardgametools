@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { ArrowLeft, Mail } from "lucide-react";
+import Link from "next/link";
 import { useToast } from "@/components/ui/use-toast";
 
 export default function NewEventPage() {
@@ -71,13 +72,12 @@ export default function NewEventPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4">
-        <button
-          onClick={() => router.push("/dashboard/events")}
-          className="text-muted-foreground hover:text-foreground flex items-center gap-2"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Zurück zu Events
-        </button>
+        <Button variant="ghost" asChild>
+          <Link href="/dashboard/events" className="flex items-center gap-2">
+            <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+            Zurück zu Events
+          </Link>
+        </Button>
       </div>
 
       <div>
@@ -88,7 +88,7 @@ export default function NewEventPage() {
       <form onSubmit={handleSubmit} className="space-y-6">
         <Card>
           <CardHeader>
-            <CardTitle>Event Details</CardTitle>
+            <CardTitle as="h2">Event Details</CardTitle>
             <CardDescription>Grundlegende Informationen zum Event</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -145,8 +145,8 @@ export default function NewEventPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Mail className="h-5 w-5" />
+            <CardTitle as="h2" className="flex items-center gap-2">
+              <Mail className="h-5 w-5" aria-hidden="true" />
               Einladungen
             </CardTitle>
             <CardDescription>
@@ -184,7 +184,7 @@ export default function NewEventPage() {
             type="submit"
             disabled={loading}
           >
-            {loading ? 'Wird erstellt...' : 'Event erstellen'}
+            {loading ? 'Wird erstellt…' : 'Event erstellen'}
           </Button>
         </div>
       </form>

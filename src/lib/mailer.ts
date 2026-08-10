@@ -1,6 +1,7 @@
 import nodemailer from "nodemailer";
 import { env } from "@/lib/env";
 import logger from "@/lib/logger";
+import { formatFullDateTime, formatShortDateTime } from "@/lib/date";
 
 const smtpHost = env.SMTP_HOST;
 const smtpPort = Number(env.SMTP_PORT);
@@ -36,14 +37,7 @@ function ensureTransporter() {
 }
 
 function formatDate(date: Date | string) {
-  return new Date(date).toLocaleDateString("de-DE", {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  return formatFullDateTime(date);
 }
 
 function htmlLayout(body: string) {
@@ -72,7 +66,7 @@ function buttonHtml(url: string, label: string) {
 
 export async function sendPasswordResetEmail(to: string, resetUrl: string, expiresAt: Date) {
   const t = ensureTransporter();
-  const formattedExpiry = expiresAt.toLocaleString("de-DE", { dateStyle: "short", timeStyle: "short" });
+  const formattedExpiry = formatShortDateTime(expiresAt);
 
   await t.sendMail({
     from: defaultSender,

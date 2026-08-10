@@ -51,14 +51,14 @@ export default function GameProposalPanel({
   return (
     <>
       <h2 className="text-xl font-bold flex items-center gap-2">
-        <Plus className="h-5 w-5" />
+        <Plus className="h-5 w-5" aria-hidden="true" />
         Spiel vorschlagen
       </h2>
       
       <Card>
         <CardHeader>
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
-            <CardTitle className="text-lg">Spiel auswählen</CardTitle>
+            <CardTitle className="text-lg" as="h2">Spiel auswählen</CardTitle>
             <div className="flex gap-2">
               <Button
                 variant={activeTab === "collection" ? "default" : "outline"}
@@ -95,7 +95,8 @@ export default function GameProposalPanel({
                 <>
                   <div className="flex gap-2">
                     <Input
-                      placeholder="Spiel suchen..."
+                      placeholder="Spiel suchen…"
+                      aria-label="Spiel in Sammlung suchen"
                       value={collectionSearch}
                       onChange={(e) => onCollectionSearchChange(e.target.value)}
                     />
@@ -120,7 +121,7 @@ export default function GameProposalPanel({
                               />
                             ) : (
                               <div className="w-10 h-10 rounded-lg bg-muted border border-border flex items-center justify-center">
-                                <Gamepad2 className="h-5 w-5 text-muted-foreground" />
+                                <Gamepad2 className="h-5 w-5 text-muted-foreground" aria-hidden="true" />
                               </div>
                             )}
                           </div>
@@ -137,7 +138,7 @@ export default function GameProposalPanel({
                           onClick={() => onAddProposal(game.id)}
                           className="flex items-center gap-1"
                         >
-                          <Plus className="h-3 w-3" />
+                          <Plus className="h-3 w-3" aria-hidden="true" />
                           Vorschlagen
                         </Button>
                       </div>
@@ -151,14 +152,15 @@ export default function GameProposalPanel({
             <>
               <div className="flex gap-2">
                 <Input
-                  placeholder="z.B. Catan, Monopoly, Carcassonne..."
+                  placeholder="z.B. Catan, Monopoly, Carcassonne…"
+                  aria-label="Spiel bei BGG suchen"
                   value={searchQuery}
                   onChange={(e) => onSearchQueryChange(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && onBggSearch()}
+                  onKeyDown={(e) => e.key === 'Enter' && onBggSearch()}
                 />
                 <Button onClick={onBggSearch} disabled={bggLoading}>
-                  <Search className="h-4 w-4 mr-2" />
-                  {bggLoading ? 'Suche...' : 'Suchen'}
+                  <Search className="h-4 w-4 mr-2" aria-hidden="true" />
+                  {bggLoading ? 'Suche…' : 'Suchen'}
                 </Button>
               </div>
 
@@ -182,7 +184,7 @@ export default function GameProposalPanel({
                             />
                           ) : (
                             <div className="w-10 h-10 rounded-lg bg-muted border border-border flex items-center justify-center">
-                              <Gamepad2 className="h-5 w-5 text-muted-foreground" />
+                              <Gamepad2 className="h-5 w-5 text-muted-foreground" aria-hidden="true" />
                             </div>
                           )}
                         </div>
@@ -200,17 +202,18 @@ export default function GameProposalPanel({
                           onClick={() => onBggImport(game.bggId)}
                           className="flex items-center gap-1"
                         >
-                          <Plus className="h-3 w-3" />
+                          <Plus className="h-3 w-3" aria-hidden="true" />
                           Importieren
                         </Button>
-                        <a
-                          href={`https://boardgamegeek.com/boardgame/${game.bggId}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-primary hover:text-primary/80"
-                        >
-                          <ExternalLink className="h-4 w-4" />
-                        </a>
+                        <Button variant="ghost" size="icon" asChild aria-label="Auf BoardGameGeek ansehen">
+                          <a
+                            href={`https://boardgamegeek.com/boardgame/${game.bggId}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            <ExternalLink className="h-4 w-4" aria-hidden="true" />
+                          </a>
+                        </Button>
                       </div>
                     </div>
                   ))}

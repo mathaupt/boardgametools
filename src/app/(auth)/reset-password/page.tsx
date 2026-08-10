@@ -27,19 +27,19 @@ function ResetPasswordForm() {
         <CardHeader className="text-center pb-2">
           <div className="flex justify-center mb-3">
             <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-destructive/10">
-              <AlertTriangle className="h-7 w-7 text-destructive" />
+              <AlertTriangle className="h-7 w-7 text-destructive" aria-hidden="true" />
             </div>
           </div>
-          <CardTitle className="text-2xl tracking-tight">Ungültiger Link</CardTitle>
+          <CardTitle as="h1" className="text-2xl tracking-tight">Ungültiger Link</CardTitle>
           <CardDescription>
             Dieser Link ist ungültig oder unvollständig. Bitte fordere einen neuen Link an.
           </CardDescription>
         </CardHeader>
         <CardFooter className="flex flex-col gap-3 pt-2">
-          <Link href="/passwort-vergessen" className="w-full">
-            <Button className="w-full">Neuen Link anfordern</Button>
-          </Link>
-          <Link href="/login" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+          <Button asChild className="w-full">
+            <Link href="/passwort-vergessen">Neuen Link anfordern</Link>
+          </Button>
+          <Link href="/login" className="text-sm text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm">
             Zurück zur Anmeldung
           </Link>
         </CardFooter>
@@ -54,18 +54,18 @@ function ResetPasswordForm() {
         <CardHeader className="text-center pb-2">
           <div className="flex justify-center mb-3">
             <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-success/10">
-              <CheckCircle2 className="h-7 w-7 text-success" />
+              <CheckCircle2 className="h-7 w-7 text-success" aria-hidden="true" />
             </div>
           </div>
-          <CardTitle className="text-2xl tracking-tight">Passwort geändert</CardTitle>
+          <CardTitle as="h1" className="text-2xl tracking-tight">Passwort geändert</CardTitle>
           <CardDescription>
             Dein Passwort wurde erfolgreich zurückgesetzt. Du kannst dich jetzt mit deinem neuen Passwort anmelden.
           </CardDescription>
         </CardHeader>
         <CardFooter className="pt-2">
-          <Link href="/login" className="w-full">
-            <Button className="w-full">Zur Anmeldung</Button>
-          </Link>
+          <Button asChild className="w-full">
+            <Link href="/login">Zur Anmeldung</Link>
+          </Button>
         </CardFooter>
       </Card>
     );
@@ -117,23 +117,23 @@ function ResetPasswordForm() {
       <CardHeader className="text-center pb-2">
         <div className="flex justify-center mb-3">
           <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary shadow-md">
-            <Dice6 className="h-7 w-7 text-primary-foreground" />
+            <Dice6 className="h-7 w-7 text-primary-foreground" aria-hidden="true" />
           </div>
         </div>
-        <CardTitle className="text-2xl tracking-tight">Neues Passwort</CardTitle>
+        <CardTitle as="h1" className="text-2xl tracking-tight">Neues Passwort</CardTitle>
         <CardDescription>Wähle ein neues Passwort für dein Konto.</CardDescription>
       </CardHeader>
       <form onSubmit={handleSubmit}>
         <CardContent className="space-y-4">
           {error && (
-            <div className="p-3 text-sm text-destructive bg-destructive/10 rounded-lg border border-destructive/20">
+            <div className="p-3 text-sm text-destructive bg-destructive/10 rounded-lg border border-destructive/20" role="alert" aria-live="polite">
               {error}
             </div>
           )}
 
           <div className="space-y-2">
             <Label htmlFor="password" className="flex items-center gap-2">
-              <Lock className="h-4 w-4" />
+              <Lock className="h-4 w-4" aria-hidden="true" />
               Neues Passwort
             </Label>
             <div className="relative">
@@ -146,7 +146,6 @@ function ResetPasswordForm() {
                 required
                 minLength={8}
                 autoComplete="new-password"
-                autoFocus
                 className="pr-10"
               />
               <Button
@@ -155,11 +154,12 @@ function ResetPasswordForm() {
                 size="sm"
                 className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
                 onClick={() => setShowPassword(!showPassword)}
+                aria-label={showPassword ? "Passwort verbergen" : "Passwort anzeigen"}
               >
                 {showPassword ? (
-                  <EyeOff className="h-4 w-4 text-muted-foreground" />
+                  <EyeOff className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
                 ) : (
-                  <Eye className="h-4 w-4 text-muted-foreground" />
+                  <Eye className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
                 )}
               </Button>
             </div>
@@ -194,11 +194,11 @@ function ResetPasswordForm() {
             className="w-full"
             disabled={isLoading || !passwordLongEnough || !passwordsMatch}
           >
-            {isLoading ? "Wird gespeichert..." : "Passwort zurücksetzen"}
+            {isLoading ? "Wird gespeichert…" : "Passwort zurücksetzen"}
           </Button>
           <Link
             href="/login"
-            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            className="text-sm text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm"
           >
             Zurück zur Anmeldung
           </Link>
@@ -215,7 +215,7 @@ export default function ResetPasswordPage() {
         fallback={
           <Card className="w-full max-w-md shadow-lg">
             <CardContent className="py-12 text-center text-muted-foreground">
-              Laden...
+              Laden…
             </CardContent>
           </Card>
         }

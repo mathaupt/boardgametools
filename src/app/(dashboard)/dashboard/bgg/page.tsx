@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Search, Plus, Star, Users, Clock, ExternalLink } from "lucide-react";
+import { Search, Plus, Star, Users, Clock, ExternalLink, Trophy } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 
 interface BGGGame {
@@ -40,7 +40,8 @@ export default function BGGImportPage() {
   const [searching, setSearching] = useState(false);
   const [importing, setImporting] = useState(false);
 
-  const handleSearch = async () => {
+  const handleSearch = async (e: React.FormEvent) => {
+    e.preventDefault();
     if (!searchQuery.trim()) return;
 
     setSearching(true);
@@ -139,24 +140,24 @@ export default function BGGImportPage() {
       {/* Search */}
       <Card>
         <CardHeader>
-          <CardTitle>Spiel suchen</CardTitle>
+          <CardTitle as="h2">Spiel suchen</CardTitle>
           <CardDescription>
             Suche nach Brettspielen auf BoardGameGeek
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="flex gap-2">
+          <form onSubmit={handleSearch} className="flex gap-2">
             <Input
-              placeholder="z.B. Catan, Monopoly, Carcassonne..."
+              placeholder="z.B. Catan, Monopoly, Carcassonne…"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+              aria-label="Spiel suchen"
             />
-            <Button onClick={handleSearch} disabled={searching}>
-              <Search className="h-4 w-4 mr-2" />
-              {searching ? 'Suche...' : 'Suchen'}
+            <Button type="submit" disabled={searching} aria-label={searching ? 'Suche läuft' : 'Suchen'}>
+              <Search className="h-4 w-4" aria-hidden="true" />
+              <span className="ml-2">{searching ? 'Suche…' : 'Suchen'}</span>
             </Button>
-          </div>
+          </form>
         </CardContent>
       </Card>
 
@@ -164,14 +165,13 @@ export default function BGGImportPage() {
       {searchResults.length > 0 && !selectedGame && (
         <Card>
           <CardHeader>
-            <CardTitle>Suchergebnisse ({searchResults.length})</CardTitle>
+            <CardTitle as="h2">Suchergebnisse ({searchResults.length})</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
             {searchResults.map((game) => (
               <div
                 key={game.bggId}
-                className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50 cursor-pointer"
-                onClick={() => handleSelectGame(game.bggId)}
+                className="flex items-center justify-between p-3 border rounded-lg"
               >
                 <div>
                   <div className="font-medium">{game.name}</div>
@@ -179,7 +179,12 @@ export default function BGGImportPage() {
                     <div className="text-sm text-muted-foreground">{game.yearPublished}</div>
                   )}
                 </div>
-                <Button variant="outline" size="sm">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleSelectGame(game.bggId)}
+                  aria-label={`Details für ${game.name}`}
+                >
                   Details
                 </Button>
               </div>
@@ -194,7 +199,7 @@ export default function BGGImportPage() {
           <CardHeader>
             <div className="flex items-start justify-between">
               <div>
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle as="h2" className="flex items-center gap-2">
                   {selectedGame.name}
                   <Badge variant="outline">
                     BGG ID: {selectedGame.bggId}
@@ -209,8 +214,8 @@ export default function BGGImportPage() {
                 disabled={importing}
                 className="flex items-center gap-2"
               >
-                <Plus className="h-4 w-4" />
-                {importing ? 'Wird importiert...' : 'Importieren'}
+                <Plus className="h-4 w-4" aria-hidden="true" />
+                {importing ? 'Wird importiert…' : 'Importieren'}
               </Button>
             </div>
           </CardHeader>
@@ -224,6 +229,7 @@ export default function BGGImportPage() {
                     alt={selectedGame.name}
                     width={400}
                     height={400}
+                    sizes="(max-width: 768px) 100vw, 400px"
                     className="w-full rounded-lg"
                   />
                 ) : (
@@ -238,9 +244,9 @@ export default function BGGImportPage() {
                       href={`https://boardgamegeek.com/boardgame/${selectedGame.bggId}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-primary hover:text-primary/80 text-sm flex items-center justify-center gap-1"
+                      className="text-primary hover:text-primary/80 text-sm flex items-center justify-center gap-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm"
                     >
-                      <ExternalLink className="h-3 w-3" />
+                      <ExternalLink className="h-3 w-3" aria-hidden="true" />
                       Auf BoardGameGeek ansehen
                     </a>
                   </div>
@@ -253,34 +259,34 @@ export default function BGGImportPage() {
                   <h3 className="font-semibold mb-2">Spiel-Details</h3>
                   <div className="space-y-2">
                     <div className="flex items-center gap-2">
-                      <Users className="h-4 w-4 text-muted-foreground" />
+                      <Users className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
                       <span>{selectedGame.minPlayers}-{selectedGame.maxPlayers} Spieler</span>
                     </div>
                     
                     {selectedGame.playTimeMinutes && (
                       <div className="flex items-center gap-2">
-                        <Clock className="h-4 w-4 text-muted-foreground" />
+                        <Clock className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
                         <span>{selectedGame.playTimeMinutes} Minuten</span>
                       </div>
                     )}
                     
                     {selectedGame.complexity && (
                       <div className="flex items-center gap-2">
-                        <Star className="h-4 w-4 text-muted-foreground" />
+                        <Star className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
                         <span>Komplexität: {getComplexityStars(selectedGame.complexity)}</span>
                       </div>
                     )}
                     
                     {selectedGame.rating && (
                       <div className="flex items-center gap-2">
-                        <span className="text-warning">⭐</span>
+                        <Star className="h-4 w-4 fill-warning text-warning" aria-hidden="true" />
                         <span>Bewertung: {parseFloat(selectedGame.rating).toFixed(2)}/10</span>
                       </div>
                     )}
                     
                     {selectedGame.rank && (
                       <div className="flex items-center gap-2">
-                        <span className="text-primary">🏆</span>
+                        <Trophy className="h-4 w-4 text-primary" aria-hidden="true" />
                         <span>Rang: #{selectedGame.rank}</span>
                       </div>
                     )}

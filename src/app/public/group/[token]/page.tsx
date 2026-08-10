@@ -135,7 +135,7 @@ export default function PublicGroupPage({ params }: PublicGroupPageProps) {
   if (loading === "init" || loading === "fetch") {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <p className="text-muted-foreground">Laden...</p>
+        <p className="text-muted-foreground">Laden…</p>
       </div>
     );
   }
@@ -159,24 +159,25 @@ export default function PublicGroupPage({ params }: PublicGroupPageProps) {
         <div className="mx-auto w-full max-w-md px-4">
           <Card>
             <CardHeader className="text-center">
-              <div className="text-4xl mb-2">🔒</div>
-              <CardTitle>{group?.name || "Geschützte Gruppe"}</CardTitle>
+              <div className="text-4xl mb-2" aria-hidden="true">🔒</div>
+              <CardTitle as="h1">{group?.name || "Geschützte Gruppe"}</CardTitle>
               <CardDescription>
                 Diese Gruppe ist passwortgeschützt. Bitte gib das Passwort ein.
               </CardDescription>
             </CardHeader>
             <CardContent>
               <form onSubmit={handlePasswordSubmit} className="space-y-3">
+                <Label htmlFor="group-password">Passwort</Label>
                 <Input
+                  id="group-password"
                   type="password"
                   placeholder="Passwort"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  autoFocus
                 />
                 {passwordError && <p className="text-sm text-destructive">{passwordError}</p>}
                 <Button type="submit" className="w-full">
-                  <Lock className="h-4 w-4 mr-2" />
+                  <Lock className="h-4 w-4 mr-2" aria-hidden="true" />
                   Zugang erhalten
                 </Button>
               </form>
@@ -193,8 +194,8 @@ export default function PublicGroupPage({ params }: PublicGroupPageProps) {
         {/* Hero Card */}
         <Card className="rounded-2xl border">
           <CardHeader>
-            <CardTitle className="text-2xl flex items-center gap-3">
-              <div className="w-10 h-10 bg-primary/10 rounded flex items-center justify-center">
+            <CardTitle as="h1" className="text-2xl flex items-center gap-3">
+              <div className="w-10 h-10 bg-primary/10 rounded flex items-center justify-center" aria-hidden="true">
                 👥
               </div>
               {group!.name}
@@ -204,11 +205,11 @@ export default function PublicGroupPage({ params }: PublicGroupPageProps) {
             )}
             <div className="flex items-center gap-4 text-sm text-muted-foreground mt-2">
               <div className="flex items-center gap-1">
-                <Users className="h-4 w-4" />
+                <Users className="h-4 w-4" aria-hidden="true" />
                 {group!.members?.length || 0} Mitglieder
               </div>
               <div className="flex items-center gap-1">
-                <Vote className="h-4 w-4" />
+                <Vote className="h-4 w-4" aria-hidden="true" />
                 {group!.polls?.length || 0} Abstimmungen
               </div>
             </div>
@@ -226,17 +227,17 @@ export default function PublicGroupPage({ params }: PublicGroupPageProps) {
                 }}
                 className="space-y-3"
               >
-                <Label>Dein Name</Label>
+                <Label htmlFor="voter-name">Dein Name</Label>
                 <p className="text-sm text-muted-foreground">
                   Gib deinen Namen ein, um abstimmen und kommentieren zu können.
                 </p>
                 <div className="flex gap-2">
                   <Input
+                    id="voter-name"
                     value={voterName}
                     onChange={(e) => setVoterName(e.target.value)}
                     placeholder="Dein Name"
                     required
-                    autoFocus
                   />
                   <Button type="submit" disabled={!voterName.trim()}>
                     Weiter
@@ -248,20 +249,23 @@ export default function PublicGroupPage({ params }: PublicGroupPageProps) {
         ) : (
           <p className="text-sm text-muted-foreground">
             Angemeldet als <strong>{voterName}</strong>{" "}
-            <button
-              className="underline"
+            <Button
+              type="button"
+              variant="link"
+              size="sm"
+              className="h-auto px-0 py-0"
               onClick={() => setNameSet(false)}
             >
               (ändern)
-            </button>
+            </Button>
           </p>
         )}
 
         {/* Members */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-base">
-              <Users className="h-4 w-4" />
+            <CardTitle as="h2" className="flex items-center gap-2 text-base">
+              <Users className="h-4 w-4" aria-hidden="true" />
               Mitglieder
             </CardTitle>
           </CardHeader>

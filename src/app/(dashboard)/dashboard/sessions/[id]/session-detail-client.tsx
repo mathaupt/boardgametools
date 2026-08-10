@@ -7,6 +7,7 @@ import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Calendar, Clock, Users, Trophy, ArrowLeft, Pencil, Trash2, Star } from "lucide-react";
+import { formatDate, formatLongDate } from "@/lib/date";
 import { useToast } from "@/components/ui/use-toast";
 import {
   AlertDialog,
@@ -93,28 +94,26 @@ export default function SessionDetailClient({ session }: SessionDetailClientProp
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold">{session.game.name}</h1>
           <p className="text-muted-foreground">
-            Session vom {new Date(session.playedAt).toLocaleDateString("de-DE", {
-              day: "2-digit", month: "long", year: "numeric",
-            })}
+            Session vom {formatLongDate(session.playedAt)}
           </p>
         </div>
         <div className="flex gap-2">
-          <Link href={`/dashboard/sessions/${session.id}/edit`}>
-            <Button variant="outline" size="sm">
-              <Pencil className="h-4 w-4 mr-2" />
+          <Button variant="outline" size="sm" asChild>
+            <Link href={`/dashboard/sessions/${session.id}/edit`}>
+              <Pencil className="h-4 w-4 mr-2" aria-hidden="true" />
               Bearbeiten
-            </Button>
-          </Link>
+            </Link>
+          </Button>
           <Button variant="destructive" size="sm" onClick={() => setDeleteDialogOpen(true)} disabled={deleting}>
-            <Trash2 className="h-4 w-4 mr-2" />
-            {deleting ? "Wird gelöscht..." : "Löschen"}
+            <Trash2 className="h-4 w-4 mr-2" aria-hidden="true" />
+            {deleting ? "Wird gelöscht…" : "Löschen"}
           </Button>
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card className="md:col-span-2">
-          <CardHeader><CardTitle>Session Details</CardTitle></CardHeader>
+          <CardHeader><CardTitle as="h2">Session Details</CardTitle></CardHeader>
           <CardContent className="space-y-4">
             <div className="flex flex-col sm:flex-row gap-4">
               {session.game.imageUrl && (
@@ -125,17 +124,17 @@ export default function SessionDetailClient({ session }: SessionDetailClientProp
               <div className="space-y-2">
                 <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
                   <div className="flex items-center gap-2">
-                    <Calendar className="h-4 w-4 text-muted-foreground" />
-                    <span>{new Date(session.playedAt).toLocaleDateString("de-DE")}</span>
+                    <Calendar className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+                    <span>{formatDate(session.playedAt)}</span>
                   </div>
                   {session.durationMinutes && (
                     <div className="flex items-center gap-2">
-                      <Clock className="h-4 w-4 text-muted-foreground" />
+                      <Clock className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
                       <span>{session.durationMinutes} Minuten</span>
                     </div>
                   )}
                   <div className="flex items-center gap-2">
-                    <Users className="h-4 w-4 text-muted-foreground" />
+                    <Users className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
                     <span>{session.players.length} Spieler</span>
                   </div>
                 </div>
@@ -146,7 +145,7 @@ export default function SessionDetailClient({ session }: SessionDetailClientProp
         </Card>
 
         <Card>
-          <CardHeader><CardTitle className="text-base">Info</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="text-base" as="h2">Info</CardTitle></CardHeader>
           <CardContent className="space-y-2 text-sm">
             <div>
               <span className="text-muted-foreground">Erstellt von:</span>{" "}
@@ -154,7 +153,7 @@ export default function SessionDetailClient({ session }: SessionDetailClientProp
             </div>
             <div>
               <span className="text-muted-foreground">Erstellt am:</span>{" "}
-              <span>{new Date(session.createdAt).toLocaleDateString("de-DE")}</span>
+              <span>{formatDate(session.createdAt)}</span>
             </div>
           </CardContent>
         </Card>
@@ -162,7 +161,7 @@ export default function SessionDetailClient({ session }: SessionDetailClientProp
 
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2"><Users className="h-5 w-5" />Spieler & Ergebnisse</CardTitle>
+          <CardTitle className="flex items-center gap-2" as="h2"><Users className="h-5 w-5" aria-hidden="true" />Spieler & Ergebnisse</CardTitle>
           <CardDescription>{sortedPlayers.length} Spieler</CardDescription>
         </CardHeader>
         <CardContent>
@@ -182,7 +181,7 @@ export default function SessionDetailClient({ session }: SessionDetailClientProp
                     <td className="py-2 pr-4">{player.placement ? `#${player.placement}` : "-"}</td>
                     <td className="py-2 pr-4 font-medium">{player.user.name || player.user.email}</td>
                     <td className="py-2 pr-4 text-right font-mono">{player.score !== null ? player.score : "-"}</td>
-                    <td className="py-2 text-center">{player.isWinner && <Trophy className="h-4 w-4 text-warning mx-auto" />}</td>
+                    <td className="py-2 text-center">{player.isWinner && <Trophy className="h-4 w-4 text-warning mx-auto" aria-label="Gewinner" />}</td>
                   </tr>
                 ))}
               </tbody>
@@ -194,7 +193,7 @@ export default function SessionDetailClient({ session }: SessionDetailClientProp
       {session.ratings.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2"><Star className="h-5 w-5" />Bewertungen</CardTitle>
+            <CardTitle className="flex items-center gap-2" as="h2"><Star className="h-5 w-5" aria-hidden="true" />Bewertungen</CardTitle>
             <CardDescription>{session.ratings.length} Bewertung(en)</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -204,7 +203,7 @@ export default function SessionDetailClient({ session }: SessionDetailClientProp
                   <span className="font-medium text-sm">{rating.user.name || rating.user.email}</span>
                   <div className="flex items-center gap-1">
                     {Array.from({ length: 5 }).map((_, i) => (
-                      <Star key={i} className={`h-4 w-4 ${i < rating.rating ? "text-warning fill-warning" : "text-muted-foreground"}`} />
+                      <Star key={i} className={`h-4 w-4 ${i < rating.rating ? "text-warning fill-warning" : "text-muted-foreground"}`} aria-hidden="true" />
                     ))}
                   </div>
                 </div>
@@ -215,9 +214,12 @@ export default function SessionDetailClient({ session }: SessionDetailClientProp
         </Card>
       )}
 
-      <Link href="/dashboard/sessions">
-        <Button variant="ghost" size="sm"><ArrowLeft className="h-4 w-4 mr-2" />Zurueck zu Sessions</Button>
-      </Link>
+      <Button variant="ghost" size="sm" asChild>
+        <Link href="/dashboard/sessions" className="flex items-center gap-2">
+          <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+          Zurück zu Sessions
+        </Link>
+      </Button>
 
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent>

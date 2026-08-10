@@ -143,7 +143,7 @@ export function CollectionImportDialog({ existingBggIds, onImported }: Collectio
     }}>
       <DialogTrigger asChild>
         <Button variant="outline" className="flex items-center gap-2">
-          <Library className="h-4 w-4 sm:mr-0" />
+          <Library className="h-4 w-4 sm:mr-0" aria-hidden="true" />
           <span className="hidden sm:inline">Gesamte Sammlung importieren</span>
           <span className="sm:hidden">Sammlung</span>
         </Button>
@@ -163,12 +163,13 @@ export function CollectionImportDialog({ existingBggIds, onImported }: Collectio
               value={bggUsername}
               onChange={(e) => setBggUsername(e.target.value)}
               disabled={isLoading}
+              aria-label="BGG-Benutzername"
             />
-            <Button type="submit" disabled={isLoading || !bggUsername.trim()}>
+            <Button type="submit" disabled={isLoading || !bggUsername.trim()} aria-label="Laden">
               {isLoading ? (
-                <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Laden...</>
+                <><Loader2 className="h-4 w-4 mr-2 animate-spin" aria-hidden="true" />Laden…</>
               ) : (
-                <><Search className="h-4 w-4 mr-2" />Laden</>
+                <><Search className="h-4 w-4 mr-2" aria-hidden="true" />Laden</>
               )}
             </Button>
           </form>
@@ -187,14 +188,16 @@ export function CollectionImportDialog({ existingBggIds, onImported }: Collectio
           {collection.length > 0 && (
             <>
               <div className="flex items-center justify-between text-sm">
-                <button
-                  type="button"
-                  onClick={toggleSelectAll}
-                  className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  <CheckSquare className="h-4 w-4" />
-                  {selectedBggIds.size === collection.length ? "Alle abwählen" : "Alle auswählen"}
-                </button>
+                <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={toggleSelectAll}
+                className="text-muted-foreground hover:text-foreground"
+              >
+                <CheckSquare className="h-4 w-4" aria-hidden="true" />
+                {selectedBggIds.size === collection.length ? "Alle abwählen" : "Alle auswählen"}
+              </Button>
                 <span className="text-muted-foreground">
                   {selectedBggIds.size} / {collection.length} ausgewählt
                 </span>
@@ -230,17 +233,17 @@ export function CollectionImportDialog({ existingBggIds, onImported }: Collectio
                         {game.yearPublished && <span>{game.yearPublished}</span>}
                         {game.minPlayers && game.maxPlayers && (
                           <span className="flex items-center gap-1">
-                            <Users className="h-3 w-3" />{game.minPlayers}–{game.maxPlayers}
+                            <Users className="h-3 w-3" aria-hidden="true" />{game.minPlayers}–{game.maxPlayers}
                           </span>
                         )}
                         {game.playTimeMinutes ? (
                           <span className="flex items-center gap-1">
-                            <Clock className="h-3 w-3" />{game.playTimeMinutes} Min.
+                            <Clock className="h-3 w-3" aria-hidden="true" />{game.playTimeMinutes} Min.
                           </span>
                         ) : null}
                         {game.rating && (
                           <span className="flex items-center gap-1">
-                            <Star className="h-3 w-3" />{game.rating}
+                            <Star className="h-3 w-3" aria-hidden="true" />{game.rating}
                           </span>
                         )}
                         {game.numPlays > 0 && <span>{game.numPlays}× gespielt</span>}
@@ -258,9 +261,9 @@ export function CollectionImportDialog({ existingBggIds, onImported }: Collectio
           {collection.length > 0 && (
             <Button onClick={handleBulkImport} disabled={isImporting || selectedBggIds.size === 0}>
               {isImporting ? (
-                <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Importiere...</>
+                <><Loader2 className="h-4 w-4 mr-2 animate-spin" aria-hidden="true" />Importiere…</>
               ) : (
-                <><Library className="h-4 w-4 mr-2" />{selectedBggIds.size} Spiel{selectedBggIds.size !== 1 ? "e" : ""} importieren</>
+                <><Library className="h-4 w-4 mr-2" aria-hidden="true" />{selectedBggIds.size} Spiel{selectedBggIds.size !== 1 ? "e" : ""} importieren</>
               )}
             </Button>
           )}

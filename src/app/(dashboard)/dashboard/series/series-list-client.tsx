@@ -7,6 +7,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Plus, Library, ImageIcon, CheckCircle2, Circle, Search, ArrowUpDown, Filter, X } from "lucide-react";
 
 export interface SeriesEntry {
@@ -37,13 +44,13 @@ const STATUS_OPTIONS: { value: StatusFilter; label: string }[] = [
 ];
 
 const SORT_OPTIONS: { value: SortOption; label: string }[] = [
-  { value: "name_asc", label: "Name (A\u2013Z)" },
-  { value: "name_desc", label: "Name (Z\u2013A)" },
-  { value: "progress_desc", label: "Fortschritt (hoch \u2192 niedrig)" },
-  { value: "progress_asc", label: "Fortschritt (niedrig \u2192 hoch)" },
+  { value: "name_asc", label: "Name (A–Z)" },
+  { value: "name_desc", label: "Name (Z–A)" },
+  { value: "progress_desc", label: "Fortschritt (hoch → niedrig)" },
+  { value: "progress_asc", label: "Fortschritt (niedrig → hoch)" },
   { value: "entries_desc", label: "Meiste Spiele" },
   { value: "newest", label: "Neueste zuerst" },
-  { value: "oldest", label: "\u00c4lteste zuerst" },
+  { value: "oldest", label: "Älteste zuerst" },
 ];
 
 function getProgress(series: GameSeriesItem) {
@@ -129,12 +136,12 @@ export default function SeriesListClient({ seriesList }: SeriesListClientProps) 
             Tracke deinen Fortschritt in Spielereihen wie EXIT oder Adventure Games
           </p>
         </div>
-        <Link href="/dashboard/series/new">
-          <Button>
-            <Plus className="h-4 w-4 mr-2" />
+        <Button asChild>
+          <Link href="/dashboard/series/new">
+            <Plus className="h-4 w-4 mr-2" aria-hidden="true" />
             Neue Reihe
-          </Button>
-        </Link>
+          </Link>
+        </Button>
       </div>
 
       {/* Filter & Sort Bar - only show when there are series */}
@@ -144,52 +151,55 @@ export default function SeriesListClient({ seriesList }: SeriesListClientProps) 
             <div className="flex flex-col sm:flex-row gap-3">
               {/* Search */}
               <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" aria-hidden="true" />
                 <Input
-                  placeholder="Reihe suchen..."
+                  placeholder="Reihe suchen…"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   className="pl-9 h-9"
+                  aria-label="Reihe suchen"
                 />
                 {search && (
-                  <button
+                  <Button
+                    variant="ghost"
+                    size="icon-xs"
                     onClick={() => setSearch("")}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                     aria-label="Suche leeren"
                   >
-                    <X className="h-3.5 w-3.5" />
-                  </button>
+                    <X className="h-3.5 w-3.5" aria-hidden="true" />
+                  </Button>
                 )}
               </div>
 
               {/* Status Filter */}
               <div className="flex items-center gap-2">
-                <Filter className="h-4 w-4 text-muted-foreground shrink-0 hidden sm:block" />
-                <select
-                  value={statusFilter}
-                  onChange={(e) => setStatusFilter(e.target.value as StatusFilter)}
-                  className="h-9 border rounded-md px-3 text-sm bg-background text-foreground w-full sm:min-w-[130px] sm:w-auto"
-                  aria-label="Status filtern"
-                >
-                  {STATUS_OPTIONS.map((opt) => (
-                    <option key={opt.value} value={opt.value}>{opt.label}</option>
-                  ))}
-                </select>
+                <Filter className="h-4 w-4 text-muted-foreground shrink-0 hidden sm:block" aria-hidden="true" />
+                <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as StatusFilter)}>
+                  <SelectTrigger className="h-9 w-full sm:min-w-[130px] sm:w-auto" aria-label="Status filtern">
+                    <SelectValue placeholder="Status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {STATUS_OPTIONS.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
               {/* Sort */}
               <div className="flex items-center gap-2">
-                <ArrowUpDown className="h-4 w-4 text-muted-foreground shrink-0 hidden sm:block" />
-                <select
-                  value={sortOption}
-                  onChange={(e) => setSortOption(e.target.value as SortOption)}
-                  className="h-9 border rounded-md px-3 text-sm bg-background text-foreground w-full sm:min-w-[200px] sm:w-auto"
-                  aria-label="Sortierung"
-                >
-                  {SORT_OPTIONS.map((opt) => (
-                    <option key={opt.value} value={opt.value}>{opt.label}</option>
-                  ))}
-                </select>
+                <ArrowUpDown className="h-4 w-4 text-muted-foreground shrink-0 hidden sm:block" aria-hidden="true" />
+                <Select value={sortOption} onValueChange={(v) => setSortOption(v as SortOption)}>
+                  <SelectTrigger className="h-9 w-full sm:min-w-[200px] sm:w-auto" aria-label="Sortierung">
+                    <SelectValue placeholder="Sortierung" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {SORT_OPTIONS.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 
@@ -199,12 +209,14 @@ export default function SeriesListClient({ seriesList }: SeriesListClientProps) 
                 <span className="text-xs text-muted-foreground">
                   {filteredAndSorted.length} von {seriesList.length} Reihen
                 </span>
-                <button
+                <Button
+                  variant="link"
+                  size="xs"
                   onClick={() => { setSearch(""); setStatusFilter("alle"); }}
-                  className="text-xs text-primary hover:underline"
+                  className="text-xs text-primary h-auto p-0"
                 >
-                  Filter zur\u00fccksetzen
-                </button>
+                  Filter zurücksetzen
+                </Button>
               </div>
             )}
           </CardContent>
@@ -216,35 +228,37 @@ export default function SeriesListClient({ seriesList }: SeriesListClientProps) 
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-16">
             <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-              <Library className="h-8 w-8 text-primary" />
+              <Library className="h-8 w-8 text-primary" aria-hidden="true" />
             </div>
-            <h3 className="text-lg font-semibold mb-2">Noch keine Spielereihen</h3>
+            <h2 className="text-lg font-semibold mb-2">Noch keine Spielereihen</h2>
             <p className="text-muted-foreground mb-6 text-center max-w-sm">
               Lege eine Reihe an, um Einmal-Spiele wie EXIT, Adventure Games oder Murder Mystery zu tracken.
             </p>
-            <Link href="/dashboard/series/new">
-              <Button>
-                <Plus className="h-4 w-4 mr-2" />
+            <Button asChild>
+              <Link href="/dashboard/series/new">
+                <Plus className="h-4 w-4 mr-2" aria-hidden="true" />
                 Erste Reihe anlegen
-              </Button>
-            </Link>
+              </Link>
+            </Button>
           </CardContent>
         </Card>
       ) : filteredAndSorted.length === 0 ? (
         /* No results after filter */
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12">
-            <Search className="h-10 w-10 text-muted-foreground/50 mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Keine Treffer</h3>
+            <Search className="h-10 w-10 text-muted-foreground/50 mb-4" aria-hidden="true" />
+            <h2 className="text-lg font-semibold mb-2">Keine Treffer</h2>
             <p className="text-muted-foreground mb-4 text-center max-w-sm">
               Keine Reihen gefunden, die deinen Filterkriterien entsprechen.
             </p>
-            <button
+            <Button
+              variant="link"
+              size="xs"
               onClick={() => { setSearch(""); setStatusFilter("alle"); }}
-              className="text-sm text-primary hover:underline"
+              className="text-sm text-primary h-auto p-0"
             >
-              Filter zur\u00fccksetzen
-            </button>
+              Filter zurücksetzen
+            </Button>
           </CardContent>
         </Card>
       ) : (
@@ -257,8 +271,12 @@ export default function SeriesListClient({ seriesList }: SeriesListClientProps) 
             const isComplete = total > 0 && played === total;
 
             return (
-              <Link key={series.id} href={`/dashboard/series/${series.id}`}>
-                <Card className="hover:shadow-md transition-all cursor-pointer h-full overflow-hidden group">
+              <Link
+                key={series.id}
+                href={`/dashboard/series/${series.id}`}
+                className="group block rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                <Card className="hover:shadow-md transition-shadow h-full overflow-hidden">
                   {/* Cover Image / Collage */}
                   <div className="w-full h-40 bg-muted relative">
                     {series.imageUrl ? (
@@ -267,6 +285,7 @@ export default function SeriesListClient({ seriesList }: SeriesListClientProps) 
                         alt={series.name}
                         className="object-cover group-hover:scale-[1.02] transition-transform duration-300"
                         fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                         unoptimized
                       />
                     ) : series.entries.length > 0 ? (
@@ -279,10 +298,11 @@ export default function SeriesListClient({ seriesList }: SeriesListClientProps) 
                                 alt=""
                                 className="object-cover"
                                 fill
+                                sizes="(max-width: 768px) 50vw, (max-width: 1024px) 25vw, 17vw"
                               />
                             ) : (
                               <div className="h-full w-full flex items-center justify-center text-muted-foreground">
-                                <ImageIcon className="h-4 w-4" />
+                                <ImageIcon className="h-4 w-4" aria-hidden="true" />
                               </div>
                             )}
                           </div>
@@ -293,7 +313,7 @@ export default function SeriesListClient({ seriesList }: SeriesListClientProps) 
                       </div>
                     ) : (
                       <div className="h-full w-full flex flex-col items-center justify-center text-muted-foreground gap-2">
-                        <Library className="h-8 w-8" />
+                        <Library className="h-8 w-8" aria-hidden="true" />
                         <span className="text-xs">Noch keine Spiele</span>
                       </div>
                     )}
@@ -301,8 +321,8 @@ export default function SeriesListClient({ seriesList }: SeriesListClientProps) 
                     {/* Completion Badge */}
                     {isComplete && (
                       <div className="absolute top-2 right-2">
-                        <Badge className="bg-success text-white hover:bg-success shadow-sm">
-                          <CheckCircle2 className="h-3 w-3 mr-1" />
+                        <Badge className="bg-success text-success-foreground hover:bg-success shadow-sm">
+                          <CheckCircle2 className="h-3 w-3 mr-1" aria-hidden="true" />
                           Komplett
                         </Badge>
                       </div>
@@ -311,7 +331,7 @@ export default function SeriesListClient({ seriesList }: SeriesListClientProps) 
 
                   {/* Card Content */}
                   <CardHeader className="pb-2">
-                    <CardTitle className="line-clamp-1 text-lg">{series.name}</CardTitle>
+                    <CardTitle as="h2" className="line-clamp-1 text-lg">{series.name}</CardTitle>
                     {series.description && (
                       <CardDescription className="line-clamp-2">{series.description}</CardDescription>
                     )}
@@ -323,9 +343,9 @@ export default function SeriesListClient({ seriesList }: SeriesListClientProps) 
                       <div className="flex justify-between items-center text-sm">
                         <span className="text-muted-foreground flex items-center gap-1.5">
                           {played > 0 ? (
-                            <CheckCircle2 className="h-3.5 w-3.5 text-primary" />
+                            <CheckCircle2 className="h-3.5 w-3.5 text-primary" aria-hidden="true" />
                           ) : (
-                            <Circle className="h-3.5 w-3.5" />
+                            <Circle className="h-3.5 w-3.5" aria-hidden="true" />
                           )}
                           {played} von {total} gespielt
                         </span>
@@ -333,7 +353,7 @@ export default function SeriesListClient({ seriesList }: SeriesListClientProps) 
                       </div>
                       <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
                         <div
-                          className={`rounded-full h-2 transition-all duration-500 ${
+                          className={`rounded-full h-2 transition-[width] duration-500 ${
                             isComplete ? "bg-success" : "bg-primary"
                           }`}
                           style={{ width: `${progress}%` }}

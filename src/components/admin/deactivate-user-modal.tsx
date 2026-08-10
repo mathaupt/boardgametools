@@ -3,13 +3,14 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogCancel,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { AlertTriangle } from "lucide-react";
 
 interface DeactivateUserModalProps {
@@ -66,14 +67,14 @@ export function DeactivateUserModal({
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
+    <AlertDialog open={isOpen} onOpenChange={onClose}>
+      <AlertDialogContent className="sm:max-w-[425px]">
+        <AlertDialogHeader>
+          <AlertDialogTitle className="flex items-center gap-2">
             <AlertTriangle className="h-5 w-5" />
             {isActive ? "Benutzer deaktivieren" : "Benutzer aktivieren"}
-          </DialogTitle>
-          <DialogDescription>
+          </AlertDialogTitle>
+          <AlertDialogDescription>
             {isActive ? (
               <>
                 Möchten Sie <strong>{userName}</strong> ({userEmail}) wirklich deaktivieren?
@@ -85,8 +86,8 @@ export function DeactivateUserModal({
                 Der Benutzer kann sich danach wieder anmelden.
               </>
             )}
-          </DialogDescription>
-        </DialogHeader>
+          </AlertDialogDescription>
+        </AlertDialogHeader>
 
         <form onSubmit={handleSubmit}>
           {error && (
@@ -95,24 +96,24 @@ export function DeactivateUserModal({
             </div>
           )}
 
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={onClose}>
+          <AlertDialogFooter>
+            <AlertDialogCancel type="button" onClick={onClose}>
               Abbrechen
-            </Button>
+            </AlertDialogCancel>
             <Button
               type="submit"
               variant={isActive ? "destructive" : "default"}
               disabled={isLoading}
             >
               {isLoading
-                ? "Wird verarbeitet..."
+                ? "Wird verarbeitet…"
                 : isActive
                 ? "Deaktivieren"
                 : "Aktivieren"}
             </Button>
-          </DialogFooter>
+          </AlertDialogFooter>
         </form>
-      </DialogContent>
-    </Dialog>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 }

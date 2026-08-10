@@ -5,6 +5,7 @@ import { buildPublicEventInclude, serializePublicEvent } from "@/lib/public-even
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, MapPin, Share2, Users, UserCircle, Check, X, Clock } from "lucide-react";
+import { formatLongDateWithWeekday, formatTime } from "@/lib/date";
 import { PublicEventClient } from "@/components/public-event/public-event-client";
 
 export const revalidate = 0;
@@ -37,7 +38,7 @@ export default async function PublicEventPage({
           <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             <div>
               <div className="inline-flex items-center gap-2 rounded-full border border-border bg-muted px-3 py-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                <Share2 className="h-4 w-4" /> Öffentliches Voting
+                <Share2 className="h-4 w-4" aria-hidden="true" /> Öffentliches Voting
               </div>
               <h1 className="mt-4 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
                 {serialized.title}
@@ -48,27 +49,19 @@ export default async function PublicEventPage({
             </div>
             <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
               <div className="flex items-center gap-2 rounded-2xl border border-border bg-muted px-3 py-2">
-                <Calendar className="h-4 w-4" />
+                <Calendar className="h-4 w-4" aria-hidden="true" />
                 <span>
-                  {eventDate.toLocaleDateString("de-DE", {
-                    weekday: "long",
-                    day: "numeric",
-                    month: "long",
-                    year: "numeric",
-                  })}
+                  {formatLongDateWithWeekday(eventDate)}
                   {serialized.status !== "planning" && (
                     <span className="block text-xs text-muted-foreground">
-                      {eventDate.toLocaleTimeString("de-DE", {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
+                      {formatTime(eventDate)}
                     </span>
                   )}
                 </span>
               </div>
               {serialized.location && (
                 <div className="flex items-center gap-2 rounded-2xl border border-border bg-muted px-3 py-2">
-                  <MapPin className="h-4 w-4" />
+                  <MapPin className="h-4 w-4" aria-hidden="true" />
                   <span>{serialized.location}</span>
                 </div>
               )}
@@ -82,8 +75,8 @@ export default async function PublicEventPage({
         <div className="mt-8 grid gap-6 lg:grid-cols-[2fr,1fr]">
           <Card className="border-border bg-card text-foreground">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-lg text-foreground">
-                <Users className="h-5 w-5" />
+              <CardTitle className="flex items-center gap-2 text-lg text-foreground" as="h2">
+                <Users className="h-5 w-5" aria-hidden="true" />
                 Teilnehmer ({serialized.invites.length})
               </CardTitle>
             </CardHeader>
@@ -98,7 +91,7 @@ export default async function PublicEventPage({
                   >
                     <div className="flex items-center gap-2">
                       <div className="flex h-7 w-7 items-center justify-center rounded-full bg-muted text-xs text-muted-foreground">
-                        <UserCircle className="h-4 w-4" />
+                        <UserCircle className="h-4 w-4" aria-hidden="true" />
                       </div>
                       <span className="text-sm font-medium text-foreground">{invite.name}</span>
                     </div>
@@ -113,11 +106,11 @@ export default async function PublicEventPage({
                       className="flex items-center gap-1 text-xs"
                     >
                       {invite.status === "accepted" ? (
-                        <><Check className="h-3 w-3" /> Dabei</>
+                        <><Check className="h-3 w-3" aria-hidden="true" /> Dabei</>
                       ) : invite.status === "declined" ? (
-                        <><X className="h-3 w-3" /> Abgesagt</>
+                        <><X className="h-3 w-3" aria-hidden="true" /> Abgesagt</>
                       ) : (
-                        <><Clock className="h-3 w-3" /> Ausstehend</>
+                        <><Clock className="h-3 w-3" aria-hidden="true" /> Ausstehend</>
                       )}
                     </Badge>
                   </div>
@@ -135,7 +128,7 @@ export default async function PublicEventPage({
                     >
                       <div className="flex items-center gap-2">
                         <div className="flex h-7 w-7 items-center justify-center rounded-full bg-muted text-xs text-muted-foreground">
-                          <UserCircle className="h-4 w-4" />
+                          <UserCircle className="h-4 w-4" aria-hidden="true" />
                         </div>
                         <span className="text-sm font-medium text-foreground">{guest.nickname}</span>
                       </div>
@@ -151,8 +144,8 @@ export default async function PublicEventPage({
 
           <Card className="border-border bg-card text-foreground">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-lg text-foreground">
-                <Share2 className="h-5 w-5" />
+              <CardTitle className="flex items-center gap-2 text-lg text-foreground" as="h2">
+                <Share2 className="h-5 w-5" aria-hidden="true" />
                 Öffentliche Teilnahme
               </CardTitle>
             </CardHeader>
