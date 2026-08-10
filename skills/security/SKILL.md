@@ -170,7 +170,7 @@ bash scripts/security-check.sh --only A06
 bash scripts/security-check.sh --no-audit
 ```
 
-**Aktueller Stand (Post-Update):** Vulnerabilities von 35 auf 6 reduziert. Verbleibende 6 Vulnerabilities (3 moderate, 3 high) sind ausschliesslich in transitiven Dev-Dependencies (`swagger-ui-react` -> `js-yaml@4.3.0`, `codeceptjs` -> `ai` -> `@ai-sdk/provider-utils` -> `undici@5.x`) und koennen ohne Breaking-Change nicht gepatcht werden. Sie werden in `docs/code-reviews/security.md` (SEC-45) verfolgt.
+**Aktueller Stand (Post-Update):** `swagger-ui-react` wurde entfernt; Swagger UI wird via unpkg-CDN geladen. `npm audit --omit=dev` meldet 0 Vulnerabilities. Verbleibende 4 Vulnerabilities (3 moderate, 1 high) befinden sich ausschliesslich in transitiven Dev-Dependencies (`codeceptjs` -> `ai` -> `@ai-sdk/provider-utils` / `@ai-sdk/gateway` -> `undici@5.x`) und koennen ohne Breaking-Change nicht gepatcht werden. Sie werden in `docs/code-reviews/regressions.md` (SEC-45) verfolgt.
 
 **Automatische Pruefung:** `security-check.sh --only A06` fuehrt `npm audit` aus.
 

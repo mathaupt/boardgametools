@@ -365,9 +365,9 @@ Erstelle einen Report mit folgendem Format:
 - 0 Treffer für `user: true` / `createdBy: true` ohne `select` – kein passwordHash-Leak
 - 0 `dangerouslySetInnerHTML` – kein XSS-Risiko
 - Alle 9 `$queryRaw` nutzen Tagged Template Literals (parameterisiert, sicher)
-- npm audit: **6 offene Vulnerabilities** (0 critical, 3 high, 3 moderate); production-relevant: 2 high in `swagger-ui-react` -> `js-yaml@4.3.0`; restliche 3 moderate/1 high in transitiven Dev-Dependencies (`codeceptjs` -> `ai` -> `undici`) - SEC-45 offen
+- npm audit: **4 offene Vulnerabilities** (0 critical, 1 high, 3 moderate); keines in Production-Dependencies. Verbleibende Vulnerabilities in transitiven Dev-Dependencies (`codeceptjs` -> `ai` -> `@ai-sdk/provider-utils` / `@ai-sdk/gateway` -> `undici@5.x`) - SEC-45 dokumentiert
 - Security Headers komplett: CSP, X-Frame-Options, HSTS (2 Jahre), Referrer-Policy, Permissions-Policy
-- CSRF-Schutz: Origin/Referer-Prüfung in proxy.ts für POST/PUT/DELETE/PATCH
+- CSRF-Schutz: Origin/Referer-Prüfung in `proxy.ts` für POST/PUT/DELETE/PATCH, ergänzt durch `Sec-Fetch-Site`-Header-Prüfung und `SameSite=Lax`-Session-Cookies
 - bcrypt (cost 12) für Passwort-Hashing überall (User + Gruppen + Reset)
 - SHA-256 für Password-Reset-Tokens
 - Cookie-Sicherheit: NextAuth v5 Default (Secure, HttpOnly, SameSite=lax)
@@ -722,7 +722,7 @@ Fuer den aktuellen Nutzerkreis (Brettspiel-Gruppe) ist Sentry/Datadog overkill. 
 27. ~~**Prisma Transactions fehlen**~~ ✅ Behoben: $transaction wird verwendet.
 42. ~~**validation.ts Bugs**~~ ✅ Behoben: `min`/`max` nutzen beide `trim().length`, `min !== undefined` statt falsy-Check, `value === ""` in validateNumber abgefangen.
 43. ~~**Fehlende Validierungsfunktionen**~~ ✅ Behoben: `validateEmail`, `validateUrl`, `validateDate`, `validateEnum` in validation.ts ergänzt. Inline-Regex aus register/route.ts durch zentrales `validateEmail` ersetzt.
-45. **npm audit: Bekannte Vulnerabilities** ❌ Offen (v0.47.0): 0 critical, 3 high, 3 moderate. Produktiv-relevant: 2 high in `swagger-ui-react` -> `js-yaml@4.3.0`; restliche 3 moderate/1 high in transitiven Dev-Dependencies. Fix blockiert durch breaking `js-yaml` v5-API in `swagger-ui-react`.
+45. ~~**npm audit: Bekannte Vulnerabilities**~~ ✅ Behoben (v0.50.10): `swagger-ui-react` entfernt; Swagger UI wird via unpkg-CDN geladen. `npm audit --omit=dev` meldet 0 Vulnerabilities. Verbleibende 4 Vulnerabilities (1 high, 3 moderate) befinden sich ausschliesslich in transitiven Dev-Dependencies (`codeceptjs` -> `ai` -> `@ai-sdk/provider-utils` / `@ai-sdk/gateway` -> `undici@5.x`) und sind dokumentiert.
 46. ~~**XSS: dangerouslySetInnerHTML**~~ ✅ Behoben: Kein dangerouslySetInnerHTML verwendet.
 47. ~~**Schwere Libraries ohne Dynamic Import**~~ ✅ Behoben: 4 dynamic() + 7 await import() Lazy-Loads.
 49. ~~**Keine API Caching Headers**~~ ✅ Behoben: 19 Caching-Konfigurationen gefunden.
@@ -866,7 +866,7 @@ const isValid = await compare(inputPassword, group.password);
 
 ## Evaluator-Feedback (automatisch generiert)
 
-> Letzter Lauf: 2026-08-10 16:26:42
+> Letzter Lauf: 2026-08-10 17:37:27
 > Gesamt-Score: **10/10**
 
 ### Kategorie-Scores

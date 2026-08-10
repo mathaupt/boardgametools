@@ -12,6 +12,21 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.11",
+    date: "2026-08-10",
+    title: "Auth-Vertrauensmodell, CSRF-Härtung und E2E-Tests stabilisiert",
+    description: "NextAuth wurde so konfiguriert, dass Host-Header in lokalen Produktions-Builds und auf Vercel vertraut werden. Der CSRF-Schutz nutzt jetzt zusätzlich `Sec-Fetch-Site` und explizit `SameSite=Lax`-Cookies. Die E2E-Test-Suite erhielt einen Bootstrap-Seed für den Test-Account, sodass alle Szenarien mit Login grün laufen.",
+    changes: [
+      { type: "fix", text: "NextAuth `trustHost` für lokale Produktions-Builds und Vercel konfiguriert" },
+      { type: "fix", text: "CSRF-Schutz in `proxy.ts` um `Sec-Fetch-Site`-Header-Prüfung erweitert" },
+      { type: "fix", text: "NextAuth Session- und CSRF-Cookies explizit auf `SameSite=Lax` und `HttpOnly` gesetzt" },
+      { type: "fix", text: "SEC-45 geschlossen: `swagger-ui-react` entfernt, Swagger UI wird via unpkg-CDN geladen" },
+      { type: "improvement", text: "E2E-Tests mit automatischem Test-User-Bootstrap (`e2e@example.com`) versehen" },
+      { type: "fix", text: "E2E-Spieleszenarien für authentifizierte Bereiche stabilisiert" },
+      { type: "internal", text: "Deployment-Guide `docs/DEPLOYMENT.md` für Vercel und iOS erstellt" },
+    ],
+  },
+  {
     version: "0.50.10",
     date: "2026-08-10",
     title: "API-Logging und Storage-Härtung",

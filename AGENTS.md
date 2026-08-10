@@ -112,6 +112,7 @@ include: { createdBy: { select: { id: true, name: true, email: true } } }
 | **FEATURES.md** | `docs/FEATURES.md` | Neue Seite, neuer Endpunkt, geaenderte Funktionalitaet |
 | **OpenAPI/Swagger** | `docs/openapi.yaml` | Neuer API-Endpunkt, geaendertes Request/Response-Schema, neue Query-Parameter |
 | **FAQ** | `src/lib/faq.ts` | Neues Feature das Nutzer betrifft, geaenderte Bedienung |
+| **Deployment** | `docs/DEPLOYMENT.md` | Neue Deploy-Schritte, neue Env-Variablen, Build-Einstellungen |
 | **AGENTS.md** | `AGENTS.md` | Neue Regeln, neue Dateien, neue Skills, geaenderte Konventionen |
 | **Bugs** | `docs/bugs.md` | Neuer Bug gefunden, Bug-Status-Update, Bug behoben |
 

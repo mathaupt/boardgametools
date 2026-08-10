@@ -823,10 +823,36 @@ Version 0.50.10 - Fix: Lokaler Datei-Upload in Produktion verhindern, wenn BLOB_
 
 ---
 
+### [BUG-024] NextAuth meldet `UntrustedHost` bei lokalem Produktions-Build
+
+**Status:** `fixed`
+**Schweregrad:** `high`
+**Entdeckt:** 2026-08-10
+**Behoben:** 2026-08-10
+**Behoben in Version:** 0.50.11
+**Test geschrieben:** Ja (E2E-Tests laufen jetzt gegen Produktions-Build)
+
+**Beschreibung:**
+Bei `npm run build && npm start` auf `localhost:3000` brach Auth.js mit `UntrustedHost` ab, weil die eingehende Host-Header in Produktion nicht als vertrauenswürdig eingestuft wurden.
+
+**Erwartetes Verhalten:**
+Lokale Produktions-Builds und das Vercel-Deployment sollten Host-Header akzeptieren, solange sie aus bekannten Umgebungen stammen.
+
+**Tatsächliches Verhalten:**
+Auth.js warf `UntrustedHost` und Login/Session-APIs gaben Fehler zurück.
+
+**Lösung:**
+`trustHost` in `src/lib/auth.ts` setzen, wenn `AUTH_TRUST_HOST=true`, `VERCEL=1` oder `NODE_ENV !== "production"` gilt. Zusätzlich in `.env.local.example` und `.env.production.example` dokumentiert.
+
+**Referenz im Changelog:**
+Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und Vercel konfiguriert
+
+---
+
 ## Statistik
 
 - **Offene Bugs:** 0
 - **In Bearbeitung:** 0
-- **Behoben:** 23
+- **Behoben:** 24
 - **Wontfix:** 0
-- **Gesamt:** 23
+- **Gesamt:** 24

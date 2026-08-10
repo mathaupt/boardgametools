@@ -6,49 +6,59 @@ export const proxy = auth((req) => {
   const { pathname } = req.nextUrl;
   const isLoggedIn = !!req.auth;
 
-  // --- CSRF protection for mutation requests (Origin verification) ---
+  // --- CSRF protection for mutation requests (Origin / Sec-Fetch-Site verification) ---
+  // Session cookies are SameSite=Lax by default, which already blocks cross-site POSTs.
+  // This layer adds defense-in-depth for same-site/subdomain and header-spoofing scenarios.
   if (
     MUTATION_METHODS.includes(req.method) &&
     pathname.startsWith("/api/") &&
     !pathname.startsWith("/api/auth/") && // NextAuth has its own CSRF
-    !pathname.startsWith("/api/public/") // Public endpoints don't require CSRF
+    !pathname.startsWith("/api/public/") && // Public endpoints are token-based, not cookie-auth
+    !pathname.startsWith("/api/mobile/v1/public/")
   ) {
     const authHeader = req.headers.get("authorization") || "";
     if (authHeader.startsWith("Bearer ")) {
       // API-token requests are not vulnerable to browser CSRF
       return;
     }
-    const origin = req.headers.get("origin");
-    const referer = req.headers.get("referer");
-    const host = req.headers.get("host");
+
     const expectedOrigin = req.nextUrl.origin;
+    const secFetchSite = req.headers.get("sec-fetch-site");
 
-    // If neither Origin nor Referer is present, assume it's a same-origin request (safe)
-    // Browsers typically send these headers for cross-origin requests
-    if (!origin && !referer) {
-      return; // Allow same-origin requests without headers
-    }
-
-    // Skip CSRF validation for same-origin requests (browser requests from same domain)
-    // Check if request is from same origin by comparing host header (without port)
-    const hostWithoutPort = host?.split(":")[0];
-    const expectedHostWithoutPort = new URL(expectedOrigin).hostname;
-    
-    if (hostWithoutPort === expectedHostWithoutPort) {
-      // Same-origin requests are safe - skip CSRF validation
+    // Modern browsers signal the relationship between the request's origin and the target.
+    if (secFetchSite === "same-origin") {
       return;
     }
 
-    // For cross-origin requests, require Origin to match
+    // Cross-site requests are blocked outright (SameSite=Lax is the primary defense).
+    if (secFetchSite === "cross-site") {
+      return Response.json({ error: "CSRF validation failed" }, { status: 403 });
+    }
+
+    const origin = req.headers.get("origin");
+    const referer = req.headers.get("referer");
+    const host = req.headers.get("host");
+
     if (origin) {
       if (origin !== expectedOrigin) {
         return Response.json({ error: "CSRF validation failed" }, { status: 403 });
       }
-    } else if (referer) {
-      // Fallback: check Referer when Origin is absent
+      return;
+    }
+
+    if (referer) {
       if (!referer.startsWith(expectedOrigin)) {
         return Response.json({ error: "CSRF validation failed" }, { status: 403 });
       }
+      return;
+    }
+
+    // Fallback for clients that do not send Origin/Referer/Sec-Fetch-Site:
+    // only accept if the Host header matches the expected origin hostname.
+    const hostWithoutPort = host?.split(":")[0];
+    const expectedHostWithoutPort = new URL(expectedOrigin).hostname;
+    if (hostWithoutPort !== expectedHostWithoutPort) {
+      return Response.json({ error: "CSRF validation failed" }, { status: 403 });
     }
   }
 

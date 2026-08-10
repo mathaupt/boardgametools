@@ -1,12 +1,15 @@
 // @ts-nocheck - CodeceptJS E2E tests
-import { setHeadlessWhen, setCommonPlugins } from "@codeceptjs/configure";
+import pkg from "@codeceptjs/configure";
+import bootstrap from "./bootstrap";
+const { setHeadlessWhen } = pkg;
 
 setHeadlessWhen(process.env.HEADLESS);
-setCommonPlugins();
 
 export const config = {
   tests: "./*_test.ts",
   output: "./output",
+  bootstrap,
+  require: ["tsx/cjs"],
   helpers: {
     Playwright: {
       browser: "chromium",
@@ -16,7 +19,11 @@ export const config = {
     },
   },
   include: {
-    I: "./steps_file",
+    I: "./steps_file.ts",
+  },
+  plugins: {
+    retryFailedStep: { enabled: true },
+    screenshot: { enabled: true },
   },
   name: "boardgametools-e2e",
 };

@@ -46,6 +46,26 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   session: {
     strategy: "jwt",
   },
+  // Auth.js uses secure defaults (HttpOnly, SameSite=lax). We explicitly keep
+  // SameSite=lax on the session cookie for cross-site request forgery protection.
+  cookies: {
+    sessionToken: {
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+      },
+    },
+    csrfToken: {
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+      },
+    },
+  },
+  trustHost:
+    process.env.AUTH_TRUST_HOST === "true" ||
+    process.env.VERCEL === "1" ||
+    process.env.NODE_ENV !== "production",
   pages: {
     signIn: "/login",
   },
