@@ -21,4 +21,13 @@ describe("proxy", () => {
     const res = await (proxy as unknown as (req: NextRequest) => Promise<unknown>)(req);
     expect(res).toBeUndefined();
   });
+
+  it("allows public access to /api/health", async () => {
+    const req = new NextRequest("http://localhost:3000/api/health", {
+      method: "GET",
+    });
+    (req as any).auth = null;
+    const res = await (proxy as unknown as (req: NextRequest) => Promise<unknown>)(req);
+    expect(res).toBeUndefined();
+  });
 });

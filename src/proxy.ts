@@ -57,6 +57,9 @@ export const proxy = auth((req) => {
     return Response.redirect(new URL("/login", req.nextUrl));
   }
 
+  // Allow public health check
+  if (pathname === "/api/health") return;
+
   // Protect authenticated API routes
   if (
     pathname.startsWith("/api/") &&

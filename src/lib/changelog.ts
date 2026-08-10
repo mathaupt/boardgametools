@@ -12,6 +12,17 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.5",
+    date: "2026-08-10",
+    title: "Proxy: /api/health öffentlich erreichbar",
+    description: "Der Health-Check Endpunkt wird nicht mehr vom Auth-Proxy blockiert, damit Monitoring und die iOS-App die Live-URL prüfen können.",
+    changes: [
+      { type: "fix", text: "`/api/health` in `src/proxy.ts` als öffentlichen Endpunkt freigegeben" },
+      { type: "fix", text: "Security-Check erkennt `.env.production.example` und generierten Prisma-Code nicht mehr als Fehler" },
+      { type: "internal", text: "Proxy-Unit-Test um `/api/health`-Whitelist erweitert" },
+    ],
+  },
+  {
     version: "0.50.4",
     date: "2026-08-10",
     title: "Produktions-Deployment-Vorbereitung und SEC-45",

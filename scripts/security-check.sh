@@ -164,8 +164,8 @@ if should_run "A03"; then
     pass "Kein dangerouslySetInnerHTML gefunden" "A03"
   fi
 
-  # Check for raw SQL / $executeRaw without parameterization
-  RAW_SQL=$(grep -rn '\$executeRaw\|prisma\.\$queryRaw' "$SRC_DIR" --include="*.ts" --include="*.tsx" 2>/dev/null | head -5 || true)
+  # Check for raw SQL / $executeRaw without parameterization (skip generated Prisma client)
+  RAW_SQL=$(grep -rn '\$executeRaw\|prisma\.\$queryRaw' "$SRC_DIR" --include="*.ts" --include="*.tsx" --exclude-dir=generated 2>/dev/null | head -5 || true)
   if [[ -n "$RAW_SQL" ]]; then
     warn "Raw SQL Queries gefunden – SQL Injection prüfen:\n$RAW_SQL" "A03"
   else
@@ -208,7 +208,7 @@ fi
 if should_run "A05"; then
   section "⚙️  OWASP A05 – Security Misconfiguration"
 
-  if git ls-files 2>/dev/null | grep '^\.env' | grep -v '.env.example' | grep -v '.env.local.example' >/dev/null 2>&1; then
+  if git ls-files 2>/dev/null | grep '^\.env' | grep -v '\.env\.example$' | grep -v '\.env\.local\.example$' | grep -v '\.env\.production\.example$' >/dev/null 2>&1; then
     fail ".env Dateien werden versioniert" "A05"
   else
     pass ".env Dateien sind geschützt" "A05"
@@ -252,8 +252,8 @@ fi
 if should_run "A07"; then
   section "🔐 OWASP A07 – Authentication Failures"
 
-  # Smarter check: exclude UI state variables, type definitions, hash operations
-  HARDCODED=$(grep -rn -E "(password|passwd|secret)\s*[:=]\s*['\"][^\"]{3,}" "$SRC_DIR" --include="*.ts" --include="*.tsx" 2>/dev/null \
+  # Smarter check: exclude UI state variables, type definitions, hash operations and generated code
+  HARDCODED=$(grep -rn -E "(password|passwd|secret)\s*[:=]\s*['\"][^\"]{3,}" "$SRC_DIR" --include="*.ts" --include="*.tsx" --exclude-dir=generated 2>/dev/null \
     | grep -v "process.env" | grep -v "useState" | grep -v "setPassword" \
     | grep -v "\.test\." | grep -v "passwordHash" | grep -v "Hash\|hash(" \
     | grep -v "type \|interface " | grep -v "NEXTAUTH_SECRET" \
