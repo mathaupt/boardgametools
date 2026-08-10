@@ -193,17 +193,19 @@ export const GameService = {
     return result;
   },
 
-  /** Soft-delete a game */
+  /** Soft-delete a game (idempotent: already-deleted games return success) */
   async delete(userId: string, gameId: string) {
     const existing = await prisma.game.findFirst({
-      where: { id: gameId, ownerId: userId, ...NOT_DELETED },
+      where: { id: gameId, ownerId: userId },
     });
     if (!existing) throw new ApiError(404, "Game not found");
 
-    await prisma.game.update({
-      where: { id: gameId },
-      data: { deletedAt: new Date() },
-    });
+    if (!existing.deletedAt) {
+      await prisma.game.update({
+        where: { id: gameId },
+        data: { deletedAt: new Date() },
+      });
+    }
 
     this._invalidateGameCaches(userId);
     return { message: "Game deleted" };

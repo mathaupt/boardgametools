@@ -259,13 +259,24 @@ describe("GameService", () => {
 
       expect(prisma.game.findFirst).toHaveBeenCalledWith(
         expect.objectContaining({
-          where: { id: GAME_ID, ownerId: USER_ID, deletedAt: null },
+          where: { id: GAME_ID, ownerId: USER_ID },
         })
       );
       expect(prisma.game.update).toHaveBeenCalledWith({
         where: { id: GAME_ID },
         data: { deletedAt: expect.any(Date) },
       });
+      expect(invalidateTag).toHaveBeenCalledTimes(4);
+      expect(result).toEqual({ message: "Game deleted" });
+    });
+
+    it("returns success when game is already soft-deleted", async () => {
+      const deletedGame = { ...fakeGame, deletedAt: new Date() };
+      vi.mocked(prisma.game.findFirst).mockResolvedValue(deletedGame as never);
+
+      const result = await GameService.delete(USER_ID, GAME_ID);
+
+      expect(prisma.game.update).not.toHaveBeenCalled();
       expect(invalidateTag).toHaveBeenCalledTimes(4);
       expect(result).toEqual({ message: "Game deleted" });
     });

@@ -24,6 +24,26 @@ function optionalEnvOrUndefined(name: string): string | undefined {
 }
 
 /**
+ * Normalisiert Postgres-Verbindungsstrings, damit pg-connection-string
+ * keine Warnung fuer aeltere SSL-Modi ausgibt. `prefer`, `require` und
+ * `verify-ca` werden auf `verify-full` abgebildet, was dem aktuellen Verhalten
+ * des Treibers entspricht.
+ */
+function normalizeDatabaseUrl(url: string): string {
+  try {
+    const parsed = new URL(url);
+    const sslmode = parsed.searchParams.get("sslmode");
+    if (sslmode && ["prefer", "require", "verify-ca"].includes(sslmode)) {
+      parsed.searchParams.set("sslmode", "verify-full");
+      return parsed.toString();
+    }
+  } catch {
+    // Kein gueltiger URL-String; unveraendert weitergeben.
+  }
+  return url;
+}
+
+/**
  * Centralized environment configuration.
  * Uses getters so values are read lazily from process.env at access time,
  * which keeps things testable (vi.resetModules / process.env mutations).
@@ -31,7 +51,7 @@ function optionalEnvOrUndefined(name: string): string | undefined {
 export const env = {
   // ── Required ──
   // Supports both SQL_DATABASE_URL (project convention) and DATABASE_URL (Vercel Postgres default).
-  get DATABASE_URL() { return requireOneOfEnv(["SQL_DATABASE_URL", "DATABASE_URL"]); },
+  get DATABASE_URL() { return normalizeDatabaseUrl(requireOneOfEnv(["SQL_DATABASE_URL", "DATABASE_URL"])); },
   get NEXTAUTH_SECRET() { return requireEnv("NEXTAUTH_SECRET"); },
 
   // ── App ──

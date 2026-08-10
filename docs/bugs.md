@@ -266,10 +266,80 @@ Version 0.50.7 - iOS-App: Abmelden bei API-URL-Wechsel
 
 ---
 
+### [BUG-007] PostgreSQL SSL-Warnung beim App-Start
+
+**Status:** `fixed`
+**Schweregrad:** `low`
+**Entdeckt:** 2026-08-10
+**Behoben:** 2026-08-10
+**Behoben in Version:** 0.50.8
+**Test geschrieben:** Nein
+
+**Beschreibung:**
+Beim Start der Next.js-Runtime erscheint eine Warnung von `pg-connection-string`: `sslmode=require/prefer/verify-ca` werden als Alias für `verify-full` behandelt und ändern sich in zukünftigen Major-Versionen.
+
+**Reproduktion:**
+1. App mit `SQL_DATABASE_URL` oder `DATABASE_URL` starten, die `sslmode=require` (oder `prefer`/`verify-ca`) enthält.
+2. Server-Logs zeigen `(node) Warning: SECURITY WARNING: ... sslmode ...`.
+
+**Erwartetes Verhalten:**
+Keine Warnung, Verhalten bleibt beim aktuellen `verify-full`.
+
+**Tatsächliches Verhalten:**
+Warnung wird bei jeder Verbindungsaufnahme ausgegeben.
+
+**Ursache:**
+Prisma/Adapter `pg` übergibt den Connection-String unverändert an `pg-connection-string`, das die Werte als Alias interpretiert.
+
+**Lösung:**
+`env.ts` normalisiert `sslmode=require/prefer/verify-ca` auf `sslmode=verify-full`, bevor der Connection-String an `PrismaPg` übergeben wird. Das entspricht dem aktuellen Verhalten des Treibers.
+
+**Referenz im Changelog:**
+Version 0.50.8 - Fix: PostgreSQL SSL-Warnung normalisiert
+
+---
+
+### [BUG-008] iOS-App: Spiel-Löschen führt trotz korrekter ID zu 404
+
+**Status:** `fixed`
+**Schweregrad:** `medium`
+**Entdeckt:** 2026-08-10
+**Behoben:** 2026-08-10
+**Behoben in Version:** 0.50.8
+**Test geschrieben:** Ja
+
+**Beschreibung:**
+Beim Löschen eines Spiels aus der iOS-Detailansicht antwortet `DELETE /api/mobile/v1/games/{id}` mit 404 `Game not found`, obwohl die ID korrekt ist und das Spiel in der lokalen Liste sichtbar ist.
+
+**Reproduktion:**
+1. iOS-App öffnen und ein Spiel aus der Liste wählen.
+2. "Löschen" bestätigen.
+3. Server antwortet mit 404.
+
+**Erwartetes Verhalten:**
+Spiel wird gelöscht (bzw. als bereits gelöscht bestätigt) und die App kehrt zur Spieleliste zurück.
+
+**Tatsächliches Verhalten:**
+Fehlermeldung "Nicht gefunden" wird angezeigt, die Detailansicht bleibt geöffnet.
+
+**Ursache:**
+`GameService.delete` prüfte nur noch nicht gelöschte Spiele (`deletedAt: null`). Wenn ein Datensatz im lokalen SwiftData-Cache noch vorhanden war, auf dem Server aber bereits als gelöscht markiert war (z. B. durch eine vorherige Anfrage oder ein anderes Gerät), lieferte `findFirst` `null` und warf 404.
+
+**Lösung:**
+- `GameService.delete` sucht jetzt nach `id` und `ownerId` unabhängig von `deletedAt`.
+- Bereits gelöschte Spiele liefern Erfolg, ohne ein erneutes `update` auszuführen (idempotentes Löschen).
+- `GameDetailView` zeigt nach erfolgreichem Löschen einen Erfolgs-Alert und schließt die Ansicht (`dismiss`).
+- Unit-Test für bereits gelöschte Spiele ergänzt.
+
+**Referenz im Changelog:**
+Version 0.50.8 - Fix: Spiel-Löschen idempotent; iOS Rücksprung + Erfolgsmeldung
+
+---
+
 ## Statistik
 
 - **Offene Bugs:** 0
 - **In Bearbeitung:** 0
-- **Behoben:** 6
+- **Behoben:** 8
 - **Wontfix:** 0
-- **Gesamt:** 6
+- **Gesamt:** 8
