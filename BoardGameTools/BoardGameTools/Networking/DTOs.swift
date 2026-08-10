@@ -172,10 +172,25 @@ struct GroupDTO: Codable, Identifiable, Sendable {
     var deletedAt: String?
 }
 
-struct BGGSearchResult: Codable, Sendable {
+struct GameInput: Encodable, Sendable {
+    let name: String
+    let description: String?
+    let minPlayers: Int?
+    let maxPlayers: Int?
+    let playTimeMinutes: Int?
+    let complexity: Int?
+    let bggId: String?
+    let ean: String?
+    let imageUrl: String?
+    let tagNames: [String]?
+}
+
+struct BGGSearchResult: Codable, Identifiable, Sendable {
     let bggId: String
     let name: String
     let yearPublished: Int?
+
+    var id: String { bggId }
 }
 
 struct BGGGameDetail: Codable, Sendable {

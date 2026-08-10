@@ -36,6 +36,23 @@ export const changelog: ChangelogEntry[] = [
     ],
   },
   {
+    version: "0.49.6",
+    date: "2026-08-10",
+    title: "iOS: Erstes emotionales Design + Spiel hinzufügen/BGG-Import",
+    description: "Die iOS-App erhält ein Farb-Thema mit Farbverläufen, abgerundete Kacheln, Offline-Banner, leere Zustände und Cover-Bilder. Spiele können manuell angelegt, bearbeitet, gelöscht und direkt aus BoardGameGeek importiert werden.",
+    changes: [
+      { type: "feature", text: "`Theme`-Farbpalette und `GradientButton`/`themeCard`-Modifier" },
+      { type: "feature", text: "Dashboard mit farbigen Kacheln, Offline-Banner und Sync-Status" },
+      { type: "feature", text: "Listen mit Cover-Bildern, Sterne-Komplexität und abgerundeten Karten" },
+      { type: "feature", text: "`GameEditView` zum manuellen Erstellen/Bearbeiten von Spielen" },
+      { type: "feature", text: "`BGGSearchView` zum Suchen und Importieren aus BoardGameGeek" },
+      { type: "feature", text: "`NetworkMonitor` zeigt Online/Offline-Status in allen Listen" },
+      { type: "feature", text: "Lade- und Leer-Zustände (`LoadingOverlay`, `EmptyStateView`)" },
+      { type: "improvement", text: "`LoginView` mit App-Icon-Gradient und API-URL-Eingabe" },
+      { type: "improvement", text: "`SettingsView` zeigt Netzwerk-Status" },
+    ],
+  },
+  {
     version: "0.49.5",
     date: "2026-08-10",
     title: "iOS Login: localhost als Default-Backend",

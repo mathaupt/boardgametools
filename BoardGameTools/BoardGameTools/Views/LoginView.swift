@@ -9,58 +9,78 @@ struct LoginView: View {
     @State private var isLoading = false
 
     var body: some View {
-        VStack(spacing: 20) {
+        VStack(spacing: 24) {
+            Spacer()
+
+            ZStack {
+                Theme.primaryGradient
+                Image(systemName: "dice.fill")
+                    .font(.system(size: 64))
+                    .foregroundStyle(.white.opacity(0.9))
+            }
+            .frame(width: 120, height: 120)
+            .clipShape(.rect(cornerRadius: 28))
+            .shadow(color: Theme.primary.opacity(0.4), radius: 16, x: 0, y: 8)
+
             Text("BoardGameTools")
                 .font(.largeTitle)
                 .fontWeight(.bold)
 
-            VStack(alignment: .leading, spacing: 4) {
-                Text("API-URL")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                HStack {
-                    TextField("https://...", text: $apiURL)
-                        .autocapitalization(.none)
-                        .textContentType(.URL)
-                        .keyboardType(.URL)
-                        .textFieldStyle(.roundedBorder)
-                    Button("Speichern") {
-                        if let url = URL(string: apiURL), !apiURL.isEmpty {
-                            APIClient.shared.baseURL = url
+            VStack(spacing: 16) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("API-URL")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    HStack {
+                        TextField("https://...", text: $apiURL)
+                            .autocapitalization(.none)
+                            .textContentType(.URL)
+                            .keyboardType(.URL)
+                            .textFieldStyle(.roundedBorder)
+                        Button("Speichern") {
+                            if let url = URL(string: apiURL), !apiURL.isEmpty {
+                                APIClient.shared.baseURL = url
+                            }
                         }
+                        .buttonStyle(.bordered)
+                        .tint(Theme.primary)
+                        .disabled(apiURL.isEmpty)
                     }
-                    .disabled(apiURL.isEmpty)
+                }
+
+                TextField("E-Mail", text: $email)
+                    .textContentType(.emailAddress)
+                    .autocapitalization(.none)
+                    .textFieldStyle(.roundedBorder)
+
+                SecureField("Passwort", text: $password)
+                    .textContentType(.password)
+                    .textFieldStyle(.roundedBorder)
+
+                Button {
+                    Task { await login() }
+                } label: {
+                    if isLoading {
+                        ProgressView()
+                            .tint(.white)
+                    } else {
+                        Text("Anmelden")
+                    }
+                }
+                .themeGradientButton()
+                .disabled(email.isEmpty || password.isEmpty || isLoading)
+
+                if let errorMessage = errorMessage {
+                    Text(errorMessage)
+                        .foregroundStyle(.red)
+                        .font(.callout)
                 }
             }
-            .padding(.bottom)
 
-            TextField("E-Mail", text: $email)
-                .textContentType(.emailAddress)
-                .autocapitalization(.none)
-                .textFieldStyle(.roundedBorder)
-
-            SecureField("Passwort", text: $password)
-                .textContentType(.password)
-                .textFieldStyle(.roundedBorder)
-
-            Button {
-                Task { await login() }
-            } label: {
-                if isLoading {
-                    ProgressView()
-                } else {
-                    Text("Anmelden")
-                }
-            }
-            .buttonStyle(.borderedProminent)
-            .disabled(email.isEmpty || password.isEmpty || isLoading)
-
-            if let errorMessage = errorMessage {
-                Text(errorMessage)
-                    .foregroundStyle(.red)
-            }
+            Spacer()
         }
-        .padding()
+        .padding(32)
+        .background(Theme.background.ignoresSafeArea())
         .onAppear {
             apiURL = APIClient.shared.baseURL.absoluteString
         }

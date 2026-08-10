@@ -3,24 +3,38 @@ import SwiftData
 
 struct GroupListView: View {
     @Environment(SyncEngine.self) private var syncEngine
+    @Environment(NetworkMonitor.self) private var networkMonitor
     @Query(sort: \LocalGroup.name) private var localGroups: [LocalGroup]
     @State private var errorMessage: String?
 
     var body: some View {
         NavigationStack {
-            List(localGroups.map { $0.toDTO() }) { group in
-                GroupRow(group: group)
+            List {
+                if !networkMonitor.isOnline {
+                    OfflineBanner()
+                        .listRowBackground(Color.clear)
+                        .listRowSeparator(.hidden)
+                }
+
+                ForEach(localGroups) { group in
+                    GroupRow(group: group)
+                        .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+                        .listRowBackground(Theme.cardBackground)
+                        .listRowSeparator(.hidden)
+                }
             }
+            .listStyle(.plain)
+            .background(Theme.background.ignoresSafeArea())
             .navigationTitle("Gruppen")
             .task { await syncEngine.sync() }
             .refreshable { await syncEngine.sync() }
             .overlay {
                 if syncEngine.isSyncing && localGroups.isEmpty {
-                    ProgressView()
+                    LoadingOverlay(message: "Lade Gruppen...")
                 } else if let errorMessage = errorMessage {
-                    Text(errorMessage).foregroundStyle(.red)
-                } else if localGroups.isEmpty {
-                    Text("Noch keine Gruppen")
+                    EmptyStateView(icon: "exclamationmark.triangle", title: "Fehler", subtitle: errorMessage)
+                } else if localGroups.isEmpty && !syncEngine.isSyncing {
+                    EmptyStateView(icon: "person.3", title: "Noch keine Gruppen", subtitle: "Erstelle eine Gruppe für deine Spielrunde.")
                 }
             }
             .onChange(of: syncEngine.errorMessage) { _, new in
@@ -31,18 +45,47 @@ struct GroupListView: View {
 }
 
 struct GroupRow: View {
-    let group: GroupDTO
+    let group: LocalGroup
 
     var body: some View {
-        VStack(alignment: .leading) {
-            Text(group.name)
-                .font(.headline)
-            if let desc = group.description, !desc.isEmpty {
-                Text(desc)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .lineLimit(2)
+        HStack(spacing: 16) {
+            ZStack {
+                Theme.coolGradient
+                    .overlay(
+                        Image(systemName: "person.3.fill")
+                            .font(.title2)
+                            .foregroundStyle(.white.opacity(0.8))
+                    )
             }
+            .frame(width: 56, height: 56)
+            .clipShape(.rect(cornerRadius: 14))
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text(group.name)
+                    .font(.headline)
+                    .lineLimit(1)
+
+                if let desc = group.desc, !desc.isEmpty {
+                    Text(desc)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(2)
+                }
+
+                HStack(spacing: 4) {
+                    Image(systemName: "person.2")
+                    Text("\(group.members?.count ?? 0) Mitglieder")
+                }
+                .font(.caption2)
+                .foregroundStyle(.tertiary)
+            }
+
+            Spacer()
+
+            Image(systemName: "chevron.right")
+                .font(.caption)
+                .foregroundStyle(.tertiary)
         }
+        .padding(.vertical, 4)
     }
 }

@@ -165,6 +165,12 @@ automatischem Build und Unit-Test-Ziel:
 - SwiftUI-Views (`LoginView`, `DashboardView`, `GameListView`, `GameDetailView`,
   `SessionListView`, `EventListView`, `GroupListView`, `SettingsView`) nutzen
   SwiftData `@Query` und Pull-to-Refresh.
+- Theming: indigo/violette Farbpalette, Farbverläufe, Kachel-Karten,
+  Offline-Banner, leere Zustände und Cover-Bilder per `AsyncImage`.
+- `GameEditView`, `GameAddSheet` und `BGGSearchView` ermöglichen das manuelle
+  Erstellen/Bearbeiten/Löschen sowie den Import aus BoardGameGeek.
+- `NetworkMonitor` zeigt den Online-/Offline-Status und triggert keinen Sync,
+  wenn keine Verbindung besteht.
 
 Die versionierte REST-API `/api/mobile/v1/*` setzt auf dem bestehenden
 Next.js-Backend auf und verwendet die Service-Schicht. Unterstützt werden

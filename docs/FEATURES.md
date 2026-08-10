@@ -701,6 +701,11 @@ und alle Kernbereiche des Web-Frontends.
 - `DashboardView`, `GameListView`, `GameDetailView`, `SessionListView`,
   `EventListView`, `GroupListView`, `SettingsView` nutzen SwiftData `@Query`
   und synchronisieren per Pull-to-Refresh.
+- Theming: indigo/violette Farbpalette, Farbverläufe, Kachel-Karten,
+  Offline-Banner, leere Zustände, Cover-Bilder per `AsyncImage`.
+- `GameEditView` und `BGGSearchView`: Spiele manuell anlegen/bearbeiten/löschen
+  oder direkt aus BoardGameGeek importieren.
+- `NetworkMonitor` meldet Online-/Offline-Status in den Listen.
 
 ### Build & Tests
 

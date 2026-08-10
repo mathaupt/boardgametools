@@ -198,6 +198,29 @@ export const faqSections: FaqSection[] = [
     ],
   },
   {
+    id: "ios-app",
+    title: "iOS-App",
+    icon: "smartphone",
+    description: "Mobile App für iPhone und iPad.",
+    items: [
+      {
+        question: "Wie melde ich mich in der iOS-App an?",
+        answer:
+          "Trage im Login-Bildschirm oben deine API-URL ein (Standard ist `http://localhost:3000` für den lokalen Entwicklungs-Server) und tippe auf Speichern. Danach gibst du E-Mail und Passwort ein und tippst auf Anmelden.",
+      },
+      {
+        question: "Wie synchronisiert die iOS-App die Daten?",
+        answer:
+          "Alle Listen zeigen zuerst lokale Daten aus SwiftData an. Wenn du in einer Liste nach unten ziehst (Pull-to-Refresh), ruft die App `GET /api/mobile/v1/sync` ab und übernimmt neue, geänderte und gelöschte Einträge in den lokalen Speicher. Das funktioniert auch im Offline-Modus, dann werden einfach die vorhandenen Daten angezeigt.",
+      },
+      {
+        question: "Kann ich in der iOS-App Spiele hinzufügen?",
+        answer:
+          "Ja, auf der Spiele-Seite tippe auf das Plus-Icon. Du kannst ein Spiel manuell eingeben oder über die BGG-Suche in BoardGameGeek suchen und automatisch importieren lassen.",
+      },
+    ],
+  },
+  {
     id: "statistics",
     title: "Statistiken",
     icon: "bar-chart",

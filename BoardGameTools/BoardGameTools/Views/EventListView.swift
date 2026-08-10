@@ -3,24 +3,38 @@ import SwiftData
 
 struct EventListView: View {
     @Environment(SyncEngine.self) private var syncEngine
+    @Environment(NetworkMonitor.self) private var networkMonitor
     @Query(sort: \LocalEvent.eventDate) private var localEvents: [LocalEvent]
     @State private var errorMessage: String?
 
     var body: some View {
         NavigationStack {
-            List(localEvents.map { $0.toDTO() }) { event in
-                EventRow(event: event)
+            List {
+                if !networkMonitor.isOnline {
+                    OfflineBanner()
+                        .listRowBackground(Color.clear)
+                        .listRowSeparator(.hidden)
+                }
+
+                ForEach(localEvents) { event in
+                    EventRow(event: event)
+                        .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+                        .listRowBackground(Theme.cardBackground)
+                        .listRowSeparator(.hidden)
+                }
             }
+            .listStyle(.plain)
+            .background(Theme.background.ignoresSafeArea())
             .navigationTitle("Events")
             .task { await syncEngine.sync() }
             .refreshable { await syncEngine.sync() }
             .overlay {
                 if syncEngine.isSyncing && localEvents.isEmpty {
-                    ProgressView()
+                    LoadingOverlay(message: "Lade Events...")
                 } else if let errorMessage = errorMessage {
-                    Text(errorMessage).foregroundStyle(.red)
-                } else if localEvents.isEmpty {
-                    Text("Noch keine Events")
+                    EmptyStateView(icon: "exclamationmark.triangle", title: "Fehler", subtitle: errorMessage)
+                } else if localEvents.isEmpty && !syncEngine.isSyncing {
+                    EmptyStateView(icon: "calendar.badge.sparkles", title: "Noch keine Events", subtitle: "Plane deinen nächsten Spieleabend.")
                 }
             }
             .onChange(of: syncEngine.errorMessage) { _, new in
@@ -31,21 +45,69 @@ struct EventListView: View {
 }
 
 struct EventRow: View {
-    let event: EventDTO
+    let event: LocalEvent
 
     var body: some View {
-        VStack(alignment: .leading) {
-            Text(event.title)
-                .font(.headline)
-            Text(event.eventDate.formattedISO8601() ?? event.eventDate)
+        HStack(spacing: 16) {
+            ZStack {
+                Theme.roseGradient
+                    .overlay(
+                        Image(systemName: "calendar.badge.sparkles")
+                            .font(.title2)
+                            .foregroundStyle(.white.opacity(0.8))
+                    )
+            }
+            .frame(width: 56, height: 56)
+            .clipShape(.rect(cornerRadius: 14))
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text(event.title)
+                    .font(.headline)
+                    .lineLimit(1)
+
+                Text(event.eventDate.formattedISO8601() ?? event.eventDate)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+
+                EventStatusBadge(status: event.status)
+            }
+
+            Spacer()
+
+            Image(systemName: "chevron.right")
                 .font(.caption)
-                .foregroundStyle(.secondary)
-            Text(event.status)
-                .font(.caption2)
-                .padding(.horizontal, 6)
-                .padding(.vertical, 2)
-                .background(.green.opacity(0.2))
-                .clipShape(.capsule)
+                .foregroundStyle(.tertiary)
+        }
+        .padding(.vertical, 4)
+    }
+}
+
+struct EventStatusBadge: View {
+    let status: String
+
+    var body: some View {
+        let (text, color) = statusAttributes
+
+        Text(text)
+            .font(.caption2)
+            .fontWeight(.semibold)
+            .padding(.horizontal, 8)
+            .padding(.vertical, 4)
+            .background(color.opacity(0.15))
+            .foregroundStyle(color)
+            .clipShape(.capsule)
+    }
+
+    private var statusAttributes: (String, Color) {
+        switch status.lowercased() {
+        case "planned", "geplant":
+            return ("Geplant", .cyan)
+        case "open", "offen":
+            return ("Offen", Theme.primary)
+        case "closed", "geschlossen", "abgeschlossen":
+            return ("Geschlossen", .gray)
+        default:
+            return (status.capitalized, Theme.secondary)
         }
     }
 }

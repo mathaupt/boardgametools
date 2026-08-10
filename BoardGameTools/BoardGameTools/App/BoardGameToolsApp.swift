@@ -11,7 +11,9 @@ struct BoardGameToolsApp: App {
                 .environment(AuthManager.shared)
                 .environment(APIClient.shared)
                 .environment(SyncEngine.shared)
+                .environment(NetworkMonitor.shared)
                 .environment(\.modelContext, persistenceController.mainContext)
+                .tint(Theme.primary)
         }
         .modelContainer(persistenceController.container)
     }

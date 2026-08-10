@@ -3,6 +3,7 @@ import SwiftData
 
 struct DashboardView: View {
     @Environment(SyncEngine.self) private var syncEngine
+    @Environment(NetworkMonitor.self) private var networkMonitor
     @Query private var games: [LocalGame]
     @Query private var sessions: [LocalSession]
     @Query private var events: [LocalEvent]
@@ -12,19 +13,33 @@ struct DashboardView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(spacing: 16) {
-                    DashboardTile(title: "Spiele", value: games.count, icon: "dice")
-                    DashboardTile(title: "Sessions", value: sessions.count, icon: "calendar")
-                    DashboardTile(title: "Events", value: events.count, icon: "person.3")
-                    DashboardTile(title: "Gruppen", value: groups.count, icon: "person.2")
-
-                    if syncEngine.isSyncing {
-                        ProgressView()
-                            .padding()
+                VStack(spacing: 20) {
+                    if !networkMonitor.isOnline {
+                        OfflineBanner()
                     }
 
-                    if let lastSyncedAt = syncEngine.lastSyncedAt {
-                        Text("Zuletzt synchronisiert: \(lastSyncedAt.formattedISO8601() ?? lastSyncedAt)")
+                    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
+                        DashboardTile(title: "Spiele", value: games.count, icon: "dice.fill", gradient: Theme.primaryGradient)
+                        DashboardTile(title: "Sessions", value: sessions.count, icon: "dice.gamedots", gradient: Theme.warmGradient)
+                        DashboardTile(title: "Events", value: events.count, icon: "calendar.badge.sparkles", gradient: Theme.roseGradient)
+                        DashboardTile(title: "Gruppen", value: groups.count, icon: "person.3.fill", gradient: Theme.coolGradient)
+                    }
+
+                    if syncEngine.isSyncing {
+                        HStack(spacing: 8) {
+                            ProgressView()
+                                .tint(.secondary)
+                            Text("Synchronisiere...")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                        .padding()
+                        .background(.thinMaterial)
+                        .clipShape(.capsule)
+                    }
+
+                    if let lastSyncedAt = syncEngine.lastSyncedAt, !syncEngine.isSyncing {
+                        Label("Zuletzt synchronisiert: \(lastSyncedAt.formattedISO8601() ?? lastSyncedAt)", systemImage: "checkmark.circle")
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }
@@ -37,6 +52,7 @@ struct DashboardView: View {
                 }
                 .padding()
             }
+            .background(Theme.background.ignoresSafeArea())
             .navigationTitle("Dashboard")
             .task { await syncEngine.sync() }
             .refreshable { await syncEngine.sync() }
@@ -47,27 +63,49 @@ struct DashboardView: View {
     }
 }
 
+struct OfflineBanner: View {
+    var body: some View {
+        HStack {
+            Image(systemName: "wifi.slash")
+            Text("Offline-Modus — Daten werden lokal angezeigt")
+                .font(.caption)
+            Spacer()
+        }
+        .padding()
+        .background(Theme.warning.opacity(0.15))
+        .foregroundStyle(Theme.warning)
+        .clipShape(.rect(cornerRadius: 12))
+    }
+}
+
 struct DashboardTile: View {
     let title: String
     let value: Int
     let icon: String
+    let gradient: LinearGradient
 
     var body: some View {
-        HStack {
-            Image(systemName: icon)
-                .font(.largeTitle)
-                .frame(width: 44)
-            VStack(alignment: .leading) {
-                Text(title)
-                    .font(.headline)
-                Text("\(value)")
-                    .font(.title)
-                    .fontWeight(.bold)
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Spacer()
+                Image(systemName: icon)
+                    .font(.title2)
+                    .foregroundStyle(.white.opacity(0.9))
             }
-            Spacer()
+
+            Text("\(value)")
+                .font(.system(size: 34, weight: .bold))
+                .foregroundStyle(.white)
+
+            Text(title)
+                .font(.subheadline)
+                .fontWeight(.medium)
+                .foregroundStyle(.white.opacity(0.9))
         }
         .padding()
-        .background(.regularMaterial)
-        .clipShape(.rect(cornerRadius: 12))
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(gradient)
+        .clipShape(.rect(cornerRadius: 20))
+        .shadow(color: .black.opacity(0.12), radius: 8, x: 0, y: 4)
     }
 }
