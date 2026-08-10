@@ -26,6 +26,7 @@ export const changelog: ChangelogEntry[] = [
       { type: "fix", text: "Spiel-Löschen ist idempotent: Bereits gelöschte Spiele erzeugen keinen 404-Fehler mehr" },
       { type: "fix", text: "iOS-Entitlements bereinigt: Sign in with Apple und Notification-Filter entfernt, damit Build mit Personal Team möglich ist" },
       { type: "fix", text: "SwiftData Context konsolidiert: PersistenceController speichert mainContext jetzt als Instanz, damit LocalDataSource und @Query denselben Kontext verwenden und Duplikate vermieden werden" },
+      { type: "fix", text: "iOS-Start bereinigt doppelte SwiftData-Einträge anhand der `id` für Spiele, Sessions, Events, Gruppen und deren Unterobjekte" },
       { type: "fix", text: "Synchronisierung liefert jetzt gelöschte IDs für Spiele, Sessions, Events und Gruppen, damit iOS-Listen aktualisiert werden" },
       { type: "improvement", text: "iOS-Listen (Spiele, Sessions, Events, Gruppen, Dashboard) synchronisieren sich bei jedem Erscheinen der Ansicht neu" },
       { type: "internal", text: "Neuer PUT-Endpunkt /api/mobile/v1/me für Profil-Updates" },
