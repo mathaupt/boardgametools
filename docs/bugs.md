@@ -38,6 +38,43 @@ Version X.Y.Z - Fix: [Beschreibung]
 
 ## Bugs
 
+### [BUG-025] Prisma-Postgres-Verbindungstimeout in Vercel-Produktion
+
+**Status:** `fixed`  
+**Schweregrad:** `critical`  
+**Entdeckt:** 2026-08-10  
+**Behoben:** 2026-08-10  
+**Behoben in Version:** 0.50.13  
+**Test geschrieben:** Ja
+
+**Beschreibung:**
+In der Vercel-Produktion bricht jede Datenbankabfrage mit dem Fehler `timeout exceeded when trying to connect` aus `pg-pool` ab. Die App kann keine Postgres-Verbindung aufbauen.
+
+**Reproduktion:**
+1. Deployment auf Vercel pushen
+2. Irgendeine API-Route oder Seite aufrufen, die Prisma verwendet
+3. Log zeigt `prisma:error timeout exceeded when trying to connect`
+
+**Erwartetes Verhalten:**
+Prisma sollte mit der in `SQL_DATABASE_URL` / `DATABASE_URL` konfigurierten Vercel Postgres Datenbank verbinden und Abfragen ausführen.
+
+**Tatsächliches Verhalten:**
+Verbindungsaufbau schlägt mit Timeout fehl (ca. 5s), bevor die eigentliche Abfrage ausgeführt werden kann.
+
+**Ursache:**
+Die `PrismaPg`-Pool-Konfiguration in `src/lib/db.ts` verwendet einen hartcodierten `connectionTimeoutMillis: 5_000`. Bei Vercel-Serverless-Coldstarts kann der TLS-Handshake und Netzwerkverbindungsaufbau zu Postgres länger dauern. Außerdem wird `max: 10` ohne Rücksicht auf `connection_limit` oder den `pgbouncer`-Modus verwendet. Zusätzlich fehlt die Unterstützung für die nativen Vercel-Postgres-Variablen `POSTGRES_URL` und `POSTGRES_URL_NON_POOLING`.
+
+**Lösung:**
+- `connectionTimeoutMillis` auf mindestens 30s oder aus `connect_timeout` Query-Parameter anheben
+- Pool-Größe (`max`) aus `connection_limit` Query-Parameter ableiten, im Vercel-Kontext auf 1 begrenzen
+- `POSTGRES_URL` und `POSTGRES_URL_NON_POOLING` als Fallback in `src/lib/env.ts` akzeptieren
+- Verbindungs-URL bereinigen, damit `pg` nicht versucht, `pgbouncer`/`connect_timeout` als Server-Parameter zu senden
+
+**Referenz im Changelog:**
+Version 0.50.13 - Fix: Prisma-Postgres Pool/Timeout für Vercel Serverless optimiert (BUG-025)
+
+---
+
 ### [BUG-003] BGG API 401 Unauthorized Error
 
 **Status:** `fixed`  
@@ -853,6 +890,6 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 - **Offene Bugs:** 0
 - **In Bearbeitung:** 0
-- **Behoben:** 24
+- **Behoben:** 25
 - **Wontfix:** 0
-- **Gesamt:** 24
+- **Gesamt:** 25

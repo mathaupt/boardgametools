@@ -12,6 +12,19 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.13",
+    date: "2026-08-10",
+    title: "Prisma-Postgres Verbindungs-Timeout in Vercel-Produktion behoben",
+    description: "Die `PrismaPg`-Pool-Konfiguration wurde für Vercel Serverless und Vercel Postgres robuster gestaltet: Timeouts und Pool-Größe können aus der Connection-URL gelesen werden, der Timeout-Default wurde erhöht und Vercel-Postgres-spezifische Variablen werden als Fallback akzeptiert.",
+    changes: [
+      { type: "fix", text: "`connectionTimeoutMillis` auf 10s Default erhöht und `connect_timeout` Query-Parameter auswertbar gemacht", bugRef: "BUG-025" },
+      { type: "improvement", text: "Pool-Größe (`max`) aus `connection_limit` ableiten und auf Vercel standardmäßig auf 1 begrenzen", bugRef: "BUG-025" },
+      { type: "improvement", text: "`POSTGRES_URL` und `POSTGRES_URL_NON_POOLING` als Fallback für `DATABASE_URL` unterstützen", bugRef: "BUG-025" },
+      { type: "improvement", text: "Prisma-/PgBouncer-spezifische Query-Parameter (`pgbouncer`, `connection_limit`, `connect_timeout`, `pool_timeout`) vor Übergabe an node-postgres entfernen", bugRef: "BUG-025" },
+      { type: "internal", text: "Unit-Tests für `parsePoolConfig` in `tests/unit/lib/db.test.ts` ergänzt", bugRef: "BUG-025" },
+    ],
+  },
+  {
     version: "0.50.12",
     date: "2026-08-10",
     title: "Dokumentations-Cleanup und Entfernung sensibler Daten",

@@ -50,8 +50,9 @@ function normalizeDatabaseUrl(url: string): string {
  */
 export const env = {
   // ── Required ──
-  // Supports both SQL_DATABASE_URL (project convention) and DATABASE_URL (Vercel Postgres default).
-  get DATABASE_URL() { return normalizeDatabaseUrl(requireOneOfEnv(["SQL_DATABASE_URL", "DATABASE_URL"])); },
+  // Supports SQL_DATABASE_URL (project convention), DATABASE_URL (Vercel default), and the
+  // native Vercel Postgres variables POSTGRES_URL (pooled) and POSTGRES_URL_NON_POOLING (direct).
+  get DATABASE_URL() { return normalizeDatabaseUrl(requireOneOfEnv(["SQL_DATABASE_URL", "DATABASE_URL", "POSTGRES_URL", "POSTGRES_URL_NON_POOLING"])); },
   get NEXTAUTH_SECRET() { return requireEnv("NEXTAUTH_SECRET"); },
 
   // ── App ──
