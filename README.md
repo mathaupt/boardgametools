@@ -135,6 +135,10 @@ curl "http://localhost:3000/api/bgg/13" \
 
 ## Deployment
 
+### 🚀 Vercel Deployment (empfohlen)
+
+Eine Schritt-für-Schritt-Anleitung für ein Live-Deployment unter Vercel — inklusive iOS-App-Verbindung — findest du in **[DEPLOYMENT.md](./DEPLOYMENT.md)**.
+
 ### 📦 IONOS Deployment
 
 Eine detaillierte Deployment-Anleitung für IONOS Hosting findest du in **[DEPLOYMENT_IONOS.md](./DEPLOYMENT_IONOS.md)**.

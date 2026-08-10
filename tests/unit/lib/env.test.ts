@@ -12,9 +12,16 @@ describe("env", () => {
     process.env = { ...originalEnv };
   });
 
-  it("throws when SQL_DATABASE_URL is missing", () => {
+  it("throws when neither SQL_DATABASE_URL nor DATABASE_URL is set", () => {
     delete process.env.SQL_DATABASE_URL;
+    delete process.env.DATABASE_URL;
     expect(() => env.DATABASE_URL).toThrow("SQL_DATABASE_URL");
+  });
+
+  it("falls back to DATABASE_URL when SQL_DATABASE_URL is not set", () => {
+    delete process.env.SQL_DATABASE_URL;
+    process.env.DATABASE_URL = "postgres://fallback";
+    expect(env.DATABASE_URL).toBe("postgres://fallback");
   });
 
   it("throws when NEXTAUTH_SECRET is missing", () => {

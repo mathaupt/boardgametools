@@ -37,9 +37,9 @@ const nextConfig: NextConfig = {
             value: [
               "default-src 'self'",
               isDev
-                ? "script-src 'self' 'unsafe-eval' 'unsafe-inline'"
-                : "script-src 'self' 'unsafe-inline'",
-              "style-src 'self' 'unsafe-inline'",
+                ? "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://unpkg.com"
+                : "script-src 'self' 'unsafe-inline' https://unpkg.com",
+              "style-src 'self' 'unsafe-inline' https://unpkg.com",
               "img-src 'self' data: blob: https://cf.geekdo-images.com",
               "font-src 'self'",
               "connect-src 'self' https://boardgamegeek.com",

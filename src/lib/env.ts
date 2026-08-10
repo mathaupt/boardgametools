@@ -6,6 +6,14 @@ function requireEnv(name: string): string {
   return value;
 }
 
+function requireOneOfEnv(names: string[]): string {
+  for (const name of names) {
+    const value = process.env[name];
+    if (value) return value;
+  }
+  throw new Error(`Missing required environment variable: one of ${names.join(", ")}`);
+}
+
 function optionalEnv(name: string, defaultValue: string): string {
   return process.env[name] || defaultValue;
 }
@@ -22,7 +30,8 @@ function optionalEnvOrUndefined(name: string): string | undefined {
  */
 export const env = {
   // ── Required ──
-  get DATABASE_URL() { return requireEnv("SQL_DATABASE_URL"); },
+  // Supports both SQL_DATABASE_URL (project convention) and DATABASE_URL (Vercel Postgres default).
+  get DATABASE_URL() { return requireOneOfEnv(["SQL_DATABASE_URL", "DATABASE_URL"]); },
   get NEXTAUTH_SECRET() { return requireEnv("NEXTAUTH_SECRET"); },
 
   // ── App ──

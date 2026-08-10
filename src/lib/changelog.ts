@@ -12,6 +12,20 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.4",
+    date: "2026-08-10",
+    title: "Produktions-Deployment-Vorbereitung und SEC-45",
+    description: "Vorbereitung für Live-Deployment unter Vercel, Beseitigung der produktionsrelevanten npm-audit-Findings und Ergänzung fehlender Error Boundaries.",
+    changes: [
+      { type: "fix", text: "SEC-45: Vulnerable `swagger-ui-react`-Abhängigkeit entfernt; Swagger UI wird jetzt via unpkg-CDN geladen", bugRef: "SEC-45" },
+      { type: "fix", text: "Content-Security-Policy um `https://unpkg.com` für Swagger-UI-Skripte/Styles erweitert" },
+      { type: "improvement", text: "`env.ts` und `prisma.config.ts` unterstützen jetzt sowohl `SQL_DATABASE_URL` als auch `DATABASE_URL`", bugRef: "SEC-45" },
+      { type: "improvement", text: "`.env.production.example` und `DEPLOYMENT.md` für Vercel-Live-Deployment inklusive iOS-App-Anbindung erstellt" },
+      { type: "improvement", text: "Fehlende `error.tsx`-Boundaries für Profil- und Statistik-Seiten ergänzt" },
+      { type: "internal", text: "`README.md` verweist jetzt auf `DEPLOYMENT.md`" },
+    ],
+  },
+  {
     version: "0.50.3",
     date: "2026-08-10",
     title: "UI/UX- und Barrierefreiheitsfixes für Events, Sessions und öffentliche Komponenten",
