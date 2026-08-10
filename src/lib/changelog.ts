@@ -36,8 +36,22 @@ export const changelog: ChangelogEntry[] = [
     ],
   },
   {
+    version: "0.49.2",
+    date: "2026-08-10",
+    title: "iOS Offline-First Daten-Layer",
+    description: "Die iOS-App erhält LocalDataSource, RemoteDataSource, SyncEngine und ein zentrales PersistenceController für SwiftData. Dashboard und Listen arbeiten nun lokal und synchronisieren per Pull-to-Refresh.",
+    changes: [
+      { type: "feature", text: "PersistenceController mit gemeinsamem SwiftData-ModelContainer" },
+      { type: "feature", text: "LocalDataSource zum Abrufen und Speichern von Spielen, Sessions, Events und Gruppen" },
+      { type: "feature", text: "RemoteDataSource für Sync- und Listen-Endpunkte" },
+      { type: "feature", text: "SyncEngine verarbeitet Delta-Updates (created/updated/deleted)" },
+      { type: "improvement", text: "Dashboard, GameList, SessionList, EventList und GroupList verwenden SwiftData und SyncEngine" },
+      { type: "internal", text: "SwiftData-Modelle um `toDTO()` Erweiterungen ergänzt" },
+    ],
+  },
+  {
     version: "0.49.1",
-    date: "2026-08-09",
+    date: "2026-08-10",
     title: "Vitest-Timeout für Security-Checks",
     description: "Das globale Test-Timeout in Vitest wurde auf 15 Sekunden erhöht, damit langlaufende Security-Check-Skripte unter voller Last nicht mehr unterbrechen.",
     changes: [

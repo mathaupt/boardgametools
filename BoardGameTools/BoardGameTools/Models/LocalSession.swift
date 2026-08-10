@@ -39,6 +39,20 @@ final class LocalSession {
         deletedAt = dto.deletedAt
         players = dto.players.map { LocalSessionPlayer(dto: $0) }
     }
+
+    func toDTO() -> SessionDTO {
+        SessionDTO(
+            id: id,
+            gameId: gameId,
+            playedAt: playedAt,
+            durationMinutes: durationMinutes,
+            notes: notes,
+            players: players?.map { $0.toDTO() } ?? [],
+            createdAt: createdAt,
+            updatedAt: updatedAt,
+            deletedAt: deletedAt
+        )
+    }
 }
 
 @Model
@@ -55,5 +69,15 @@ final class LocalSessionPlayer {
         self.score = dto.score
         self.isWinner = dto.isWinner
         self.placement = dto.placement
+    }
+
+    func toDTO() -> SessionPlayerDTO {
+        SessionPlayerDTO(
+            id: id,
+            userId: userId,
+            score: score,
+            isWinner: isWinner,
+            placement: placement
+        )
     }
 }

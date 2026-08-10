@@ -62,6 +62,27 @@ final class LocalEvent {
         proposals = dto.proposals?.map { LocalEventProposal(dto: $0) }
         dateProposals = dto.dateProposals?.map { LocalDateProposal(dto: $0) }
     }
+
+    func toDTO() -> EventDTO {
+        EventDTO(
+            id: id,
+            title: title,
+            description: desc,
+            eventDate: eventDate,
+            location: location,
+            status: status,
+            groupId: groupId,
+            selectedGameId: selectedGameId,
+            winningProposalId: winningProposalId,
+            isPublic: isPublic,
+            shareToken: shareToken,
+            proposals: proposals?.map { $0.toDTO() },
+            dateProposals: dateProposals?.map { $0.toDTO() },
+            createdAt: createdAt,
+            updatedAt: updatedAt,
+            deletedAt: deletedAt
+        )
+    }
 }
 
 @Model
@@ -107,6 +128,23 @@ final class LocalEventProposal {
         voteCount = dto.voteCount ?? 0
         createdAt = dto.createdAt
     }
+
+    func toDTO() -> EventProposalDTO {
+        EventProposalDTO(
+            id: id,
+            eventId: eventId,
+            gameId: gameId,
+            proposedById: proposedById,
+            bggId: bggId,
+            bggName: bggName,
+            bggImageUrl: bggImageUrl,
+            bggMinPlayers: bggMinPlayers,
+            bggMaxPlayers: bggMaxPlayers,
+            bggPlayTimeMinutes: bggPlayTimeMinutes,
+            voteCount: voteCount,
+            createdAt: createdAt
+        )
+    }
 }
 
 @Model
@@ -126,6 +164,16 @@ final class LocalDateProposal {
         self.createdAt = dto.createdAt
         self.votes = dto.votes?.map { LocalDateVote(dto: $0) }
     }
+
+    func toDTO() -> DateProposalDTO {
+        DateProposalDTO(
+            id: id,
+            eventId: eventId,
+            date: date,
+            votes: votes?.map { $0.toDTO() },
+            createdAt: createdAt
+        )
+    }
 }
 
 @Model
@@ -143,6 +191,16 @@ final class LocalDateVote {
         self.availability = dto.availability
         self.createdAt = dto.createdAt
     }
+
+    func toDTO() -> DateVoteDTO {
+        DateVoteDTO(
+            id: id,
+            dateProposalId: dateProposalId,
+            userId: userId,
+            availability: availability,
+            createdAt: createdAt
+        )
+    }
 }
 
 @Model
@@ -157,5 +215,14 @@ final class LocalVote {
         self.proposalId = dto.proposalId
         self.userId = dto.userId
         self.createdAt = dto.createdAt
+    }
+
+    func toDTO() -> VoteDTO {
+        VoteDTO(
+            id: id,
+            proposalId: proposalId,
+            userId: userId,
+            createdAt: createdAt
+        )
     }
 }

@@ -1,37 +1,32 @@
 import SwiftUI
+import SwiftData
 
 struct GroupListView: View {
-    @State private var groups: [GroupDTO] = []
-    @State private var isLoading = true
+    @Environment(SyncEngine.self) private var syncEngine
+    @Query(sort: \LocalGroup.name) private var localGroups: [LocalGroup]
     @State private var errorMessage: String?
 
     var body: some View {
         NavigationStack {
-            List(groups) { group in
+            List(localGroups.map { $0.toDTO() }) { group in
                 GroupRow(group: group)
             }
             .navigationTitle("Gruppen")
-            .task { await load() }
-            .refreshable { await load() }
+            .task { await syncEngine.sync() }
+            .refreshable { await syncEngine.sync() }
             .overlay {
-                if isLoading { ProgressView() }
-                else if let errorMessage = errorMessage { Text(errorMessage).foregroundStyle(.red) }
-                else if groups.isEmpty { Text("Noch keine Gruppen") }
+                if syncEngine.isSyncing && localGroups.isEmpty {
+                    ProgressView()
+                } else if let errorMessage = errorMessage {
+                    Text(errorMessage).foregroundStyle(.red)
+                } else if localGroups.isEmpty {
+                    Text("Noch keine Gruppen")
+                }
+            }
+            .onChange(of: syncEngine.errorMessage) { _, new in
+                errorMessage = new
             }
         }
-    }
-
-    private func load() async {
-        isLoading = true
-        errorMessage = nil
-        do {
-            groups = try await APIClient.shared.request(method: .get, endpoint: .groups)
-        } catch let error as APIError {
-            errorMessage = error.message
-        } catch {
-            errorMessage = error.localizedDescription
-        }
-        isLoading = false
     }
 }
 

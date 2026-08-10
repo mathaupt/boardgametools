@@ -395,6 +395,13 @@ npx prisma generate          # Prisma Client nicht gefunden
 npx prisma migrate dev       # Schema out of sync
 npm run backup:prod          # Manuelles DB-Backup
 npm install --legacy-peer-deps  # Falls Peer-Dependency-Konflikte auftreten (alternativ `.npmrc` verwenden)
+
+cd BoardGameTools            # iOS-Client
+xcodegen generate --project .
+xcodebuild -project BoardGameTools.xcodeproj -scheme BoardGameTools \
+  -destination 'platform=iOS Simulator,name=iPhone 16,OS=18.5' build
+xcodebuild -project BoardGameTools.xcodeproj -scheme BoardGameTools \
+  -destination 'platform=iOS Simulator,name=iPhone 16,OS=18.5' test
 npm run typecheck            # TypeScript-Fehler isolieren
 npm run lint                 # ESLint-Fehler prüfen
 npm run security-check:fast  # Security-Check ohne npm audit (schnell)

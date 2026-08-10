@@ -693,9 +693,14 @@ und alle Kernbereiche des Web-Frontends.
 - `KeychainManager` — sichere Speicherung von Access-/Refresh-Token.
 - SwiftData-Modelle für `Game`, `Session`, `Event`, `Group`, `User` und
   `SyncMetadata` (Basis für Offline-First-Sync).
-- Erste SwiftUI-Views: `LoginView`, `DashboardView`, `GameListView`,
-  `GameDetailView`, `SessionListView`, `EventListView`, `GroupListView`,
-  `SettingsView`.
+- `PersistenceController` — zentraler `ModelContainer` für die gesamte App.
+- `LocalDataSource` / `RemoteDataSource` — lokale SwiftData-CRUD-Operationen
+  und entkoppelte API-Zugriffe.
+- `SyncEngine` — abonniert `GET /api/mobile/v1/sync` und wendet
+  Delta-Updates (`created/updated/deleted`) auf den lokalen Speicher an.
+- `DashboardView`, `GameListView`, `GameDetailView`, `SessionListView`,
+  `EventListView`, `GroupListView`, `SettingsView` nutzen SwiftData `@Query`
+  und synchronisieren per Pull-to-Refresh.
 
 ### Build & Tests
 

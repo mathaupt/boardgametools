@@ -52,6 +52,24 @@ final class LocalGroup {
         polls = dto.polls?.map { LocalGroupPoll(dto: $0) }
         comments = dto.comments?.map { LocalGroupComment(dto: $0) }
     }
+
+    func toDTO() -> GroupDTO {
+        GroupDTO(
+            id: id,
+            name: name,
+            description: desc,
+            ownerId: ownerId,
+            isPublic: isPublic,
+            shareToken: shareToken,
+            members: members?.map { $0.toDTO() },
+            events: nil,
+            polls: polls?.map { $0.toDTO() },
+            comments: comments?.map { $0.toDTO() },
+            createdAt: createdAt,
+            updatedAt: updatedAt,
+            deletedAt: deletedAt
+        )
+    }
 }
 
 @Model
@@ -68,6 +86,16 @@ final class LocalGroupMember {
         self.userId = dto.userId
         self.role = dto.role
         self.joinedAt = dto.joinedAt
+    }
+
+    func toDTO() -> GroupMemberDTO {
+        GroupMemberDTO(
+            id: id,
+            groupId: groupId,
+            userId: userId,
+            role: role,
+            joinedAt: joinedAt
+        )
     }
 }
 
@@ -98,6 +126,21 @@ final class LocalGroupPoll {
         self.createdAt = dto.createdAt
         self.options = dto.options?.map { LocalGroupPollOption(dto: $0) }
     }
+
+    func toDTO() -> GroupPollDTO {
+        GroupPollDTO(
+            id: id,
+            groupId: groupId,
+            title: title,
+            description: desc,
+            type: type,
+            status: status,
+            createdById: createdById,
+            closedAt: closedAt,
+            options: options?.map { $0.toDTO() },
+            createdAt: createdAt
+        )
+    }
 }
 
 @Model
@@ -117,6 +160,16 @@ final class LocalGroupPollOption {
         self.sortOrder = dto.sortOrder
         self.votes = dto.votes?.map { LocalGroupPollVote(dto: $0) }
     }
+
+    func toDTO() -> GroupPollOptionDTO {
+        GroupPollOptionDTO(
+            id: id,
+            pollId: pollId,
+            text: text,
+            sortOrder: sortOrder,
+            votes: votes?.map { $0.toDTO() }
+        )
+    }
 }
 
 @Model
@@ -133,6 +186,16 @@ final class LocalGroupPollVote {
         self.voterName = dto.voterName
         self.userId = dto.userId
         self.createdAt = dto.createdAt
+    }
+
+    func toDTO() -> GroupPollVoteDTO {
+        GroupPollVoteDTO(
+            id: id,
+            optionId: optionId,
+            voterName: voterName,
+            userId: userId,
+            createdAt: createdAt
+        )
     }
 }
 
@@ -154,5 +217,17 @@ final class LocalGroupComment {
         self.userId = dto.userId
         self.content = dto.content
         self.createdAt = dto.createdAt
+    }
+
+    func toDTO() -> GroupCommentDTO {
+        GroupCommentDTO(
+            id: id,
+            groupId: groupId,
+            pollId: pollId,
+            authorName: authorName,
+            userId: userId,
+            content: content,
+            createdAt: createdAt
+        )
     }
 }

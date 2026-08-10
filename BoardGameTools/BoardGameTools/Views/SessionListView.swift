@@ -1,37 +1,32 @@
 import SwiftUI
+import SwiftData
 
 struct SessionListView: View {
-    @State private var sessions: [SessionDTO] = []
-    @State private var isLoading = true
+    @Environment(SyncEngine.self) private var syncEngine
+    @Query(sort: \LocalSession.playedAt, order: .reverse) private var localSessions: [LocalSession]
     @State private var errorMessage: String?
 
     var body: some View {
         NavigationStack {
-            List(sessions) { session in
+            List(localSessions.map { $0.toDTO() }) { session in
                 SessionRow(session: session)
             }
             .navigationTitle("Sessions")
-            .task { await load() }
-            .refreshable { await load() }
+            .task { await syncEngine.sync() }
+            .refreshable { await syncEngine.sync() }
             .overlay {
-                if isLoading { ProgressView() }
-                else if let errorMessage = errorMessage { Text(errorMessage).foregroundStyle(.red) }
-                else if sessions.isEmpty { Text("Noch keine Sessions") }
+                if syncEngine.isSyncing && localSessions.isEmpty {
+                    ProgressView()
+                } else if let errorMessage = errorMessage {
+                    Text(errorMessage).foregroundStyle(.red)
+                } else if localSessions.isEmpty {
+                    Text("Noch keine Sessions")
+                }
+            }
+            .onChange(of: syncEngine.errorMessage) { _, new in
+                errorMessage = new
             }
         }
-    }
-
-    private func load() async {
-        isLoading = true
-        errorMessage = nil
-        do {
-            sessions = try await APIClient.shared.request(method: .get, endpoint: .sessions)
-        } catch let error as APIError {
-            errorMessage = error.message
-        } catch {
-            errorMessage = error.localizedDescription
-        }
-        isLoading = false
     }
 }
 

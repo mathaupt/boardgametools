@@ -1,37 +1,32 @@
 import SwiftUI
+import SwiftData
 
 struct EventListView: View {
-    @State private var events: [EventDTO] = []
-    @State private var isLoading = true
+    @Environment(SyncEngine.self) private var syncEngine
+    @Query(sort: \LocalEvent.eventDate) private var localEvents: [LocalEvent]
     @State private var errorMessage: String?
 
     var body: some View {
         NavigationStack {
-            List(events) { event in
+            List(localEvents.map { $0.toDTO() }) { event in
                 EventRow(event: event)
             }
             .navigationTitle("Events")
-            .task { await load() }
-            .refreshable { await load() }
+            .task { await syncEngine.sync() }
+            .refreshable { await syncEngine.sync() }
             .overlay {
-                if isLoading { ProgressView() }
-                else if let errorMessage = errorMessage { Text(errorMessage).foregroundStyle(.red) }
-                else if events.isEmpty { Text("Noch keine Events") }
+                if syncEngine.isSyncing && localEvents.isEmpty {
+                    ProgressView()
+                } else if let errorMessage = errorMessage {
+                    Text(errorMessage).foregroundStyle(.red)
+                } else if localEvents.isEmpty {
+                    Text("Noch keine Events")
+                }
+            }
+            .onChange(of: syncEngine.errorMessage) { _, new in
+                errorMessage = new
             }
         }
-    }
-
-    private func load() async {
-        isLoading = true
-        errorMessage = nil
-        do {
-            events = try await APIClient.shared.request(method: .get, endpoint: .events)
-        } catch let error as APIError {
-            errorMessage = error.message
-        } catch {
-            errorMessage = error.localizedDescription
-        }
-        isLoading = false
     }
 }
 

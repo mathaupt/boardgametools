@@ -158,9 +158,13 @@ automatischem Build und Unit-Test-Ziel:
   Keychain, Vorbereitung für Sign in with Apple.
 - SwiftData-Modell-Grundgerüst für `Game`, `Session`, `Event`, `Group`, `User`
   und `SyncMetadata` (Basis für Offline-First-Sync).
-- SwiftUI-Views: `LoginView`, `DashboardView`, `GameListView`,
-  `GameDetailView`, `SessionListView`, `EventListView`, `GroupListView` und
-  `SettingsView`.
+- `PersistenceController` mit zentralem `ModelContainer`.
+- `LocalDataSource` / `RemoteDataSource` für entkoppelte Daten- und API-Zugriffe.
+- `SyncEngine` synchronisiert den lokalen SwiftData-Speicher über
+  `GET /api/mobile/v1/sync` mit Delta-Updates.
+- SwiftUI-Views (`LoginView`, `DashboardView`, `GameListView`, `GameDetailView`,
+  `SessionListView`, `EventListView`, `GroupListView`, `SettingsView`) nutzen
+  SwiftData `@Query` und Pull-to-Refresh.
 
 Die versionierte REST-API `/api/mobile/v1/*` setzt auf dem bestehenden
 Next.js-Backend auf und verwendet die Service-Schicht. Unterstützt werden

@@ -1,44 +1,34 @@
 import SwiftUI
+import SwiftData
 
 struct GameListView: View {
-    @State private var games: [GameDTO] = []
-    @State private var isLoading = true
+    @Environment(SyncEngine.self) private var syncEngine
+    @Query(sort: \LocalGame.name) private var localGames: [LocalGame]
     @State private var errorMessage: String?
 
     var body: some View {
         NavigationStack {
-            List(games) { game in
+            List(localGames.map { $0.toDTO() }) { game in
                 NavigationLink(destination: GameDetailView(game: game)) {
                     GameRow(game: game)
                 }
             }
             .navigationTitle("Spiele")
-            .task { await load() }
-            .refreshable { await load() }
+            .task { await syncEngine.sync() }
+            .refreshable { await syncEngine.sync() }
             .overlay {
-                if isLoading {
+                if syncEngine.isSyncing && localGames.isEmpty {
                     ProgressView()
                 } else if let errorMessage = errorMessage {
-                    Text(errorMessage)
-                        .foregroundStyle(.red)
-                } else if games.isEmpty {
+                    Text(errorMessage).foregroundStyle(.red)
+                } else if localGames.isEmpty {
                     Text("Noch keine Spiele")
                 }
             }
+            .onChange(of: syncEngine.errorMessage) { _, new in
+                errorMessage = new
+            }
         }
-    }
-
-    private func load() async {
-        isLoading = true
-        errorMessage = nil
-        do {
-            games = try await APIClient.shared.request(method: .get, endpoint: .games)
-        } catch let error as APIError {
-            errorMessage = error.message
-        } catch {
-            errorMessage = error.localizedDescription
-        }
-        isLoading = false
     }
 }
 

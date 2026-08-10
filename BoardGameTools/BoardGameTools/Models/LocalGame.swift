@@ -57,4 +57,24 @@ final class LocalGame {
         deletedAt = dto.deletedAt
         tagNames = dto.tagNames ?? []
     }
+
+    func toDTO() -> GameDTO {
+        GameDTO(
+            id: id,
+            name: name,
+            description: desc,
+            minPlayers: minPlayers,
+            maxPlayers: maxPlayers,
+            playTimeMinutes: playTimeMinutes,
+            complexity: complexity,
+            bggId: bggId,
+            ean: ean,
+            imageUrl: imageUrl,
+            ownerId: ownerId,
+            createdAt: createdAt,
+            updatedAt: updatedAt,
+            deletedAt: deletedAt,
+            tagNames: tagNames
+        )
+    }
 }

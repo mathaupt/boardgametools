@@ -1,55 +1,49 @@
 import SwiftUI
+import SwiftData
 
 struct DashboardView: View {
-    @State private var dashboard: DashboardDTO?
+    @Environment(SyncEngine.self) private var syncEngine
+    @Query private var games: [LocalGame]
+    @Query private var sessions: [LocalSession]
+    @Query private var events: [LocalEvent]
+    @Query private var groups: [LocalGroup]
     @State private var errorMessage: String?
-    @State private var isLoading = true
 
     var body: some View {
         NavigationStack {
-            Group {
-                if isLoading {
-                    ProgressView()
-                } else if let dashboard = dashboard {
-                    DashboardContent(dashboard: dashboard)
-                } else if let errorMessage = errorMessage {
-                    Text(errorMessage)
-                        .foregroundStyle(.red)
-                } else {
-                    Text("Keine Daten verfügbar")
+            ScrollView {
+                VStack(spacing: 16) {
+                    DashboardTile(title: "Spiele", value: games.count, icon: "dice")
+                    DashboardTile(title: "Sessions", value: sessions.count, icon: "calendar")
+                    DashboardTile(title: "Events", value: events.count, icon: "person.3")
+                    DashboardTile(title: "Gruppen", value: groups.count, icon: "person.2")
+
+                    if syncEngine.isSyncing {
+                        ProgressView()
+                            .padding()
+                    }
+
+                    if let lastSyncedAt = syncEngine.lastSyncedAt {
+                        Text("Zuletzt synchronisiert: \(lastSyncedAt.formattedISO8601() ?? lastSyncedAt)")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+
+                    if let errorMessage = errorMessage {
+                        Text(errorMessage)
+                            .foregroundStyle(.red)
+                            .padding(.horizontal)
+                    }
                 }
+                .padding()
             }
             .navigationTitle("Dashboard")
-            .task { await load() }
-            .refreshable { await load() }
+            .task { await syncEngine.sync() }
+            .refreshable { await syncEngine.sync() }
+            .onChange(of: syncEngine.errorMessage) { _, new in
+                errorMessage = new
+            }
         }
-    }
-
-    private func load() async {
-        isLoading = true
-        errorMessage = nil
-        do {
-            dashboard = try await APIClient.shared.request(method: .get, endpoint: .dashboard)
-        } catch let error as APIError {
-            errorMessage = error.message
-        } catch {
-            errorMessage = error.localizedDescription
-        }
-        isLoading = false
-    }
-}
-
-struct DashboardContent: View {
-    let dashboard: DashboardDTO
-
-    var body: some View {
-        VStack(spacing: 16) {
-            DashboardTile(title: "Spiele", value: dashboard.games, icon: "dice")
-            DashboardTile(title: "Sessions", value: dashboard.sessions, icon: "calendar")
-            DashboardTile(title: "Events", value: dashboard.events, icon: "person.3")
-            DashboardTile(title: "Gruppen", value: dashboard.groups, icon: "person.2")
-        }
-        .padding()
     }
 }
 
