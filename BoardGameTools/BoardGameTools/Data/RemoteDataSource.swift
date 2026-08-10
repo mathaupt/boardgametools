@@ -95,4 +95,28 @@ final class RemoteDataSource {
         }
         return try await APIClient.shared.request(method: .post, endpoint: .bggImport, body: Body(bggId: bggId))
     }
+
+    func registerDevice(token: String, platform: String = "ios") async throws {
+        let input = DeviceInput(token: token, platform: platform)
+        try await APIClient.shared.request(method: .post, endpoint: .devices, body: input)
+    }
+
+    func fetchPublicEvent(token: String) async throws -> PublicEventDTO {
+        try await APIClient.shared.request(method: .get, endpoint: .publicEvent(token), requiresAuth: false)
+    }
+
+    func joinPublicEvent(token: String, nickname: String) async throws -> GuestParticipantDTO {
+        struct Body: Encodable, Sendable {
+            let nickname: String
+        }
+        return try await APIClient.shared.request(method: .post, endpoint: .publicEventJoin(token), body: Body(nickname: nickname), requiresAuth: false)
+    }
+
+    func votePublicEvent(token: String, guestId: String, proposalId: String) async throws -> PublicEventVoteResponse {
+        struct Body: Encodable, Sendable {
+            let guestId: String
+            let proposalId: String
+        }
+        return try await APIClient.shared.request(method: .post, endpoint: .publicEventVote(token), body: Body(guestId: guestId, proposalId: proposalId), requiresAuth: false)
+    }
 }

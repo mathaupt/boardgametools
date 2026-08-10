@@ -709,6 +709,12 @@ und alle Kernbereiche des Web-Frontends.
   Detail-Views: Sessions, Events und Gruppen anlegen, bearbeiten und löschen.
 - `BarcodeScannerView` scannt EAN/UPC-Barcodes und importiert das Spiel aus BGG.
 - `CoverOCRView` erkennt Text auf Spielecovers und sucht per OCR in BGG.
+- `NotificationManager` fragt Push-Berechtigungen an und registriert das Gerät-Token
+  beim Backend (`POST /api/mobile/v1/devices`).
+- `DeepLinkManager` verarbeitet `boardgametools://public/event/<token>`,
+  `boardgametools://event/<id>` und `boardgametools://game/<id>`.
+- `PublicEventView` öffnet öffentliche Event-Share-Links und erlaubt
+  Mitmachen/Abstimmen als Gast.
 - `NetworkMonitor` meldet Online-/Offline-Status in den Listen.
 
 ### Build & Tests

@@ -13,6 +13,9 @@
 		0D1D67979405F2801FA812D4 /* KeychainManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2AC1EA71DA7977515EB3D9F /* KeychainManager.swift */; };
 		0E6D5E7608B5E52FE916208A /* LocalGame.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CDBCD76AF477FC68E2B95E6 /* LocalGame.swift */; };
 		1704288C6E40C526C776E61C /* LocalSyncMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 055297BA7A4C12F53332C527 /* LocalSyncMetadata.swift */; };
+		1FBF1C5BD62C58CE7701EFA2 /* PublicEventView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF744E3238C7286C729E3445 /* PublicEventView.swift */; };
+		27591C7353F311F7050C7766 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EB9863F7F62956890899840 /* AppDelegate.swift */; };
+		27BAE574D9A64AFD3CD0D4F4 /* DeepLinkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C45B02497A2DB12479BDBEF0 /* DeepLinkManager.swift */; };
 		28FC6A0FEA6BA4A7EB0698A3 /* LoadingOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9279E0949CBCA2B08A2DD23 /* LoadingOverlay.swift */; };
 		31774D6CC1ED38412FDCB5F4 /* EventEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F16E5E22065BD0C11E218454 /* EventEditView.swift */; };
 		31EF9BB88D7264A04B4CCC38 /* CoverOCRView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12213D212D0985E6D79DF190 /* CoverOCRView.swift */; };
@@ -24,6 +27,7 @@
 		4800D5375AC82BD2A090F2D3 /* LocalUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28F8B8E1286EDF7F8C672199 /* LocalUser.swift */; };
 		537B89166A8AA054C6D3992E /* SyncEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF0664A111DF7AADCD0537F /* SyncEngine.swift */; };
 		5C041216E799961D6781DBC3 /* GroupEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4982AF7E570325A116EAACD6 /* GroupEditView.swift */; };
+		5E166A3CE22E3905FEA849D6 /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCB9F9F92C9281C4662A61CE /* NotificationManager.swift */; };
 		668F43B3FA1DE1A6151A1D6E /* Date+Formatting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8949B5162A70DA3C5067724E /* Date+Formatting.swift */; };
 		68E52C2C385FB3E8FD0AF6DF /* GroupDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0750AC1B73F5BAA09378C7A1 /* GroupDetailView.swift */; };
 		6B119C1D6FDE1B38B633DF7C /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87751CAAA5E342F57213D414 /* APIClient.swift */; };
@@ -83,6 +87,7 @@
 		2177B1EC374AF280A73A00AD /* GameAddSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameAddSheet.swift; sourceTree = "<group>"; };
 		227EC966DE601DD6F6A608CC /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		28F8B8E1286EDF7F8C672199 /* LocalUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalUser.swift; sourceTree = "<group>"; };
+		2EB9863F7F62956890899840 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		31E11308010F76C70A7DA006 /* LocalEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalEvent.swift; sourceTree = "<group>"; };
 		425C9C635648AF2B13717989 /* LocalGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalGroup.swift; sourceTree = "<group>"; };
 		496D6DFD992392B96B815880 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
@@ -110,8 +115,11 @@
 		AA8957147C89F3BF63D2DA53 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		AD9DCD6CCA2204BEE8CC4D9B /* Endpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Endpoint.swift; sourceTree = "<group>"; };
 		AE6FE4B2F8F6E20F3683D5ED /* NetworkMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkMonitor.swift; sourceTree = "<group>"; };
+		AF744E3238C7286C729E3445 /* PublicEventView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicEventView.swift; sourceTree = "<group>"; };
 		B54FF532EE47EE51D89A2B63 /* GameListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameListView.swift; sourceTree = "<group>"; };
+		BCB9F9F92C9281C4662A61CE /* NotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationManager.swift; sourceTree = "<group>"; };
 		BED57C09A8DA870B3B2E27F2 /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
+		C45B02497A2DB12479BDBEF0 /* DeepLinkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLinkManager.swift; sourceTree = "<group>"; };
 		C72096771FDB674FDC245975 /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
 		C7B0F01C64A2EE5A2819EC83 /* BoardGameToolsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoardGameToolsTests.swift; sourceTree = "<group>"; };
 		C925D7E2A6C938435CAE8AB9 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -150,6 +158,7 @@
 		31EE0C22F288156C7E88654D /* App */ = {
 			isa = PBXGroup;
 			children = (
+				2EB9863F7F62956890899840 /* AppDelegate.swift */,
 				DCB971A87FEBCF123BA4A06F /* BoardGameToolsApp.swift */,
 			);
 			path = App;
@@ -195,6 +204,7 @@
 				5DAD77CE1B3236D2419A5BA7 /* GroupListView.swift */,
 				181145FA369056CBA30EDA8F /* LoginView.swift */,
 				C72096771FDB674FDC245975 /* MainTabView.swift */,
+				AF744E3238C7286C729E3445 /* PublicEventView.swift */,
 				AA8957147C89F3BF63D2DA53 /* RootView.swift */,
 				76F952DF9AEB46DB3D4BACA3 /* SessionDetailView.swift */,
 				0DDE0722256172146C52432F /* SessionEditView.swift */,
@@ -268,7 +278,9 @@
 			isa = PBXGroup;
 			children = (
 				68DAA7220BB73B67BEB1E705 /* AuthManager.swift */,
+				C45B02497A2DB12479BDBEF0 /* DeepLinkManager.swift */,
 				AE6FE4B2F8F6E20F3683D5ED /* NetworkMonitor.swift */,
+				BCB9F9F92C9281C4662A61CE /* NotificationManager.swift */,
 				0CF0664A111DF7AADCD0537F /* SyncEngine.swift */,
 			);
 			path = Services;
@@ -383,6 +395,7 @@
 			files = (
 				6B119C1D6FDE1B38B633DF7C /* APIClient.swift in Sources */,
 				428422990AD64ADA61E82B66 /* APIError.swift in Sources */,
+				27591C7353F311F7050C7766 /* AppDelegate.swift in Sources */,
 				83CFF1DFE149C9A6FE1E03AF /* AuthManager.swift in Sources */,
 				344F357D424D6A12925A5741 /* BGGSearchView.swift in Sources */,
 				97AC7B72AD17B612E6763E58 /* BarcodeScannerView.swift in Sources */,
@@ -391,6 +404,7 @@
 				C16CA4AD69BE75704A76FBDF /* DTOs.swift in Sources */,
 				41AF0965CCD1A55A9F507616 /* DashboardView.swift in Sources */,
 				668F43B3FA1DE1A6151A1D6E /* Date+Formatting.swift in Sources */,
+				27BAE574D9A64AFD3CD0D4F4 /* DeepLinkManager.swift in Sources */,
 				D6DF487F4B1FAC75727268BB /* EmptyStateView.swift in Sources */,
 				8607936C3F36C3C64F997124 /* Endpoint.swift in Sources */,
 				9163997911AC5FF62292149A /* EventDetailView.swift in Sources */,
@@ -418,7 +432,9 @@
 				DEED63120A6EAF4CF4027418 /* LoginView.swift in Sources */,
 				8C2C711D2B24F2028BCD1B45 /* MainTabView.swift in Sources */,
 				EBB71FDCBF1B0568CB963F63 /* NetworkMonitor.swift in Sources */,
+				5E166A3CE22E3905FEA849D6 /* NotificationManager.swift in Sources */,
 				F79E82B4D3142DA1E9FFED69 /* PersistenceController.swift in Sources */,
+				1FBF1C5BD62C58CE7701EFA2 /* PublicEventView.swift in Sources */,
 				DCB28E1087FFA193024E23EC /* RemoteDataSource.swift in Sources */,
 				6EEEF50ABD8BB1C00994D96B /* RootView.swift in Sources */,
 				957E13321900F2C40CAFA2A6 /* SessionDetailView.swift in Sources */,

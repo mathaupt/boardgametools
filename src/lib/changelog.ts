@@ -36,6 +36,20 @@ export const changelog: ChangelogEntry[] = [
     ],
   },
   {
+    version: "0.49.8",
+    date: "2026-08-10",
+    title: "iOS: Push-Notifications & Deep-Link-Handler",
+    description: "Die iOS-App registriert das Gerät für Push-Notifications, verarbeitet eingehende Benachrichtigungen und öffnet öffentliche Event-Share-Links sowie zukünftige Spiel-/Event-Deep-Links per URL-Scheme.",
+    changes: [
+      { type: "feature", text: "`NotificationManager` mit Berechtigungsanfrage und Geräte-Token-Registrierung" },
+      { type: "feature", text: "`AppDelegate` für `didRegisterForRemoteNotificationsWithDeviceToken`" },
+      { type: "feature", text: "`DeepLinkManager` parst `boardgametools://` URLs" },
+      { type: "feature", text: "`PublicEventView` zeigt öffentliche Events und erlaubt Mitmachen/Abstimmen" },
+      { type: "improvement", text: "`MainTabView` fragt Push-Berechtigung beim Start an" },
+      { type: "internal", text: "Neue DTOs: `DeviceInput`, `PublicEventDTO` und Public-Event-Vote-Modelle" },
+    ],
+  },
+  {
     version: "0.49.7",
     date: "2026-08-10",
     title: "iOS: Session/Event/Group CRUD, Barcode- & Cover-Scanner",

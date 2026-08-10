@@ -223,6 +223,16 @@ export const faqSections: FaqSection[] = [
         answer:
           "Ja. Auf der Session-, Event- und Gruppen-Seite gibt es jeweils ein Plus-Icon. Dort kannst du neue Einträge erstellen und bestehende später öffnen, bearbeiten oder löschen.",
       },
+      {
+        question: "Bekomme ich Push-Benachrichtigungen von der iOS-App?",
+        answer:
+          "Ja, die App fragt beim ersten Start nach der Berechtigung und registriert dein Gerät anschließend beim Server. Du erhältst dann Benachrichtigungen für Event-Einladungen und Änderungen an Events, an denen du teilnimmst.",
+      },
+      {
+        question: "Funktionieren öffentliche Event-Links in der iOS-App?",
+        answer:
+          "Ja, wenn du einen Link wie `boardgametools://public/event/<token>` antippst, öffnet sich direkt der Public-Event-Screen in der App. Dort kannst du dich mit einem Nickname als Gast anmelden und für Spiele-Vorschläge abstimmen.",
+      },
     ],
   },
   {

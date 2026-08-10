@@ -214,6 +214,81 @@ struct GroupInput: Encodable, Sendable {
     let description: String?
 }
 
+struct DeviceInput: Encodable, Sendable {
+    let token: String
+    let platform: String
+}
+
+struct PublicEventGameDTO: Codable, Sendable {
+    let id: String
+    let name: String
+    let imageUrl: String?
+    let minPlayers: Int?
+    let maxPlayers: Int?
+    let playTimeMinutes: Int?
+}
+
+struct PublicEventProposalDTO: Codable, Identifiable, Sendable {
+    let id: String
+    let game: PublicEventGameDTO
+    let proposedBy: PublicEventUserDTO?
+    let totalVotes: Int
+    let voteCounts: PublicEventVoteCountsDTO
+    let userHasVoted: Bool
+}
+
+struct PublicEventUserDTO: Codable, Sendable {
+    let id: String
+    let name: String?
+}
+
+struct PublicEventVoteCountsDTO: Codable, Sendable {
+    let registered: Int
+    let guests: Int
+}
+
+struct PublicEventGuestParticipantDTO: Codable, Identifiable, Sendable {
+    let id: String
+    let nickname: String
+    let votesCount: Int
+    let createdAt: String
+}
+
+struct PublicEventDTO: Decodable, Sendable {
+    let id: String
+    let title: String
+    let description: String?
+    let eventDate: String
+    let location: String?
+    let status: String
+    let shareToken: String?
+    let isPublic: Bool
+    let createdBy: PublicEventUserDTO
+    let invites: [PublicEventInviteDTO]
+    let selectedGame: PublicEventGameDTO?
+    let winningProposal: PublicEventWinningProposalDTO?
+    let proposals: [PublicEventProposalDTO]
+    let guestParticipants: [PublicEventGuestParticipantDTO]
+    let currentUserId: String?
+}
+
+struct PublicEventInviteDTO: Codable, Sendable {
+    let name: String
+    let status: String
+}
+
+struct PublicEventWinningProposalDTO: Codable, Sendable {
+    let id: String
+    let bggName: String?
+    let bggImageUrl: String?
+}
+
+struct PublicEventVoteResponse: Decodable, Sendable {
+    let message: String?
+    let totalVotes: Int?
+    let voteCounts: PublicEventVoteCountsDTO?
+}
+
 struct BGGSearchResult: Codable, Identifiable, Sendable {
     let bggId: String
     let name: String

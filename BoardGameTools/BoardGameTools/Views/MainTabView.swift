@@ -22,5 +22,8 @@ struct MainTabView: View {
                 .tabItem { Label("Einstellungen", systemImage: "gearshape") }
         }
         .tint(Theme.primary)
+        .task {
+            await NotificationManager.shared.requestAuthorization()
+        }
     }
 }

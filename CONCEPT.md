@@ -175,6 +175,12 @@ automatischem Build und Unit-Test-Ziel:
   und importiert das erkannte Spiel.
 - `CoverOCRView` nutzt Vision-Text-Erkennung auf einem Spielecover und sucht
   den erkannten Titel per BGG-Suche.
+- `NotificationManager` verwaltet Push-Benachrichtigungs-Berechtigungen,
+  empfängt das APNs-Geräte-Token und sendet es an `POST /api/mobile/v1/devices`.
+- `DeepLinkManager` parsed URLs des Custom Schemes `boardgametools://` und
+  öffnet öffentliche Event-Share-Links sowie zukünftige Spiel-/Event-Deep-Links.
+- `PublicEventView` zeigt ein öffentliches Event, lädt es per Share-Token und
+  erlaubt das Mitmachen und Abstimmen als Gast.
 - `NetworkMonitor` zeigt den Online-/Offline-Status und triggert keinen Sync,
   wenn keine Verbindung besteht.
 
