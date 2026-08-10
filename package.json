@@ -1,6 +1,6 @@
 {
   "name": "boardgametools",
-  "version": "0.50.6",
+  "version": "0.50.12",
   "private": true,
   "scripts": {
     "dev": "NODE_OPTIONS='--max-old-space-size=4096' next dev",
@@ -21,7 +21,6 @@
     "db:migrate": "prisma migrate dev",
     "db:generate": "prisma generate",
     "db:studio": "prisma studio",
-    "db:seed:test-user": "echo 'Please register test user via browser at http://localhost:3000/register with email: test@example.com, password: password123, name: Test User'",
     "postinstall": "prisma generate",
     "prepare": "husky",
     "security-check": "bash scripts/security-check.sh",

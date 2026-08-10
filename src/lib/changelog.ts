@@ -12,6 +12,19 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.12",
+    date: "2026-08-10",
+    title: "Dokumentations-Cleanup und Entfernung sensibler Daten",
+    description: "Überflüssige, veraltete und zu detaillierte Dokumente wurden entfernt. Echte Credentials, PII und Hostnamen aus früheren Deploy-Versuchen wurden aus dem Repository gelöscht. Der Deployment-Guide ist jetzt zentral unter `docs/DEPLOYMENT.md` zu finden.",
+    changes: [
+      { type: "internal", text: "Alte IONOS-/Vercel-/Fix-Deployment-Dokumente am Root-Level entfernt" },
+      { type: "internal", text: "Zu detaillierte iOS-Implementierungspläne (`docs/superpowers/plans/`) entfernt; Design-Specs bleiben erhalten" },
+      { type: "fix", text: "`prisma/seed.js` und `prisma/dev.db` mit echten Test-Credentials/PII gelöscht" },
+      { type: "fix", text: "README, `docs/DEPLOYMENT.md` und `docs/bugs.md` von hartcodierten Test-Credentials bereinigt" },
+      { type: "internal", text: "Projektstruktur in AGENTS.md und README an zentrale `docs/DEPLOYMENT.md` angepasst" },
+    ],
+  },
+  {
     version: "0.50.11",
     date: "2026-08-10",
     title: "Auth-Vertrauensmodell, CSRF-Härtung und E2E-Tests stabilisiert",
@@ -113,9 +126,9 @@ export const changelog: ChangelogEntry[] = [
       { type: "fix", text: "SEC-45: Vulnerable `swagger-ui-react`-Abhängigkeit entfernt; Swagger UI wird jetzt via unpkg-CDN geladen", bugRef: "SEC-45" },
       { type: "fix", text: "Content-Security-Policy um `https://unpkg.com` für Swagger-UI-Skripte/Styles erweitert" },
       { type: "improvement", text: "`env.ts` und `prisma.config.ts` unterstützen jetzt sowohl `SQL_DATABASE_URL` als auch `DATABASE_URL`", bugRef: "SEC-45" },
-      { type: "improvement", text: "`.env.production.example` und `DEPLOYMENT.md` für Vercel-Live-Deployment inklusive iOS-App-Anbindung erstellt" },
+      { type: "improvement", text: "`.env.production.example` und `docs/DEPLOYMENT.md` für Vercel-Live-Deployment inklusive iOS-App-Anbindung erstellt" },
       { type: "improvement", text: "Fehlende `error.tsx`-Boundaries für Profil- und Statistik-Seiten ergänzt" },
-      { type: "internal", text: "`README.md` verweist jetzt auf `DEPLOYMENT.md`" },
+      { type: "internal", text: "`README.md` verweist jetzt auf `docs/DEPLOYMENT.md`" },
     ],
   },
   {

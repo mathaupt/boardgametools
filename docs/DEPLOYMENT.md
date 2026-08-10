@@ -183,4 +183,4 @@ xcodebuild -project BoardGameTools.xcodeproj -scheme BoardGameTools -destination
 
 - **Uploads ohne `BLOB_READ_WRITE_TOKEN`**: In Produktion werden Uploads abgelehnt (`LocalStorageProvider` wirft Fehler). Für Vercel Blob muss ein Token hinterlegt werden.
 - **Redis-Rate-Limiting ohne Upstash**: Ohne `UPSTASH_REDIS_REST_URL`/-`TOKEN` fällt die App auf In-Memory-Rate-Limiting zurück, das bei mehreren Serverinstanzen nicht skaliert.
-- **E2E-Tests**: Für `npm run test:e2e` muss `npm start` (Production-Build) laufen. Der Test-Account wird automatisch von `tests/e2e/bootstrap.ts` erstellt (`e2e@example.com` / `E2ETest123!`).
+- **E2E-Tests**: Für `npm run test:e2e` muss `npm start` (Production-Build) laufen. Der Test-Account wird automatisch von `tests/e2e/bootstrap.ts` erstellt (Zugangsdaten nur im Test-Code hinterlegt).

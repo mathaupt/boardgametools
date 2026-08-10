@@ -126,34 +126,34 @@ Version 0.46.1 - CSRF Validation: Requests ohne Origin/Referer erlaubt
 **Status:** `fixed`  
 **Schweregrad:** `medium`  
 **Entdeckt:** 2026-06-12  
-**Behoben:** 2026-06-12  
-**Behoben in Version:** 0.44.0  
-**Test geschrieben:** Nein (TODO: Registration-Flow-Test hinzufügen)
+**Behoben:** 2026-08-09  
+**Behoben in Version:** 0.50.11  
+**Test geschrieben:** Ja (E2E-Bootstrap)
 
 **Beschreibung:**
-Die in der README dokumentierten Test-Anmeldedaten (test@example.com / password123) funktionierten nicht, da der Test-Benutzer nicht automatisch in der Datenbank existiert.
+Die README dokumentierte fiktive Test-Anmeldedaten, für die kein automatisch erstellter Test-Benutzer existierte.
 
 **Reproduktion:**
-1. README Anweisungen befolgen
-2. Versuchen, sich mit test@example.com / password123 einzuloggen
+1. README-Anweisungen befolgen
+2. Versuch, sich mit den dort genannten Beispiel-Daten einzuloggen
 3. "Ungültige Anmeldedaten" Fehler
 
 **Erwartetes Verhalten:**
-Test-Benutzer sollte existieren und login sollte funktionieren.
+Test-Benutzer sollte existieren und Login sollte funktionieren.
 
 **Tatsächliches Verhalten:**
-Test-Benutzer existiert nicht, Login schlägt fehl.
+Test-Benutzer existierte nicht, Login schlug fehl.
 
 **Ursache:**
 README suggerierte existierende Test-Credentials, aber es gab keinen Mechanismus um den Test-Benutzer automatisch zu erstellen.
 
 **Lösung:**
-- README aktualisiert mit klaren Anweisungen zur Test-Benutzer-Erstellung
-- npm script db:seed:test-user hinzugefügt
-- Anleitung auf Browser-Registrierung statt API/curl geändert
+- README von hartcodierten Test-Credentials befreit
+- E2E-Tests verwenden `tests/e2e/bootstrap.ts`, das den Test-Account vor dem Testlauf anlegt und danach aufräumt
+- Für manuelle Tests wird auf das Registrierungsformular verwiesen
 
 **Referenz im Changelog:**
-Version 0.44.0 - docs: fix README test credentials and update project info
+Version 0.50.11 - docs: README Test-Credentials entfernt, E2E-Bootstrap ergänzt
 
 ---
 

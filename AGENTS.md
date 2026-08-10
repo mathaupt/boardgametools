@@ -208,14 +208,15 @@ include: { createdBy: { select: { id: true, name: true, email: true } } }
 boardgametools/
 ├── AGENTS.md              # Diese Datei (IMMER aktuell halten!)
 ├── CONCEPT.md             # Detailliertes Konzept
-├── BoardGameTools/        # Geplantes Xcode-Projekt für native iOS-App (SwiftUI/SwiftData)
+├── BoardGameTools/        # Xcode-Projekt für native iOS-App (SwiftUI/SwiftData)
 ├── skills/                # AgentSkills (siehe unten)
 ├── docs/                  # Projekt-Dokumentation
+│   ├── DEPLOYMENT.md      # Deploy-Guide für Vercel + iOS
 │   ├── bugs.md            # **Bug-Tracking Liste (PFLICHT aktuell halten!)**
 │   ├── FEATURES.md        # **Feature-Dokumentation (PFLICHT aktuell halten!)**
 │   ├── DEVELOPMENT-PROCESS.md  # Entwicklungsprozess & Agent-Architektur
 │   ├── openapi.yaml       # **Swagger/OpenAPI Spec (PFLICHT aktuell halten!)**
-│   ├── superpowers/       # Design-Specs und Implementierungspläne
+│   ├── superpowers/specs/ # Design-Specs für iOS-App
 │   ├── architecture/      # Architektur-Snapshots und Bewertungen
 │   ├── best-practices/    # Best-Practices-Snapshots und Bewertungen
 │   ├── bill-of-materials/ # BOM-Snapshots und Bewertungen

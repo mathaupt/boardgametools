@@ -1,7 +1,5 @@
 # BoardGameTools
 
-Version: 0.44.0
-
 Eine Webanwendung zur Verwaltung von Brettspielen, Spielsessions und Events mit Voting-Funktionalität.
 
 ## Features
@@ -29,6 +27,9 @@ Eine Webanwendung zur Verwaltung von Brettspielen, Spielsessions und Events mit 
 # Dependencies installieren
 npm install
 
+# .env.local aus dem Beispiel erzeugen
+cp .env.local.example .env.local
+
 # Datenbank initialisieren
 npx prisma migrate dev
 
@@ -43,8 +44,8 @@ npm run dev
 Für die BoardGameGeek-Integration wird ein Auth-Token benötigt:
 
 ```bash
-# .env Datei erstellen/konfigurieren
-cp .env.example .env
+# .env.local erstellen/konfigurieren
+cp .env.local.example .env.local
 
 # BGG Auth Token hinzufügen
 BGG_AUTH_TOKEN="dein-bgg-token-hier"
@@ -52,22 +53,9 @@ BGG_AUTH_TOKEN="dein-bgg-token-hier"
 
 **Test-Login:**
 
-Der Test-Benutzer muss zuerst erstellt werden (via Registrierungsformular):
+Erstelle einen Test-Benutzer über das Registrierungsformular unter `http://localhost:3000/register`.
 
-```bash
-# Option 1: Registrierungsformular im Browser öffnen
-# Öffne http://localhost:3000/register und registriere dich mit:
-# Email: test@example.com
-# Passwort: password123
-# Name: Test User
-
-# Option 2: npm script für Hinweise
-npm run db:seed:test-user
-```
-
-Danach kann man sich einloggen mit:
-- Email: `test@example.com`
-- Passwort: `password123`
+Für automatisierte E2E-Tests wird der Account in `tests/e2e/bootstrap.ts` angelegt und wieder aufgeräumt.
 
 ## Scripts
 
@@ -80,16 +68,10 @@ Danach kann man sich einloggen mit:
 | `npm run test:e2e` | E2E Tests ausführen |
 | `npm run db:migrate` | Datenbank-Migration |
 | `npm run db:studio` | Prisma Studio öffnen |
-| `npm run db:seed:test-user` | Zeigt Hinweise zur Test-Benutzer Erstellung |
 
 ### Pre-Commit Checks
 
-Dieses Repo verwendet [Husky](https://typicode.github.io/husky) für einen verpflichtenden Pre-Commit-Hook. Vor jedem Commit werden automatisch
-
-1. `npm run test` – komplette Vitest-Suite
-2. `npm run security-check` – OWASP Top 10 Heuristiken inkl. `npm audit`
-
-ausgeführt. Schlägt einer der Schritte fehl, wird das Commit blockiert. Das Security-Script befindet sich unter `scripts/security-check.sh` und generiert bei jedem Lauf eine aktuelle `security-report.md`.
+Dieses Repo verwendet [Husky](https://typicode.github.io/husky) für einen verpflichtenden Pre-Commit-Hook. Vor jedem Commit werden automatisch Linting, Unit-Tests für geänderte Dateien, der OWASP Security-Check und der Review-Evaluator (Regressions-Check) ausgeführt. Schlägt einer der Schritte fehl, wird das Commit blockiert. Das Security-Script befindet sich unter `scripts/security-check.sh` und generiert bei jedem Lauf eine aktuelle `security-report.md` (lokal, nicht committet).
 
 ## Projektstruktur
 
@@ -97,6 +79,11 @@ ausgeführt. Schlägt einer der Schritte fehl, wird das Commit blockiert. Das Se
 boardgametools/
 ├── AGENTS.md              # Agent-Anweisungen für Entwicklung
 ├── CONCEPT.md             # Detailliertes Konzept
+├── docs/                  # Projekt-Dokumentation
+│   ├── DEPLOYMENT.md      # Deploy-Guide für Vercel + iOS
+│   ├── bugs.md            # Bug-Tracking
+│   ├── FEATURES.md        # Feature-Dokumentation
+│   └── openapi.yaml       # OpenAPI/Swagger-Spezifikation
 ├── skills/                # AgentSkills für AI-Assistenten
 ├── prisma/                # Datenbank-Schema
 ├── src/
@@ -110,6 +97,9 @@ boardgametools/
 
 - **AGENTS.md**: Entwicklungsanweisungen für AI-Agenten
 - **CONCEPT.md**: Detailliertes Konzept mit Datenmodell
+- **docs/DEPLOYMENT.md**: Schritt-für-Schritt-Deploy-Guide für Vercel + iOS
+- **docs/FEATURES.md**: Feature-Übersicht
+- **docs/openapi.yaml**: OpenAPI/Swagger-Spezifikation
 - **skills/**: Feature-spezifische Anleitungen
 
 ## API Endpoints
@@ -135,49 +125,7 @@ curl "http://localhost:3000/api/bgg/13" \
 
 ## Deployment
 
-### 🚀 Vercel Deployment (empfohlen)
-
-Eine Schritt-für-Schritt-Anleitung für ein Live-Deployment unter Vercel — inklusive iOS-App-Verbindung — findest du in **[DEPLOYMENT.md](./DEPLOYMENT.md)**.
-
-### 📦 IONOS Deployment
-
-Eine detaillierte Deployment-Anleitung für IONOS Hosting findest du in **[DEPLOYMENT_IONOS.md](./DEPLOYMENT_IONOS.md)**.
-
-Die Anleitung deckt ab:
-- Docker Deployment (empfohlen)
-- Manuelleses Node.js Deployment
-- SSL-Konfiguration mit Let's Encrypt
-- PM2 Prozess-Management
-- Backup-Strategien
-- Monitoring & Fehlerbehebung
-
-### 🚀 Schnell-Deployment (Docker)
-
-```bash
-# 1. Repository klonen
-git clone https://github.com/mathaupt/boardgametools.git
-cd boardgametools
-
-# 2. Umgebungsvariablen konfigurieren
-cp .env.example .env.production
-# .env.production mit deinen Werten bearbeiten
-
-# 3. Docker starten
-docker-compose up -d --build
-
-# 4. Datenbank initialisieren
-docker-compose exec app npx prisma migrate deploy
-```
-
-### ▲ Vercel Deployment
-
-Vercel führt bei jedem Build automatisch die Prisma-Migrationen aus, bevor `next build` läuft. Voraussetzung:
-
-1. `DATABASE_URL` (und ggf. `SHADOW_DATABASE_URL`) im Vercel-Projekt setzen.
-2. Keine individuellen Build-Befehle notwendig – dank `package.json` ruft `npm run build` zuerst das Helper-Script `npm run prisma:deploy` auf. Dieses versucht `prisma migrate deploy` und fällt, falls P3005 (nicht-leere DB) auftritt, automatisch auf `prisma db push` zurück.
-3. Bei Redeploy werden so ausstehende Migrationen auf die Produktions-Datenbank angewandt bzw. das Schema synchronisiert, danach folgt automatisch das Next.js-Build.
-
-Damit bleiben Prisma-Schema und Produktions-Datenbank immer synchron.
+Eine Schritt-für-Schritt-Anleitung für ein Live-Deployment unter Vercel — inklusive iOS-App-Verbindung — findest du in **[docs/DEPLOYMENT.md](./docs/DEPLOYMENT.md)**.
 
 ## Lizenz
 
