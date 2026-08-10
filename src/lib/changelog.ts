@@ -36,6 +36,15 @@ export const changelog: ChangelogEntry[] = [
     ],
   },
   {
+    version: "0.49.1",
+    date: "2026-08-09",
+    title: "Vitest-Timeout für Security-Checks",
+    description: "Das globale Test-Timeout in Vitest wurde auf 15 Sekunden erhöht, damit langlaufende Security-Check-Skripte unter voller Last nicht mehr unterbrechen.",
+    changes: [
+      { type: "internal", text: "`vitest.config.ts`: `testTimeout` auf 15.000 ms gesetzt" },
+    ],
+  },
+  {
     version: "0.49.0",
     date: "2026-08-09",
     title: "iOS-Client Grundgerüst und API-Anbindung",
