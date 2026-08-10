@@ -410,10 +410,47 @@ Version 0.50.8 - Fix: iOS-Entitlements bereinigt, Build mit Personal Team mögli
 
 ---
 
+### [BUG-011] Public-Event-Antworten leaken E-Mail-Adressen von eingeladenen Nutzern
+
+**Status:** `fixed`
+**Schweregrad:** `critical`
+**Entdeckt:** 2026-08-10
+**Behoben:** 2026-08-10
+**Behoben in Version:** 0.50.8
+**Test geschrieben:** Ja (`tests/unit/lib/public-event.test.ts` aktualisiert)
+
+**Beschreibung:**
+Die öffentliche Event-Ansicht (über Share-Token erreichbar) enthielt in `dateProposals.votes.user` die vollständige E-Mail-Adresse jedes registrierten Nutzers, der einen Terminvote abgegeben hat. Da der Share-Token an beliebige Personen weitergegeben werden kann, ist das ein Datenschutz-/PII-Leak.
+
+**Reproduktion:**
+1. Event mit öffentlicher Freigabe erstellen.
+2. Mehrere registrierte Nutzer für Terminvorschläge abstimmen lassen.
+3. GET `/api/public/event/<token>` oder GET `/api/mobile/v1/public/event/<token>` aufrufen.
+4. In `dateProposals[...].votes[...].user.email` steht die unmaskierte E-Mail-Adresse.
+
+**Erwartetes Verhalten:**
+Öffentliche Event-Ansichten zeigen nur `id` und `name` des abstimmenden Nutzers.
+
+**Tatsächliches Verhalten:**
+Die Antwort enthielt `email` im `user`-Objekt der Terminvotes.
+
+**Ursache:**
+`buildPublicEventInclude` in `src/lib/public-event.ts` selektierte `email: true` für `dateProposals.votes.user`; `SerializedPublicEvent` und `serializePublicEvent` gaben das Feld unverändert weiter.
+
+**Lösung:**
+- `email` aus `PublicEventRaw`, `SerializedPublicEvent`, `buildPublicEventInclude` und `serializePublicEvent` entfernt.
+- Optimistic-Update in `DateVotingSection` (`src/components/public-event/date-voting-section.tsx`) angepasst.
+- `tests/unit/lib/public-event.test.ts` aktualisiert.
+
+**Referenz im Changelog:**
+Version 0.50.8 - Fix: Public-Event-Antworten enthalten keine E-Mail-Adressen von Termin-Votes mehr (BUG-011)
+
+---
+
 ## Statistik
 
 - **Offene Bugs:** 0
 - **In Bearbeitung:** 0
-- **Behoben:** 10
+- **Behoben:** 11
 - **Wontfix:** 0
-- **Gesamt:** 10
+- **Gesamt:** 11

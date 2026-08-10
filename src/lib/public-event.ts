@@ -68,7 +68,7 @@ interface PublicEventRaw {
     votes: Array<{
       id: string;
       availability: string;
-      user: { id: string; name: string; email: string };
+      user: { id: string; name: string };
     }>;
     guestVotes: Array<{
       id: string;
@@ -152,7 +152,7 @@ export const buildPublicEventInclude = (userId?: string | null) => ({
   dateProposals: {
     include: {
       votes: {
-        include: { user: { select: { id: true, name: true, email: true } } },
+        include: { user: { select: { id: true, name: true } } },
       },
       guestVotes: {
         include: { guest: { select: { id: true, nickname: true } } },
@@ -216,7 +216,7 @@ export interface SerializedPublicEvent {
     votes: Array<{
       id: string;
       availability: string;
-      user: { id: string; name: string; email: string };
+      user: { id: string; name: string };
     }>;
     guestVotes: Array<{
       id: string;

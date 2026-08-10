@@ -42,7 +42,7 @@ function makeEvent(overrides = {}) {
       {
         id: "dp-1",
         date: new Date("2026-04-01"),
-        votes: [{ id: "dv-1", availability: "yes", user: { id: "user-1", name: "Max", email: "max@example.com" } }],
+        votes: [{ id: "dv-1", availability: "yes", user: { id: "user-1", name: "Max" } }],
         guestVotes: [{ id: "gdv-1", availability: "maybe", guest: { id: "guest-1", nickname: "Gast1" } }],
       },
     ],

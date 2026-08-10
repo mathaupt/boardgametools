@@ -24,6 +24,7 @@ export const changelog: ChangelogEntry[] = [
       { type: "improvement", text: "Löschen eines Spiels in der iOS-App zeigt Erfolgsmeldung und kehrt zur Spieleliste zurück" },
       { type: "fix", text: "PostgreSQL SSL-Warnung (`sslmode=require/prefer/verify-ca`) wird auf `verify-full` normalisiert" },
       { type: "fix", text: "Spiel-Löschen ist idempotent: Bereits gelöschte Spiele erzeugen keinen 404-Fehler mehr" },
+      { type: "fix", text: "Public-Event-Antworten enthalten keine E-Mail-Adressen von Termin-Votes mehr (BUG-011)", bugRef: "BUG-011" },
       { type: "fix", text: "iOS-Entitlements bereinigt: Sign in with Apple und Notification-Filter entfernt, damit Build mit Personal Team möglich ist" },
       { type: "fix", text: "SwiftData Context konsolidiert: PersistenceController speichert mainContext jetzt als Instanz, damit LocalDataSource und @Query denselben Kontext verwenden und Duplikate vermieden werden" },
       { type: "fix", text: "iOS-Start bereinigt doppelte SwiftData-Einträge anhand der `id` für Spiele, Sessions, Events, Gruppen und deren Unterobjekte" },

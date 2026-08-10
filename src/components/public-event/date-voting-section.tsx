@@ -83,7 +83,7 @@ export function DateVotingSection({
               newVotes.push({
                 id: "temp-" + Date.now(),
                 availability,
-                user: { id: currentUserId!, name: "Du", email: "" },
+                user: { id: currentUserId!, name: "Du" },
               });
             }
             return { ...dp, votes: newVotes };
