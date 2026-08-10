@@ -681,7 +681,7 @@ und alle Kernbereiche des Web-Frontends.
 | Bereich | Status |
 |---------|--------|
 | Login / Anmeldung | Anmelden per E-Mail/Passwort, Sign in with Apple vorbereitet |
-| Dashboard | Statistik-Kacheln (Spiele, Sessions, Events, Gruppen) |
+| Dashboard | Statistik-Kacheln (Spiele, Sessions, Events, Gruppen), tippbar zu den jeweiligen Listen |
 | Spiele | Liste, Detailansicht mit Tags/Komplexität, BGG-Import-Endpoint nutzbar |
 | Sessions | Liste gespielter Partien mit Brettspiel-Thumbnail |
 | Events | Liste anstehender Events mit Brettspiel-Thumbnail |

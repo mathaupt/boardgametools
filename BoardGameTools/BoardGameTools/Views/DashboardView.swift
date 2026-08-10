@@ -19,10 +19,25 @@ struct DashboardView: View {
                     }
 
                     LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
-                        DashboardTile(title: "Spiele", value: games.count, icon: "dice.fill", gradient: Theme.primaryGradient)
-                        DashboardTile(title: "Sessions", value: sessions.count, icon: "dice.gamedots", gradient: Theme.warmGradient)
-                        DashboardTile(title: "Events", value: events.count, icon: "calendar.badge.sparkles", gradient: Theme.roseGradient)
-                        DashboardTile(title: "Gruppen", value: groups.count, icon: "person.3.fill", gradient: Theme.coolGradient)
+                        NavigationLink(destination: GameListView()) {
+                            DashboardTile(title: "Spiele", value: games.count, icon: "dice.fill", gradient: Theme.primaryGradient)
+                        }
+                        .buttonStyle(.plain)
+
+                        NavigationLink(destination: SessionListView()) {
+                            DashboardTile(title: "Sessions", value: sessions.count, icon: "dice.gamedots", gradient: Theme.warmGradient)
+                        }
+                        .buttonStyle(.plain)
+
+                        NavigationLink(destination: EventListView()) {
+                            DashboardTile(title: "Events", value: events.count, icon: "calendar.badge.sparkles", gradient: Theme.roseGradient)
+                        }
+                        .buttonStyle(.plain)
+
+                        NavigationLink(destination: GroupListView()) {
+                            DashboardTile(title: "Gruppen", value: groups.count, icon: "person.3.fill", gradient: Theme.coolGradient)
+                        }
+                        .buttonStyle(.plain)
                     }
 
                     if syncEngine.isSyncing {
