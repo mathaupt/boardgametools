@@ -2,10 +2,12 @@ import SwiftUI
 
 struct GameDetailView: View {
     @Environment(SyncEngine.self) private var syncEngine
+    @Environment(\.dismiss) private var dismiss
     let game: GameDTO
 
     @State private var isEditing = false
     @State private var isDeleting = false
+    @State private var showSuccessAlert = false
     @State private var errorMessage: String?
 
     var body: some View {
@@ -107,6 +109,11 @@ struct GameDetailView: View {
         } message: {
             Text("Dieses Spiel wird unwiderruflich entfernt.")
         }
+        .alert("Gelöscht", isPresented: $showSuccessAlert) {
+            Button("OK") { dismiss() }
+        } message: {
+            Text("Das Spiel wurde erfolgreich gelöscht.")
+        }
     }
 
     private var emptyHeader: some View {
@@ -127,6 +134,8 @@ struct GameDetailView: View {
         do {
             try await RemoteDataSource.shared.deleteGame(id: game.id)
             await syncEngine.sync()
+            errorMessage = nil
+            showSuccessAlert = true
         } catch let error as APIError {
             errorMessage = error.message
         } catch {

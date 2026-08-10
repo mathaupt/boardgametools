@@ -21,6 +21,7 @@ export const changelog: ChangelogEntry[] = [
       { type: "feature", text: "Event- und Session-Listen verwenden neue Brettspiel-Thumbnail-Bilder" },
       { type: "feature", text: "Dashboard-Kacheln in der iOS-App verlinken zu Spiele-, Sessions-, Events- und Gruppen-Listen" },
       { type: "feature", text: "Account-Daten in iOS Einstellungen bearbeiten: Name und Passwort (E-Mail nicht änderbar)" },
+      { type: "improvement", text: "Löschen eines Spiels in der iOS-App zeigt Erfolgsmeldung und kehrt zur Spieleliste zurück" },
       { type: "internal", text: "Neuer PUT-Endpunkt /api/mobile/v1/me für Profil-Updates" },
     ],
   },
