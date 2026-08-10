@@ -415,6 +415,14 @@ npm run lint                 # ESLint-Fehler prüfen
 npm run security-check:fast  # Security-Check ohne npm audit (schnell)
 ```
 
+### iOS-Build mit Personal Team (kostenloses Apple-ID-Team)
+
+Falls Xcode meldet, dass das Provisioning Profile wegen `com.apple.developer.applesignin` oder `com.apple.developer.usernotifications.filter` nicht erstellt werden kann:
+
+- Diese Entitlements sind für ein Personal Team nicht verfügbar (erfordern Apple Developer Program).
+- Sie wurden aus `BoardGameTools/BoardGameTools/BoardGameTools.entitlements` entfernt, damit der Build mit einem kostenlosen Team funktioniert.
+- Für Release/Sign in with Apple/Push-Notifications muss ein kostenpflichtiger Apple Developer Account verwendet und die Capabilities wieder in den Entitlements aktiviert werden.
+
 ### Nach einem Dependency-Update
 
 1. `npm run typecheck` ausführen (kritisch bei TypeScript-/Prisma-Major-Updates)

@@ -99,7 +99,7 @@
 		62A220CFA2556D53011A6348 /* BGGSearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BGGSearchView.swift; sourceTree = "<group>"; };
 		67D526624C4D03B84E8C1386 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		68DAA7220BB73B67BEB1E705 /* AuthManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthManager.swift; sourceTree = "<group>"; };
-		6DDF67A6744FF354D5EF1667 /* BoardGameTools.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = BoardGameTools.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		6DDF67A6744FF354D5EF1667 /* BoardGameTools.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BoardGameTools.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		76F952DF9AEB46DB3D4BACA3 /* SessionDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionDetailView.swift; sourceTree = "<group>"; };
 		80292756B82C18E5B3D4B6D7 /* BoardGameTools.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BoardGameTools.entitlements; sourceTree = "<group>"; };
 		85AFF26A7B83DC6A9AB12AAB /* BoardGameToolsTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = BoardGameToolsTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -353,8 +353,6 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1430;
-				TargetAttributes = {
-				};
 			};
 			buildConfigurationList = 8DDCBBB2F7DFAC7BB11BE678 /* Build configuration list for PBXProject "BoardGameTools" */;
 			developmentRegion = en;
@@ -609,6 +607,7 @@
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CODE_SIGN_ENTITLEMENTS = BoardGameTools/BoardGameTools.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				DEVELOPMENT_TEAM = U9HLBF34BZ;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = BoardGameTools/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
@@ -649,6 +648,7 @@
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CODE_SIGN_ENTITLEMENTS = BoardGameTools/BoardGameTools.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				DEVELOPMENT_TEAM = U9HLBF34BZ;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = BoardGameTools/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;

@@ -374,10 +374,46 @@ Version 0.50.8 - Fix: Synchronisierung liefert gelöschte IDs; iOS-Listen synchr
 
 ---
 
+### [BUG-010] iOS-Build: Xcode kann Provisioning Profile für Personal Team nicht erstellen
+
+**Status:** `fixed`
+**Schweregrad:** `high`
+**Entdeckt:** 2026-08-10
+**Behoben:** 2026-08-10
+**Behoben in Version:** 0.50.8
+**Test geschrieben:** Nein (Xcode-Signierung, Build-Verifikation)
+
+**Beschreibung:**
+Beim Bauen der iOS-App mit einem Personal Development Team meldet Xcode, dass das Provisioning Profile für `com.boardgametools.ios` nicht erstellt werden kann. Die Capabilities `Sign in with Apple` und `User Notifications Filter` werden von einem kostenlosen Personal Team nicht unterstützt, daher schlägt die automatische Signierung fehl.
+
+**Reproduktion:**
+1. Xcode → Signing & Capabilities → Team "Matthias Haupt (Personal Team)" wählen.
+2. Build starten (Gerät oder Archive).
+3. Fehler: "cannot create a iOS App Development provisioning profile ... Personal development teams ... do not support the Sign In with Apple capability" und anschließend "Entitlement com.apple.developer.usernotifications.filter not found and could not be included in profile".
+
+**Erwartetes Verhalten:**
+Build wird mit Personal Team erfolgreich signiert.
+
+**Tatsächliches Verhalten:**
+Provisioning schlägt fehl, Build wird abgebrochen.
+
+**Ursache:**
+`BoardGameTools.entitlements` enthielt die Entitlements `com.apple.developer.applesignin` und `com.apple.developer.usernotifications.filter`, die ein Apple Developer Program (kostenpflichtig) bzw. entsprechende App-ID-Capabilities erfordern.
+
+**Lösung:**
+- Beide Entitlements aus `BoardGameTools/BoardGameTools/BoardGameTools.entitlements` entfernt.
+- Simulator-Build mit `xcodebuild` verifiziert.
+- Hinweis: Für Sign in with Apple und Push-Notifications mit einem kostenpflichtigen Apple Developer Account müssen die Entitlements später wieder hinzugefügt und in den App-ID-Capabilities aktiviert werden.
+
+**Referenz im Changelog:**
+Version 0.50.8 - Fix: iOS-Entitlements bereinigt, Build mit Personal Team möglich
+
+---
+
 ## Statistik
 
 - **Offene Bugs:** 0
 - **In Bearbeitung:** 0
-- **Behoben:** 9
+- **Behoben:** 10
 - **Wontfix:** 0
-- **Gesamt:** 9
+- **Gesamt:** 10
