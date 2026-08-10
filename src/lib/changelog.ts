@@ -36,6 +36,18 @@ export const changelog: ChangelogEntry[] = [
     ],
   },
   {
+    version: "0.49.9",
+    date: "2026-08-10",
+    title: "Backend: APNs Push-Versand",
+    description: "Das Backend kann jetzt Push-Benachrichtigungen über Apples APNs an registrierte iOS-Geräte senden. Auslöser sind Event-Einladungen, geschlossene Abstimmungen, neue Spielvorschläge, neue Stimmen und neue Sessions.",
+    changes: [
+      { type: "feature", text: "`PushService` mit `apns2`, JWT-Signing-Key und Sandbox/Production-Umschaltung" },
+      { type: "feature", text: "Push-Benachrichtigungen bei Event-Einladungen, Abstimmungsende, Vorschlägen, Votes und neuen Sessions" },
+      { type: "internal", text: "Neue Env-Variablen: APNS_ENABLED, APNS_TEAM_ID, APNS_KEY_ID, APNS_SIGNING_KEY, APNS_TOPIC, APNS_PRODUCTION" },
+      { type: "internal", text: "Unit-Tests für `PushService` in `tests/unit/lib/services/push.service.test.ts`" },
+    ],
+  },
+  {
     version: "0.49.8",
     date: "2026-08-10",
     title: "iOS: Push-Notifications & Deep-Link-Handler",

@@ -3,6 +3,8 @@ import { requireAuth, handleApiError } from "@/lib/require-auth";
 import prisma from "@/lib/db";
 import { withApiLogging } from "@/lib/api-logger";
 import { Errors } from "@/lib/error-messages";
+import * as PushService from "@/lib/services/push.service";
+import logger from "@/lib/logger";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -83,6 +85,20 @@ export const POST = withApiLogging(async function POST(
         }
       }
     });
+
+    // Notify the event creator about the new vote (not the voter itself)
+    if (event.createdById !== userId) {
+      try {
+        const voter = await prisma.user.findUnique({
+          where: { id: userId },
+          select: { name: true, email: true },
+        });
+        const voterName = voter?.name || voter?.email || "Jemand";
+        await PushService.notifyNewVote(event.createdById, id, event.title, voterName);
+      } catch (pushErr) {
+        logger.error({ err: pushErr }, "Failed to send new vote push");
+      }
+    }
 
     return NextResponse.json(vote, { status: 201 });
   } catch (error) {

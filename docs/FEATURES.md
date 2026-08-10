@@ -650,6 +650,9 @@ Bearer-Token-Authentifizierung.
 - `POST /api/mobile/v1/uploads` — Bild-Upload
 - `GET /api/mobile/v1/sync` — Vollständiger Offline-Snapshot
 - `POST /api/mobile/v1/devices` — Push-Device-Token registrieren
+- `PushService` (`src/lib/services/push.service.ts`) sendet Benachrichtigungen
+  über APNs an registrierte iOS-Geräte (Event-Einladungen, Abstimmungsende,
+  Spielvorschläge, Votes, neue Sessions).
 
 ### Öffentliche Teilnahme
 

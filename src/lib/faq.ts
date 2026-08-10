@@ -226,7 +226,7 @@ export const faqSections: FaqSection[] = [
       {
         question: "Bekomme ich Push-Benachrichtigungen von der iOS-App?",
         answer:
-          "Ja, die App fragt beim ersten Start nach der Berechtigung und registriert dein Gerät anschließend beim Server. Du erhältst dann Benachrichtigungen für Event-Einladungen und Änderungen an Events, an denen du teilnimmst.",
+          "Ja, die App fragt beim ersten Start nach der Berechtigung und registriert dein Gerät anschließend beim Server. Du erhältst Push-Benachrichtigungen für Event-Einladungen, wenn eine Abstimmung beendet wurde, jemand ein Spiel vorschlägt oder abstimmt, und wenn eine neue Session aufgezeichnet wird.",
       },
       {
         question: "Funktionieren öffentliche Event-Links in der iOS-App?",

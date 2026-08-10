@@ -16,6 +16,7 @@ vi.mock("@/lib/db", () => {
       count: vi.fn(),
     },
     game: { findFirst: vi.fn() },
+    user: { findUnique: vi.fn() },
     sessionPlayer: { deleteMany: vi.fn(), createMany: vi.fn() },
     $transaction: vi.fn(),
   };
@@ -146,6 +147,7 @@ describe("SessionService", () => {
   it("create - creates session with players and invalidates caches", async () => {
     vi.mocked(prisma.game.findFirst).mockResolvedValue({ id: "game-1" } as never);
     vi.mocked(prisma.gameSession.create).mockResolvedValue(fakeSession as never);
+    vi.mocked(prisma.user.findUnique).mockResolvedValue({ name: "Alice", email: "a@b.com" } as never);
 
     const result = await SessionService.create(uid, validInput);
 

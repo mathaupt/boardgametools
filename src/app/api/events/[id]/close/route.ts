@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { invalidateTag } from "@/lib/cache";
 import { requireAuth, handleApiError } from "@/lib/require-auth";
 import prisma from "@/lib/db";
 import { withApiLogging } from "@/lib/api-logger";
 import { CacheTags } from "@/lib/cache-tags";
+import { invalidateTag } from "@/lib/cache";
+import { EventService } from "@/lib/services/event.service";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -63,18 +64,12 @@ export const POST = withApiLogging(async function POST(
     );
     const winningProposal = sortedProposals[0];
 
-    const updatedEvent = await prisma.event.update({
-      where: { id },
-      data: {
-        status: "closed",
-        selectedGameId: winningProposal?.gameId || null,
-        winningProposalId: winningProposal?.id || null,
-      },
-      include: {
-        selectedGame: true,
-        winningProposal: true,
-      },
-    });
+    const updatedEvent = await EventService.close(
+      userId,
+      id,
+      winningProposal?.gameId ?? undefined,
+      winningProposal?.id
+    );
 
     invalidateTag(CacheTags.userEvents(userId));
 

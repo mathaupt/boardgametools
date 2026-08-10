@@ -386,6 +386,14 @@ export async function GET() {
 SQL_DATABASE_URL="postgres://..."      # PostgreSQL Connection
 NEXTAUTH_URL="http://localhost:3000"
 NEXTAUTH_SECRET="<secret>"
+
+# Apple Push Notifications (APNs) — optional
+APNS_ENABLED="false"                   # true/false
+APNS_PRODUCTION="false"                # true/false (Sandbox vs. Production)
+APNS_TEAM_ID="<apple-team-id>"         # 10-stelliger Apple Team ID
+APNS_KEY_ID="<apns-key-id>"            # APNs Auth Key ID
+APNS_SIGNING_KEY="<base64-p8-key>"     # Base64-codierte .p8 oder PEM mit \n
+APNS_TOPIC="com.boardgametools.ios"    # Bundle-ID der iOS-App
 ```
 
 ## Troubleshooting

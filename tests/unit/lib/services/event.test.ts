@@ -231,7 +231,7 @@ describe("EventService", () => {
   // ── close ────────────────────────────────────────────────────
 
   describe("close", () => {
-    it("closes event and invalidates caches", async () => {
+    it("closes event, fetches selected game and invalidates caches", async () => {
       const closedEvent = { ...fakeEvent, status: "closed" };
       vi.mocked(prisma.event.findFirst).mockResolvedValue(fakeEvent as never);
       vi.mocked(prisma.event.update).mockResolvedValue(closedEvent as never);
@@ -243,10 +243,12 @@ describe("EventService", () => {
           where: { id: EVENT_ID, createdById: USER_ID, deletedAt: null },
         })
       );
-      expect(prisma.event.update).toHaveBeenCalledWith({
-        where: { id: EVENT_ID },
-        data: { status: "closed" },
-      });
+      expect(prisma.event.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { id: EVENT_ID },
+          data: { status: "closed" },
+        })
+      );
       expect(invalidateTag).toHaveBeenCalledWith(`events-${USER_ID}`);
       expect(invalidateTag).toHaveBeenCalledWith(`dash-${USER_ID}`);
       expect(invalidateTag).toHaveBeenCalledTimes(2);

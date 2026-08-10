@@ -177,6 +177,9 @@ automatischem Build und Unit-Test-Ziel:
   den erkannten Titel per BGG-Suche.
 - `NotificationManager` verwaltet Push-Benachrichtigungs-Berechtigungen,
   empfängt das APNs-Geräte-Token und sendet es an `POST /api/mobile/v1/devices`.
+- `PushService` auf dem Server signiert JWTs mit dem APNs-Key und sendet
+  über HTTP/2 Benachrichtigungen an iOS-Geräte bei Event-Einladungen,
+  Abstimmungsende, neuen Spielvorschlägen, neuen Stimmen und neuen Sessions.
 - `DeepLinkManager` parsed URLs des Custom Schemes `boardgametools://` und
   öffnet öffentliche Event-Share-Links sowie zukünftige Spiel-/Event-Deep-Links.
 - `PublicEventView` zeigt ein öffentliches Event, lädt es per Share-Token und

@@ -3,6 +3,8 @@ import { requireAuth, handleApiError } from "@/lib/require-auth";
 import prisma from "@/lib/db";
 import { withApiLogging } from "@/lib/api-logger";
 import { Errors } from "@/lib/error-messages";
+import * as PushService from "@/lib/services/push.service";
+import logger from "@/lib/logger";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -78,6 +80,21 @@ export const POST = withApiLogging(async function POST(
         _count: { select: { votes: true, guestVotes: true } }
       }
     });
+
+    // Notify the event creator about the new proposal
+    if (event.createdById !== userId) {
+      try {
+        const proposer = await prisma.user.findUnique({
+          where: { id: userId },
+          select: { name: true, email: true },
+        });
+        const proposerName = proposer?.name || proposer?.email || "Jemand";
+        const gameName = proposal.game?.name || proposal.bggName || "Unbekannt";
+        await PushService.notifyNewGameProposal(event.createdById, id, event.title, proposerName, gameName);
+      } catch (pushErr) {
+        logger.error({ err: pushErr }, "Failed to send new proposal push");
+      }
+    }
 
     return NextResponse.json({
       ...proposal,

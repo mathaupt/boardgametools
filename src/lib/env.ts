@@ -57,4 +57,12 @@ export const env = {
 
   // ── Apple Sign In ──
   get APPLE_CLIENT_ID() { return optionalEnvOrUndefined("APPLE_CLIENT_ID"); },
+
+  // ── Apple Push Notifications (APNs) ──
+  get APNS_ENABLED() { return optionalEnv("APNS_ENABLED", "false"); },
+  get APNS_PRODUCTION() { return optionalEnv("APNS_PRODUCTION", "false"); },
+  get APNS_TEAM_ID() { return optionalEnvOrUndefined("APNS_TEAM_ID"); },
+  get APNS_KEY_ID() { return optionalEnvOrUndefined("APNS_KEY_ID"); },
+  get APNS_SIGNING_KEY() { return optionalEnvOrUndefined("APNS_SIGNING_KEY"); },
+  get APNS_TOPIC() { return optionalEnv("APNS_TOPIC", "com.boardgametools.ios"); },
 };

@@ -8,6 +8,7 @@ import { getPublicBaseUrl } from "@/lib/public-link";
 import { encryptId } from "@/lib/crypto";
 import { NOT_DELETED, SAFE_USER_SELECT, buildPagination, paginatedResponse } from "./shared";
 import logger from "@/lib/logger";
+import * as PushService from "@/lib/services/push.service";
 
 // ── Types ────────────────────────────────────────────────────────
 
@@ -190,6 +191,16 @@ export const EventService = {
       }
     }
 
+    // Send push notifications to registered invitees (not the organizer)
+    for (const invite of newEvent.invites) {
+      if (!invite.userId || invite.userId === userId) continue;
+      try {
+        await PushService.notifyEventInvite(invite.userId, newEvent.id, input.title, inviterName);
+      } catch (pushErr) {
+        logger.error({ err: pushErr, userId: invite.userId }, "Failed to send event invite push");
+      }
+    }
+
     invalidateTag(CacheTags.userEvents(userId));
     invalidateTag(CacheTags.userDashboard(userId));
 
@@ -200,6 +211,9 @@ export const EventService = {
   async close(userId: string, eventId: string, selectedGameId?: string, winningProposalId?: string) {
     const event = await prisma.event.findFirst({
       where: { id: eventId, createdById: userId, ...NOT_DELETED },
+      include: {
+        invites: { include: { user: { select: SAFE_USER_SELECT } } },
+      },
     });
     if (!event) throw new ApiError(404, "Event not found");
 
@@ -210,7 +224,20 @@ export const EventService = {
         ...(selectedGameId && { selectedGameId }),
         ...(winningProposalId && { winningProposalId }),
       },
+      include: {
+        selectedGame: true,
+      },
     });
+
+    // Notify all invitees (and the creator) about the closed vote
+    const winningGameName = updated.selectedGame?.name;
+    for (const invite of event.invites) {
+      try {
+        await PushService.notifyEventClosed(invite.userId ?? invite.user?.id ?? userId, eventId, event.title, winningGameName);
+      } catch (pushErr) {
+        logger.error({ err: pushErr, inviteId: invite.id }, "Failed to send event closed push");
+      }
+    }
 
     invalidateTag(CacheTags.userEvents(userId));
     invalidateTag(CacheTags.userDashboard(userId));

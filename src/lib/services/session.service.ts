@@ -4,6 +4,8 @@ import { CacheTags } from "@/lib/cache-tags";
 import { ApiError } from "@/lib/require-auth";
 import { validateString } from "@/lib/validation";
 import { NOT_DELETED, SAFE_USER_SELECT, buildPagination, paginatedResponse } from "./shared";
+import * as PushService from "@/lib/services/push.service";
+import logger from "@/lib/logger";
 
 // ── Types ────────────────────────────────────────────────────────
 
@@ -120,6 +122,22 @@ export const SessionService = {
     });
 
     this._invalidateSessionCaches(userId);
+
+    // Notify all players about the new session
+    const creator = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { name: true, email: true },
+    });
+    const creatorName = creator?.name || creator?.email || "Jemand";
+    for (const player of input.players) {
+      if (player.userId === userId) continue;
+      try {
+        await PushService.notifySessionCreated(player.userId, input.gameId, game.name, creatorName);
+      } catch (pushErr) {
+        logger.error({ err: pushErr, userId: player.userId }, "Failed to send session created push");
+      }
+    }
+
     return newSession;
   },
 
