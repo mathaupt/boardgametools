@@ -14,7 +14,6 @@ struct BoardGameToolsApp: App {
                 .environment(SyncEngine.shared)
                 .environment(NetworkMonitor.shared)
                 .environment(DeepLinkManager.shared)
-                .environment(\.modelContext, persistenceController.mainContext)
                 .onOpenURL { url in
                     DeepLinkManager.shared.handle(url: url)
                 }

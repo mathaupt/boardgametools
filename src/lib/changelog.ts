@@ -25,6 +25,7 @@ export const changelog: ChangelogEntry[] = [
       { type: "fix", text: "PostgreSQL SSL-Warnung (`sslmode=require/prefer/verify-ca`) wird auf `verify-full` normalisiert" },
       { type: "fix", text: "Spiel-Löschen ist idempotent: Bereits gelöschte Spiele erzeugen keinen 404-Fehler mehr" },
       { type: "fix", text: "iOS-Entitlements bereinigt: Sign in with Apple und Notification-Filter entfernt, damit Build mit Personal Team möglich ist" },
+      { type: "fix", text: "SwiftData Context konsolidiert: PersistenceController speichert mainContext jetzt als Instanz, damit LocalDataSource und @Query denselben Kontext verwenden und Duplikate vermieden werden" },
       { type: "fix", text: "Synchronisierung liefert jetzt gelöschte IDs für Spiele, Sessions, Events und Gruppen, damit iOS-Listen aktualisiert werden" },
       { type: "improvement", text: "iOS-Listen (Spiele, Sessions, Events, Gruppen, Dashboard) synchronisieren sich bei jedem Erscheinen der Ansicht neu" },
       { type: "internal", text: "Neuer PUT-Endpunkt /api/mobile/v1/me für Profil-Updates" },

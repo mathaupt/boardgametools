@@ -6,6 +6,7 @@ final class PersistenceController {
     static let shared = PersistenceController()
 
     let container: ModelContainer
+    let mainContext: ModelContext
 
     private init() {
         let schema = Schema([
@@ -29,12 +30,9 @@ final class PersistenceController {
         let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
         do {
             container = try ModelContainer(for: schema, configurations: [config])
+            mainContext = container.mainContext
         } catch {
             fatalError("Could not create ModelContainer: \(error)")
         }
-    }
-
-    var mainContext: ModelContext {
-        container.mainContext
     }
 }
