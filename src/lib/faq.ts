@@ -216,7 +216,12 @@ export const faqSections: FaqSection[] = [
       {
         question: "Kann ich in der iOS-App Spiele hinzufügen?",
         answer:
-          "Ja, auf der Spiele-Seite tippe auf das Plus-Icon. Du kannst ein Spiel manuell eingeben oder über die BGG-Suche in BoardGameGeek suchen und automatisch importieren lassen.",
+          "Ja, auf der Spiele-Seite tippe auf das Plus-Icon. Du kannst ein Spiel manuell eingeben, über die BGG-Suche in BoardGameGeek suchen, einen EAN/UPC-Barcode scannen oder ein Foto vom Cover machen lassen — der Titel wird per OCR erkannt und in BGG gesucht.",
+      },
+      {
+        question: "Kann ich Sessions, Events und Gruppen in der App anlegen?",
+        answer:
+          "Ja. Auf der Session-, Event- und Gruppen-Seite gibt es jeweils ein Plus-Icon. Dort kannst du neue Einträge erstellen und bestehende später öffnen, bearbeiten oder löschen.",
       },
     ],
   },

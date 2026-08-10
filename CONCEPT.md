@@ -169,6 +169,12 @@ automatischem Build und Unit-Test-Ziel:
   Offline-Banner, leere Zustände und Cover-Bilder per `AsyncImage`.
 - `GameEditView`, `GameAddSheet` und `BGGSearchView` ermöglichen das manuelle
   Erstellen/Bearbeiten/Löschen sowie den Import aus BoardGameGeek.
+- `SessionEditView`, `EventEditView` und `GroupEditView` mit Detail-Views
+  erlauben CRUD-Operationen für Sessions, Events und Gruppen.
+- `BarcodeScannerView` scannt EAN/UPC-Barcodes, führt einen BGG-Lookup durch
+  und importiert das erkannte Spiel.
+- `CoverOCRView` nutzt Vision-Text-Erkennung auf einem Spielecover und sucht
+  den erkannten Titel per BGG-Suche.
 - `NetworkMonitor` zeigt den Online-/Offline-Status und triggert keinen Sync,
   wenn keine Verbindung besteht.
 

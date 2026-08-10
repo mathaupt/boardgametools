@@ -705,6 +705,10 @@ und alle Kernbereiche des Web-Frontends.
   Offline-Banner, leere Zustände, Cover-Bilder per `AsyncImage`.
 - `GameEditView` und `BGGSearchView`: Spiele manuell anlegen/bearbeiten/löschen
   oder direkt aus BoardGameGeek importieren.
+- `SessionEditView`, `EventEditView`, `GroupEditView` plus zugehörige
+  Detail-Views: Sessions, Events und Gruppen anlegen, bearbeiten und löschen.
+- `BarcodeScannerView` scannt EAN/UPC-Barcodes und importiert das Spiel aus BGG.
+- `CoverOCRView` erkennt Text auf Spielecovers und sucht per OCR in BGG.
 - `NetworkMonitor` meldet Online-/Offline-Status in den Listen.
 
 ### Build & Tests

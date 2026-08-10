@@ -6,6 +6,7 @@ struct GroupListView: View {
     @Environment(NetworkMonitor.self) private var networkMonitor
     @Query(sort: \LocalGroup.name) private var localGroups: [LocalGroup]
     @State private var errorMessage: String?
+    @State private var isShowingAddSheet = false
 
     var body: some View {
         NavigationStack {
@@ -17,15 +18,32 @@ struct GroupListView: View {
                 }
 
                 ForEach(localGroups) { group in
-                    GroupRow(group: group)
-                        .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
-                        .listRowBackground(Theme.cardBackground)
-                        .listRowSeparator(.hidden)
+                    NavigationLink(destination: GroupDetailView(group: group.toDTO())) {
+                        GroupRow(group: group)
+                    }
+                    .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+                    .listRowBackground(Theme.cardBackground)
+                    .listRowSeparator(.hidden)
                 }
             }
             .listStyle(.plain)
             .background(Theme.background.ignoresSafeArea())
             .navigationTitle("Gruppen")
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        isShowingAddSheet = true
+                    } label: {
+                        Image(systemName: "plus.circle.fill")
+                            .font(.title3)
+                            .foregroundStyle(Theme.primaryGradient)
+                    }
+                }
+            }
+            .sheet(isPresented: $isShowingAddSheet) {
+                GroupEditView(existingGroup: nil)
+                    .presentationDetents([.large])
+            }
             .task { await syncEngine.sync() }
             .refreshable { await syncEngine.sync() }
             .overlay {

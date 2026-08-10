@@ -23,6 +23,26 @@ struct GameAddSheet: View {
                     )
                 }
                 .listRowBackground(Theme.cardBackground)
+
+                NavigationLink(destination: BarcodeScannerView()) {
+                    AddOptionRow(
+                        icon: "barcode.viewfinder",
+                        title: "Barcode scannen",
+                        subtitle: "EAN/UPC eines Spiels scannen und aus BGG importieren",
+                        gradient: Theme.roseGradient
+                    )
+                }
+                .listRowBackground(Theme.cardBackground)
+
+                NavigationLink(destination: CoverOCRView()) {
+                    AddOptionRow(
+                        icon: "camera.viewfinder",
+                        title: "Cover scannen",
+                        subtitle: "Foto vom Spielecover machen und per OCR in BGG suchen",
+                        gradient: Theme.warmGradient
+                    )
+                }
+                .listRowBackground(Theme.cardBackground)
             }
             .listStyle(.plain)
             .background(Theme.background.ignoresSafeArea())

@@ -6,6 +6,7 @@ struct SessionListView: View {
     @Environment(NetworkMonitor.self) private var networkMonitor
     @Query(sort: \LocalSession.playedAt, order: .reverse) private var localSessions: [LocalSession]
     @State private var errorMessage: String?
+    @State private var isShowingAddSheet = false
 
     var body: some View {
         NavigationStack {
@@ -17,15 +18,32 @@ struct SessionListView: View {
                 }
 
                 ForEach(localSessions) { session in
-                    SessionRow(session: session)
-                        .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
-                        .listRowBackground(Theme.cardBackground)
-                        .listRowSeparator(.hidden)
+                    NavigationLink(destination: SessionDetailView(session: session.toDTO())) {
+                        SessionRow(session: session)
+                    }
+                    .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+                    .listRowBackground(Theme.cardBackground)
+                    .listRowSeparator(.hidden)
                 }
             }
             .listStyle(.plain)
             .background(Theme.background.ignoresSafeArea())
             .navigationTitle("Sessions")
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        isShowingAddSheet = true
+                    } label: {
+                        Image(systemName: "plus.circle.fill")
+                            .font(.title3)
+                            .foregroundStyle(Theme.primaryGradient)
+                    }
+                }
+            }
+            .sheet(isPresented: $isShowingAddSheet) {
+                SessionEditView(existingSession: nil)
+                    .presentationDetents([.large])
+            }
             .task { await syncEngine.sync() }
             .refreshable { await syncEngine.sync() }
             .overlay {

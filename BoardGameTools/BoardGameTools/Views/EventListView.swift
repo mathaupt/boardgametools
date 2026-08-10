@@ -6,6 +6,7 @@ struct EventListView: View {
     @Environment(NetworkMonitor.self) private var networkMonitor
     @Query(sort: \LocalEvent.eventDate) private var localEvents: [LocalEvent]
     @State private var errorMessage: String?
+    @State private var isShowingAddSheet = false
 
     var body: some View {
         NavigationStack {
@@ -17,15 +18,32 @@ struct EventListView: View {
                 }
 
                 ForEach(localEvents) { event in
-                    EventRow(event: event)
-                        .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
-                        .listRowBackground(Theme.cardBackground)
-                        .listRowSeparator(.hidden)
+                    NavigationLink(destination: EventDetailView(event: event.toDTO())) {
+                        EventRow(event: event)
+                    }
+                    .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+                    .listRowBackground(Theme.cardBackground)
+                    .listRowSeparator(.hidden)
                 }
             }
             .listStyle(.plain)
             .background(Theme.background.ignoresSafeArea())
             .navigationTitle("Events")
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        isShowingAddSheet = true
+                    } label: {
+                        Image(systemName: "plus.circle.fill")
+                            .font(.title3)
+                            .foregroundStyle(Theme.primaryGradient)
+                    }
+                }
+            }
+            .sheet(isPresented: $isShowingAddSheet) {
+                EventEditView(existingEvent: nil)
+                    .presentationDetents([.large])
+            }
             .task { await syncEngine.sync() }
             .refreshable { await syncEngine.sync() }
             .overlay {

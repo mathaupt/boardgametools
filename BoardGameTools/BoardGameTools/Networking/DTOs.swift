@@ -185,6 +185,35 @@ struct GameInput: Encodable, Sendable {
     let tagNames: [String]?
 }
 
+struct SessionPlayerInput: Encodable, Sendable {
+    let userId: String
+    let score: Int?
+    let isWinner: Bool
+    let placement: Int?
+}
+
+struct SessionInput: Encodable, Sendable {
+    let gameId: String
+    let playedAt: String
+    let durationMinutes: Int?
+    let notes: String?
+    let players: [SessionPlayerInput]
+}
+
+struct EventInput: Encodable, Sendable {
+    let title: String
+    let description: String?
+    let eventDate: String
+    let location: String?
+    let groupId: String?
+    let inviteEmails: [String]?
+}
+
+struct GroupInput: Encodable, Sendable {
+    let name: String
+    let description: String?
+}
+
 struct BGGSearchResult: Codable, Identifiable, Sendable {
     let bggId: String
     let name: String

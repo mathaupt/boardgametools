@@ -36,6 +36,21 @@ export const changelog: ChangelogEntry[] = [
     ],
   },
   {
+    version: "0.49.7",
+    date: "2026-08-10",
+    title: "iOS: Session/Event/Group CRUD, Barcode- & Cover-Scanner",
+    description: "Die iOS-App unterstützt jetzt das Erstellen, Bearbeiten und Löschen von Sessions, Events und Gruppen. Zusätzlich können Spiele per EAN/UPC-Barcode oder Fotoscan eines Covers über BoardGameGeek importiert werden.",
+    changes: [
+      { type: "feature", text: "`SessionEditView` & `SessionDetailView` mit Spieler-Verwaltung" },
+      { type: "feature", text: "`EventEditView` & `EventDetailView` inkl. Gruppen-Auswahl" },
+      { type: "feature", text: "`GroupEditView` & `GroupDetailView`" },
+      { type: "feature", text: "`BarcodeScannerView` mit BGG-EAN-Lookup und Auto-Import" },
+      { type: "feature", text: "`CoverOCRView` mit Live-Text-Erkennung und BGG-Suche" },
+      { type: "improvement", text: "Listen für Sessions, Events und Gruppen mit `+` und Detail-Navigation" },
+      { type: "internal", text: "Neue DTOs: `SessionInput`, `EventInput`, `GroupInput` und `bggLookup`" },
+    ],
+  },
+  {
     version: "0.49.6",
     date: "2026-08-10",
     title: "iOS: Erstes emotionales Design + Spiel hinzufügen/BGG-Import",
