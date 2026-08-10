@@ -1,3 +1,5 @@
+import { readFileSync } from "fs";
+import { join } from "path";
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/db";
 import { withApiLogging } from "@/lib/api-logger";
@@ -32,8 +34,17 @@ interface HealthResponse {
   };
 }
 
+function getAppVersion(): string {
+  try {
+    const pkg = JSON.parse(readFileSync(join(process.cwd(), "package.json"), "utf8"));
+    return pkg.version || "unknown";
+  } catch {
+    return "unknown";
+  }
+}
+
 // Read version once at module load
-const APP_VERSION = process.env.npm_package_version || "unknown";
+const APP_VERSION = getAppVersion();
 
 export const GET = withApiLogging(async function GET(request: NextRequest) {
   const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";

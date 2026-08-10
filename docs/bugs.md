@@ -157,10 +157,81 @@ Version 0.44.0 - docs: fix README test credentials and update project info
 
 ---
 
+### [BUG-004] iOS-Logout führt zu 500 Internal Server Error
+
+**Status:** `fixed`  
+**Schweregrad:** `high`  
+**Entdeckt:** 2026-08-10  
+**Behoben:** 2026-08-10  
+**Behoben in Version:** 0.50.6  
+**Test geschrieben:** Ja
+
+**Beschreibung:**
+Das Abmelden in der iOS-App führte zu einem 500er Fehler, weil der Logout-Endpoint einen JSON-Body mit `accessToken` erwartete, die App aber nur den `Authorization: Bearer <token>` Header sendete.
+
+**Reproduktion:**
+1. iOS-App mit Live-URL `https://boardgametools.vercel.app` verbinden
+2. Einloggen
+3. "Abmelden" in den Einstellungen tippen
+4. Server antwortet mit 500 und `SyntaxError: Unexpected end of JSON input`
+
+**Erwartetes Verhalten:**
+Logout sollte auch mit leerem Body über den Authorization-Header funktionieren.
+
+**Tatsächliches Verhalten:**
+500 Internal Server Error, da `request.json()` bei leerem Body fehlschlug und der Fehler nicht abgefangen wurde.
+
+**Ursache:**
+`/api/mobile/v1/auth/logout/route.ts` rief `await request.json()` ohne Fehlerbehandlung auf. Bei leerem Body liefert Next.js einen `SyntaxError`, der als `Unexpected error` geloggt und als 500 zurückgegeben wurde.
+
+**Lösung:**
+- JSON-Body-Parsing in `try/catch` eingebettet
+- Fallback auf `Authorization: Bearer <token>` Header implementiert
+- 401 zurückgeben, wenn weder Body noch Header einen Token enthalten
+- Unit-Tests für Body, Header und fehlenden Token ergänzt
+
+**Referenz im Changelog:**
+Version 0.50.6 - Mobile Logout akzeptiert Token aus Authorization-Header und leere Bodies
+
+---
+
+### [BUG-005] /api/health zeigt Version "unknown" an
+
+**Status:** `fixed`  
+**Schweregrad:** `low`  
+**Entdeckt:** 2026-08-10  
+**Behoben:** 2026-08-10  
+**Behoben in Version:** 0.50.6  
+**Test geschrieben:** Nein
+
+**Beschreibung:**
+Der Health-Check Endpoint gab `"version":"unknown"` zurück, weil Vercel `process.env.npm_package_version` nicht setzt.
+
+**Reproduktion:**
+1. `curl https://boardgametools.vercel.app/api/health`
+2. Antwort enthält `"version":"unknown"`
+
+**Erwartetes Verhalten:**
+Version sollte die aus `package.json` enthalten.
+
+**Tatsächliches Verhalten:**
+Version ist "unknown".
+
+**Ursache:**
+`process.env.npm_package_version` ist in der Vercel-Runtime nicht verfügbar.
+
+**Lösung:**
+Version wird jetzt beim Modul-Load aus `package.json` gelesen (`readFileSync`).
+
+**Referenz im Changelog:**
+Version 0.50.6 - /api/health liest die App-Version direkt aus package.json
+
+---
+
 ## Statistik
 
 - **Offene Bugs:** 0
 - **In Bearbeitung:** 0
-- **Behoben:** 3
+- **Behoben:** 5
 - **Wontfix:** 0
-- **Gesamt:** 3
+- **Gesamt:** 5

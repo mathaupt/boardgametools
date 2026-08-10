@@ -12,6 +12,17 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.6",
+    date: "2026-08-10",
+    title: "iOS-Logout und Health-Version-Fix",
+    description: "Logout für die iOS-App funktioniert jetzt auch ohne Request-Body, und der Health-Check zeigt die echte App-Version aus package.json an.",
+    changes: [
+      { type: "fix", text: "`/api/health` liest die App-Version direkt aus `package.json`", bugRef: "BUG-005" },
+      { type: "fix", text: "Mobile Logout akzeptiert Token aus `Authorization`-Header und leere Bodies", bugRef: "BUG-004" },
+      { type: "internal", text: "Logout-Unit-Tests um Header-Auth und 401-Fall erweitert" },
+    ],
+  },
+  {
     version: "0.50.5",
     date: "2026-08-10",
     title: "Proxy: /api/health öffentlich erreichbar",

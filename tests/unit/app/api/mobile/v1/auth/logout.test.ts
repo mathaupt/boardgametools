@@ -19,7 +19,7 @@ const mockedRevoke = vi.mocked(revokeToken);
 describe("POST /api/mobile/v1/auth/logout", () => {
   beforeEach(() => { vi.clearAllMocks(); });
 
-  it("revokes the provided access token", async () => {
+  it("revokes the provided access token from body", async () => {
     mockedRevoke.mockResolvedValue(undefined as never);
     const res = await POST(
       new NextRequest("http://localhost:3000/api/mobile/v1/auth/logout", {
@@ -31,5 +31,32 @@ describe("POST /api/mobile/v1/auth/logout", () => {
 
     expect(res.status).toBe(200);
     expect(mockedRevoke).toHaveBeenCalledWith("token");
+  });
+
+  it("revokes the access token from Authorization header when body is empty", async () => {
+    mockedRevoke.mockResolvedValue(undefined as never);
+    const res = await POST(
+      new NextRequest("http://localhost:3000/api/mobile/v1/auth/logout", {
+        method: "POST",
+        headers: { authorization: "Bearer ios-token" },
+      }),
+      {}
+    );
+
+    expect(res.status).toBe(200);
+    expect(mockedRevoke).toHaveBeenCalledWith("ios-token");
+  });
+
+  it("returns 401 when neither body nor Authorization header provides a token", async () => {
+    mockedRevoke.mockResolvedValue(undefined as never);
+    const res = await POST(
+      new NextRequest("http://localhost:3000/api/mobile/v1/auth/logout", {
+        method: "POST",
+      }),
+      {}
+    );
+
+    expect(res.status).toBe(401);
+    expect(mockedRevoke).not.toHaveBeenCalled();
   });
 });
