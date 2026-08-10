@@ -84,6 +84,15 @@ describe("require-auth", () => {
       await expect(requireAuth()).rejects.toThrow(ApiError);
       await expect(requireAuth()).rejects.toMatchObject({ statusCode: 401 });
     });
+
+    it("throws ApiError(401) when user is inactive", async () => {
+      mockAuth.mockResolvedValue({
+        user: { id: "user-3", role: "USER", name: "Inactive", email: "i@b.c", isActive: false },
+        expires: "",
+      } as never);
+      await expect(requireAuth()).rejects.toThrow(ApiError);
+      await expect(requireAuth()).rejects.toMatchObject({ statusCode: 401 });
+    });
   });
 
   describe("requireAdmin", () => {

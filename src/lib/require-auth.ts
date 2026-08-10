@@ -26,11 +26,13 @@ export interface AuthResult {
 
 /**
  * Require an authenticated session.
- * Throws ApiError(401) when no session exists.
+ * Throws ApiError(401) when no session exists or the user is inactive.
+ * The session callback in auth.ts refreshes role/isActive from the DB,
+ * so requireAuth can rely on the session object.
  */
 export async function requireAuth(): Promise<AuthResult> {
   const session = await auth();
-  if (!session?.user?.id) {
+  if (!session?.user?.id || session.user.isActive === false) {
     throw new ApiError(401, "Unauthorized");
   }
   const user = session.user as unknown as Record<string, unknown>;

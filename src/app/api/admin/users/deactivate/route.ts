@@ -31,6 +31,14 @@ export const POST = withApiLogging(async function POST(request: NextRequest) {
       data: { isActive },
     });
 
+    // Deactivation should immediately invalidate all mobile access tokens.
+    if (!isActive) {
+      await prisma.apiToken.updateMany({
+        where: { userId: targetUserId, revokedAt: null },
+        data: { revokedAt: new Date() },
+      });
+    }
+
     return NextResponse.json({ message: Errors.USER_STATUS_CHANGED });
   } catch (error) {
     return handleApiError(error);

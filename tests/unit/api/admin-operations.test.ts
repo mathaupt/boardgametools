@@ -12,7 +12,7 @@ vi.mock("@/lib/require-auth", () => {
     handleApiError: vi.fn((err: unknown) => ({ body: { error: (err as Error)?.message || "Internal server error" }, status: (err as { statusCode?: number })?.statusCode || 500 })),
   };
 });
-vi.mock("@/lib/db", () => ({ default: { user: { update: vi.fn(), findUnique: vi.fn(), create: vi.fn() } } }));
+vi.mock("@/lib/db", () => ({ default: { user: { update: vi.fn(), findUnique: vi.fn(), create: vi.fn() }, apiToken: { updateMany: vi.fn() } } }));
 vi.mock("bcryptjs", () => ({ hash: vi.fn(() => Promise.resolve("hashed-pw")) }));
 vi.mock("@/lib/validation", () => ({ validateString: vi.fn(() => null), firstError: vi.fn(() => null) }));
 vi.mock("@/lib/error-messages", () => ({
@@ -37,12 +37,17 @@ describe("Admin Operations", () => {
   });
 
   describe("POST /deactivate", () => {
-    it("deactivates user", async () => {
+    it("deactivates user and revokes api tokens", async () => {
       vi.mocked(prisma.user.update).mockResolvedValue({} as never);
+      vi.mocked(prisma.apiToken.updateMany).mockResolvedValue({ count: 2 } as never);
       const req = createMockRequest("POST", "http://localhost:3000/api/admin/users/deactivate", { body: { userId: TARGET_ID, isActive: false } });
       const { status, body } = parseResponse(await (DeactivatePOST as Function)(req));
       expect(status).toBe(200);
       expect(body.message).toBe("Benutzer-Status geaendert");
+      expect(prisma.apiToken.updateMany).toHaveBeenCalledWith({
+        where: { userId: TARGET_ID, revokedAt: null },
+        data: { revokedAt: expect.any(Date) },
+      });
     });
 
     it("prevents self-deactivation", async () => {
@@ -66,12 +71,17 @@ describe("Admin Operations", () => {
   });
 
   describe("POST /change-password", () => {
-    it("changes password", async () => {
+    it("changes password and revokes api tokens", async () => {
       vi.mocked(prisma.user.update).mockResolvedValue({} as never);
+      vi.mocked(prisma.apiToken.updateMany).mockResolvedValue({ count: 1 } as never);
       const req = createMockRequest("POST", "http://localhost:3000/api/admin/users/change-password", { body: { userId: TARGET_ID, newPassword: "securePass123" } });
       const { status, body } = parseResponse(await (ChangePasswordPOST as Function)(req));
       expect(status).toBe(200);
       expect(body.message).toBe("Passwort geaendert");
+      expect(prisma.apiToken.updateMany).toHaveBeenCalledWith({
+        where: { userId: TARGET_ID, revokedAt: null },
+        data: { revokedAt: expect.any(Date) },
+      });
     });
 
     it("prevents changing own password", async () => {

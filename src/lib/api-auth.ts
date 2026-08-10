@@ -15,6 +15,11 @@ export interface ApiSession {
 export async function apiAuth(request: NextRequest): Promise<ApiSession | null> {
   const webSession = await auth();
   if (webSession?.user?.id) {
+    // session callback in auth.ts already refreshes role/isActive from the DB,
+    // but apiAuth is a security boundary, so we verify isActive explicitly.
+    if (webSession.user.isActive === false) {
+      return null;
+    }
     const role = ((webSession.user as unknown as Record<string, unknown>).role as string | undefined) ?? "USER";
     return {
       user: {
@@ -32,14 +37,15 @@ export async function apiAuth(request: NextRequest): Promise<ApiSession | null> 
 
   const apiToken = await prisma.apiToken.findUnique({
     where: { tokenHash: hashToken(token) },
-    include: { user: { select: { id: true, name: true, email: true, role: true } } },
+    include: { user: { select: { id: true, name: true, email: true, role: true, isActive: true } } },
   });
 
   if (
     !apiToken ||
     apiToken.type !== "access" ||
     apiToken.revokedAt ||
-    (apiToken.expiresAt && apiToken.expiresAt < new Date())
+    (apiToken.expiresAt && apiToken.expiresAt < new Date()) ||
+    !apiToken.user.isActive
   ) {
     return null;
   }

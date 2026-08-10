@@ -447,10 +447,386 @@ Version 0.50.8 - Fix: Public-Event-Antworten enthalten keine E-Mail-Adressen von
 
 ---
 
+---
+
+### [BUG-012] Deaktivierte Nutzer können weiterhin Aktionen ausführen
+
+**Status:** `fixed`
+**Schweregrad:** `critical`
+**Entdeckt:** 2026-08-10
+**Behoben:** 2026-08-10
+**Behoben in Version:** 0.50.9
+**Test geschrieben:** Ja (`tests/unit/lib/api-auth.test.ts`, `tests/unit/lib/require-auth.test.ts`)
+
+**Beschreibung:**
+`apiAuth()` validiert API-Token und `requireAuth()` liest die NextAuth-Session, aber keiner der beiden Helper prüft `user.isActive`. Ein deaktivierter Account kann weiterhin API-Requests und Dashboard-Seiten nutzen, solange Token/Cookie gültig sind.
+
+**Reproduktion:**
+1. Admin deaktiviert Nutzer über `POST /api/admin/users/deactivate`.
+2. Nutzer führt mit bestehendem Cookie oder API-Token einen Request aus (z. B. `GET /api/games`).
+3. Request wird erfolgreich verarbeitet.
+
+**Erwartetes Verhalten:**
+Deaktivierte Accounts werden sofort abgewiesen (401/403).
+
+**Tatsächliches Verhalten:**
+Requests werden akzeptiert.
+
+**Ursache:**
+`isActive` wird in `apiAuth` und `requireAuth` nicht gegen die Datenbank geprüft.
+
+**Lösung:**
+- `next-auth.d.ts`: `isActive` zu `Session.user` hinzugefügt.
+- `auth.ts`: `session`-Callback fragt `User` aus der DB ab und setzt `session.user.isActive` sowie `role`/`name`/`email`.
+- `api-auth.ts`: Bearer-Token Pfad prüft `apiToken.user.isActive`; Web-Session Pfad prüft `webSession.user.isActive`.
+- `require-auth.ts`: `requireAuth` wirft 401, wenn `session.user.isActive === false`.
+- `(dashboard)/layout.tsx`: Leitet auf `/login` um, wenn `session.user.isActive === false`.
+
+**Referenz im Changelog:**
+Version 0.50.9 - Fix: Auth-Helper prüfen `isActive` und aktualisieren Session-Daten aus der DB (BUG-012, BUG-013, BUG-016)
+
+---
+
+### [BUG-013] Admin-Rolle im Session-Token ist veraltet, wenn DB-Rolle ändert
+
+**Status:** `fixed`
+**Schweregrad:** `critical`
+**Entdeckt:** 2026-08-10
+**Behoben:** 2026-08-10
+**Behoben in Version:** 0.50.9
+**Test geschrieben:** Ja (`tests/unit/lib/require-auth.test.ts`)
+
+**Beschreibung:**
+`requireAdmin()` liest die Rolle aus dem NextAuth-JWT (`session.user.role`). Wird ein Admin in der Datenbank auf `USER` zurückgestuft, bleibt der alte Token mit `role: ADMIN` gültig, bis er abläuft. `proxy.ts` prüft ebenfalls `req.auth.user.role` aus dem Token.
+
+**Reproduktion:**
+1. Nutzer ist Admin und besitzt Session.
+2. Admin ändert eigene oder fremde Rolle auf `USER`.
+3. Nutzer ruft `GET /api/admin/users` mit altem Cookie auf.
+4. Zugriff wird gewährt.
+
+**Erwartetes Verhalten:**
+Admin-Routes verwenden die aktuelle Rolle aus der Datenbank.
+
+**Tatsächliches Verhalten:**
+Token-Rolle wird verwendet.
+
+**Ursache:**
+`requireAdmin` und `proxy.ts` greifen auf `session.user.role` bzw. `req.auth.user.role` zu, ohne die DB zu validieren.
+
+**Lösung:**
+- `auth.ts`: `session`-Callback liest `role` aus der Datenbank und überschreibt `session.user.role`.
+- `require-auth.ts`: `requireAdmin` nutzt die von `requireAuth` zurückgegebene `role`, die wiederum aus der aktualisierten Session stammt.
+- `proxy.ts` ist ein erster Schutz und kann das JWT `role` nur bedingt prüfen; endgültige Autorisierung erfolgt in den Admin-Routen via `requireAdmin`.
+
+**Referenz im Changelog:**
+Version 0.50.9 - Fix: Auth-Helper prüfen `isActive` und aktualisieren Session-Daten aus der DB (BUG-012, BUG-013, BUG-016)
+
+---
+
+### [BUG-014] Deaktivierung widerruft keine API-Token
+
+**Status:** `fixed`
+**Schweregrad:** `high`
+**Entdeckt:** 2026-08-10
+**Behoben:** 2026-08-10
+**Behoben in Version:** 0.50.9
+**Test geschrieben:** Ja (`tests/unit/api/admin-operations.test.ts`)
+
+**Beschreibung:**
+`POST /api/admin/users/deactivate` setzt `isActive=false`, aber bereits ausgestellte `ApiToken` bleiben gültig, bis sie ablaufen oder ein Logout-All erfolgt. Mobile Clients können weiterhin Daten abrufen.
+
+**Reproduktion:**
+1. Nutzer besitzt aktives API-Token (iOS-App).
+2. Admin deaktiviert Nutzer.
+3. Mobile App ruft weiterhin `/api/mobile/v1/games` mit Bearer-Token.
+4. Request erfolgreich.
+
+**Erwartetes Verhalten:**
+Bei Deaktivierung werden alle ausgestellten Access-Token für den Nutzer widerrufen.
+
+**Tatsächliches Verhalten:**
+Token bleiben gültig.
+
+**Ursache:**
+Kein `apiToken.updateMany` in `deactivate/route.ts`.
+
+**Lösung:**
+In `src/app/api/admin/users/deactivate/route.ts` werden bei `isActive: false` alle offenen `ApiToken` des Nutzers auf `revokedAt: new Date()` gesetzt.
+
+**Referenz im Changelog:**
+Version 0.50.9 - Fix: Deaktivierung und Passwort-Änderung widerrufen API-Token (BUG-014, BUG-015)
+
+---
+
+### [BUG-015] Passwort-Änderung widerruft keine API-Token
+
+**Status:** `fixed`
+**Schweregrad:** `high`
+**Entdeckt:** 2026-08-10
+**Behoben:** 2026-08-10
+**Behoben in Version:** 0.50.9
+**Test geschrieben:** Ja (`tests/unit/app/api/mobile/v1/me.test.ts`, `tests/unit/api/admin-operations.test.ts`)
+
+**Beschreibung:**
+Wenn ein Nutzer sein Passwort über `PUT /api/mobile/v1/me` ändert oder ein Admin das Passwort eines anderen Nutzers über `POST /api/admin/users/change-password` ändert, bleiben bestehende API-Token aktiv. Bei einem kompromittierten Account reicht das Passwort-Reset nicht, um Angreifer auszusperren.
+
+**Reproduktion:**
+1. Angreifer besitzt API-Token.
+2. Nutzer ändert Passwort.
+3. Angreifer nutzt weiterhin API-Token.
+
+**Erwartetes Verhalten:**
+Alle API-Token des betroffenen Nutzers werden ungültig.
+
+**Tatsächliches Verhalten:**
+Token bleiben gültig.
+
+**Ursache:**
+Keine Token-Widerrufung nach Passwort-Update.
+
+**Lösung:**
+- `src/app/api/mobile/v1/me/route.ts`: Nach erfolgreicher Passwort-Änderung werden alle offenen `ApiToken` des Nutzers widerrufen.
+- `src/app/api/admin/users/change-password/route.ts`: Gleiches Verhalten für Admin-Passwort-Reset.
+
+**Referenz im Changelog:**
+Version 0.50.9 - Fix: Deaktivierung und Passwort-Änderung widerrufen API-Token (BUG-014, BUG-015)
+
+---
+
+### [BUG-016] Dashboard/API-Zugriff für deaktivierte Nutzer nicht blockiert
+
+**Status:** `fixed`
+**Schweregrad:** `high`
+**Entdeckt:** 2026-08-10
+**Behoben:** 2026-08-10
+**Behoben in Version:** 0.50.9
+**Test geschrieben:** Ja (`tests/unit/lib/api-auth.test.ts`, `tests/unit/lib/require-auth.test.ts`)
+
+**Beschreibung:**
+`proxy.ts` prüft `isLoggedIn` und `role` aus dem NextAuth-Token, aber nicht `isActive`. Deaktivierte Nutzer können Dashboard-Seiten weiterhin aufrufen, weil der Token noch existiert.
+
+**Reproduktion:**
+1. Admin deaktiviert Nutzer.
+2. Nutzer besitzt noch gültiges Session-Cookie.
+3. Aufruf von `/dashboard` zeigt die Seite an.
+
+**Erwartetes Verhalten:**
+Deaktivierte Nutzer werden bei Dashboard- und Admin-Routen abgelehnt.
+
+**Tatsächliches Verhalten:**
+Zugriff wird gewährt.
+
+**Ursache:**
+`proxy.ts` prüft nur Existenz der Session, nicht den aktuellen `isActive`-Status. Middleware kann ohne DB-Zugriff `isActive` nicht aktuell ermitteln.
+
+**Lösung:**
+- `auth.ts`: `session`-Callback liest `isActive` aus der DB und aktualisiert `session.user.isActive`.
+- `src/app/(dashboard)/layout.tsx`: Leitet inaktive Nutzer auf `/login` um.
+- `api-auth.ts` und `require-auth.ts`: Verweigern Requests inaktiver Nutzer (Bearer + Web-Session).
+
+**Referenz im Changelog:**
+Version 0.50.9 - Fix: Auth-Helper prüfen `isActive` und aktualisieren Session-Daten aus der DB (BUG-012, BUG-013, BUG-016)
+
+---
+
+### [BUG-017] Info.plist fehlt App-Store-Schlüssel und Sicherheits-Konfiguration
+
+**Status:** `fixed`
+**Schweregrad:** `high`
+**Entdeckt:** 2026-08-10
+**Behoben:** 2026-08-10
+**Behoben in Version:** 0.50.9
+**Test geschrieben:** Nein (Build-Verifikation via xcodebuild)
+
+**Beschreibung:**
+Die `Info.plist` der iOS-App enthielt keinen `ITSAppUsesNonExemptEncryption`-Schlüssel, der für den App-Store-Upload erforderlich ist. `CFBundleShortVersionString` war "1.0" statt einer semantischen Versionsangabe. `NSAppTransportSecurity` hatte keine `NSExceptionDomains` für lokale Entwicklung.
+
+**Erwartetes Verhalten:**
+Info.plist erfüllt App-Store-Richtlinien, enthält den Encryption-Schlüssel und eine semantische Version.
+
+**Tatsächliches Verhalten:**
+Schlüssel fehlten; Version war nicht semantisch.
+
+**Lösung:**
+- `ITSAppUsesNonExemptEncryption` auf `<false/>` gesetzt.
+- `CFBundleShortVersionString` auf `1.0.0` gesetzt.
+- `API_BASE_URL` auf `https://boardgametools.vercel.app` gesetzt.
+- `NSExceptionDomains` für `localhost` mit `NSExceptionAllowsInsecureHTTPLoads` für lokale Entwicklung hinzugefügt.
+
+**Referenz im Changelog:**
+Version 0.50.9 - Fix: iOS Info.plist für App Store (Encryption-Key, API-Base-URL, HTTPS) und API-URL-Validierung (BUG-017, BUG-018)
+
+---
+
+### [BUG-018] iOS-App akzeptiert HTTP-URLs und validiert API-Base nicht
+
+**Status:** `fixed`
+**Schweregrad:** `high`
+**Entdeckt:** 2026-08-10
+**Behoben:** 2026-08-10
+**Behoben in Version:** 0.50.9
+**Test geschrieben:** Nein (Build-Verifikation via xcodebuild)
+
+**Beschreibung:**
+`APIClient` hat als Standard `http://localhost:3000` verwendet und erlaubt es, beliebige URLs über Login- und Einstellungs-Ansicht zu speichern. Im Release-Build würden HTTP-URLs gegen App Transport Security verstoßen und unsichere Verbindungen ermöglichen.
+
+**Erwartetes Verhalten:**
+Im Release werden nur HTTPS-URLs akzeptiert; im Debug ist `http://localhost` erlaubt. Die App liest die Default-URL aus der `Info.plist`.
+
+**Tatsächliches Verhalten:**
+HTTP-Standard und keine Validierung.
+
+**Lösung:**
+- `APIClient` liest `API_BASE_URL` aus `Info.plist` und fällt auf `https://boardgametools.vercel.app` zurück.
+- Neue private `validate(_:)` Methode: Release erlaubt nur `https://`, Debug erlaubt zusätzlich `http://localhost` und `http://127.0.0.1`.
+- `LoginView` und `SettingsView` verwenden `updateBaseURL(_:)` und zeigen Validierungsfehler an.
+- `APIError` um `.insecureURL` erweitert.
+
+**Referenz im Changelog:**
+Version 0.50.9 - Fix: iOS Info.plist für App Store (Encryption-Key, API-Base-URL, HTTPS) und API-URL-Validierung (BUG-017, BUG-018)
+
+---
+
+### [BUG-019] API-Logs enthalten öffentliche Share-Tokens im Klartext
+
+**Status:** `fixed`
+**Schweregrad:** `medium`
+**Entdeckt:** 2026-08-10
+**Behoben:** 2026-08-10
+**Behoben in Version:** 0.50.10
+**Test geschrieben:** Ja
+
+**Beschreibung:**
+`withApiLogging` speicherte die vollständige URL von öffentlichen Endpunkten wie `/api/public/event/<token>/vote` in der `ApiLog`-Tabelle. Das token erlaubt Zugriff auf Events und sollte nicht in Logs persistiert werden.
+
+**Erwartetes Verhalten:**
+Share-Tokens in öffentlichen Pfaden werden maskiert, bevor sie in `ApiLog.path` geschrieben werden.
+
+**Tatsächliches Verhalten:**
+Token wurde als Klartext im `path`-Feld gespeichert.
+
+**Lösung:**
+- `sanitizePath(rawPath)` ersetzt Token-Segmente in `/api/public/{event,group,invite}/` und `/api/mobile/v1/public/{event,group,invite}/` durch `[redacted]`.
+- Nur die bereinigte URL wird in `ApiLog` geschrieben.
+
+**Referenz im Changelog:**
+Version 0.50.10 - Fix: API-Logs maskieren Share-Tokens in öffentlichen Pfaden (BUG-019)
+
+---
+
+### [BUG-020] withApiLogging löst auth() für öffentliche Requests aus
+
+**Status:** `fixed`
+**Schweregrad:** `low`
+**Entdeckt:** 2026-08-10
+**Behoben:** 2026-08-10
+**Behoben in Version:** 0.50.10
+**Test geschrieben:** Ja
+
+**Beschreibung:**
+Der Logging-Wrapper rief für jede Anfrage `auth()` auf, auch für öffentliche Endpunkte wie Share-Links oder `/api/health`. Durch die neue Session-Callback-Validierung führt das zu unnötigen Datenbank-Lookups.
+
+**Erwartetes Verhalten:**
+Öffentliche Routen werden anhand ihres Pfads erkannt und rufen keine `auth()`-Session ab.
+
+**Tatsächliches Verhalten:**
+Jede Anfrage löste `auth()` aus, auch wenn `userId` nicht benötigt wird.
+
+**Lösung:**
+- `isPublicPath(path)` erkennt `/api/public/`, `/api/mobile/v1/public/`, `/api/auth/` und `/api/health`.
+- `auth()` wird nur aufgerufen, wenn die Route nicht öffentlich ist.
+
+**Referenz im Changelog:**
+Version 0.50.10 - Fix: withApiLogging löst auth() nur bei geschützten Routen aus (BUG-020)
+
+---
+
+### [BUG-021] Interne Fehlermeldungen werden in API-Logs gespeichert
+
+**Status:** `fixed`
+**Schweregrad:** `medium`
+**Entdeckt:** 2026-08-10
+**Behoben:** 2026-08-10
+**Behoben in Version:** 0.50.10
+**Test geschrieben:** Ja
+
+**Beschreibung:**
+Wenn ein Route-Handler eine nicht-`ApiError`-Exception warf, wurde `err.message` (z. B. Stack-Trace-Fragmente, interne DB-Fehler) in `ApiLog.errorMessage` persistiert. Das kann interne Details oder sensible Werte enthalten.
+
+**Erwartetes Verhalten:**
+Interne Fehler werden nicht in der Datenbank geloggt; nur sichere `ApiError`-Meldungen dürfen in `ApiLog.errorMessage` stehen.
+
+**Tatsächliches Verhalten:**
+`err.message` wurde ungefiltert in `ApiLog.errorMessage` geschrieben.
+
+**Lösung:**
+- Nur `ApiError.message` wird in `ApiLog.errorMessage` geschrieben.
+- Andere Fehler werden an `logger.error` weitergegeben (strukturiertes Logging, nicht DB-Log).
+
+**Referenz im Changelog:**
+Version 0.50.10 - Fix: Interne Fehlermeldungen werden nicht in API-Logs gespeichert (BUG-021)
+
+---
+
+### [BUG-022] Debug-Routen sind anfällig bei falscher NODE_ENV-Konfiguration
+
+**Status:** `fixed`
+**Schweregrad:** `medium`
+**Entdeckt:** 2026-08-10
+**Behoben:** 2026-08-10
+**Behoben in Version:** 0.50.10
+**Test geschrieben:** Nein (Build-/Manuelle Verifikation)
+
+**Beschreibung:**
+`/api/debug/env` und `/api/debug/session` waren nur durch `env.NODE_ENV === "development"` geschützt. Falls diese Variable fälschlicherweise auf `development` in einer Produktionsumgebung gesetzt ist, könnten Umgebungs- oder Session-Informationen preisgegeben werden.
+
+**Erwartetes Verhalten:**
+Debug-Routen sind auch dann blockiert, wenn `NODE_ENV` falsch konfiguriert ist, aber Vercel-Production erkannt wird.
+
+**Tatsächliches Verhalten:**
+Die Route war zugänglich, sobald `NODE_ENV` auf `development` stand.
+
+**Lösung:**
+- Zusätzliche Prüfung `process.env.VERCEL_ENV === "production"` in `GET`-Guard.
+- Route gibt 404 zurück, sobald Produktionsumgebung von Vercel erkannt wird.
+
+**Referenz im Changelog:**
+Version 0.50.10 - Fix: Debug-Routen zusätzlich auf Vercel-Production-Umgebung blockieren (BUG-022)
+
+---
+
+### [BUG-023] Lokaler Datei-Upload in Produktion ohne Blob-Token
+
+**Status:** `fixed`
+**Schweregrad:** `high`
+**Entdeckt:** 2026-08-10
+**Behoben:** 2026-08-10
+**Behoben in Version:** 0.50.10
+**Test geschrieben:** Nein (Storage-Integration ist nicht Teil der Unit-Tests)
+
+**Beschreibung:**
+Falls `BLOB_READ_WRITE_TOKEN` in Produktion fehlt, fiel `getStorageProvider()` auf `LocalStorageProvider` zurück. Auf serverless Plattformen sind lokale Dateien jedoch flüchtig und gingen bei Deployment/Scale-Down verloren.
+
+**Erwartetes Verhalten:**
+In Produktion wird ein Upload abgelehnt, wenn kein persistenter Storage (Vercel Blob) konfiguriert ist.
+
+**Tatsächliches Verhalten:**
+Dateien wurden lokal gespeichert und waren potenziell nicht mehr verfügbar.
+
+**Lösung:**
+- `LocalStorageProvider.upload` wirft in Produktion einen Fehler mit Hinweis auf `BLOB_READ_WRITE_TOKEN`.
+- Der Aufrufer kann den Nutzer darüber informieren; vorher ging das Bild ohne Warnung verloren.
+
+**Referenz im Changelog:**
+Version 0.50.10 - Fix: Lokaler Datei-Upload in Produktion verhindern, wenn BLOB_READ_WRITE_TOKEN fehlt (BUG-023)
+
+---
+
 ## Statistik
 
 - **Offene Bugs:** 0
 - **In Bearbeitung:** 0
-- **Behoben:** 11
+- **Behoben:** 23
 - **Wontfix:** 0
-- **Gesamt:** 11
+- **Gesamt:** 23

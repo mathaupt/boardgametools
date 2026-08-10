@@ -15,6 +15,11 @@ interface StorageProvider {
 
 class LocalStorageProvider implements StorageProvider {
   async upload(buffer: Buffer, fileName: string): Promise<StorageResult> {
+    if (env.NODE_ENV === "production") {
+      throw new Error(
+        "Local file storage is ephemeral in production. Set BLOB_READ_WRITE_TOKEN to use Vercel Blob."
+      );
+    }
     const uploadsDir = path.join(process.cwd(), "public", "uploads");
     await mkdir(uploadsDir, { recursive: true });
     const filePath = path.join(uploadsDir, fileName);

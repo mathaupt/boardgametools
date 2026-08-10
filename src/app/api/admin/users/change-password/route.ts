@@ -37,6 +37,13 @@ export const POST = withApiLogging(async function POST(request: NextRequest) {
       data: { passwordHash },
     });
 
+    // Invalidate all mobile access tokens for the affected user so that old
+    // credentials cannot be used from other devices.
+    await prisma.apiToken.updateMany({
+      where: { userId: targetUserId, revokedAt: null },
+      data: { revokedAt: new Date() },
+    });
+
     return NextResponse.json({ message: Errors.PASSWORD_CHANGED });
   } catch (error) {
     return handleApiError(error);

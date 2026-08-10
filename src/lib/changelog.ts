@@ -12,6 +12,30 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.10",
+    date: "2026-08-10",
+    title: "API-Logging und Storage-Härtung",
+    description: "API-Logs maskieren öffentliche Share-Tokens, vermeiden unnötige Auth-Lookups und speichern keine internen Fehlerdetails. Debug-Routen und lokaler Storage werden in Produktion blockiert.",
+    changes: [
+      { type: "fix", text: "API-Logs maskieren Share-Tokens in öffentlichen Pfaden (BUG-019)", bugRef: "BUG-019" },
+      { type: "fix", text: "withApiLogging löst auth() nur bei geschützten Routen aus (BUG-020)", bugRef: "BUG-020" },
+      { type: "fix", text: "Interne Fehlermeldungen werden nicht in API-Logs gespeichert (BUG-021)", bugRef: "BUG-021" },
+      { type: "fix", text: "Debug-Routen zusätzlich auf Vercel-Production-Umgebung blockieren (BUG-022)", bugRef: "BUG-022" },
+      { type: "fix", text: "Lokaler Datei-Upload in Produktion verhindern, wenn BLOB_READ_WRITE_TOKEN fehlt (BUG-023)", bugRef: "BUG-023" },
+    ],
+  },
+  {
+    version: "0.50.9",
+    date: "2026-08-10",
+    title: "Sicherheits-Härtung: Auth-Status, Rollen und Token-Widerruf",
+    description: "Die Authentifizierung wurde gegen die Datenbank gehärtet: Inaktive Nutzer und veraltete Admin-Rollen werden sofort abgewiesen, Deaktivierung und Passwort-Änderung widerrufen mobile Access-Token.",
+    changes: [
+      { type: "fix", text: "Auth-Helper prüfen `isActive` und aktualisieren Session-Daten aus der DB (BUG-012, BUG-013, BUG-016)", bugRef: "BUG-012" },
+      { type: "fix", text: "Deaktivierung und Passwort-Änderung widerrufen API-Token (BUG-014, BUG-015)", bugRef: "BUG-014" },
+      { type: "fix", text: "iOS Info.plist für App Store (Encryption-Key, API-Base-URL, HTTPS) und API-URL-Validierung (BUG-017, BUG-018)", bugRef: "BUG-017" },
+    ],
+  },
+  {
     version: "0.50.8",
     date: "2026-08-10",
     title: "iOS-App: Brettspiel-Logos und Account-Einstellungen",

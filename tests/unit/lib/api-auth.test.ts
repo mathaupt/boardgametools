@@ -37,7 +37,7 @@ describe("apiAuth", () => {
       type: "access",
       revokedAt: null,
       expiresAt: new Date(Date.now() + 10000),
-      user: { id: "u1", email: "a@b.c", name: "Max", role: "USER" },
+      user: { id: "u1", email: "a@b.c", name: "Max", role: "USER", isActive: true },
     } as never);
 
     const token = "a".repeat(64);
@@ -56,12 +56,36 @@ describe("apiAuth", () => {
       type: "access",
       revokedAt: null,
       expiresAt: new Date(Date.now() - 10000),
-      user: { id: "u1", email: "a@b.c", name: "Max", role: "USER" },
+      user: { id: "u1", email: "a@b.c", name: "Max", role: "USER", isActive: true },
     } as never);
 
     const req = new NextRequest("http://localhost:3000/api/mobile/v1/me", {
       headers: { authorization: "Bearer expired" },
     });
+    const result = await apiAuth(req);
+    expect(result).toBeNull();
+  });
+
+  it("returns null for an inactive user via bearer token", async () => {
+    mockedAuth.mockResolvedValue(null as never);
+    vi.mocked(prisma.apiToken.findUnique).mockResolvedValue({
+      id: "t1",
+      type: "access",
+      revokedAt: null,
+      expiresAt: new Date(Date.now() + 10000),
+      user: { id: "u1", email: "a@b.c", name: "Max", role: "USER", isActive: false },
+    } as never);
+
+    const req = new NextRequest("http://localhost:3000/api/mobile/v1/me", {
+      headers: { authorization: "Bearer inactive-token" },
+    });
+    const result = await apiAuth(req);
+    expect(result).toBeNull();
+  });
+
+  it("returns null for an inactive web session", async () => {
+    mockedAuth.mockResolvedValue({ user: { id: "u1", email: "a@b.c", name: "Max", role: "USER", isActive: false } } as never);
+    const req = new NextRequest("http://localhost:3000/api/mobile/v1/me");
     const result = await apiAuth(req);
     expect(result).toBeNull();
   });

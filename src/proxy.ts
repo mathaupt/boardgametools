@@ -1,6 +1,6 @@
 import { auth } from "@/lib/auth";
 
-const MUTATION_METHODS = new Set(["POST", "PUT", "DELETE", "PATCH"]);
+const MUTATION_METHODS = ["POST", "PUT", "DELETE", "PATCH"];
 
 export const proxy = auth((req) => {
   const { pathname } = req.nextUrl;
@@ -8,7 +8,7 @@ export const proxy = auth((req) => {
 
   // --- CSRF protection for mutation requests (Origin verification) ---
   if (
-    MUTATION_METHODS.has(req.method) &&
+    MUTATION_METHODS.includes(req.method) &&
     pathname.startsWith("/api/") &&
     !pathname.startsWith("/api/auth/") && // NextAuth has its own CSRF
     !pathname.startsWith("/api/public/") // Public endpoints don't require CSRF

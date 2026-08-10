@@ -4,7 +4,7 @@ import { env } from "@/lib/env";
 import { Errors } from "@/lib/error-messages";
 
 export async function GET() {
-  if (env.NODE_ENV !== "development") {
+  if (env.NODE_ENV !== "development" || process.env.VERCEL_ENV === "production") {
     return NextResponse.json({ error: Errors.NOT_AVAILABLE }, { status: 404 });
   }
 

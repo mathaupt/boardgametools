@@ -13,6 +13,9 @@ vi.mock("@/lib/db", () => ({
       findUnique: vi.fn(),
       update: vi.fn(),
     },
+    apiToken: {
+      updateMany: vi.fn(),
+    },
   },
 }));
 
@@ -93,6 +96,10 @@ describe("PUT /api/mobile/v1/me", () => {
     expect(res.status).toBe(200);
     expect(mockedCompare).toHaveBeenCalledWith("oldpass", "old");
     expect(mockedUpdate).toHaveBeenCalledWith(expect.objectContaining({ data: { passwordHash: "hashed" } }));
+    expect(prisma.apiToken.updateMany).toHaveBeenCalledWith({
+      where: { userId: "u1", revokedAt: null },
+      data: { revokedAt: expect.any(Date) },
+    });
   });
 
   it("rejects password change when current password is wrong", async () => {

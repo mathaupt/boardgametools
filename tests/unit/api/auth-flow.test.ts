@@ -13,7 +13,7 @@ vi.mock("@/lib/require-auth", () => {
   };
 });
 vi.mock("@/lib/services", () => ({ GameService: { list: vi.fn(), create: vi.fn() } }));
-vi.mock("@/lib/db", () => ({ default: { user: { update: vi.fn() } } }));
+vi.mock("@/lib/db", () => ({ default: { user: { update: vi.fn() }, apiToken: { updateMany: vi.fn() } } }));
 vi.mock("bcryptjs", () => ({ hash: vi.fn(() => Promise.resolve("hashed-pw")) }));
 vi.mock("@/lib/validation", () => ({ validateString: vi.fn(() => null), firstError: vi.fn(() => null) }));
 vi.mock("@/lib/error-messages", () => ({

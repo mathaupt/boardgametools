@@ -2,6 +2,7 @@ import Foundation
 
 enum APIError: Error, Equatable {
     case invalidURL
+    case insecureURL
     case unauthorized
     case notFound
     case conflict
@@ -15,6 +16,7 @@ enum APIError: Error, Equatable {
     var message: String {
         switch self {
         case .invalidURL: return "Ungültige URL"
+        case .insecureURL: return "Nur HTTPS-URLs sind erlaubt"
         case .unauthorized: return "Nicht autorisiert. Bitte melde dich erneut an."
         case .notFound: return "Nicht gefunden"
         case .conflict: return "Konflikt – möglicherweise bereits vorhanden."
@@ -29,7 +31,7 @@ enum APIError: Error, Equatable {
 
     static func == (lhs: APIError, rhs: APIError) -> Bool {
         switch (lhs, rhs) {
-        case (.invalidURL, .invalidURL), (.unauthorized, .unauthorized), (.notFound, .notFound),
+        case (.invalidURL, .invalidURL), (.insecureURL, .insecureURL), (.unauthorized, .unauthorized), (.notFound, .notFound),
              (.conflict, .conflict), (.unknown, .unknown), (.cancelled, .cancelled):
             return true
         case (.badRequest(let a), .badRequest(let b)): return a == b

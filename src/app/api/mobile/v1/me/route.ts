@@ -87,6 +87,15 @@ export const PUT = withApiLogging(async function PUT(request: NextRequest) {
       select: { id: true, email: true, name: true, role: true },
     });
 
+    // If the password was changed, invalidate all other mobile access tokens
+    // so that credentials compromised elsewhere cannot continue to be used.
+    if (updateData.passwordHash) {
+      await prisma.apiToken.updateMany({
+        where: { userId: user.id, revokedAt: null },
+        data: { revokedAt: new Date() },
+      });
+    }
+
     return NextResponse.json({ user: updated });
   } catch (error) {
     return handleApiError(error);

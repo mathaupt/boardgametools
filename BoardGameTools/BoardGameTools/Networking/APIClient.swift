@@ -5,7 +5,7 @@ import Foundation
 final class APIClient: Sendable {
     static let shared = APIClient()
 
-    var baseURL: URL {
+    private(set) var baseURL: URL {
         didSet {
             UserDefaults.standard.set(baseURL.absoluteString, forKey: "api_base_url")
         }
@@ -16,13 +16,50 @@ final class APIClient: Sendable {
     private var pendingRefreshContinuations: [CheckedContinuation<Void, Error>] = []
 
     private init() {
+        let infoDefault = Bundle.main.infoDictionary?["API_BASE_URL"] as? String
+        let fallback = infoDefault ?? "https://boardgametools.vercel.app"
+
         if let saved = UserDefaults.standard.string(forKey: "api_base_url"),
-           let url = URL(string: saved) {
+           let url = URL(string: saved),
+           (try? Self.validate(url)) != nil {
+            self.baseURL = url
+        } else if let url = URL(string: fallback),
+                  (try? Self.validate(url)) != nil {
             self.baseURL = url
         } else {
-            self.baseURL = URL(string: "http://localhost:3000")!
+            self.baseURL = URL(string: "https://boardgametools.vercel.app")!
         }
         self.session = URLSession(configuration: .default)
+    }
+
+    func updateBaseURL(_ url: URL) throws(APIError) {
+        try Self.validate(url)
+        self.baseURL = url
+    }
+
+    private static func validate(_ url: URL) throws(APIError) {
+        guard let scheme = url.scheme?.lowercased() else {
+            throw .invalidURL
+        }
+
+        #if DEBUG
+        if scheme == "http" {
+            guard let host = url.host?.lowercased(),
+                  host == "localhost" || host == "127.0.0.1" else {
+                throw .insecureURL
+            }
+        } else if scheme != "https" {
+            throw .invalidURL
+        }
+        #else
+        guard scheme == "https" else {
+            throw .insecureURL
+        }
+        #endif
+
+        guard let host = url.host, !host.isEmpty else {
+            throw .invalidURL
+        }
     }
 
     // MARK: - Generic requests

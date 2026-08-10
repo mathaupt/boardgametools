@@ -5,6 +5,7 @@ struct LoginView: View {
     @State private var email = ""
     @State private var password = ""
     @State private var apiURL = ""
+    @State private var urlErrorMessage: String?
     @State private var errorMessage: String?
     @State private var isLoading = false
 
@@ -35,13 +36,27 @@ struct LoginView: View {
                             .keyboardType(.URL)
                             .textFieldStyle(.roundedBorder)
                         Button("Speichern") {
-                            if let url = URL(string: apiURL), !apiURL.isEmpty {
-                                APIClient.shared.baseURL = url
+                            urlErrorMessage = nil
+                            guard let url = URL(string: apiURL), !apiURL.isEmpty else {
+                                urlErrorMessage = "Ungültige API-URL"
+                                return
+                            }
+                            do {
+                                try APIClient.shared.updateBaseURL(url)
+                            } catch let error as APIError {
+                                urlErrorMessage = error.message
+                            } catch {
+                                urlErrorMessage = "Ungültige API-URL"
                             }
                         }
                         .buttonStyle(.bordered)
                         .tint(Theme.primary)
                         .disabled(apiURL.isEmpty)
+                    }
+                    if let urlErrorMessage = urlErrorMessage {
+                        Text(urlErrorMessage)
+                            .foregroundStyle(.red)
+                            .font(.callout)
                     }
                 }
 

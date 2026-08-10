@@ -15,6 +15,34 @@ interface LogEntry {
   errorMessage?: string | null;
 }
 
+const PUBLIC_PATH_PREFIXES = ["/api/public/", "/api/mobile/v1/public/", "/api/auth/", "/api/health"];
+
+const SENSITIVE_PUBLIC_SEGMENTS: [string, number][] = [
+  ["/api/public/event/", 4],
+  ["/api/public/group/", 4],
+  ["/api/public/invite/", 4],
+  ["/api/mobile/v1/public/event/", 6],
+  ["/api/mobile/v1/public/group/", 6],
+  ["/api/mobile/v1/public/invite/", 6],
+];
+
+function isPublicPath(path: string): boolean {
+  return PUBLIC_PATH_PREFIXES.some((prefix) => path.startsWith(prefix));
+}
+
+function sanitizePath(path: string): string {
+  for (const [prefix, tokenIndex] of SENSITIVE_PUBLIC_SEGMENTS) {
+    if (path.startsWith(prefix)) {
+      const segments = path.split("/");
+      if (segments.length > tokenIndex) {
+        segments[tokenIndex] = "[redacted]";
+      }
+      return segments.join("/");
+    }
+  }
+  return path;
+}
+
 /**
  * Logs an API request to the database (fire-and-forget).
  * Call this at the end of your route handler.
@@ -51,17 +79,23 @@ export function withApiLogging<C extends RouteHandlerContext = RouteHandlerConte
 ): (req: NextRequest, context: C) => Promise<NextResponse> {
   return async (req: NextRequest, context: C): Promise<NextResponse> => {
     const start = Date.now();
-    const path = new URL(req.url).pathname;
+    const rawPath = new URL(req.url).pathname;
+    const path = sanitizePath(rawPath);
+    const isPublic = isPublicPath(rawPath);
     let session: { user?: { id?: string } } | null = null;
 
-    try {
-      session = await auth();
-    } catch {
-      // auth may fail for public routes, that's fine
+    // Only resolve the session for protected routes. Public routes (e.g. share
+    // links, auth callbacks, health) should not trigger a DB lookup.
+    if (!isPublic) {
+      try {
+        session = await auth();
+      } catch {
+        // auth may fail for public routes, that's fine
+      }
     }
 
     let response: NextResponse;
-    let errorMessage: string | null = null;
+    let logErrorMessage: string | null = null;
 
     try {
       response = await handler(req, context);
@@ -71,8 +105,9 @@ export function withApiLogging<C extends RouteHandlerContext = RouteHandlerConte
           { error: err.message },
           { status: err.statusCode }
         );
+        logErrorMessage = err.message;
       } else {
-        errorMessage = err instanceof Error ? err.message : "Unknown error";
+        logger.error(err instanceof Error ? err : new Error(String(err)));
         response = NextResponse.json(
           { error: "Internal Server Error" },
           { status: 500 }
@@ -91,7 +126,7 @@ export function withApiLogging<C extends RouteHandlerContext = RouteHandlerConte
       userId: session?.user?.id,
       userAgent: req.headers.get("user-agent"),
       ip: req.headers.get("x-forwarded-for") || req.headers.get("x-real-ip"),
-      errorMessage,
+      errorMessage: logErrorMessage,
     }).catch(() => {});
 
     return response;

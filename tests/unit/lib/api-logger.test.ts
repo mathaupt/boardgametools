@@ -122,6 +122,45 @@ describe("api-logger", () => {
       expect(auth).toHaveBeenCalled();
     });
 
+    it("does not call auth for public paths", async () => {
+      const handler = vi.fn().mockResolvedValue(NextResponse.json({}));
+      const wrapped = withApiLogging(handler);
+
+      const req = new NextRequest("http://localhost:3000/api/public/event/secret-token/vote");
+      await wrapped(req, {});
+
+      expect(auth).not.toHaveBeenCalled();
+    });
+
+    it("redacts public share tokens in the log path", async () => {
+      const handler = vi.fn().mockResolvedValue(NextResponse.json({}));
+      const wrapped = withApiLogging(handler);
+
+      const req = new NextRequest("http://localhost:3000/api/public/event/secret-token/vote");
+      await wrapped(req, {});
+      await new Promise((resolve) => setImmediate(resolve));
+
+      const call = vi.mocked(prisma.apiLog.create).mock.calls[0]?.[0];
+      expect(call?.data.path).toBe("/api/public/event/[redacted]/vote");
+      expect(call?.data.path).not.toContain("secret-token");
+    });
+
+    it("does not log internal error details for non-ApiError", async () => {
+      const handler = vi.fn().mockRejectedValue(new Error("DB password leak"));
+      const wrapped = withApiLogging(handler);
+
+      const req = new NextRequest("http://localhost:3000/api/games");
+      const response = await wrapped(req, {});
+      await new Promise((resolve) => setImmediate(resolve));
+
+      expect(response.status).toBe(500);
+      const body = await response.json();
+      expect(body.error).toBe("Internal Server Error");
+
+      const call = vi.mocked(prisma.apiLog.create).mock.calls[0]?.[0];
+      expect(call?.data.errorMessage).toBeNull();
+    });
+
     it("logs the request with fire-and-forget", async () => {
       const handler = vi.fn().mockResolvedValue(NextResponse.json({ ok: true }, { status: 201 }));
       const wrapped = withApiLogging(handler);

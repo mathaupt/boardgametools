@@ -101,10 +101,16 @@ struct SettingsView: View {
             return
         }
 
+        do {
+            try APIClient.shared.updateBaseURL(url)
+        } catch {
+            errorMessage = error.message
+            return
+        }
+
         // Changing the backend usually invalidates the current session.
         // Clear local auth state first so the user can log in again.
         await logout()
-        APIClient.shared.baseURL = url
         errorMessage = nil
         successMessage = nil
     }
