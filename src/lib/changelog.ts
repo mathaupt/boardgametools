@@ -12,6 +12,23 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.3",
+    date: "2026-08-10",
+    title: "UI/UX- und Barrierefreiheitsfixes für Events, Sessions und öffentliche Komponenten",
+    description: "Abschluss des UI/UX-Reviews für Events, Sessions, öffentliche Seiten und zentrale Komponenten: Konsistente shadcn/ui-Komponenten, korrekte ARIA-Markierung, semantische Farben, verbundene Formularlabels und einheitliche Datumsformatierung.",
+    changes: [
+      { type: "improvement", text: "Native `<button>`- und `<a>`-Elemente in Event-, Session- und Public-Komponenten durch shadcn/ui `Button` (teilweise `asChild`) ersetzt" },
+      { type: "improvement", text: "Icon-only Buttons mit aussagekräftigen `aria-label`-Attributen versehen" },
+      { type: "improvement", text: "Dekorative Lucide-Icons mit `aria-hidden='true'` markiert" },
+      { type: "fix", text: "Ladetexte und Platzhalter mit `...` durch typografische Auslassungspunkte `…` ersetzt" },
+      { type: "fix", text: "Verbleibende `toLocaleDateString`-Aufrufe in `validation.ts` und `guest-registration-panel.tsx` durch `@/lib/date`-Funktionen ersetzt" },
+      { type: "fix", text: "Hartkodierte Tailwind-Farben in `event-mail-dialog.tsx` durch semantische Theme-Tokens ersetzt" },
+      { type: "fix", text: "`CardTitle`-Komponenten in `collection-game-proposer.tsx` und `guest-registration-panel.tsx` mit `as='h2'` versehen" },
+      { type: "improvement", text: "Formular-Labels und Eingabefelder durch `htmlFor`/`id` oder `aria-label` verbunden" },
+      { type: "internal", text: "Layout-`Dice6`-Icon in `sidebar.tsx` und `LogOut`-Button in `navbar.tsx` barrierefrei markiert" },
+    ],
+  },
+  {
     version: "0.50.2",
     date: "2026-08-10",
     title: "UI/UX- und Barrierefreiheitsfixes für Spiele, Spielereihen und Scanner",
