@@ -8,6 +8,7 @@ vi.mock("@/lib/db", () => ({
     game: { count: vi.fn(() => Promise.resolve(0)) },
     gameSession: { count: vi.fn(() => Promise.resolve(0)), aggregate: vi.fn(() => Promise.resolve({ _sum: { durationMinutes: 0 } })) },
     event: { count: vi.fn(() => Promise.resolve(0)) },
+    gameSeries: { count: vi.fn(() => Promise.resolve(0)) },
   },
 }));
 
@@ -24,7 +25,7 @@ const mockedTransaction = vi.mocked(prisma.$transaction);
 describe("GET /api/mobile/v1/dashboard", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockedTransaction.mockResolvedValue([5, 12, 3, { _sum: { durationMinutes: 720 } }] as never);
+    mockedTransaction.mockResolvedValue([5, 12, 3, { _sum: { durationMinutes: 720 } }, 2] as never);
   });
 
   it("returns dashboard stats", async () => {
@@ -34,7 +35,7 @@ describe("GET /api/mobile/v1/dashboard", () => {
     const body = await res.json();
 
     expect(res.status).toBe(200);
-    expect(body).toEqual({ games: 5, sessions: 12, events: 3, totalDurationMinutes: 720 });
+    expect(body).toEqual({ games: 5, sessions: 12, events: 3, totalDurationMinutes: 720, series: 2 });
   });
 
   it("returns 401 when not authenticated", async () => {

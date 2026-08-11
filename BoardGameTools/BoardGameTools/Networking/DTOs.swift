@@ -22,7 +22,9 @@ struct DashboardDTO: Decodable, Sendable {
     let games: Int
     let sessions: Int
     let events: Int
-    let groups: Int
+    let groups: Int?
+    let totalDurationMinutes: Int?
+    let series: Int?
 }
 
 struct GameDTO: Codable, Identifiable, Sendable {
@@ -218,6 +220,67 @@ struct GroupInput: Encodable, Sendable {
     let description: String?
 }
 
+struct SeriesEntryDTO: Codable, Identifiable, Sendable {
+    let id: String
+    var seriesId: String
+    var gameId: String
+    var sortOrder: Int
+    var played: Bool
+    var playedAt: String?
+    var rating: Int?
+    var difficulty: String?
+    var playTimeMinutes: Int?
+    var successful: Bool?
+    var playerCount: Int?
+    var score: Int?
+    var createdAt: String
+    var updatedAt: String
+    var game: GameDTO?
+}
+
+struct SeriesDTO: Codable, Identifiable, Sendable {
+    let id: String
+    var name: String
+    var description: String?
+    var imageUrl: String?
+    var ownerId: String?
+    var createdAt: String
+    var updatedAt: String
+    var deletedAt: String?
+    var entries: [SeriesEntryDTO]
+}
+
+struct SeriesInput: Encodable, Sendable {
+    let name: String
+    let description: String?
+    let imageUrl: String?
+}
+
+struct SeriesEntryInput: Encodable, Sendable {
+    let gameId: String
+    let sortOrder: Int?
+}
+
+struct SeriesEntryUpdateInput: Encodable, Sendable {
+    let played: Bool?
+    let playedAt: String?
+    let rating: Int?
+    let difficulty: String?
+    let playTimeMinutes: Int?
+    let successful: Bool?
+    let playerCount: Int?
+    let score: Int?
+}
+
+struct SeriesReorderEntry: Encodable, Sendable {
+    let id: String
+    let sortOrder: Int
+}
+
+struct SeriesReorderInput: Encodable, Sendable {
+    let entries: [SeriesReorderEntry]
+}
+
 struct DeviceInput: Encodable, Sendable {
     let token: String
     let platform: String
@@ -338,6 +401,7 @@ struct SyncPayload: Codable, Sendable {
     let dateVotes: SyncChanges<DateVoteDTO>
     let groupPollVotes: SyncChanges<GroupPollVoteDTO>
     let groupMembers: SyncChanges<GroupMemberDTO>
+    let series: SyncChanges<SeriesDTO>
 }
 
 struct VoteDTO: Codable, Identifiable, Sendable {

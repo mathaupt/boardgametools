@@ -30,6 +30,7 @@ const emptyPayload = {
   dateVotes: { created: [], updated: [], deleted: [] },
   groupPollVotes: { created: [], updated: [], deleted: [] },
   groupMembers: { created: [], updated: [], deleted: [] },
+  series: { created: [], updated: [], deleted: [] },
 };
 
 describe("GET /api/mobile/v1/sync", () => {

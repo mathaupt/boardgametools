@@ -97,6 +97,60 @@ final class LocalDataSource {
         try context.fetch(FetchDescriptor<LocalGroup>(sortBy: [SortDescriptor(\.name)]))
     }
 
+    // MARK: - Series
+
+    func upsertSeries(_ dto: SeriesDTO) throws {
+        let descriptor = FetchDescriptor<LocalGameSeries>(predicate: #Predicate { $0.id == dto.id })
+        let existing = try context.fetch(descriptor).first
+        let series: LocalGameSeries
+        if let existing = existing {
+            series = existing
+            series.update(from: dto)
+        } else {
+            series = LocalGameSeries(dto: dto)
+            context.insert(series)
+        }
+
+        var newEntryIDs = Set<String>()
+        for entryDTO in dto.entries {
+            newEntryIDs.insert(entryDTO.id)
+            let entryDescriptor = FetchDescriptor<LocalGameSeriesEntry>(predicate: #Predicate { $0.id == entryDTO.id })
+            if let existingEntry = try context.fetch(entryDescriptor).first {
+                existingEntry.update(from: entryDTO)
+                existingEntry.series = series
+            } else {
+                let entry = LocalGameSeriesEntry(dto: entryDTO)
+                entry.series = series
+                context.insert(entry)
+            }
+        }
+
+        // Remove entries that are no longer present
+        let existingEntries = series.entries ?? []
+        for entry in existingEntries where !newEntryIDs.contains(entry.id) {
+            context.delete(entry)
+        }
+    }
+
+    func deleteSeries(id: String) throws {
+        let descriptor = FetchDescriptor<LocalGameSeries>(predicate: #Predicate { $0.id == id })
+        if let entity = try context.fetch(descriptor).first {
+            context.delete(entity)
+        }
+    }
+
+    func fetchSeries() throws -> [LocalGameSeries] {
+        try context.fetch(FetchDescriptor<LocalGameSeries>(sortBy: [SortDescriptor(\.name)]))
+    }
+
+    func fetchSeriesEntries(seriesId: String) throws -> [LocalGameSeriesEntry] {
+        let descriptor = FetchDescriptor<LocalGameSeriesEntry>(
+            predicate: #Predicate { $0.seriesId == seriesId },
+            sortBy: [SortDescriptor(\.sortOrder)]
+        )
+        return try context.fetch(descriptor)
+    }
+
     // MARK: - Sync metadata
 
     func syncMetadata(for key: String) throws -> LocalSyncMetadata {

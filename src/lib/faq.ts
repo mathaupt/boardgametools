@@ -72,6 +72,11 @@ export const faqSections: FaqSection[] = [
           'Jedes Spiel kann mit Tags versehen werden, z.B. "Familienspiel", "Strategiespiel" oder eigene Tags. Auf der Spiele-Uebersicht kannst du per Klick auf Tag-Chips filtern und so schnell bestimmte Spiele finden. Tags werden beim BGG-Import automatisch uebernommen.',
       },
       {
+        question: "Wie kann ich Spiele filtern und sortieren?",
+        answer:
+          'Auf der Spiele-Übersicht kannst du oben nach Name suchen, per Dropdown nach Spieleranzahl filtern, eine Mindest-Komplexität (1-5 Sterne) auswählen und Tags als Chips anklicken. Über das Sortier-Dropdown sortierst du nach Name (A-Z/Z-A), Komplexität, Spieleranzahl oder Neueste zuerst.',
+      },
+      {
         question: "Kann ich mehrere Spiele gleichzeitig loeschen?",
         answer:
           'Ja, auf der Spiele-Uebersicht gibt es eine Mehrfachauswahl. Waehle die gewuenschten Spiele aus und klicke auf "Ausgewaehlte loeschen". Geloeschte Spiele werden per Soft-Delete markiert und koennen bei Bedarf wiederhergestellt werden.',
@@ -217,6 +222,16 @@ export const faqSections: FaqSection[] = [
         question: "Kann ich in der iOS-App Spiele hinzufügen?",
         answer:
           "Ja, auf der Spiele-Seite tippe auf das Plus-Icon. Du kannst ein Spiel manuell eingeben, über die BGG-Suche in BoardGameGeek suchen, einen EAN/UPC-Barcode scannen oder ein Foto vom Cover machen lassen — der Titel wird per OCR erkannt und in BGG gesucht.",
+      },
+      {
+        question: "Kann ich Spiele in der iOS-App filtern und sortieren?",
+        answer:
+          "Ja. Oben in der Spiele-Liste kannst du nach Namen suchen, über das Filter-Icon nach Tags, Spieleranzahl und Komplexität filtern und per Menü nach Name, Komplexität, Spieleranzahl oder Erstellungsdatum sortieren.",
+      },
+      {
+        question: "Gibt es Spielereihen auch in der iOS-App?",
+        answer:
+          "Ja, im Tab 'Reihen' siehst du alle deine Spielereihen mit Fortschrittsbalken. Tippe eine Reihe an, um Einträge zu sehen, als gespielt zu markieren, eine Bewertung abzugeben und die Reihenfolge zu ändern.",
       },
       {
         question: "Kann ich Sessions, Events und Gruppen in der App anlegen?",
@@ -422,7 +437,7 @@ export const faqSections: FaqSection[] = [
       {
         question: "Welche Daten werden synchronisiert?",
         answer:
-          "Der Sync-Endpoint liefert deine Spiele, Sessions, Events, Gruppen und zugehörige Abstimmungen. Die iOS-App speichert sie lokal in SwiftData und synchronisiert Änderungen bei bestehender Verbindung.",
+          "Der Sync-Endpoint liefert deine Spiele, Sessions, Events, Gruppen, Spielereihen und zugehörige Abstimmungen. Die iOS-App speichert sie lokal in SwiftData und synchronisiert Änderungen bei bestehender Verbindung.",
       },
       {
         question: "Unterstützt die App Offline-Modus?",

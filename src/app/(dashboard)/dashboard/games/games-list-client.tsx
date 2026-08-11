@@ -1,12 +1,19 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -30,6 +37,8 @@ export interface GameItem {
   playTimeMinutes: number | null;
   complexity: number | null;
   bggId: string | null;
+  createdAt: string;
+  updatedAt: string;
   _count: { sessions: number };
   tags?: Array<{ tag: { id: string; name: string } }>;
 }
@@ -47,6 +56,9 @@ export default function GamesListClient({ games: initialGames }: GamesListClient
   const [barcodeScannerOpen, setBarcodeScannerOpen] = useState(false);
   const [searchText, setSearchText] = useState("");
   const [activeTag, setActiveTag] = useState<string | null>(null);
+  const [playerCount, setPlayerCount] = useState<string>("all");
+  const [minComplexity, setMinComplexity] = useState<number | null>(null);
+  const [sortOption, setSortOption] = useState<string>("name_asc");
 
   // Extract unique tags from all games
   const allTags = Array.from(
@@ -55,12 +67,40 @@ export default function GamesListClient({ games: initialGames }: GamesListClient
     ).entries()
   ).sort((a, b) => a[1].localeCompare(b[1]));
 
-  // Filter games
-  const filteredGames = games.filter((game) => {
-    const matchesSearch = !searchText || game.name.toLowerCase().includes(searchText.toLowerCase());
-    const matchesTag = !activeTag || (game.tags ?? []).some((t) => t.tag.id === activeTag);
-    return matchesSearch && matchesTag;
-  });
+  // Filter and sort games
+  const filteredGames = useMemo(() => {
+    const selectedPlayers = playerCount === "all" ? null : Number(playerCount);
+
+    const filtered = games.filter((game) => {
+      const matchesSearch = !searchText || game.name.toLowerCase().includes(searchText.toLowerCase());
+      const matchesTag = !activeTag || (game.tags ?? []).some((t) => t.tag.id === activeTag);
+      const matchesPlayers =
+        selectedPlayers == null || (game.minPlayers <= selectedPlayers && game.maxPlayers >= selectedPlayers);
+      const matchesComplexity = minComplexity == null || (game.complexity ?? 0) >= minComplexity;
+      return matchesSearch && matchesTag && matchesPlayers && matchesComplexity;
+    });
+
+    return filtered.sort((a, b) => {
+      switch (sortOption) {
+        case "name_asc":
+          return a.name.localeCompare(b.name, "de");
+        case "name_desc":
+          return b.name.localeCompare(a.name, "de");
+        case "complexity_asc":
+          return (a.complexity ?? 0) - (b.complexity ?? 0);
+        case "complexity_desc":
+          return (b.complexity ?? 0) - (a.complexity ?? 0);
+        case "players_asc":
+          return a.minPlayers - b.minPlayers;
+        case "players_desc":
+          return b.maxPlayers - a.maxPlayers;
+        case "newest":
+          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        default:
+          return 0;
+      }
+    });
+  }, [games, searchText, activeTag, playerCount, minComplexity, sortOption]);
 
   async function handleDelete(game: GameItem) {
     setDeleting(true);
@@ -155,13 +195,84 @@ export default function GamesListClient({ games: initialGames }: GamesListClient
 
       {games.length > 0 && (
         <div className="space-y-3">
-          <Input
-            placeholder="Spiele durchsuchen…"
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
-            className="max-w-sm"
-            aria-label="Spiele durchsuchen"
-          />
+          <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
+            <Input
+              placeholder="Spiele durchsuchen…"
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
+              className="max-w-sm"
+              aria-label="Spiele durchsuchen"
+            />
+
+            <div className="flex flex-wrap gap-2 items-center">
+              <Select value={playerCount} onValueChange={setPlayerCount}>
+                <SelectTrigger className="w-[140px]" aria-label="Spieleranzahl filtern">
+                  <SelectValue placeholder="Spieler" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Alle Spieler</SelectItem>
+                  {Array.from({ length: 12 }, (_, i) => i + 1).map((count) => (
+                    <SelectItem key={count} value={String(count)}>
+                      {count} Spieler
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <Select value={sortOption} onValueChange={setSortOption}>
+                <SelectTrigger className="w-[180px]" aria-label="Sortierung">
+                  <SelectValue placeholder="Sortierung" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="name_asc">Name (A–Z)</SelectItem>
+                  <SelectItem value="name_desc">Name (Z–A)</SelectItem>
+                  <SelectItem value="complexity_asc">Komplexität (↑)</SelectItem>
+                  <SelectItem value="complexity_desc">Komplexität (↓)</SelectItem>
+                  <SelectItem value="players_asc">Spieler (↑)</SelectItem>
+                  <SelectItem value="players_desc">Spieler (↓)</SelectItem>
+                  <SelectItem value="newest">Neueste zuerst</SelectItem>
+                </SelectContent>
+              </Select>
+
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setSearchText("");
+                  setActiveTag(null);
+                  setPlayerCount("all");
+                  setMinComplexity(null);
+                  setSortOption("name_asc");
+                }}
+                aria-label="Filter zurücksetzen"
+              >
+                Zurücksetzen
+              </Button>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-3">
+            <span className="text-sm text-muted-foreground">Mindest-Komplexität:</span>
+            <div className="flex gap-1">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <Button
+                  type="button"
+                  key={star}
+                  variant="ghost"
+                  size="icon-xs"
+                  onClick={() => setMinComplexity(minComplexity === star ? null : star)}
+                  aria-label={`Mindestens ${star} Sterne`}
+                >
+                  <Star
+                    className={`h-4 w-4 ${minComplexity != null && star <= minComplexity ? "fill-amber-400 text-amber-400" : "text-muted-foreground"}`}
+                    aria-hidden="true"
+                  />
+                </Button>
+              ))}
+            </div>
+          </div>
+
           {allTags.length > 0 && (
             <div className="flex flex-wrap gap-2">
               <Button

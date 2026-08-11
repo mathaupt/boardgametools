@@ -70,6 +70,41 @@ final class RemoteDataSource {
         try await APIClient.shared.request(method: .post, endpoint: .groups, body: input)
     }
 
+    func series() async throws -> [SeriesDTO] {
+        try await APIClient.shared.request(method: .get, endpoint: .series)
+    }
+
+    func createSeries(_ input: SeriesInput) async throws -> SeriesDTO {
+        try await APIClient.shared.request(method: .post, endpoint: .series, body: input)
+    }
+
+    func updateSeries(id: String, _ input: SeriesInput) async throws -> SeriesDTO {
+        try await APIClient.shared.request(method: .put, endpoint: .serie(id), body: input)
+    }
+
+    func deleteSeries(id: String) async throws {
+        try await APIClient.shared.request(method: .delete, endpoint: .serie(id))
+    }
+
+    func addSeriesEntry(seriesId: String, gameId: String) async throws -> SeriesEntryDTO {
+        struct Body: Encodable, Sendable {
+            let gameId: String
+        }
+        return try await APIClient.shared.request(method: .post, endpoint: .seriesEntries(seriesId), body: Body(gameId: gameId))
+    }
+
+    func updateSeriesEntry(seriesId: String, entryId: String, _ input: SeriesEntryUpdateInput) async throws -> SeriesEntryDTO {
+        try await APIClient.shared.request(method: .put, endpoint: .seriesEntry(seriesId, entryId), body: input)
+    }
+
+    func deleteSeriesEntry(seriesId: String, entryId: String) async throws {
+        try await APIClient.shared.request(method: .delete, endpoint: .seriesEntry(seriesId, entryId))
+    }
+
+    func reorderSeriesEntries(seriesId: String, _ input: SeriesReorderInput) async throws {
+        try await APIClient.shared.request(method: .put, endpoint: .seriesEntriesReorder(seriesId), body: input)
+    }
+
     func updateGroup(id: String, _ input: GroupInput) async throws -> GroupDTO {
         try await APIClient.shared.request(method: .put, endpoint: .group(id), body: input)
     }

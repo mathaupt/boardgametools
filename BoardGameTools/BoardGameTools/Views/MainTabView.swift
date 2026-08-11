@@ -15,6 +15,9 @@ struct MainTabView: View {
             EventListView()
                 .tabItem { Label("Events", systemImage: "person.3") }
 
+            SeriesListView()
+                .tabItem { Label("Reihen", systemImage: "rectangle.stack.badge.play") }
+
             GroupListView()
                 .tabItem { Label("Gruppen", systemImage: "person.2") }
 

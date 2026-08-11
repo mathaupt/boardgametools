@@ -10,6 +10,7 @@ export interface DashboardDTO {
   sessions: number;
   events: number;
   totalDurationMinutes: number;
+  series: number;
 }
 
 export const GET = withApiLogging(async function GET(request: NextRequest) {
@@ -19,7 +20,7 @@ export const GET = withApiLogging(async function GET(request: NextRequest) {
       throw new ApiError(401, Errors.UNAUTHORIZED);
     }
 
-    const [games, sessions, events, aggregate] = await prisma.$transaction([
+    const [games, sessions, events, aggregate, series] = await prisma.$transaction([
       prisma.game.count({ where: { ownerId: session.user.id, deletedAt: null } }),
       prisma.gameSession.count({ where: { createdById: session.user.id, deletedAt: null } }),
       prisma.event.count({ where: { createdById: session.user.id, deletedAt: null } }),
@@ -27,6 +28,7 @@ export const GET = withApiLogging(async function GET(request: NextRequest) {
         where: { createdById: session.user.id, deletedAt: null },
         _sum: { durationMinutes: true },
       }),
+      prisma.gameSeries.count({ where: { ownerId: session.user.id, deletedAt: null } }),
     ]);
 
     const dto: DashboardDTO = {
@@ -34,6 +36,7 @@ export const GET = withApiLogging(async function GET(request: NextRequest) {
       sessions,
       events,
       totalDurationMinutes: aggregate._sum.durationMinutes ?? 0,
+      series,
     };
 
     return NextResponse.json(dto);

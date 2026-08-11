@@ -6,7 +6,50 @@ struct GameListView: View {
     @Environment(NetworkMonitor.self) private var networkMonitor
     @Query(sort: \LocalGame.name) private var localGames: [LocalGame]
     @State private var isShowingAddSheet = false
+    @State private var isShowingFilterSheet = false
+    @State private var searchText = ""
+    @State private var selectedTags: Set<String> = []
+    @State private var selectedPlayerCount: Int?
+    @State private var minComplexity: Int?
+    @State private var sortOption: GameSortOption = .nameAsc
     @State private var errorMessage: String?
+
+    private var allTags: [String] {
+        Array(Set(localGames.flatMap { $0.tagNames })).sorted()
+    }
+
+    private var filteredGames: [LocalGame] {
+        let filtered = localGames.filter { game in
+            let matchesSearch = searchText.isEmpty || game.name.localizedStandardContains(searchText)
+            let matchesTags = selectedTags.isEmpty || !Set(game.tagNames).isDisjoint(with: selectedTags)
+            let matchesPlayers = selectedPlayerCount == nil || (game.minPlayers <= selectedPlayerCount! && game.maxPlayers >= selectedPlayerCount!)
+            let matchesComplexity = minComplexity == nil || (game.complexity ?? 0) >= minComplexity!
+            return matchesSearch && matchesTags && matchesPlayers && matchesComplexity
+        }
+
+        return filtered.sorted { lhs, rhs in
+            switch sortOption {
+            case .nameAsc:
+                return lhs.name.localizedStandardCompare(rhs.name) == .orderedAscending
+            case .nameDesc:
+                return lhs.name.localizedStandardCompare(rhs.name) == .orderedDescending
+            case .complexityAsc:
+                return (lhs.complexity ?? 0) < (rhs.complexity ?? 0)
+            case .complexityDesc:
+                return (lhs.complexity ?? 0) > (rhs.complexity ?? 0)
+            case .playersAsc:
+                return lhs.minPlayers < rhs.minPlayers
+            case .playersDesc:
+                return lhs.maxPlayers > rhs.maxPlayers
+            case .newest:
+                return lhs.createdAt > rhs.createdAt
+            }
+        }
+    }
+
+    private var hasActiveFilters: Bool {
+        !selectedTags.isEmpty || selectedPlayerCount != nil || minComplexity != nil || sortOption != .nameAsc
+    }
 
     var body: some View {
         NavigationStack {
@@ -17,7 +60,7 @@ struct GameListView: View {
                         .listRowSeparator(.hidden)
                 }
 
-                ForEach(localGames) { game in
+                ForEach(filteredGames) { game in
                     NavigationLink(destination: GameDetailView(game: game.toDTO())) {
                         GameRow(game: game)
                     }
@@ -29,7 +72,35 @@ struct GameListView: View {
             .listStyle(.plain)
             .background(Theme.background.ignoresSafeArea())
             .navigationTitle("Spiele")
+            .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Spiel suchen")
             .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Menu {
+                        ForEach(GameSortOption.allCases) { option in
+                            Button {
+                                sortOption = option
+                            } label: {
+                                Label(option.label, systemImage: sortOption == option ? "checkmark" : "")
+                            }
+                        }
+                    } label: {
+                        Image(systemName: "arrow.up.arrow.down.circle")
+                            .font(.title3)
+                            .accessibilityLabel("Sortierung")
+                    }
+                }
+
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        isShowingFilterSheet = true
+                    } label: {
+                        Image(systemName: hasActiveFilters ? "line.3.horizontal.decrease.circle.fill" : "line.3.horizontal.decrease.circle")
+                            .font(.title3)
+                            .foregroundStyle(Theme.primaryGradient)
+                    }
+                    .accessibilityLabel("Filter")
+                }
+
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
                         isShowingAddSheet = true
@@ -38,11 +109,21 @@ struct GameListView: View {
                             .font(.title3)
                             .foregroundStyle(Theme.primaryGradient)
                     }
+                    .accessibilityLabel("Spiel hinzufügen")
                 }
             }
             .sheet(isPresented: $isShowingAddSheet) {
                 GameAddSheet()
                     .presentationDetents([.large])
+            }
+            .sheet(isPresented: $isShowingFilterSheet) {
+                GameFilterSheet(
+                    allTags: allTags,
+                    selectedTags: $selectedTags,
+                    selectedPlayerCount: $selectedPlayerCount,
+                    minComplexity: $minComplexity,
+                    sortOption: $sortOption
+                )
             }
             .onAppear { Task { await syncEngine.sync() } }
             .refreshable { await syncEngine.sync() }
@@ -51,8 +132,8 @@ struct GameListView: View {
                     LoadingOverlay(message: "Lade Spiele...")
                 } else if let errorMessage = errorMessage {
                     EmptyStateView(icon: "exclamationmark.triangle", title: "Fehler", subtitle: errorMessage)
-                } else if localGames.isEmpty && !syncEngine.isSyncing {
-                    EmptyStateView(icon: "dice", title: "Noch keine Spiele", subtitle: "Füge dein erstes Spiel hinzu oder synchronisiere deine Sammlung.")
+                } else if filteredGames.isEmpty && !syncEngine.isSyncing {
+                    EmptyStateView(icon: "magnifyingglass", title: "Keine Spiele", subtitle: "Passe deine Filter oder Suche an.")
                 }
             }
             .onChange(of: syncEngine.errorMessage) { _, new in
@@ -94,6 +175,13 @@ struct GameRow: View {
                                 .foregroundStyle(index <= complexity ? Theme.secondary : .gray.opacity(0.4))
                         }
                     }
+                }
+
+                if !game.tagNames.isEmpty {
+                    Text(game.tagNames.joined(separator: ", "))
+                        .font(.caption2)
+                        .foregroundStyle(.tertiary)
+                        .lineLimit(1)
                 }
             }
 

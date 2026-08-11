@@ -12,6 +12,21 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.14",
+    date: "2026-08-10",
+    title: "Spielereihen und erweiterte Spielefilter für iOS und Web",
+    description: "Die iOS-App erhält ein vollständiges Spielereihen-Feature (CRUD, Einträge, Fortschritt, Bewertungen) und eine durchsuchbare/filterbare Spieleliste. Die Next.js-Web-App bekommt zusätzliche Filter für Spieleranzahl und Komplexität sowie eine Sortierung in der Spieleliste. Backend-seitig wurden mobile API-Endpunkte, Sync-Payload und Dashboard um Reihen erweitert.",
+    changes: [
+      { type: "feature", text: "iOS: Spielereihen (Reihen) mit Liste, Detail, Bearbeiten, Einträge hinzufügen/entfernen/umsortieren und Fortschritt markieren" },
+      { type: "feature", text: "iOS: Spieleliste um Suche, Tag-Filter, Spieleranzahl-Filter, Komplexitäts-Filter und Sortierung erweitert" },
+      { type: "feature", text: "Web: Spieleliste um Spieleranzahl-Filter, Komplexitäts-Filter und Sortierung erweitert" },
+      { type: "feature", text: "Backend: `/api/mobile/v1/series` Endpunkte für vollständiges Reihen-CRUD inkl. Reorder" },
+      { type: "improvement", text: "Sync-Payload und mobiles Dashboard um `series` bzw. Reihen-Anzahl erweitert" },
+      { type: "improvement", text: "OpenAPI-Spezifikation um mobile Series-Endpunkte ergänzt" },
+      { type: "internal", text: "Unit-Tests für mobile Series-Routes, Sync-Payload und Dashboard erweitert" },
+    ],
+  },
+  {
     version: "0.50.13",
     date: "2026-08-10",
     title: "Prisma-Postgres Verbindungs-Timeout in Vercel-Produktion behoben",

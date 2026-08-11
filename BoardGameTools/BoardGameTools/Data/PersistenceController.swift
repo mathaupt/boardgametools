@@ -26,6 +26,8 @@ final class PersistenceController {
             LocalGroupComment.self,
             LocalUser.self,
             LocalSyncMetadata.self,
+            LocalGameSeries.self,
+            LocalGameSeriesEntry.self,
         ])
         let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
         do {
@@ -63,6 +65,8 @@ final class PersistenceController {
         try deduplicate(LocalGroupPollVote.self, id: \.id)
         try deduplicate(LocalGroupComment.self, id: \.id)
         try deduplicate(LocalUser.self, id: \.id)
+        try deduplicate(LocalGameSeries.self, id: \.id)
+        try deduplicate(LocalGameSeriesEntry.self, id: \.id)
 
         try mainContext.save()
     }

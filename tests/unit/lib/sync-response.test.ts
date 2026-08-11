@@ -4,6 +4,7 @@ const gameFindMany = vi.hoisted(() => vi.fn());
 const gameSessionFindMany = vi.hoisted(() => vi.fn());
 const eventFindMany = vi.hoisted(() => vi.fn());
 const groupFindMany = vi.hoisted(() => vi.fn());
+const gameSeriesFindMany = vi.hoisted(() => vi.fn());
 
 vi.mock("@/lib/db", () => ({
   default: {
@@ -19,6 +20,7 @@ vi.mock("@/lib/db", () => ({
     dateVote: { findMany: vi.fn().mockResolvedValue([]) },
     groupPoll: { findMany: vi.fn().mockResolvedValue([]) },
     groupComment: { findMany: vi.fn().mockResolvedValue([]) },
+    gameSeries: { findMany: gameSeriesFindMany },
   },
 }));
 
@@ -51,6 +53,7 @@ describe("buildSyncPayload", () => {
     gameSessionFindMany.mockReset().mockResolvedValue([]);
     eventFindMany.mockReset().mockResolvedValue([]);
     groupFindMany.mockReset().mockResolvedValue([]);
+    gameSeriesFindMany.mockReset().mockResolvedValueOnce([]).mockResolvedValueOnce([]);
   });
 
   it("includes active items and their deleted IDs", async () => {
@@ -59,6 +62,9 @@ describe("buildSyncPayload", () => {
     expect(payload.games.created).toHaveLength(1);
     expect(payload.games.created[0].id).toBe("g-active");
     expect(payload.games.deleted).toEqual(["g-deleted"]);
+    expect(payload.series).toBeDefined();
+    expect(payload.series.created).toEqual([]);
+    expect(payload.series.deleted).toEqual([]);
 
     expect(gameFindMany).toHaveBeenCalledTimes(2);
     expect(gameFindMany).toHaveBeenNthCalledWith(

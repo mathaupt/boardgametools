@@ -38,6 +38,8 @@ tags:
     description: Spielsessions erfassen und auswerten
   - name: Series
     description: Spielereihen (EXIT, Adventure Games, etc.)
+  - name: Mobile Series
+    description: Spielereihen-Endpunkte fuer die iOS-App
   - name: Events
     description: Spieleabende planen und organisieren
   - name: Event Voting
@@ -711,6 +713,140 @@ paths:
     put:
       tags: [Series]
       summary: Reihenfolge der Eintraege aendern
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [entries]
+              properties:
+                entries:
+                  type: array
+                  items:
+                    type: object
+                    required: [id, sortOrder]
+                    properties:
+                      id: { type: string }
+                      sortOrder: { type: integer }
+      responses:
+        '200': { description: Reihenfolge aktualisiert }
+
+  # ===== MOBILE SERIES =====
+  /api/mobile/v1/series:
+    get:
+      tags: [Mobile Series]
+      summary: Mobile - Eigene Spielereihen auflisten
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200': { description: Reihen mit Eintraegen und Fortschritt }
+    post:
+      tags: [Mobile Series]
+      summary: Mobile - Neue Spielereihe erstellen
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                name: { type: string, minLength: 1, maxLength: 200 }
+                description: { type: string, maxLength: 1000 }
+                imageUrl: { type: string, maxLength: 2000 }
+      responses:
+        '201': { description: Reihe erstellt }
+
+  /api/mobile/v1/series/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: { type: string }
+    get:
+      tags: [Mobile Series]
+      summary: Mobile - Reihen-Details mit Eintraegen
+      responses:
+        '200': { description: Reihe mit Spielen, sortiert nach sortOrder }
+    put:
+      tags: [Mobile Series]
+      summary: Mobile - Reihe bearbeiten
+      responses:
+        '200': { description: Reihe aktualisiert }
+    delete:
+      tags: [Mobile Series]
+      summary: Mobile - Reihe loeschen
+      responses:
+        '200': { description: Reihe geloescht }
+
+  /api/mobile/v1/series/{id}/entries:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: { type: string }
+    post:
+      tags: [Mobile Series]
+      summary: Mobile - Spiel zur Reihe hinzufuegen
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [gameId]
+              properties:
+                gameId: { type: string }
+                sortOrder: { type: integer }
+      responses:
+        '201': { description: Eintrag erstellt }
+
+  /api/mobile/v1/series/{id}/entries/{entryId}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: { type: string }
+      - name: entryId
+        in: path
+        required: true
+        schema: { type: string }
+    put:
+      tags: [Mobile Series]
+      summary: Mobile - Reihen-Eintrag bearbeiten
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                played: { type: boolean }
+                playedAt: { type: string, format: date-time, nullable: true }
+                rating: { type: integer, minimum: 1, maximum: 5, nullable: true }
+                difficulty: { type: string, maxLength: 50, nullable: true }
+                playTimeMinutes: { type: integer, minimum: 0, maximum: 9999, nullable: true }
+                successful: { type: boolean, nullable: true }
+                playerCount: { type: integer, minimum: 1, maximum: 99, nullable: true }
+                score: { type: integer, minimum: 0, maximum: 999999, nullable: true }
+      responses:
+        '200': { description: Eintrag aktualisiert }
+    delete:
+      tags: [Mobile Series]
+      summary: Mobile - Eintrag aus Reihe entfernen
+      responses:
+        '200': { description: Eintrag entfernt }
+
+  /api/mobile/v1/series/{id}/entries/reorder:
+    put:
+      tags: [Mobile Series]
+      summary: Mobile - Reihenfolge der Eintraege aendern
       parameters:
         - name: id
           in: path

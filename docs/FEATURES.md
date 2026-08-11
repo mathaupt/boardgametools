@@ -74,6 +74,9 @@ Spieldauer, Komplexitaet und Tags.
 **Aktionen:**
 - Textsuche (filtert nach Name, clientseitig)
 - Tag-Filter (klickbare Chips, z.B. "Strategie", "Familie")
+- Spieleranzahl-Filter (Spiel muss den gewaehlten Wert unterstuetzen)
+- Komplexitaets-Filter (Mindest-Sternzahl, 1-5)
+- Sortierung: Name (A–Z / Z–A), Komplexitaet, Spieleranzahl, Neueste zuerst
 - Neues Spiel hinzufuegen
 - Von BGG importieren
 - Barcode-Scanner oeffnen
@@ -681,8 +684,9 @@ und alle Kernbereiche des Web-Frontends.
 | Bereich | Status |
 |---------|--------|
 | Login / Anmeldung | Anmelden per E-Mail/Passwort, Sign in with Apple vorbereitet |
-| Dashboard | Statistik-Kacheln (Spiele, Sessions, Events, Gruppen), tippbar zu den jeweiligen Listen |
-| Spiele | Liste, Detailansicht mit Tags/Komplexität, BGG-Import-Endpoint nutzbar |
+| Dashboard | Statistik-Kacheln (Spiele, Sessions, Events, Gruppen, Reihen), tippbar zu den jeweiligen Listen |
+| Spiele | Liste mit Suche, Tag-Filter, Spieleranzahl-Filter, Komplexitäts-Filter und Sortierung; Detailansicht mit Tags/Komplexität; BGG-Import-Endpoint nutzbar |
+| Reihen | Liste, Detailansicht, Bearbeiten, Einträge hinzufügen/entfernen, Fortschritt markieren, bewerten und umsortieren |
 | Sessions | Liste gespielter Partien mit Brettspiel-Thumbnail |
 | Events | Liste anstehender Events mit Brettspiel-Thumbnail |
 | Gruppen | Liste eigener Gruppen |

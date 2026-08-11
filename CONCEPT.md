@@ -163,9 +163,10 @@ automatischem Build und Unit-Test-Ziel:
 - `SyncEngine` synchronisiert den lokalen SwiftData-Speicher über
   `GET /api/mobile/v1/sync` mit Delta-Updates.
 - SwiftUI-Views (`LoginView`, `DashboardView`, `GameListView`, `GameDetailView`,
-  `SessionListView`, `EventListView`, `GroupListView`, `SettingsView`) nutzen
-  SwiftData `@Query` und Pull-to-Refresh.
-- Theming: indigo/violette Farbpalette, Farbverläufe, Kachel-Karten,
+  `SeriesListView`, `SeriesDetailView`, `SeriesEditView`, `SessionListView`, `EventListView`,
+  `GroupListView`, `SettingsView`) nutzen SwiftData `@Query` und Pull-to-Refresh.
+- `GameListView` unterstützt Suche, Tag-Filter, Spieleranzahl-Filter, Komplexitäts-Filter und Sortierung.
+- Theming: indigo-violette Farbpalette, Farbverläufe, Kachel-Karten,
   Offline-Banner, leere Zustände und Cover-Bilder per `AsyncImage`.
 - `GameEditView`, `GameAddSheet` und `BGGSearchView` ermöglichen das manuelle
   Erstellen/Bearbeiten/Löschen sowie den Import aus BoardGameGeek.
@@ -190,7 +191,7 @@ automatischem Build und Unit-Test-Ziel:
 Die versionierte REST-API `/api/mobile/v1/*` setzt auf dem bestehenden
 Next.js-Backend auf und verwendet die Service-Schicht. Unterstützt werden
 Bearer-Token-Authentifizierung, API-Token-Paar mit Refresh, Sync-Endpoint, CRUD
-für Spiele, Sessions, Events und Gruppen, BGG-Suche/EAN-Lookup, Bild-Upload,
+für Spiele, Spielereihen, Sessions, Events und Gruppen, BGG-Suche/EAN-Lookup, Bild-Upload,
 Push-Device-Registrierung, Sign in with Apple und Deep Links für öffentliche
 Share-Links.
 

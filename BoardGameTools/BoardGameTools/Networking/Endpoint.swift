@@ -39,6 +39,13 @@ enum Endpoint: Sendable {
     case groupPollVote(String, String)
     case groupComments(String)
 
+    // Series
+    case series
+    case serie(String)
+    case seriesEntries(String)
+    case seriesEntry(String, String)
+    case seriesEntriesReorder(String)
+
     // BGG
     case bggSearch(query: String)
     case bggLookup
@@ -81,6 +88,11 @@ enum Endpoint: Sendable {
         case .groupPolls(let id): return "/api/mobile/v1/groups/\(id)/polls"
         case .groupPollVote(let id, let pollId): return "/api/mobile/v1/groups/\(id)/polls/\(pollId)/vote"
         case .groupComments(let id): return "/api/mobile/v1/groups/\(id)/comments"
+        case .series: return "/api/mobile/v1/series"
+        case .serie(let id): return "/api/mobile/v1/series/\(id)"
+        case .seriesEntries(let id): return "/api/mobile/v1/series/\(id)/entries"
+        case .seriesEntry(let id, let entryId): return "/api/mobile/v1/series/\(id)/entries/\(entryId)"
+        case .seriesEntriesReorder(let id): return "/api/mobile/v1/series/\(id)/entries/reorder"
         case .bggSearch: return "/api/mobile/v1/bgg/search"
         case .bggLookup: return "/api/mobile/v1/bgg/lookup"
         case .bggImport: return "/api/mobile/v1/bgg/import"

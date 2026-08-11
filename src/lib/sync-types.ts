@@ -18,6 +18,7 @@ export interface SyncPayload {
   dateVotes: SyncChanges<DateVoteDTO>;
   groupPollVotes: SyncChanges<GroupPollVoteDTO>;
   groupMembers: SyncChanges<GroupMemberDTO>;
+  series: SyncChanges<SeriesDTO>;
 }
 
 export interface GameDTO {
@@ -176,4 +177,34 @@ export interface GroupDTO {
   createdAt: string;
   updatedAt: string;
   deletedAt?: string | null;
+}
+
+export interface SeriesEntryDTO {
+  id: string;
+  seriesId: string;
+  gameId: string;
+  sortOrder: number;
+  played: boolean;
+  playedAt: string | null;
+  rating: number | null;
+  difficulty: string | null;
+  playTimeMinutes: number | null;
+  successful: boolean | null;
+  playerCount: number | null;
+  score: number | null;
+  createdAt: string;
+  updatedAt: string;
+  game?: { imageUrl: string | null };
+}
+
+export interface SeriesDTO {
+  id: string;
+  name: string;
+  description: string | null;
+  imageUrl: string | null;
+  ownerId: string;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+  entries: SeriesEntryDTO[];
 }

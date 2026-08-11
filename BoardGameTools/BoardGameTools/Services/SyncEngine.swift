@@ -71,7 +71,15 @@ final class SyncEngine {
             try local.deleteGroup(id: id)
         }
 
+        // Series
+        for dto in payload.series.created + payload.series.updated {
+            try local.upsertSeries(dto)
+        }
+        for id in payload.series.deleted {
+            try local.deleteSeries(id: id)
+        }
+
         // Related entities are embedded in DTOs (proposals, date proposals, members, polls,
-        // comments) and recreated via SwiftData relationships during upserts.
+        // comments, series entries) and recreated via SwiftData relationships during upserts.
     }
 }

@@ -9,3 +9,4 @@ export {
   toGroupPollVoteDto,
   toGroupCommentDto,
 } from "./group";
+export { toSeriesDto, toSeriesEntryDto } from "./series";

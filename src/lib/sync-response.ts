@@ -14,6 +14,7 @@ import {
   toGroupPollDto,
   toGroupPollVoteDto,
   toGroupCommentDto,
+  toSeriesDto,
 } from "@/lib/dto-mappers";
 
 function asCreated<T>(items: T[]): SyncChanges<T> { return { created: items, updated: [], deleted: [] }; }
@@ -71,6 +72,8 @@ export async function buildSyncPayload(userId: string): Promise<SyncPayload> {
     groupMembersAll,
     groupPollsRaw,
     groupComments,
+    series,
+    deletedSeries,
   ] = await Promise.all([
     prisma.game.findMany({
       where: { ownerId: userId, ...NOT_DELETED },
@@ -113,6 +116,15 @@ export async function buildSyncPayload(userId: string): Promise<SyncPayload> {
       orderBy: { createdAt: "desc" },
     }),
     prisma.groupComment.findMany({ where: { groupId: { in: groupIds } }, orderBy: { createdAt: "desc" } }),
+    prisma.gameSeries.findMany({
+      where: { ownerId: userId, ...NOT_DELETED },
+      orderBy: { updatedAt: "desc" },
+      include: { entries: { include: { game: { select: { imageUrl: true } } }, orderBy: { sortOrder: "asc" } } },
+    }),
+    prisma.gameSeries.findMany({
+      where: { ownerId: userId, deletedAt: { not: null } },
+      select: { id: true },
+    }),
   ]);
 
   return {
@@ -129,5 +141,6 @@ export async function buildSyncPayload(userId: string): Promise<SyncPayload> {
     dateVotes: asCreated(dateVotes.map(toDateVoteDto)),
     groupPollVotes: asCreated(groupPollsRaw.flatMap((p) => p.options.flatMap((o) => o.votes.map(toGroupPollVoteDto)))),
     groupMembers: asCreated(groupMembersAll.map(toGroupMemberDto)),
+    series: toChanges(series.map(toSeriesDto), deletedIdsOnly(deletedSeries)),
   };
 }
