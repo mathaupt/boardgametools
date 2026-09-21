@@ -866,7 +866,7 @@ const isValid = await compare(inputPassword, group.password);
 
 ## Evaluator-Feedback (automatisch generiert)
 
-> Letzter Lauf: 2026-08-11 06:20:47
+> Letzter Lauf: 2026-09-21 07:18:46
 > Gesamt-Score: **10/10**
 
 ### Kategorie-Scores
@@ -938,4 +938,4 @@ const isValid = await compare(inputPassword, group.password);
 
 ### Teilweise gelöst (1)
 
-- 🔶 **SEC-45** npm audit: Bekannte Vulnerabilities: 1 high nur in devDependencies
+- 🔶 **SEC-45** npm audit: Bekannte Vulnerabilities: 9 high nur in devDependencies

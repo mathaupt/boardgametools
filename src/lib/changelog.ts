@@ -12,6 +12,18 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.15",
+    date: "2026-09-20",
+    title: "Sicherheits- und Framework-Updates für Next.js und Node-Bibliotheken",
+    description: "Der App Tech-Stack wurde überprüft und auf den neuesten stabilen Stand aktualisiert. Kritische Sicherheitslücken in Next.js und Nodemailer wurden durch gezielte Updates geschlossen. Das native iOS-Projekt wurde verifiziert und erfolgreich kompiliert.",
+    changes: [
+      { type: "internal", text: "Framework: Next.js auf Version 16.3.5 aktualisiert, um unautorisierte RCE-Sicherheitslücken zu beheben" },
+      { type: "internal", text: "Bibliotheken: Nodemailer auf Version 9.1.1 aktualisiert, um IDN- und Punycode-Bypass/SSRF-Sicherheitslücken zu beheben" },
+      { type: "internal", text: "Verzeichnisbereinigung: Unbenutzte transitive Sharp-Abhängigkeiten deinstalliert" },
+      { type: "internal", text: "iOS: Native Xcode iOS App Zielplattformen und Builds verifiziert und erfolgreich für iOS 17.0+ / Xcode 17 SDKs kompiliert" },
+    ],
+  },
+  {
     version: "0.50.14",
     date: "2026-08-10",
     title: "Spielereihen und erweiterte Spielefilter für iOS und Web",
