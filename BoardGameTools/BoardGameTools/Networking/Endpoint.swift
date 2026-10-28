@@ -1,6 +1,6 @@
 import Foundation
 
-enum Endpoint: Sendable {
+enum Endpoint: Sendable, Equatable {
     // Auth
     case login
     case refresh

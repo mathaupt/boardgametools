@@ -48,7 +48,7 @@ describe("POST /api/mobile/v1/auth/apple", () => {
         method: "POST",
         body: JSON.stringify({ identityToken: "id-token", authorizationCode: "code" }),
       }),
-      {}
+      { params: Promise.resolve({}) }
     );
     const body = await res.json();
 
@@ -74,7 +74,7 @@ describe("POST /api/mobile/v1/auth/apple", () => {
         method: "POST",
         body: JSON.stringify({ identityToken: "id-token", authorizationCode: "code", name: "Max" }),
       }),
-      {}
+      { params: Promise.resolve({}) }
     );
 
     expect(res.status).toBe(200);
@@ -87,7 +87,7 @@ describe("POST /api/mobile/v1/auth/apple", () => {
         method: "POST",
         body: JSON.stringify({ authorizationCode: "code" }),
       }),
-      {}
+      { params: Promise.resolve({}) }
     );
     expect(res.status).toBe(400);
   });

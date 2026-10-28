@@ -54,7 +54,7 @@ describe("Mobile BGG & Upload Routes", () => {
     mockedApiAuth.mockResolvedValue(authUser() as never);
     mockedSearch.mockResolvedValue([{ bggId: "13", name: "Catan", yearPublished: 1995 }] as never);
 
-    const res = await searchBgg(new NextRequest("http://localhost:3000/api/mobile/v1/bgg/search?q=Catan"), {});
+    const res = await searchBgg(new NextRequest("http://localhost:3000/api/mobile/v1/bgg/search?q=Catan"), { params: Promise.resolve({}) });
     const body = await res.json();
 
     expect(res.status).toBe(200);
@@ -70,7 +70,7 @@ describe("Mobile BGG & Upload Routes", () => {
         method: "POST",
         body: JSON.stringify({ ean: "4001504405010" }),
       }),
-      {}
+      { params: Promise.resolve({}) }
     );
     const body = await res.json();
 
@@ -114,7 +114,7 @@ describe("Mobile BGG & Upload Routes", () => {
         method: "POST",
         body: JSON.stringify({ bggId: "13" }),
       }),
-      {}
+      { params: Promise.resolve({}) }
     );
 
     expect(res.status).toBe(201);
@@ -138,7 +138,7 @@ describe("Mobile Upload & Device Routes", () => {
     });
     (request as unknown as { formData: () => Promise<FormData> }).formData = vi.fn().mockResolvedValue(formData);
 
-    const res = await uploadImage(request, {});
+    const res = await uploadImage(request, { params: Promise.resolve({}) });
     expect(res.status).toBe(201);
   });
 
@@ -151,7 +151,7 @@ describe("Mobile Upload & Device Routes", () => {
         method: "POST",
         body: JSON.stringify({ token: "device-token-123", platform: "ios" }),
       }),
-      {}
+      { params: Promise.resolve({}) }
     );
 
     expect(res.status).toBe(200);

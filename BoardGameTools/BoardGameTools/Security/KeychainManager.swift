@@ -8,12 +8,13 @@ enum KeychainError: Error {
     case conversionFailed
 }
 
-actor KeychainManager {
+actor KeychainManager: TokenStorage {
     static let shared = KeychainManager()
 
     private init() {}
 
     func save(service: String, account: String, data: Data) async throws {
+        try Task.checkCancellation()
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: service,

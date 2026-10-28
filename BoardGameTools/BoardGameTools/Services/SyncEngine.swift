@@ -1,4 +1,5 @@
 import Foundation
+import Observation
 
 @Observable
 @MainActor
@@ -17,21 +18,32 @@ final class SyncEngine {
         local = LocalDataSource(context: PersistenceController.shared.mainContext)
     }
 
+    func invalidate() {
+        isSyncing = false
+        lastSyncedAt = nil
+        lastStatus = nil
+        errorMessage = nil
+    }
+
     func sync() async {
-        guard !isSyncing else { return }
+        guard AuthManager.shared.isAuthenticated, !isSyncing else { return }
+        let generation = APIClient.shared.sessionGeneration
         isSyncing = true
         errorMessage = nil
         do {
             let payload = try await remote.sync()
+            guard generation == APIClient.shared.sessionGeneration else { return }
             try apply(payload)
             try local.setLastSynced(at: payload.syncedAt, status: "success")
             try local.save()
             lastSyncedAt = payload.syncedAt
             lastStatus = "success"
         } catch let error as APIError {
+            guard generation == APIClient.shared.sessionGeneration else { return }
             errorMessage = error.message
             lastStatus = "error"
         } catch {
+            guard generation == APIClient.shared.sessionGeneration else { return }
             errorMessage = error.localizedDescription
             lastStatus = "error"
         }

@@ -11,7 +11,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  NODE_VERSION: "20"
+  NODE_VERSION: "24"
 
 jobs:
   lint-typecheck:
@@ -52,16 +52,16 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run security-check:fast
+      - run: npm audit --omit=dev --audit-level=high
 
   build:
     name: Build
     runs-on: ubuntu-latest
-    needs: [lint-typecheck, test]
+    needs: [lint-typecheck, test, security, ios-contracts]
     env:
       SQL_DATABASE_URL: "postgresql://fake:fake@localhost:5432/fake"
       NEXTAUTH_SECRET: "ci-test-secret-not-for-production"
       NEXTAUTH_URL: "http://localhost:3000"
-      SKIP_PRISMA_MIGRATE: "true"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -70,4 +70,11 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx prisma generate
-      - run: next build
+      - run: npm run build
+
+  ios-contracts:
+    name: Swift contracts and account isolation
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - run: bash scripts/test-ios-contracts.sh

@@ -40,7 +40,7 @@ describe("GET /api/mobile/v1/sync", () => {
     mockedApiAuth.mockResolvedValue({ user: { id: "u1", email: "a@b.c", name: "Max", role: "USER" } } as never);
     mockedBuild.mockResolvedValue(emptyPayload as never);
 
-    const res = await GET(new NextRequest("http://localhost:3000/api/mobile/v1/sync"), {});
+    const res = await GET(new NextRequest("http://localhost:3000/api/mobile/v1/sync"), { params: Promise.resolve({}) });
     const body = await res.json();
 
     expect(res.status).toBe(200);
@@ -51,7 +51,7 @@ describe("GET /api/mobile/v1/sync", () => {
   it("returns 401 when not authenticated", async () => {
     mockedApiAuth.mockResolvedValue(null as never);
 
-    const res = await GET(new NextRequest("http://localhost:3000/api/mobile/v1/sync"), {});
+    const res = await GET(new NextRequest("http://localhost:3000/api/mobile/v1/sync"), { params: Promise.resolve({}) });
     expect(res.status).toBe(401);
   });
 });

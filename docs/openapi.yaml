@@ -2028,7 +2028,17 @@ paths:
                 refreshToken: { type: string }
                 deviceName: { type: string }
       responses:
-        '200': { description: Neues Token-Paar }
+        '200':
+          description: Neues Token-Paar ohne Nutzerprofil; Login liefert das Profil zusätzlich.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [accessToken, refreshToken, expiresAt]
+                properties:
+                  accessToken: { type: string }
+                  refreshToken: { type: string }
+                  expiresAt: { type: string, format: date-time }
         '401': { $ref: '#/components/responses/Unauthorized' }
 
   /api/mobile/v1/auth/logout:

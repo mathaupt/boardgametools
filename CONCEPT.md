@@ -120,15 +120,15 @@ BoardGameTools ist eine Next.js Webanwendung zur Verwaltung von Brettspielen, Sp
 
 | Komponente | Technologie |
 |------------|-------------|
-| **Framework** | Next.js 16.3.0 (App Router, Turbopack dev, Webpack prod) |
+| **Framework** | Next.js 16.4.3 (App Router, Turbopack dev, Webpack prod) |
 | **React** | React 19.2.8 |
 | **Sprache** | TypeScript 6.0.3 (strict) |
-| **Datenbank** | PostgreSQL (Prisma Postgres) + Prisma 7.9.1 (`@prisma/adapter-pg` + `pg`) |
+| **Datenbank** | PostgreSQL (Prisma Postgres) + Prisma 7.10.1 (`@prisma/adapter-pg` + `pg`) |
 | **Styling** | Tailwind CSS 4.3.3 + `@tailwindcss/postcss` + shadcn/ui + Radix UI |
 | **Icons** | Lucide React 1.30.0 |
 | **Charts** | Recharts 3.10.1 |
 | **Auth** | NextAuth.js v5 beta.32 (Credentials Provider) |
-| **E-Mail** | Nodemailer 9.0.5 (SMTP) |
+| **E-Mail** | Nodemailer 10.2.1 (SMTP) |
 | **Barcode-Scan** | html5-qrcode 2.3.8 |
 | **OCR** | Tesseract.js 7.0.0 |
 | **Passwort-Hashing** | bcryptjs 3.0.3 |
@@ -652,3 +652,10 @@ Senior Dev Code Reviewer – Prüft Code-Qualität, Architektur, Sicherheit und 
 18. ✅ Prod-Datenbank-Backup-System
 19. ✅ Profil-Seite
 20. ✅ FAQ & Changelog
+
+
+### Wartungsstand 0.50.16 (28.10.2026)
+
+Die iOS-Modelle unterscheiden Login-Antwort, Token-Erneuerung und Spielzusammenfassung einer Reihe. Der lokale SwiftData-Cache gehört zu genau einer Kombination aus Backend und Nutzer. Abmelden und Identitätswechsel löschen den Cache einschließlich Sync-Metadaten; verspätete Antworten der alten Sitzung werden nicht übernommen. Bei der ersten Aktualisierung werden alte, nicht zugeordnete Cache-Daten verworfen; eine erneute Anmeldung und Online-Synchronisation ist dann erforderlich.
+
+`npm run build` erstellt ausschließlich den Build. Datenbankmigrationen werden separat freigegeben und mit `npm run prisma:deploy` ausgeführt; Migrationsfehler führen zum Abbruch. Die Swift-Regressionstests können auf macOS ohne iOS-Simulator über `npm run test:ios:contracts` ausgeführt werden.

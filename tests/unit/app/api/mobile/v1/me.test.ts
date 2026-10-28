@@ -41,7 +41,7 @@ describe("GET /api/mobile/v1/me", () => {
     mockedApiAuth.mockResolvedValue({ user: { id: "u1", name: "Max", email: "a@b.c", role: "USER" } } as never);
     mockedTransaction.mockResolvedValue([5, 12, 3, 2] as never);
 
-    const res = await GET(new NextRequest("http://localhost:3000/api/mobile/v1/me"), {});
+    const res = await GET(new NextRequest("http://localhost:3000/api/mobile/v1/me"), { params: Promise.resolve({}) });
     const body = await res.json();
 
     expect(res.status).toBe(200);
@@ -52,7 +52,7 @@ describe("GET /api/mobile/v1/me", () => {
   it("returns 401 when not authenticated", async () => {
     mockedApiAuth.mockResolvedValue(null as never);
 
-    const res = await GET(new NextRequest("http://localhost:3000/api/mobile/v1/me"), {});
+    const res = await GET(new NextRequest("http://localhost:3000/api/mobile/v1/me"), { params: Promise.resolve({}) });
     expect(res.status).toBe(401);
   });
 });
@@ -70,7 +70,7 @@ describe("PUT /api/mobile/v1/me", () => {
         method: "PUT",
         body: JSON.stringify({ name: "Moritz" }),
       }),
-      {}
+      { params: Promise.resolve({}) }
     );
     const body = await res.json();
 
@@ -90,7 +90,7 @@ describe("PUT /api/mobile/v1/me", () => {
         method: "PUT",
         body: JSON.stringify({ currentPassword: "oldpass", newPassword: "newpass123" }),
       }),
-      {}
+      { params: Promise.resolve({}) }
     );
 
     expect(res.status).toBe(200);
@@ -112,7 +112,7 @@ describe("PUT /api/mobile/v1/me", () => {
         method: "PUT",
         body: JSON.stringify({ currentPassword: "wrong", newPassword: "newpass123" }),
       }),
-      {}
+      { params: Promise.resolve({}) }
     );
 
     expect(res.status).toBe(403);
@@ -127,7 +127,7 @@ describe("PUT /api/mobile/v1/me", () => {
         method: "PUT",
         body: JSON.stringify({ name: "Moritz" }),
       }),
-      {}
+      { params: Promise.resolve({}) }
     );
     expect(res.status).toBe(401);
   });

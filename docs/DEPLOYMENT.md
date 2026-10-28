@@ -35,7 +35,7 @@ Diese Anleitung beschreibt den kompletten Release-Prozess für die BoardGameTool
 | Install Command | `npm ci` |
 | Root Directory | `.` |
 
-> `npm run build` führt automatisch `npm run prisma:deploy` aus, um Migrationen anzuwenden.
+> `npm run build` ist seit 0.50.16 ein reiner Build ohne Datenbankänderung. Migrationen sind ein gesonderter, ausdrücklich freizugebender Release-Schritt.
 
 ### 2.3 Erforderliche Environment Variables
 
@@ -71,8 +71,11 @@ In Vercel unter **Project Settings → Environment Variables** eintragen (Bereic
 
 - Bei Vercel Postgres: `SQL_DATABASE_URL` entspricht dem Vercel-Postgres-String.
 - Bei externem Postgres: Stelle sicher, dass die Datenbank erreichbar ist und SSL aktiviert ist (Vercel erfordert SSL).
-- Migrationen werden durch `npm run build` → `npm run prisma:deploy` automatisch ausgeführt.
-- Manuelles Zurücksetzen bei Bedarf: `npx prisma migrate deploy` bzw. `npx prisma migrate reset` (nur lokal/dev).
+- Vor einem Release den Zustand und die Wiederherstellbarkeit des Backups prüfen und Migrationen zuerst an einer separaten Testdatenbank erproben.
+- Freigegebene Migrationen gezielt mit `npm run prisma:deploy` ausführen. Der Befehl bricht beim ersten Fehler ab; es gibt kein automatisches Baseline und kein `prisma db push`.
+- Erst nach erfolgreicher Migration den vorbereiteten Build veröffentlichen. Vercel verwendet weiterhin `npm run build`; neue Migrationen werden dadurch nicht stillschweigend ausgeführt.
+- Für ausdrücklich freigegebene Release-Umgebungen kombiniert `npm run release:build` Migration und anschließenden Build. Das ist kein Prüf- oder Preview-Befehl.
+- Bei einem Migrationsfehler Ursache und Schema prüfen. `migrate resolve` nur nach manuell geprüftem Baseline-/Reparaturplan; niemals pauschal alle Migrationen als angewendet markieren. `migrate reset` ist ausschließlich für wegwerfbare lokale Entwicklungsdatenbanken vorgesehen.
 
 ### 2.5 Vorschau-Deployment (Preview)
 

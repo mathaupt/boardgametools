@@ -12,6 +12,22 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.16",
+    date: "2026-10-28",
+    title: "Sicherheitsupdates und zuverlässigere iOS-Anmeldung",
+    description: "Sicherheitsupdates für Web und Backend, passende iOS-Antwortformate und getrennte lokale Kontodaten. Der Produktionsbuild verändert die Datenbank nicht mehr automatisch.",
+    changes: [
+      { type: "fix", text: "Next.js, Nodemailer und betroffene Abhängigkeiten aktualisiert; produktive npm-Sicherheitsbefunde behoben", bugRef: "BUG-026" },
+      { type: "fix", text: "iOS kann erneuerte Anmeldetokens einlesen; parallele Anfragen teilen sich eine Erneuerung", bugRef: "BUG-027" },
+      { type: "fix", text: "Spielereihen mit Einträgen können auf iOS synchronisiert werden", bugRef: "BUG-028" },
+      { type: "fix", text: "Lokale Daten werden bei Konto- oder Serverwechsel und beim Abmelden entfernt; alte Antworten werden verworfen", bugRef: "BUG-029" },
+      { type: "fix", text: "Datenbankmigrationen brechen bei Fehlern ab und laufen nur noch als ausdrücklicher Release-Schritt", bugRef: "BUG-030" },
+      { type: "fix", text: "Antworten erfolgreicher Bild-Uploads können auf iOS eingelesen werden", bugRef: "BUG-031" },
+      { type: "fix", text: "API-Logging an die strengeren Routentypen des aktualisierten Frameworks angepasst", bugRef: "BUG-032" },
+      { type: "internal", text: "Regressionstests für Migrationen, iOS-Verträge und Kontotrennung sowie macOS-CI ergänzt" },
+    ],
+  },
+  {
     version: "0.50.15",
     date: "2026-09-20",
     title: "Sicherheits- und Framework-Updates für Next.js und Node-Bibliotheken",

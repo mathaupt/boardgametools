@@ -62,8 +62,10 @@ Für automatisierte E2E-Tests wird der Account in `tests/e2e/bootstrap.ts` angel
 | Script | Beschreibung |
 |--------|-------------|
 | `npm run dev` | Entwicklungsserver starten |
-| `npm run build` | Führt `prisma migrate deploy` aus und erstellt anschließend den Produktions-Build |
+| `npm run build` | Erstellt den Produktions-Build ohne Datenbankänderungen |
 | `npm run test` | Unit Tests ausführen |
+| `npm run prisma:deploy` | Führt freigegebene Migrationen aus; bricht bei Fehlern ab |
+| `npm run test:ios:contracts` | Prüft iOS-Verträge, Token-Erneuerung und Kontotrennung auf macOS |
 | `npm run test:watch` | Unit Tests im Watch-Modus |
 | `npm run test:e2e` | E2E Tests ausführen |
 | `npm run db:migrate` | Datenbank-Migration |

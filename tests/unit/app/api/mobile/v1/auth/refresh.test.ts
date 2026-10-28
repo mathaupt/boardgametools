@@ -32,7 +32,7 @@ describe("POST /api/mobile/v1/auth/refresh", () => {
         method: "POST",
         body: JSON.stringify({ refreshToken: "oldRefresh" }),
       }),
-      {}
+      { params: Promise.resolve({}) }
     );
 
     expect(res.status).toBe(200);
@@ -47,7 +47,7 @@ describe("POST /api/mobile/v1/auth/refresh", () => {
         method: "POST",
         body: JSON.stringify({ refreshToken: "bad" }),
       }),
-      {}
+      { params: Promise.resolve({}) }
     );
 
     expect(res.status).toBe(401);

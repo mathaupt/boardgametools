@@ -26,7 +26,7 @@ describe("POST /api/mobile/v1/auth/logout", () => {
         method: "POST",
         body: JSON.stringify({ accessToken: "token" }),
       }),
-      {}
+      { params: Promise.resolve({}) }
     );
 
     expect(res.status).toBe(200);
@@ -40,7 +40,7 @@ describe("POST /api/mobile/v1/auth/logout", () => {
         method: "POST",
         headers: { authorization: "Bearer ios-token" },
       }),
-      {}
+      { params: Promise.resolve({}) }
     );
 
     expect(res.status).toBe(200);
@@ -53,7 +53,7 @@ describe("POST /api/mobile/v1/auth/logout", () => {
       new NextRequest("http://localhost:3000/api/mobile/v1/auth/logout", {
         method: "POST",
       }),
-      {}
+      { params: Promise.resolve({}) }
     );
 
     expect(res.status).toBe(401);

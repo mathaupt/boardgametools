@@ -186,7 +186,7 @@ describe("Mobile Event Routes", () => {
       mockedApiAuth.mockResolvedValue(authUser() as never);
       mockedEventFindMany.mockResolvedValue([{ id: "e1", ...baseEventFields, createdById: "u1" }] as never);
 
-      const res = await listEvents(new NextRequest("http://localhost:3000/api/mobile/v1/events"), {});
+      const res = await listEvents(new NextRequest("http://localhost:3000/api/mobile/v1/events"), { params: Promise.resolve({}) });
       const body = await res.json();
 
       expect(res.status).toBe(200);
@@ -207,7 +207,7 @@ describe("Mobile Event Routes", () => {
     it("returns 401 when not authenticated", async () => {
       mockedApiAuth.mockResolvedValue(null as never);
 
-      const res = await listEvents(new NextRequest("http://localhost:3000/api/mobile/v1/events"), {});
+      const res = await listEvents(new NextRequest("http://localhost:3000/api/mobile/v1/events"), { params: Promise.resolve({}) });
 
       expect(res.status).toBe(401);
       expect((await res.json()).error).toBe("Nicht autorisiert");
@@ -224,7 +224,7 @@ describe("Mobile Event Routes", () => {
           method: "POST",
           body: JSON.stringify({ title: "Spieleabend", eventDate: "2026-04-01" }),
         }),
-        {}
+        { params: Promise.resolve({}) }
       );
       const body = await res.json();
 
@@ -241,7 +241,7 @@ describe("Mobile Event Routes", () => {
           method: "POST",
           body: JSON.stringify({ title: "X", eventDate: "2026-04-01" }),
         }),
-        {}
+        { params: Promise.resolve({}) }
       );
 
       expect(res.status).toBe(401);
@@ -256,7 +256,7 @@ describe("Mobile Event Routes", () => {
           method: "POST",
           body: JSON.stringify({}),
         }),
-        {}
+        { params: Promise.resolve({}) }
       );
 
       expect(res.status).toBe(400);

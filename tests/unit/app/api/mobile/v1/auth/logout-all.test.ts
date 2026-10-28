@@ -29,7 +29,7 @@ describe("POST /api/mobile/v1/auth/logout-all", () => {
 
     const res = await POST(
       new NextRequest("http://localhost:3000/api/mobile/v1/auth/logout-all", { method: "POST" }),
-      {}
+      { params: Promise.resolve({}) }
     );
 
     expect(res.status).toBe(200);
@@ -44,7 +44,7 @@ describe("POST /api/mobile/v1/auth/logout-all", () => {
 
     const res = await POST(
       new NextRequest("http://localhost:3000/api/mobile/v1/auth/logout-all", { method: "POST" }),
-      {}
+      { params: Promise.resolve({}) }
     );
 
     expect(res.status).toBe(401);

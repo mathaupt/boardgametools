@@ -95,7 +95,7 @@ describe("/api/mobile/v1/series", () => {
   it("GET lists series", async () => {
     mockedList.mockResolvedValue([sampleSeries] as never);
 
-    const res = await listSeries(req("GET", "http://localhost:3000/api/mobile/v1/series"), {});
+    const res = await listSeries(req("GET", "http://localhost:3000/api/mobile/v1/series"), { params: Promise.resolve({}) });
     const body = await res.json();
 
     expect(res.status).toBe(200);
@@ -105,7 +105,7 @@ describe("/api/mobile/v1/series", () => {
   it("POST creates a series", async () => {
     mockedCreate.mockResolvedValue(sampleSeries as never);
 
-    const res = await createSeries(req("POST", "http://localhost:3000/api/mobile/v1/series", { name: "EXIT" }), {});
+    const res = await createSeries(req("POST", "http://localhost:3000/api/mobile/v1/series", { name: "EXIT" }), { params: Promise.resolve({}) });
     const body = await res.json();
 
     expect(res.status).toBe(201);
@@ -203,7 +203,7 @@ describe("/api/mobile/v1/series", () => {
   it("returns 401 when not authenticated", async () => {
     mockedApiAuth.mockResolvedValue(null as never);
 
-    const res = await listSeries(req("GET", "http://localhost:3000/api/mobile/v1/series"), {});
+    const res = await listSeries(req("GET", "http://localhost:3000/api/mobile/v1/series"), { params: Promise.resolve({}) });
     expect(res.status).toBe(401);
   });
 });

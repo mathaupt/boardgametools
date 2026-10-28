@@ -53,7 +53,7 @@ describe("Mobile Session Routes", () => {
     mockedApiAuth.mockResolvedValue(authUser() as never);
     mockedList.mockResolvedValue([sampleSession] as never);
 
-    const res = await listSessions(new NextRequest("http://localhost:3000/api/mobile/v1/sessions"), {});
+    const res = await listSessions(new NextRequest("http://localhost:3000/api/mobile/v1/sessions"), { params: Promise.resolve({}) });
     const body = await res.json();
 
     expect(res.status).toBe(200);
@@ -74,7 +74,7 @@ describe("Mobile Session Routes", () => {
           players: [{ userId: "u1" }],
         }),
       }),
-      {}
+      { params: Promise.resolve({}) }
     );
 
     expect(res.status).toBe(201);

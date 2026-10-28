@@ -19,6 +19,10 @@ export const faqSections: FaqSection[] = [
     description: "So startest du mit BoardGameTools.",
     items: [
       {
+        question: "Was passiert beim Abmelden oder Kontowechsel in der iOS-App?",
+        answer: "Die App entfernt lokale Spiele, Partien, Gruppen, Events und Sync-Daten. Deine Daten bleiben auf dem Server erhalten und werden nach der Anmeldung erneut geladen. Bei einem Wechsel der API-Adresse meldet sich die App zuerst beim bisherigen Server ab. Nach dem Update auf 0.50.16 kann einmalig eine erneute Anmeldung nötig sein, weil alte lokale Daten keinem Konto sicher zugeordnet waren.",
+      },
+      {
         question: "Wie erstelle ich ein Konto?",
         answer:
           'Klicke auf der Startseite auf "Registrieren". Gib deinen Namen, eine E-Mail-Adresse und ein Passwort ein (mindestens 8 Zeichen, maximal 128). Nach der Registrierung kannst du dich sofort anmelden und loslegen.',

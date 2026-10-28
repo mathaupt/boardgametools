@@ -1,4 +1,13 @@
 import Foundation
+import Observation
+
+protocol TokenStorage: Sendable {
+    func readAccessToken() async -> String?
+    func readRefreshToken() async -> String?
+    func saveAccessToken(_ token: String) async throws
+    func saveRefreshToken(_ token: String) async throws
+    func clearTokens() async throws
+}
 
 @Observable
 @MainActor
@@ -12,32 +21,45 @@ final class APIClient: Sendable {
     }
 
     private let session: URLSession
-    private var isRefreshing = false
-    private var pendingRefreshContinuations: [CheckedContinuation<Void, Error>] = []
+    private let tokens: any TokenStorage
+    private var refreshTask: Task<Void, Error>?
+    private(set) var sessionGeneration = 0
 
-    private init() {
+    private convenience init() {
         let infoDefault = Bundle.main.infoDictionary?["API_BASE_URL"] as? String
         let fallback = infoDefault ?? "https://boardgametools.vercel.app"
 
         if let saved = UserDefaults.standard.string(forKey: "api_base_url"),
            let url = URL(string: saved),
            (try? Self.validate(url)) != nil {
-            self.baseURL = url
+            self.init(baseURL: url)
         } else if let url = URL(string: fallback),
                   (try? Self.validate(url)) != nil {
-            self.baseURL = url
+            self.init(baseURL: url)
         } else {
-            self.baseURL = URL(string: "https://boardgametools.vercel.app")!
+            self.init(baseURL: URL(string: "https://boardgametools.vercel.app")!)
         }
-        self.session = URLSession(configuration: .default)
+    }
+
+    init(baseURL: URL, session: URLSession = URLSession(configuration: .default), tokens: any TokenStorage = KeychainManager.shared) {
+        self.baseURL = baseURL
+        self.session = session
+        self.tokens = tokens
+    }
+
+    func invalidateSession() {
+        sessionGeneration += 1
+        refreshTask?.cancel()
+        refreshTask = nil
     }
 
     func updateBaseURL(_ url: URL) throws(APIError) {
         try Self.validate(url)
+        invalidateSession()
         self.baseURL = url
     }
 
-    private static func validate(_ url: URL) throws(APIError) {
+    static func validate(_ url: URL) throws(APIError) {
         guard let scheme = url.scheme?.lowercased() else {
             throw .invalidURL
         }
@@ -91,9 +113,10 @@ final class APIClient: Sendable {
         method: HTTPMethod,
         endpoint: Endpoint,
         body: (any Encodable & Sendable)? = nil,
-        requiresAuth: Bool = true
+        requiresAuth: Bool = true,
+        allowRefresh: Bool = true
     ) async throws -> Data {
-        return try await perform(method: method, endpoint: endpoint, body: body, requiresAuth: requiresAuth)
+        return try await perform(method: method, endpoint: endpoint, body: body, requiresAuth: requiresAuth, allowRefresh: allowRefresh)
     }
 
     // MARK: - Upload
@@ -106,7 +129,7 @@ final class APIClient: Sendable {
         var request = URLRequest(url: url)
         request.httpMethod = HTTPMethod.post.rawValue
 
-        if let token = await KeychainManager.shared.readAccessToken() {
+        if let token = await tokens.readAccessToken() {
             request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         }
 
@@ -133,12 +156,10 @@ final class APIClient: Sendable {
         method: HTTPMethod,
         endpoint: Endpoint,
         body: (any Encodable & Sendable)? = nil,
-        requiresAuth: Bool = true
+        requiresAuth: Bool = true,
+        allowRefresh: Bool = true
     ) async throws -> Data {
-        if requiresAuth {
-            await ensureAccessTokenValid()
-        }
-
+        let generation = sessionGeneration
         guard let url = endpoint.url(base: baseURL) else {
             throw APIError.invalidURL
         }
@@ -147,7 +168,7 @@ final class APIClient: Sendable {
         request.httpMethod = method.rawValue
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
 
-        if requiresAuth, let token = await KeychainManager.shared.readAccessToken() {
+        if requiresAuth, let token = await tokens.readAccessToken() {
             request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         }
 
@@ -155,13 +176,16 @@ final class APIClient: Sendable {
             request.httpBody = try JSONConfig.encoder.encode(body)
         }
 
+        guard generation == sessionGeneration else { throw APIError.cancelled }
         let (data, response) = try await session.data(for: request)
+        guard generation == sessionGeneration else { throw APIError.cancelled }
         do {
             try validate(response: response, data: data)
         } catch APIError.unauthorized {
-            if requiresAuth {
+            if requiresAuth && allowRefresh && endpoint != .logout && endpoint != .logoutAll {
                 try await refreshAccessToken()
-                return try await perform(method: method, endpoint: endpoint, body: body, requiresAuth: requiresAuth)
+                guard generation == sessionGeneration else { throw APIError.cancelled }
+                return try await perform(method: method, endpoint: endpoint, body: body, requiresAuth: requiresAuth, allowRefresh: false)
             } else {
                 throw APIError.unauthorized
             }
@@ -193,53 +217,47 @@ final class APIClient: Sendable {
         }
     }
 
-    private func ensureAccessTokenValid() async {
-        // Refresh happens reactively on 401. This could be enhanced by decoding exp claim.
-    }
-
     private func refreshAccessToken() async throws {
-        guard let refreshToken = await KeychainManager.shared.readRefreshToken() else {
-            throw APIError.unauthorized
+        if let refreshTask {
+            return try await refreshTask.value
         }
-
-        if isRefreshing {
-            return try await withCheckedThrowingContinuation { continuation in
-                pendingRefreshContinuations.append(continuation)
+        let generation = sessionGeneration
+        let task = Task { @MainActor in
+            guard let refreshToken = await tokens.readRefreshToken() else {
+                throw APIError.unauthorized
             }
+            guard let url = Endpoint.refresh.url(base: baseURL) else {
+                throw APIError.invalidURL
+            }
+            struct RefreshBody: Encodable { let refreshToken: String }
+            var request = URLRequest(url: url)
+            request.httpMethod = HTTPMethod.post.rawValue
+            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            request.httpBody = try JSONConfig.encoder.encode(RefreshBody(refreshToken: refreshToken))
+            let (data, response) = try await session.data(for: request)
+            try Task.checkCancellation()
+            guard generation == sessionGeneration else { throw APIError.cancelled }
+            do {
+                try validate(response: response, data: data)
+            } catch APIError.unauthorized {
+                try await tokens.clearTokens()
+                throw APIError.unauthorized
+            }
+            let responseTokens = try JSONConfig.decoder.decode(RefreshTokenResponse.self, from: data)
+            try await tokens.saveAccessToken(responseTokens.accessToken)
+            try Task.checkCancellation()
+            guard generation == sessionGeneration else { throw APIError.cancelled }
+            try await tokens.saveRefreshToken(responseTokens.refreshToken)
         }
-
-        isRefreshing = true
+        refreshTask = task
         defer {
-            isRefreshing = false
-            let continuations = pendingRefreshContinuations
-            pendingRefreshContinuations.removeAll()
-            continuations.forEach { $0.resume() }
+            if generation == sessionGeneration { refreshTask = nil }
         }
-
-        struct RefreshBody: Encodable, Sendable {
-            let refreshToken: String
-            let deviceName: String
-        }
-
-        guard let url = Endpoint.refresh.url(base: baseURL) else {
-            throw APIError.invalidURL
-        }
-
-        var request = URLRequest(url: url)
-        request.httpMethod = HTTPMethod.post.rawValue
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.httpBody = try JSONConfig.encoder.encode(RefreshBody(refreshToken: refreshToken, deviceName: "iOS App"))
-
-        let (data, response) = try await session.data(for: request)
         do {
-            try validate(response: response, data: data)
+            try await task.value
         } catch {
-            try await KeychainManager.shared.clearTokens()
-            throw APIError.unauthorized
+            if generation != sessionGeneration { throw APIError.cancelled }
+            throw error
         }
-
-        let tokenResponse = try JSONConfig.decoder.decode(TokenResponse.self, from: data)
-        try await KeychainManager.shared.saveAccessToken(tokenResponse.accessToken)
-        try await KeychainManager.shared.saveRefreshToken(tokenResponse.refreshToken)
     }
 }

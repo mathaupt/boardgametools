@@ -159,7 +159,7 @@ describe("Mobile Group Routes", () => {
 
       const res = await listGroups(
         new NextRequest("http://localhost:3000/api/mobile/v1/groups"),
-        {}
+        { params: Promise.resolve({}) }
       );
       const body = await res.json();
 
@@ -181,7 +181,7 @@ describe("Mobile Group Routes", () => {
 
       const res = await listGroups(
         new NextRequest("http://localhost:3000/api/mobile/v1/groups?page=1&limit=10"),
-        {}
+        { params: Promise.resolve({}) }
       );
       const body = await res.json();
 
@@ -195,7 +195,7 @@ describe("Mobile Group Routes", () => {
 
       const res = await listGroups(
         new NextRequest("http://localhost:3000/api/mobile/v1/groups"),
-        {}
+        { params: Promise.resolve({}) }
       );
 
       expect(res.status).toBe(401);
@@ -212,7 +212,7 @@ describe("Mobile Group Routes", () => {
           method: "POST",
           body: JSON.stringify({ name: "Game Night" }),
         }),
-        {}
+        { params: Promise.resolve({}) }
       );
       const body = await res.json();
 

@@ -30,8 +30,8 @@ BoardGameTools folgt der klassischen Test-Pyramide. Die Basis bilden schnelle, i
 
 | Ebene       | Werkzeug              | Anzahl  | Ausfuehrungszeit | Wo                  |
 |-------------|-----------------------|---------|------------------|---------------------|
-| Unit        | Vitest 4.1.10         | 500+    | < 15 Sekunden    | `tests/unit/lib/`   |
-| Integration | Vitest 4.1.10         | 20+     | --               | `tests/unit/api/`   |
+| Unit        | Vitest 4.1.12         | 500+    | < 15 Sekunden    | `tests/unit/lib/`   |
+| Integration | Vitest 4.1.12         | 20+     | --               | `tests/unit/api/`   |
 | E2E         | CodeceptJS 4.1.0 + Playwright 1.62.1 | wenige | 30-60 Sekunden   | `tests/e2e/`        |
 
 ### Kernprinzipien
@@ -173,7 +173,7 @@ export default defineConfig({
 | `coverage.thresholds`| `src/lib/**`: 60% Lines/Stmts/Funcs        | Mindeststandard fuer Business-Logik       |
 | `alias @`            | `./src`                                     | Gleiche Pfadaufloesung wie in Next.js     |
 
-**Abhaengigkeiten:** `vitest` ^4.1.10, `@vitejs/plugin-react` ^6.0.2, `@vitest/coverage-v8` ^4.1.10, `jsdom` ^29.1.1, `@testing-library/react` ^16.3.2, `@testing-library/jest-dom` ^7.0.0, `@testing-library/user-event` ^14.6.3, `jest-axe` ^11.0.0.
+**Abhaengigkeiten:** `vitest` ^4.1.12, `@vitejs/plugin-react` ^6.0.2, `@vitest/coverage-v8` ^4.1.12, `jsdom` ^29.1.1, `@testing-library/react` ^16.3.2, `@testing-library/jest-dom` ^7.0.0, `@testing-library/user-event` ^14.6.3, `jest-axe` ^11.0.0.
 
 ### Test-Befehle
 
@@ -743,3 +743,8 @@ npm run review-evaluate:regression    # Review-Evaluator mit Regressionserkennun
 - [ ] Keine festen Wartezeiten (`I.wait(5)` verboten).
 - [ ] Selektoren stabil (`data-testid` bevorzugen).
 - [ ] Test-Daten isoliert (eigene Daten erstellen und aufraeumen).
+
+
+## iOS-Regressionen seit 0.50.16
+
+`npm run test:ios:contracts` kompiliert die tatsächlichen Swift-Netzwerk-/SwiftData-Dateien und führt die Regressionen aus `BoardGameToolsTests.swift` ohne Simulator aus. Tests verwenden In-Memory-SwiftData, isolierte UserDefaults, einen Speicher-Tokenstore und URLProtocol-Antworten. Es werden keine echten Server, Nutzerdaten oder Keychain-Tokens verwendet. Die gleichen Prüfungen stehen als Xcode-Tests bereit. CI führt sie unter macOS aus.

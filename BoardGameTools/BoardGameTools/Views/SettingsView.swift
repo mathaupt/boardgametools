@@ -102,17 +102,14 @@ struct SettingsView: View {
         }
 
         do {
-            try APIClient.shared.updateBaseURL(url)
-        } catch {
+            try await authManager.changeBackend(to: url)
+            errorMessage = nil
+            successMessage = nil
+        } catch let error as APIError {
             errorMessage = error.message
-            return
+        } catch {
+            errorMessage = error.localizedDescription
         }
-
-        // Changing the backend usually invalidates the current session.
-        // Clear local auth state first so the user can log in again.
-        await logout()
-        errorMessage = nil
-        successMessage = nil
     }
 
     private func updateProfile() async {

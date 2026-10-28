@@ -819,3 +819,11 @@ Zusaetzlich: Profil-Link, Logout-Button, Versions-Badge → Changelog.
 ---
 
 *Erstellt am 2026-03-24 | Version 0.40.0 | 41 Seiten, 71 API-Endpunkte, 27 Modelle, 508 Tests*
+
+
+### Korrekturen in 0.50.16
+
+- iOS-Token-Erneuerung verwendet ein eigenes Antwortmodell ohne obligatorisches Nutzerobjekt. Fehlgeschlagene parallele Erneuerungen melden denselben Fehler; eine Anfrage wird höchstens einmal nach Erneuerung wiederholt.
+- Spielereiheneinträge erwarten die tatsächlich gelieferte Bildzusammenfassung statt eines vollständigen Spiels. Bild-Upload-Antworten entsprechen dem Backendformat.
+- Konto- und Backendwechsel sowie Abmelden löschen alle lokalen Kontodaten. Antworten früherer Sitzungen können den Cache nicht erneut befüllen. Abmeldung beim Backendwechsel erfolgt am bisherigen Server.
+- Bei unbekannter Cache-Zuordnung nach dem Update sind erneute Anmeldung und Online-Synchronisation nötig. Bereits eindeutig zugeordnete Daten bleiben beim Neustart für Offline-Lesen erhalten.

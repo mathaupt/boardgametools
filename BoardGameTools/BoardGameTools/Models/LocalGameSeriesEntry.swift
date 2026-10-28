@@ -71,7 +71,7 @@ final class LocalGameSeriesEntry {
             score: score,
             createdAt: createdAt,
             updatedAt: updatedAt,
-            game: game?.toDTO()
+            game: game.map { SeriesGameSummary(imageUrl: $0.imageUrl) }
         )
     }
 }

@@ -886,10 +886,197 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 ---
 
+### [BUG-026] Sicherheitsbefunde in produktiven Abhängigkeiten
+
+**Status:** `fixed`
+**Schweregrad:** `critical`
+**Entdeckt:** 2026-10-28
+**Behoben:** 2026-10-28
+**Behoben in Version:** 0.50.16
+**Test geschrieben:** Ja
+
+**Beschreibung:** npm audit --omit=dev meldete 10 betroffene Pakete einschließlich eines kritischen Next.js-Befunds.
+
+**Reproduktion:** Produktionsaudit mit altem Lockfile ausführen.
+
+**Erwartetes Verhalten:** Keine bekannten hohen oder kritischen produktiven Paketbefunde.
+
+**Tatsächliches Verhalten vor Korrektur:** 10 produktive Paketbefunde.
+
+**Ursache:** Veraltete direkte und transitive Versionen.
+
+**Lösung:** Next.js 16.4.3, Nodemailer 10.2.1, Blob 2.8.2, Prisma 7.10.1 und kompatible transitive Updates; gezielte Overrides für Undici 6, Zod 4 und js-yaml 4.
+
+**Test-Status:** npm audit --omit=dev: 0; Gesamtaudit: nur 3 niedrige Entwicklungsbefunde.
+
+**Referenz im Changelog:** Version 0.50.16, BUG-026.
+
+---
+
+### [BUG-027] iOS-Token-Erneuerung scheitert am Antwortformat
+
+**Status:** `fixed`
+**Schweregrad:** `high`
+**Entdeckt:** 2026-10-28
+**Behoben:** 2026-10-28
+**Behoben in Version:** 0.50.16
+**Test geschrieben:** Ja
+
+**Beschreibung:** Refresh liefert kein user-Objekt, der Client erwartete jedoch TokenResponse.
+
+**Reproduktion:** Nach Ablauf des Access-Tokens eine geschützte Anfrage senden.
+
+**Erwartetes Verhalten:** Neue Tokens speichern und Anfrage einmal wiederholen.
+
+**Tatsächliches Verhalten vor Korrektur:** Decodierfehler; bereits rotierter Refresh-Token geht verloren.
+
+**Ursache:** Gemeinsames DTO für unterschiedliche Login- und Refresh-Antworten.
+
+**Lösung:** Eigenes RefreshTokenResponse; geteilte Refresh-Task mit Fehlerweitergabe, begrenzte Wiederholung und Session-Generation.
+
+**Test-Status:** Swift-Verträge und simulierte URLSession: Erfolg, parallele Anfragen, Refresh-Fehler und maximale Wiederholung.
+
+**Referenz im Changelog:** Version 0.50.16, BUG-027.
+
+---
+
+### [BUG-028] Spielereiheneintrag verhindert iOS-Synchronisation
+
+**Status:** `fixed`
+**Schweregrad:** `high`
+**Entdeckt:** 2026-10-28
+**Behoben:** 2026-10-28
+**Behoben in Version:** 0.50.16
+**Test geschrieben:** Ja
+
+**Beschreibung:** Backend liefert game nur als Bildzusammenfassung; Swift erwartete das vollständige GameDTO.
+
+**Reproduktion:** Eine Reihe mit einem Eintrag anlegen und iOS synchronisieren.
+
+**Erwartetes Verhalten:** Reihen und übrige Snapshot-Daten einlesen.
+
+**Tatsächliches Verhalten vor Korrektur:** keyNotFound(id) im verschachtelten game-Objekt.
+
+**Ursache:** Unterschiedliche verschachtelte DTOs.
+
+**Lösung:** SeriesGameSummary mit optionaler imageUrl statt vollständigem GameDTO.
+
+**Test-Status:** Swift-Decodiertest mit befülltem Reiheneintrag und Serverformat.
+
+**Referenz im Changelog:** Version 0.50.16, BUG-028.
+
+---
+
+### [BUG-029] Lokale iOS-Daten bleiben bei Konto- und Serverwechsel erhalten
+
+**Status:** `fixed`
+**Schweregrad:** `high`
+**Entdeckt:** 2026-10-28
+**Behoben:** 2026-10-28
+**Behoben in Version:** 0.50.16
+**Test geschrieben:** Ja
+
+**Beschreibung:** Ein gemeinsamer SwiftData-Store wurde nicht geleert; alte Antworten konnten neue Sitzungen beeinflussen.
+
+**Reproduktion:** Konto A synchronisieren, abmelden und Konto B oder anderes Backend verwenden.
+
+**Erwartetes Verhalten:** Keine Daten von A in B; Logout an bisheriges Backend.
+
+**Tatsächliches Verhalten vor Korrektur:** Alte Datensätze verblieben; Logout konnte bereits an die neue URL gehen.
+
+**Ursache:** Fehlende Cache-Zuordnung und falsche Reihenfolge beim Backendwechsel.
+
+**Lösung:** LocalAccountStore ordnet Backend/Nutzer zu, leert alle Kontomodelle und Metadaten; unbekannte Altzuordnung wird verworfen. Session-Generation verwirft alte Antworten, laufende Erneuerungen werden abgebrochen.
+
+**Test-Status:** In-Memory-SwiftData: Altbestand, identisches Konto, zweites Konto, Backendwechsel und Logout; URLSession-Test für alte Antwort und Logout-Host.
+
+**Referenz im Changelog:** Version 0.50.16, BUG-029.
+
+---
+
+### [BUG-030] Migrationsfehler lösen automatische Baseline und db push aus
+
+**Status:** `fixed`
+**Schweregrad:** `high`
+**Entdeckt:** 2026-10-28
+**Behoben:** 2026-10-28
+**Behoben in Version:** 0.50.16
+**Test geschrieben:** Ja
+
+**Beschreibung:** Der bisherige Build versuchte bei beliebigen Migrationsfehlern Reparaturaktionen ohne Schemaprüfung.
+
+**Reproduktion:** Migrationsprozess mit Exit 7 oder Signal simulieren.
+
+**Erwartetes Verhalten:** Einmaliger Aufruf und Fehlerstatus, ohne weitere Datenbankaktionen.
+
+**Tatsächliches Verhalten vor Korrektur:** Migrationen wurden als angewendet markiert; anschließend db push. Bei Signal konnte sogar Erfolg gemeldet werden.
+
+**Ursache:** Pauschaler Fehler-Fallback; signalbedingter Status null wurde als 0 behandelt.
+
+**Lösung:** Build von Migration getrennt; Migrationsskript ruft ausschließlich migrate deploy auf und bricht bei Fehler oder Signal ab.
+
+**Test-Status:** Vitest mit ausführbarem npx-Testdouble: Erfolg, Exit 7 und SIGTERM; keine echte Datenbank.
+
+**Referenz im Changelog:** Version 0.50.16, BUG-030.
+
+---
+
+### [BUG-031] iOS meldet nach erfolgreichem Bild-Upload einen Decodierfehler
+
+**Status:** `fixed`
+**Schweregrad:** `medium`
+**Entdeckt:** 2026-10-28
+**Behoben:** 2026-10-28
+**Behoben in Version:** 0.50.16
+**Test geschrieben:** Ja
+
+**Beschreibung:** UploadResponse verlangte path, obwohl der Server url und Metadaten liefert.
+
+**Reproduktion:** Ein Bild über die mobile API hochladen und Antwort decodieren.
+
+**Erwartetes Verhalten:** Erfolgreiche Antwort mit Bild-URL einlesen.
+
+**Tatsächliches Verhalten vor Korrektur:** keyNotFound(path).
+
+**Ursache:** Veraltetes Client-Antwortmodell.
+
+**Lösung:** UploadResponse entspricht id, url, fileName, mimeType und sizeBytes.
+
+**Test-Status:** Swift-Decodiertest mit tatsächlichem Upload-Antwortformat.
+
+**Referenz im Changelog:** Version 0.50.16, BUG-031.
+
+---
+
+### [BUG-032] API-Logging-Kontext scheitert an strengeren Next.js-Buildtypen
+
+**Status:** `fixed`
+**Schweregrad:** `medium`
+**Entdeckt:** 2026-10-28
+**Behoben:** 2026-10-28
+**Behoben in Version:** 0.50.16
+**Test geschrieben:** Ja
+
+**Beschreibung:** Beim Sicherheitsupdate auf Next.js 16.4.3 verlangten die generierten Routentypen einen params-Kontext. Der Logging-Wrapper verwendete bisher einen unbestimmten Record als Standard.
+
+**Reproduktion:** Produktionsbuild nach dem Framework-Update ausführen.
+
+**Erwartetes Verhalten:** Geschützte und öffentliche Routen werden unverändert gebaut und geloggt.
+
+**Tatsächliches Verhalten vor Korrektur:** TypeScript-Buildfehler in statischen API-Routen.
+
+**Lösung:** Next.js-kompatibler Standardkontext mit asynchronen params; dynamische Kontexte bleiben generisch. Tests verwenden denselben Framework-Kontext.
+
+**Test-Status:** API-Logging-/Route-Tests, vollständiger Typecheck und Produktionsbuild.
+
+**Referenz im Changelog:** Version 0.50.16.
+
+---
+
 ## Statistik
 
 - **Offene Bugs:** 0
 - **In Bearbeitung:** 0
-- **Behoben:** 25
+- **Behoben:** 32
 - **Wontfix:** 0
-- **Gesamt:** 25
+- **Gesamt:** 32

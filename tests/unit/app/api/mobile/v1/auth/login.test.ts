@@ -57,7 +57,7 @@ describe("POST /api/mobile/v1/auth/login", () => {
       expiresAt: new Date("2099-01-01"),
     } as never);
 
-    const res = await POST(jsonRequest({ email: "a@b.c", password: "pw" }), {});
+    const res = await POST(jsonRequest({ email: "a@b.c", password: "pw" }), { params: Promise.resolve({}) });
     const body = await res.json();
 
     expect(res.status).toBe(200);
@@ -73,14 +73,14 @@ describe("POST /api/mobile/v1/auth/login", () => {
     } as never);
     mockedCompare.mockResolvedValue(false as never);
 
-    const res = await POST(jsonRequest({ email: "a@b.c", password: "wrong" }), {});
+    const res = await POST(jsonRequest({ email: "a@b.c", password: "wrong" }), { params: Promise.resolve({}) });
     expect(res.status).toBe(401);
   });
 
   it("returns 401 for non-existent user", async () => {
     vi.mocked(prisma.user.findUnique).mockResolvedValue(null as never);
 
-    const res = await POST(jsonRequest({ email: "x@y.z", password: "pw" }), {});
+    const res = await POST(jsonRequest({ email: "x@y.z", password: "pw" }), { params: Promise.resolve({}) });
     expect(res.status).toBe(401);
   });
 });

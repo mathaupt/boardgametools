@@ -7,6 +7,12 @@ struct TokenResponse: Decodable, Sendable {
     let user: UserDTO
 }
 
+struct RefreshTokenResponse: Decodable, Sendable {
+    let accessToken: String
+    let refreshToken: String
+    let expiresAt: String
+}
+
 struct UserDTO: Codable, Identifiable, Sendable {
     let id: String
     let email: String
@@ -220,6 +226,10 @@ struct GroupInput: Encodable, Sendable {
     let description: String?
 }
 
+struct SeriesGameSummary: Codable, Sendable {
+    var imageUrl: String?
+}
+
 struct SeriesEntryDTO: Codable, Identifiable, Sendable {
     let id: String
     var seriesId: String
@@ -235,7 +245,7 @@ struct SeriesEntryDTO: Codable, Identifiable, Sendable {
     var score: Int?
     var createdAt: String
     var updatedAt: String
-    var game: GameDTO?
+    var game: SeriesGameSummary?
 }
 
 struct SeriesDTO: Codable, Identifiable, Sendable {
@@ -378,7 +388,10 @@ struct BGGGameDetail: Codable, Sendable {
 
 struct UploadResponse: Decodable, Sendable {
     let url: String
-    let path: String
+    let id: String
+    let fileName: String
+    let mimeType: String
+    let sizeBytes: Int
 }
 
 struct SyncChanges<T: Codable & Sendable>: Codable, Sendable {

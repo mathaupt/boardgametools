@@ -72,9 +72,9 @@ export async function logApiRequest(entry: LogEntry) {
  * Usage:
  *   export const GET = withApiLogging(async (req) => { ... return NextResponse.json(...) })
  */
-type RouteHandlerContext = Record<string, unknown>;
+type RouteHandlerContext = { params: Promise<Record<string, string | string[]>> };
 
-export function withApiLogging<C extends RouteHandlerContext = RouteHandlerContext>(
+export function withApiLogging<C extends Record<string, unknown> = RouteHandlerContext>(
   handler: (req: NextRequest, context: C) => Promise<NextResponse>
 ): (req: NextRequest, context: C) => Promise<NextResponse> {
   return async (req: NextRequest, context: C): Promise<NextResponse> => {

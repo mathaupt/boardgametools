@@ -6,17 +6,17 @@ BoardGameTools ist eine Next.js 16 Webanwendung zur Verwaltung von Brettspielen,
 
 ## Tech Stack
 
-- **Framework**: Next.js 16.3.0 (App Router, Turbopack dev, Webpack prod)
+- **Framework**: Next.js 16.4.3 (App Router, Turbopack dev, Webpack prod)
 - **Sprache**: TypeScript 6.0.3 (strict)
-- **Datenbank**: PostgreSQL (Prisma Postgres) + Prisma ORM 7.9.1
+- **Datenbank**: PostgreSQL (Prisma Postgres) + Prisma ORM 7.10.1
 - **Styling**: Tailwind CSS 4.3.3 + `@tailwindcss/postcss` 4.3.3 + shadcn/ui Komponenten
 - **Auth**: NextAuth.js v5 beta.32 mit Credentials Provider
-- **Testing**: Vitest 4.1.10 (Unit), CodeceptJS 4.1.0 + Playwright 1.62.1 (E2E)
+- **Testing**: Vitest 4.1.12 (Unit), CodeceptJS 4.1.0 + Playwright 1.62.1 (E2E)
 - **Lint**: ESLint 9.39.5 (Flat Config `eslint.config.mjs`)
 - **CI/Hooks**: Husky 9.1.7 (pre-commit: Tests + Security + Review, pre-push: DB-Backup)
-- **Node**: `>=22.13.1` (siehe `package.json` engines)
+- **Node**: `>=24.0.0` (siehe `package.json` engines)
 - **Package Manager**: npm mit `legacy-peer-deps=true` (`.npmrc`) zur Auflösung von Peer-Dependency-Konflikten
-- **Native iOS-Client** (geplant): Xcode, Swift 6, SwiftUI, SwiftData, URLSession, Keychain, Sign in with Apple, Push-Benachrichtigungen, Deep Links
+- **Native iOS-Client** (implementiert): Xcode, Swift 6, SwiftUI, SwiftData, URLSession, Keychain, Sign in with Apple, Push-Benachrichtigungen, Deep Links
 
 ## Dependency-Management
 
@@ -25,7 +25,10 @@ BoardGameTools ist eine Next.js 16 Webanwendung zur Verwaltung von Brettspielen,
   - `mocha`: `diff ^8.0.4`, `serialize-javascript ^7.0.5`
   - `minimatch@3.1.5`: `brace-expansion ^1.1.18`
   - `codeceptjs`: `uuid ^11.1.1`, `axios ^1.19.0`
-- Verbleibende bekannte Schwachstellen: `swagger-ui-react` zwingt `js-yaml@4.3.0`; `@ai-sdk/provider-utils` hält `undici@5.x`. Beide sind bekannt und werden in `docs/code-reviews/security.md` verfolgt (SEC-45).
+- Sicherheitsstand 0.50.16: `npm audit --omit=dev` meldet 0 Befunde; Gesamtaudit enthält drei niedrige Befunde in der shadcn/deepmerge-Entwicklungskette. Details: `docs/code-reviews/security.md`.
+- Gezielte Overrides: `undici@>=6 <7` → `^6.29.1`, `zod@>=4 <4.6.6` → `^4.6.7`, `js-yaml@>=4 <5` → `^4.3.2`.
+- `npm run build` verändert keine Datenbank. Migrationen nur explizit über `npm run prisma:deploy`; bei Fehlern abbrechen, kein automatisches Baseline oder `db push`.
+- iOS-Vertragstests auf macOS: `npm run test:ios:contracts`. Lokale Cache-Zuordnung und vollständige Bereinigung: `LocalAccountStore` in `Data/PersistenceController.swift`.
 
 ## PFLICHT-Regeln
 

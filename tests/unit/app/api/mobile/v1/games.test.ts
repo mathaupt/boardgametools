@@ -68,7 +68,7 @@ describe("Mobile Game Routes", () => {
       mockedApiAuth.mockResolvedValue(authUser() as never);
       mockedList.mockResolvedValue([sampleGame] as never);
 
-      const res = await listGames(new NextRequest("http://localhost:3000/api/mobile/v1/games"), {});
+      const res = await listGames(new NextRequest("http://localhost:3000/api/mobile/v1/games"), { params: Promise.resolve({}) });
       const body = await res.json();
 
       expect(res.status).toBe(200);
@@ -88,7 +88,7 @@ describe("Mobile Game Routes", () => {
           method: "POST",
           body: JSON.stringify({ name: "Azul", minPlayers: 2, maxPlayers: 4 }),
         }),
-        {}
+        { params: Promise.resolve({}) }
       );
       const body = await res.json();
 
