@@ -27,6 +27,7 @@ BoardGameTools ist eine Next.js 16 Webanwendung zur Verwaltung von Brettspielen,
   - `codeceptjs`: `uuid ^11.1.1`, `axios ^1.19.0`
 - Sicherheitsstand 0.50.16: `npm audit --omit=dev` meldet 0 Befunde; Gesamtaudit enthält drei niedrige Befunde in der shadcn/deepmerge-Entwicklungskette. Details: `docs/code-reviews/security.md`.
 - Gezielte Overrides: `undici@>=6 <7` → `^6.29.1`, `zod@>=4 <4.6.6` → `^4.6.7`, `js-yaml@>=4 <5` → `^4.3.2`.
+- GitHub CI benötigt schon für `npm ci` eine global definierte künstliche `SQL_DATABASE_URL`, da postinstall `prisma generate` startet. Niemals Produktionszugangsdaten für Codegenerierung verwenden; Regression: `tests/unit/scripts/ci-install.test.ts`.
 - `npm run build` verändert keine Datenbank. Migrationen nur explizit über `npm run prisma:deploy`; bei Fehlern abbrechen, kein automatisches Baseline oder `db push`.
 - iOS-Vertragstests auf macOS: `npm run test:ios:contracts`. Lokale Cache-Zuordnung und vollständige Bereinigung: `LocalAccountStore` in `Data/PersistenceController.swift`.
 

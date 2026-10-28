@@ -187,3 +187,8 @@ xcodebuild -project BoardGameTools.xcodeproj -scheme BoardGameTools -destination
 - **Uploads ohne `BLOB_READ_WRITE_TOKEN`**: In Produktion werden Uploads abgelehnt (`LocalStorageProvider` wirft Fehler). Für Vercel Blob muss ein Token hinterlegt werden.
 - **Redis-Rate-Limiting ohne Upstash**: Ohne `UPSTASH_REDIS_REST_URL`/-`TOKEN` fällt die App auf In-Memory-Rate-Limiting zurück, das bei mehreren Serverinstanzen nicht skaliert.
 - **E2E-Tests**: Für `npm run test:e2e` muss `npm start` (Production-Build) laufen. Der Test-Account wird automatisch von `tests/e2e/bootstrap.ts` erstellt (Zugangsdaten nur im Test-Code hinterlegt).
+
+
+### CI-Codegenerierung ohne Datenbankzugang (0.50.17)
+
+Alle GitHub-CI-Jobs erhalten für `npm ci` eine künstliche `SQL_DATABASE_URL` auf `127.0.0.1:1`. Der automatische `postinstall`-Schritt führt `prisma generate` aus; dafür ist eine syntaktisch gültige URL erforderlich, aber keine laufende Datenbank. Dieser Wert ist ausschließlich Testkonfiguration und wird nicht in Vercel-Umgebungsvariablen übernommen. Migrationen dürfen damit nicht ausgeführt werden.

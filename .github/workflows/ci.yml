@@ -12,6 +12,9 @@ concurrency:
 
 env:
   NODE_VERSION: "24"
+  # Prisma's postinstall needs a URL even though generation never connects.
+  # Deliberately unusable local endpoint: CI must not use production credentials.
+  SQL_DATABASE_URL: "postgresql://ci:ci@127.0.0.1:1/boardgametools_ci"
 
 jobs:
   lint-typecheck:
@@ -59,7 +62,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: [lint-typecheck, test, security, ios-contracts]
     env:
-      SQL_DATABASE_URL: "postgresql://fake:fake@localhost:5432/fake"
       NEXTAUTH_SECRET: "ci-test-secret-not-for-production"
       NEXTAUTH_URL: "http://localhost:3000"
     steps:

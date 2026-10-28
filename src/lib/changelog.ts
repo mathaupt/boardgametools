@@ -12,6 +12,16 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.17",
+    date: "2026-10-28",
+    title: "Automatische Prüfungen ohne Produktionszugang starten",
+    description: "Die CI erhält für die Prisma-Codegenerierung eine künstliche lokale Datenbankadresse. Dadurch kann die Paketinstallation auch in frischen Umgebungen ohne geheime Zugangsdaten erfolgreich abgeschlossen werden.",
+    changes: [
+      { type: "fix", text: "Prisma-Codegenerierung während npm ci für alle CI-Jobs mit einer ungefährlichen Testadresse versorgt", bugRef: "BUG-033" },
+      { type: "internal", text: "Regressionstest führt den echten postinstall-Schritt in einem Verzeichnis ohne .env-Dateien aus" },
+    ],
+  },
+  {
     version: "0.50.16",
     date: "2026-10-28",
     title: "Sicherheitsupdates und zuverlässigere iOS-Anmeldung",

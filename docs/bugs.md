@@ -1073,10 +1073,35 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 ---
 
+### [BUG-033] GitHub-CI bricht bei npm ci wegen fehlender SQL_DATABASE_URL ab
+
+**Status:** `fixed`
+**Schweregrad:** `high`
+**Entdeckt:** 2026-10-28
+**Behoben:** 2026-10-28
+**Behoben in Version:** 0.50.17
+**Test geschrieben:** Ja
+
+**Beschreibung:** Der postinstall-Schritt führt prisma generate aus. Die Prisma-Konfiguration verlangt schon beim Laden SQL_DATABASE_URL; nur der Build-Job hatte bisher eine Testadresse.
+
+**Reproduktion:** npm ci in einem frischen Checkout ohne .env-Dateien ausführen.
+
+**Erwartetes Verhalten:** Installation und Codegenerierung für Lint-, Test- und Security-Jobs ohne Produktionszugang.
+
+**Tatsächliches Verhalten vor Korrektur:** PrismaConfigEnvError; drei Jobs scheitern vor ihren eigentlichen Prüfungen, der Build wird übersprungen.
+
+**Lösung:** Eine künstliche Datenbankadresse auf 127.0.0.1:1 gilt global für den CI-Workflow. prisma generate benötigt nur die Konfiguration und stellt keine Datenbankverbindung her.
+
+**Test-Status:** tests/unit/scripts/ci-install.test.ts startet das echte postinstall in einem temporären Checkout ohne .env-Dateien mit den Workflow-Variablen. Der Test wurde zuerst mit dem ursprünglichen Fehler reproduziert.
+
+**Referenz im Changelog:** 0.50.17, BUG-033.
+
+---
+
 ## Statistik
 
 - **Offene Bugs:** 0
 - **In Bearbeitung:** 0
-- **Behoben:** 32
+- **Behoben:** 33
 - **Wontfix:** 0
-- **Gesamt:** 32
+- **Gesamt:** 33

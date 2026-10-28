@@ -102,3 +102,13 @@ Jeder Eintrag enthält Felder für Root-Cause-Analyse und Gegenmaßnahmen (manue
 **Verantwortlich:** BoardGameTools Team
 
 ---
+
+## 2026-10-28 – BUG-033, CI-Installation ohne Umgebungsdatei
+
+**Root-Cause:** Die lokale Installation wurde mit `--ignore-scripts` vorbereitet und Prisma anschließend mit einer künstlichen URL generiert. Das erfasste nicht den normalen `npm ci`-Ablauf ohne .env-Dateien. In GitHub war die benötigte URL ausschließlich im späteren Build-Job definiert.
+
+**Gegenmaßnahme:** Künstliche SQL_DATABASE_URL für alle CI-Jobs, Regressionstest mit echtem postinstall in einem temporären Checkout ohne .env und zusätzliche vollständige npm-ci-Prüfung in einer frischen Projektkopie. Keine Produktionssecrets für Codegenerierung.
+
+**Verantwortlich:** BoardGameTools Wartung
+
+**Validierung:** Ursprünglicher PrismaConfigEnvError reproduziert; mit Korrektur 648 Tests, Typecheck und Lint erfolgreich.
