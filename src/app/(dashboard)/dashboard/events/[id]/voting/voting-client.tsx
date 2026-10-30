@@ -31,9 +31,10 @@ export default function VotingClient({ initialEvent, initialGames, eventId }: Vo
 
   const [event] = useState<EventResponse>(initialEvent);
   const [proposals, setProposals] = useState<ProposalWithDetails[]>(() => {
-    return initialEvent.proposals
-      .map((p) => ({ ...p, userVoted: p.userHasVoted ?? p.userVoted ?? false }))
-      .sort((a, b) => b._count.votes - a._count.votes);
+    return initialEvent.proposals.map((p) => ({
+      ...p,
+      userVoted: p.userHasVoted ?? p.userVoted ?? false,
+    }));
   });
   const [games, setGames] = useState<Game[]>(initialGames);
   const [voting, setVoting] = useState<string | null>(null);
@@ -53,8 +54,13 @@ export default function VotingClient({ initialEvent, initialGames, eventId }: Vo
       });
       if (!res.ok) throw new Error("Fehler beim Abstimmen");
       setProposals((prev) => prev.map((p) =>
-        p.id === proposalId ? { ...p, userVoted: true, _count: { ...p._count, votes: p._count.votes + 1 } } : p
-      ).sort((a, b) => b._count.votes - a._count.votes));
+        p.id === proposalId ? {
+          ...p,
+          userVoted: true,
+          _count: { ...p._count, votes: p._count.votes + 1 },
+          totalVotes: p._count.votes + 1 + (p._count.guestVotes ?? 0),
+        } : p
+      ));
     } catch (error) {
       console.error("Vote error:", error);
       toast({ title: "Fehler beim Abstimmen", description: "Bitte versuche es erneut.", variant: "destructive" });
@@ -67,8 +73,13 @@ export default function VotingClient({ initialEvent, initialGames, eventId }: Vo
       const res = await fetch(`/api/events/${eventId}/votes?proposalId=${proposalId}`, { method: "DELETE" });
       if (!res.ok) throw new Error("Fehler beim Entfernen");
       setProposals((prev) => prev.map((p) =>
-        p.id === proposalId ? { ...p, userVoted: false, _count: { ...p._count, votes: p._count.votes - 1 } } : p
-      ).sort((a, b) => b._count.votes - a._count.votes));
+        p.id === proposalId ? {
+          ...p,
+          userVoted: false,
+          _count: { ...p._count, votes: p._count.votes - 1 },
+          totalVotes: Math.max(p._count.votes - 1 + (p._count.guestVotes ?? 0), 0),
+        } : p
+      ));
     } catch (error) {
       console.error("Remove vote error:", error);
       toast({ title: "Fehler", description: "Bitte versuche es erneut.", variant: "destructive" });
@@ -169,7 +180,7 @@ export default function VotingClient({ initialEvent, initialGames, eventId }: Vo
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-4">
-          <ProposalRankingList eventId={eventId} proposals={proposals} voting={voting} deletingProposal={deletingProposal} eventIsCreator={event?.isCreator ?? false} currentUserId={event?.currentUserId ?? ""} onVote={handleVote} onRemoveVote={handleRemoveVote} onDeleteProposal={handleDeleteProposal} />
+          <ProposalRankingList eventId={eventId} proposals={proposals} voting={voting} deletingProposal={deletingProposal} eventIsCreator={event?.isCreator ?? false} currentUserId={event?.currentUserId ?? ""} winningProposalId={event.winningProposalId} selectedGameId={event.selectedGameId} onVote={handleVote} onRemoveVote={handleRemoveVote} onDeleteProposal={handleDeleteProposal} />
         </div>
         <div className="space-y-4">
           <GameProposalPanel availableGames={availableGames} collectionSearch={collectionSearch} onCollectionSearchChange={setCollectionSearch} activeTab={activeTab} onTabChange={setActiveTab} searchQuery={searchQuery} onSearchQueryChange={setSearchQuery} bggResults={bggResults} bggLoading={bggLoading} onAddProposal={handleAddProposal} onBggSearch={handleBggSearch} onBggImport={handleBggImport} />

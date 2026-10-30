@@ -22,6 +22,7 @@ function makeEvent(overrides = {}) {
     proposals: [
       {
         id: "prop-1",
+        createdAt: new Date("2026-03-21T10:00:00Z"),
         bggId: null,
         bggName: null,
         bggImageUrl: null,
@@ -128,6 +129,11 @@ describe("serializePublicEvent", () => {
     expect(result.proposals[0].totalVotes).toBe(5);
     expect(result.proposals[0].voteCounts.registered).toBe(3);
     expect(result.proposals[0].voteCounts.guests).toBe(2);
+  });
+
+  it("serializes proposal creation timestamps for newest-first sorting", () => {
+    const result = serializePublicEvent(makeEvent(), null);
+    expect(result.proposals[0].createdAt).toBe("2026-03-21T10:00:00.000Z");
   });
 
   it("sets userHasVoted=true when currentUserId has voted", () => {

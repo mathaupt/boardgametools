@@ -1,12 +1,16 @@
 "use client";
 
 import Image from "next/image";
+import { useMemo, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Users, Star, Trophy, Vote, X, Gamepad2, Trash2 } from "lucide-react";
 import { ProposalWithDetails } from "./voting-types";
 import { ProposalGameDetails } from "@/components/event-voting/proposal-game-details";
+import { ProposalSortControl } from "@/components/event-voting/proposal-sort-control";
+import { proposalRanks, sortProposals } from "@/lib/voting/sort-proposals";
+import type { ProposalSort, VotingProposal } from "@/lib/voting/types";
 
 interface ProposalRankingListProps {
   eventId: string;
@@ -18,6 +22,25 @@ interface ProposalRankingListProps {
   onVote: (proposalId: string) => void;
   onRemoveVote: (proposalId: string) => void;
   onDeleteProposal: (proposalId: string) => void;
+  winningProposalId?: string | null;
+  selectedGameId?: string | null;
+}
+
+function toSortableProposal(proposal: ProposalWithDetails): VotingProposal {
+  return {
+    id: proposal.id,
+    name: proposal.game.name,
+    createdAt: proposal.createdAt
+      ? proposal.createdAt instanceof Date
+        ? proposal.createdAt.toISOString()
+        : String(proposal.createdAt)
+      : null,
+    voteCounts: {
+      registered: proposal._count.votes,
+      guests: proposal._count.guestVotes ?? 0,
+    },
+    totalVotes: proposal.totalVotes ?? proposal._count.votes + (proposal._count.guestVotes ?? 0),
+  };
 }
 
 export default function ProposalRankingList({
@@ -30,13 +53,31 @@ export default function ProposalRankingList({
   onVote,
   onRemoveVote,
   onDeleteProposal,
+  winningProposalId,
+  selectedGameId,
 }: ProposalRankingListProps) {
+  const [sort, setSort] = useState<ProposalSort>("votes");
+  const visibleProposals = useMemo(
+    () => sortProposals(proposals, sort, toSortableProposal),
+    [proposals, sort]
+  );
+  const ranks = useMemo(
+    () => proposalRanks(visibleProposals, toSortableProposal),
+    [visibleProposals]
+  );
+
   return (
     <>
       <h2 className="text-xl font-bold flex items-center gap-2">
         <Trophy className="h-5 w-5 text-warning" aria-hidden="true" />
         Voting-Rangliste
       </h2>
+
+      {proposals.length > 0 && (
+        <div className="flex justify-end">
+          <ProposalSortControl value={sort} onChange={setSort} id="voting-page-proposal-sort" />
+        </div>
+      )}
       
       {proposals.length === 0 ? (
         <Card>
@@ -49,8 +90,8 @@ export default function ProposalRankingList({
           </CardContent>
         </Card>
       ) : (
-        proposals.map((proposal, index) => (
-          <Card key={proposal.id} className="relative">
+        visibleProposals.map((proposal) => (
+          <Card key={proposal.id} className="relative" data-testid={`proposal-${proposal.id}`}>
             <CardHeader>
               <div className="flex items-start justify-between">
                 <div className="flex-1">
@@ -71,13 +112,15 @@ export default function ProposalRankingList({
                         </div>
                       )}
                     </div>
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-primary-foreground ${
-                      index === 0 ? 'bg-warning' : 
-                      index === 1 ? 'bg-muted-foreground' : 
-                      index === 2 ? 'bg-accent' : 'bg-muted'
-                    }`}>
-                      {index + 1}
-                    </div>
+                    {sort === "votes" && (
+                      <div
+                        className="w-8 h-8 rounded-full flex items-center justify-center font-bold text-primary-foreground bg-muted"
+                        data-testid={`proposal-rank-${proposal.id}`}
+                        aria-label={`Rang ${ranks.get(proposal.id)}`}
+                      >
+                        {ranks.get(proposal.id)}
+                      </div>
+                    )}
                     <ProposalGameDetails
                       eventId={eventId}
                       proposalId={proposal.id}
@@ -115,9 +158,14 @@ export default function ProposalRankingList({
                 
                 <div className="flex items-center gap-2">
                   <div className="text-center">
-                    <div className="text-2xl font-bold">{proposal._count.votes}</div>
-                    <div className="text-sm text-muted-foreground">Votes</div>
+                    <div className="text-2xl font-bold" data-testid={`vote-count-${proposal.id}`}>
+                      {proposal._count.votes + (proposal._count.guestVotes ?? 0)}
+                    </div>
+                    <div className="text-sm text-muted-foreground">Stimmen</div>
                   </div>
+                  {(selectedGameId === proposal.game.id || winningProposalId === proposal.id) && (
+                    <Trophy className="h-5 w-5 text-warning" aria-label="Ausgewähltes Spiel" />
+                  )}
                   {(eventIsCreator || proposal.proposedById === currentUserId) && (
                     <Button
                       variant="ghost"

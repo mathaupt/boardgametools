@@ -10,7 +10,7 @@ nicht wiederverwendet. Verbindlicher Ablauf:
 | ID | Feature | Status | Implementierungsplan | Umsetzungsfreigabe |
 |---|---|---|---|---|
 | FEAT-001 | Spieldetails aus dem Voting öffnen | Umgesetzt (Web) | [Gemeinsamer Plan](superpowers/plans/2026-10-30-FEAT-001-004-voting.md) | Freigegeben und umgesetzt am 30.10.2026 |
-| FEAT-002 | Voting-Vorschläge sortieren | Plan erstellt | [Gemeinsamer Plan](superpowers/plans/2026-10-30-FEAT-001-004-voting.md) | Ausstehend |
+| FEAT-002 | Voting-Vorschläge sortieren | Umgesetzt (Web) | [Gemeinsamer Plan](superpowers/plans/2026-10-30-FEAT-001-004-voting.md) | Freigegeben und umgesetzt am 30.10.2026 |
 | FEAT-003 | Kompakte Voting-Liste prüfen | Prüfplan erstellt | [Gemeinsamer Plan](superpowers/plans/2026-10-30-FEAT-001-004-voting.md) | Ausstehend |
 | FEAT-004 | Voting-Vorschläge löschen | Plan erstellt | [Gemeinsamer Plan](superpowers/plans/2026-10-30-FEAT-001-004-voting.md) | Ausstehend |
 | FEAT-005 | ApiLog-Schreiblast für `/api/health` begrenzen | Erfasst | Ausstehend | Ausstehend |
@@ -71,20 +71,22 @@ denselben zugänglichen Dialog. Native iOS-Oberfläche separat planen.
 
 **Implementierungsplan:** [FEAT-001 bis FEAT-004](superpowers/plans/2026-10-30-FEAT-001-004-voting.md).
 **Plattformumfang:** Web zuerst, iOS separat; am 30.10.2026 bestätigt.
-**Umsetzungsfreigabe:** Ausstehend.
+**Umsetzungsfreigabe:** Ausdrücklich erteilt am 30.10.2026 mit „implement feat-002“.
 
 **Ziel:** Führende Spiele und andere Vorschläge schnell vergleichen können.
 
 **Anforderung:** Die Vorschlagsliste erhält eine wählbare Sortierung.
 Standard: **Anzahl der Stimmen, absteigend** – die meisten Votes zuerst.
 
-**Abnahmekriterien für die spätere Umsetzung:**
+**Abnahmekriterien:**
 
 - Ohne aktive Auswahl ist die Liste nach Stimmenzahl absteigend sortiert.
 - Eine beschriftete Auswahl erlaubt weitere Sortierungen; konkrete Optionen im Plan festlegen.
 - Gleichstände, Vorschläge ohne Stimmen und neue Votes haben ein im Plan definiertes,
   nachvollziehbares Verhalten.
 - Sortierung verändert weder Stimmen noch Voting-Ergebnisregeln.
+
+**Abgeschlossen:** 30.10.2026, Version 0.50.27. Web-Ansichten sortieren standardmäßig nach kombinierten Nutzer- und Gaststimmen; Name und Erstellungszeitpunkt sind zusätzlich wählbar.
 
 ## FEAT-003 – Kompakte Voting-Liste prüfen
 

@@ -3,7 +3,8 @@ import { Game, Event, GameProposal, User } from "@/generated/prisma/client";
 export interface ProposalWithDetails extends GameProposal {
   game: Game;
   proposedBy: User | { id: string; name: string };
-  _count: { votes: number };
+  _count: { votes: number; guestVotes?: number };
+  totalVotes?: number;
   userVoted?: boolean;
   userHasVoted?: boolean;
 }

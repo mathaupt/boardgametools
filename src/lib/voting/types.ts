@@ -1,3 +1,13 @@
+export type ProposalSort = "votes" | "name" | "newest";
+
+export interface VotingProposal {
+  id: string;
+  name: string;
+  createdAt: string | null;
+  voteCounts: { registered: number; guests: number };
+  totalVotes: number;
+}
+
 export interface VotingGameDetail {
   proposalId: string;
   name: string;

@@ -12,6 +12,16 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.27",
+    date: "2026-10-30",
+    title: "Spielvorschläge sortieren",
+    description: "Die Voting-Listen lassen sich nach Stimmenzahl, Name oder Aktualität ordnen.",
+    changes: [
+      { type: "feature", text: "Vorschläge standardmäßig nach kombinierten Nutzer- und Gaststimmen sortieren; Name A–Z und neueste Vorschläge sind ebenfalls auswählbar" },
+      { type: "improvement", text: "Gleichstände werden nachvollziehbar aufgelöst; bei gleicher Stimmenzahl erhalten Spiele denselben Rang" },
+    ],
+  },
+  {
     version: "0.50.26",
     date: "2026-10-30",
     title: "Spieldetails direkt im Voting öffnen",

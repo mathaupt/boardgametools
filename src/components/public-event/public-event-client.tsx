@@ -22,6 +22,9 @@ import { CollectionGameProposer } from "./collection-game-proposer";
 import { BggGameSearch } from "./bgg-game-search";
 import type { Proposal, StoredGuestState } from "./types";
 import { ProposalGameDetails } from "@/components/event-voting/proposal-game-details";
+import { ProposalSortControl } from "@/components/event-voting/proposal-sort-control";
+import { sortProposals } from "@/lib/voting/sort-proposals";
+import type { ProposalSort, VotingProposal } from "@/lib/voting/types";
 
 interface PublicEventClientProps {
   token: string;
@@ -35,6 +38,7 @@ export function PublicEventClient({ token, event }: PublicEventClientProps) {
   const [activeGuest, setActiveGuest] = useState<StoredGuestState | null>(null);
   const [guestVotes, setGuestVotes] = useState<Set<string>>(new Set());
   const [proposals, setProposals] = useState<Proposal[]>(event.proposals);
+  const [proposalSort, setProposalSort] = useState<ProposalSort>("votes");
   const [userVoting, setUserVoting] = useState<string | null>(null);
   const [guestVoting, setGuestVoting] = useState<string | null>(null);
 
@@ -47,6 +51,14 @@ export function PublicEventClient({ token, event }: PublicEventClientProps) {
     () => new Set(proposals.map((p) => p.game.id)),
     [proposals]
   );
+
+  const visibleProposals = useMemo(() => sortProposals(proposals, proposalSort, (proposal): VotingProposal => ({
+    id: proposal.id,
+    name: proposal.game.name,
+    createdAt: proposal.createdAt,
+    voteCounts: proposal.voteCounts,
+    totalVotes: proposal.totalVotes,
+  })), [proposals, proposalSort]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -77,7 +89,7 @@ export function PublicEventClient({ token, event }: PublicEventClientProps) {
   }, []);
 
   const handleProposalAdded = useCallback((proposal: Proposal) => {
-    setProposals((prev) => [...prev, proposal].sort((a, b) => b.totalVotes - a.totalVotes));
+    setProposals((prev) => [...prev, proposal]);
   }, []);
 
   const updateProposalState = (
@@ -85,9 +97,7 @@ export function PublicEventClient({ token, event }: PublicEventClientProps) {
     updater: (proposal: Proposal) => Proposal
   ) => {
     setProposals((prev) =>
-      prev
-        .map((proposal) => (proposal.id === proposalId ? updater(proposal) : proposal))
-        .sort((a, b) => b.totalVotes - a.totalVotes)
+      prev.map((proposal) => (proposal.id === proposalId ? updater(proposal) : proposal))
     );
   };
 
@@ -205,6 +215,11 @@ export function PublicEventClient({ token, event }: PublicEventClientProps) {
           )}
         </div>
         <div className="mt-4 space-y-4">
+          {proposals.length > 0 && (
+            <div className="flex justify-end">
+              <ProposalSortControl value={proposalSort} onChange={setProposalSort} id="public-event-proposal-sort" />
+            </div>
+          )}
           {proposals.length === 0 ? (
             <Card className="border-dashed border-border/60 bg-background/50">
               <CardContent className="py-10 text-center text-muted-foreground">
@@ -212,7 +227,7 @@ export function PublicEventClient({ token, event }: PublicEventClientProps) {
               </CardContent>
             </Card>
           ) : (
-            proposals.map((proposal, index) => {
+            visibleProposals.map((proposal) => {
               const userHasVoted = proposal.userHasVoted ?? false;
               const guestHasVoted = guestVotes.has(proposal.id);
               return (
@@ -237,9 +252,9 @@ export function PublicEventClient({ token, event }: PublicEventClientProps) {
                         </div>
                         <div>
                           <div className="text-lg text-foreground">
-                            {index < 3 && (
+                            {(event.winningProposal?.id === proposal.id || event.selectedGame?.id === proposal.game.id) && (
                               <Trophy
-                                className={cn("mr-2 inline h-4 w-4", index === 0 && "text-warning", index === 1 && "text-muted-foreground", index === 2 && "text-warning")}
+                                className="mr-2 inline h-4 w-4 text-warning"
                                 aria-hidden="true"
                               />
                             )}

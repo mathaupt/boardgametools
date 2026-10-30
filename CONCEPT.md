@@ -52,6 +52,7 @@ Die Weboberfläche verwendet seit 0.50.20 die bestätigte Gestaltung „Club Pro
 - **Spiele vorschlagen**: Eingeladene können Spiele aus der Sammlung oder per BGG-Suche vorschlagen
 - **Spieldetails ansehen**: Vorschläge öffnen einen zugänglichen Dialog mit verfügbaren Spielinformationen; öffentliche Gäste sehen keine private Sammlungsbeschreibung
 - **Voting**: Spieler stimmen für vorgeschlagene Spiele ab
+- **Sortierung**: Web-Abstimmungen lassen sich nach Gesamtstimmen, deutschem Namen oder Zeitpunkt des Vorschlags sortieren
 - **Ergebnis**: Spiel mit meisten Stimmen wird ausgewählt
 - **Einladungen erneut senden**: Reminder-E-Mails
 - **Eigene Nachrichten**: Organizer kann individuelle Nachrichten an Teilnehmer senden

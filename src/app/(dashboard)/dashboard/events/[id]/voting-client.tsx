@@ -1,12 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Trophy, ThumbsUp, ThumbsDown, Users, Star, Gamepad } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { ProposalGameDetails } from "@/components/event-voting/proposal-game-details";
+import { ProposalSortControl } from "@/components/event-voting/proposal-sort-control";
+import { sortProposals } from "@/lib/voting/sort-proposals";
+import type { ProposalSort, VotingProposal } from "@/lib/voting/types";
 
 interface Proposal {
   id: string;
@@ -24,7 +27,9 @@ interface Proposal {
   };
   _count: {
     votes: number;
+    guestVotes?: number;
   };
+  createdAt?: string | Date | null;
 }
 
 interface VotingClientProps {
@@ -35,6 +40,18 @@ interface VotingClientProps {
   isPast: boolean;
   selectedGameId?: string;
   winningProposalId?: string;
+}
+
+function toSortableProposal(proposal: Proposal): VotingProposal {
+  return {
+    id: proposal.id,
+    name: proposal.game.name,
+    createdAt: proposal.createdAt instanceof Date
+      ? proposal.createdAt.toISOString()
+      : proposal.createdAt ?? null,
+    voteCounts: { registered: proposal._count.votes, guests: proposal._count.guestVotes ?? 0 },
+    totalVotes: proposal._count.votes + (proposal._count.guestVotes ?? 0),
+  };
 }
 
 export default function VotingClient({ 
@@ -49,7 +66,13 @@ export default function VotingClient({
   const [voting, setVoting] = useState<string | null>(null);
   const [localUserVoteIds, setLocalUserVoteIds] = useState<Set<string>>(userVoteIds);
   const [localProposals, setLocalProposals] = useState(proposals);
+  const [sort, setSort] = useState<ProposalSort>("votes");
   const { toast } = useToast();
+
+  const sortedProposals = useMemo(
+    () => sortProposals(localProposals, sort, toSortableProposal),
+    [localProposals, sort]
+  );
 
   const handleVote = async (proposalId: string) => {
     if (!userId || isPast || voting) return;
@@ -75,7 +98,7 @@ export default function VotingClient({
         p.id === proposalId 
           ? { ...p, _count: { ...p._count, votes: p._count.votes + 1 } }
           : p
-      ).sort((a, b) => b._count.votes - a._count.votes));
+      ));
       
     } catch (error) {
       console.error('Vote error:', error);
@@ -113,7 +136,7 @@ export default function VotingClient({
         p.id === proposalId 
           ? { ...p, _count: { ...p._count, votes: p._count.votes - 1 } }
           : p
-      ).sort((a, b) => b._count.votes - a._count.votes));
+      ));
       
     } catch (error) {
       console.error('Remove vote error:', error);
@@ -131,12 +154,13 @@ export default function VotingClient({
 
   return (
     <div className="space-y-3" data-testid="voting-proposals">
-      {localProposals
-        .sort((a, b) => b._count.votes - a._count.votes)
-        .map((proposal, index) => (
+      <div className="flex justify-end">
+        <ProposalSortControl value={sort} onChange={setSort} id="event-detail-proposal-sort" />
+      </div>
+      {sortedProposals.map((proposal) => (
           <div key={proposal.id} data-testid={`proposal-${proposal.id}`} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 border border-border rounded-lg hover:bg-accent/50 focus-within:ring-2 focus-within:ring-ring transition-colors bg-card gap-4 sm:gap-0">
             <div className="flex items-start sm:items-center gap-3 flex-1">
-              {index === 0 && (selectedGameId || winningProposalId) && (
+              {(selectedGameId === proposal.game.id || winningProposalId === proposal.id) && (
                 <Trophy className="h-5 w-5 text-warning flex-shrink-0 mt-0.5 sm:mt-0" aria-hidden="true" />
               )}
               {/* Game Image */}
@@ -193,8 +217,8 @@ export default function VotingClient({
             <div className="flex items-center gap-3 sm:gap-3">
               {/* Vote Count */}
               <div className="text-center min-w-[60px]">
-                <div className="text-2xl font-bold text-foreground" data-testid={`vote-count-${proposal.id}`}>{proposal._count.votes}</div>
-                <div className="text-xs text-muted-foreground">Votes</div>
+                <div className="text-2xl font-bold text-foreground" data-testid={`vote-count-${proposal.id}`}>{proposal._count.votes + (proposal._count.guestVotes ?? 0)}</div>
+                <div className="text-xs text-muted-foreground">Stimmen</div>
               </div>
               
               {/* Voting Buttons */}
@@ -237,7 +261,7 @@ export default function VotingClient({
               )}
             </div>
           </div>
-        ))}
+      ))}
     </div>
   );
 }

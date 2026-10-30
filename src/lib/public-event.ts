@@ -37,6 +37,7 @@ interface PublicEventRaw {
   } | null;
   proposals: Array<{
     id: string;
+    createdAt?: Date | null;
     bggId: string | null;
     bggName: string | null;
     bggImageUrl: string | null;
@@ -191,6 +192,7 @@ export interface SerializedPublicEvent {
   } | null;
   proposals: Array<{
     id: string;
+    createdAt: string | null;
     game: {
       id: string;
       name: string;
@@ -274,6 +276,7 @@ export function serializePublicEvent(
 
       return {
         id: proposal.id,
+        createdAt: proposal.createdAt?.toISOString() ?? null,
         game: gameData,
         proposedBy: proposedByData,
         totalVotes: registeredVotes + guestVotes,

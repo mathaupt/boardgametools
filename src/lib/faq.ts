@@ -126,6 +126,10 @@ export const faqSections: FaqSection[] = [
         answer: "Klicke in der Abstimmung auf den Spielnamen oder auf „Spieldetails“. Die Informationen öffnen sich in einem Dialog, der sich per Schließen-Schaltfläche oder Escape wieder schließen lässt. Öffentliche Gäste sehen keine privat verfasste Sammlungsbeschreibung.",
       },
       {
+        question: "Wie kann ich die Spielvorschläge sortieren?",
+        answer: "Standardmäßig stehen die Vorschläge mit den meisten Stimmen oben. Über „Sortieren“ kannst du stattdessen alphabetisch nach Name oder nach den neuesten Vorschlägen ordnen. Nutzer- und Gaststimmen werden gemeinsam gezählt.",
+      },
+      {
         question: "Wie funktioniert die Terminabstimmung?",
         answer:
           'In der Event-Detailseite kannst du mehrere Terminvorschlaege hinzufuegen. Teilnehmer (und Gaeste) stimmen mit "Ja", "Vielleicht" oder "Nein" fuer jeden Termin ab \u2013 aehnlich wie bei Doodle. Du siehst eine Uebersichtsmatrix aller Antworten und kannst am Ende den besten Termin festlegen. Die Terminabstimmung kann bei Bedarf zurueckgesetzt werden.',

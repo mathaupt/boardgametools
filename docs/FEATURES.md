@@ -281,6 +281,7 @@ Uebersicht der Gaeste (per oeffentlichem Link beigetreten) mit Stimmenanzahl.
 - Vorschlaege mit Bild, Name, Spieleranzahl, Spieldauer, Komplexitaet
 - Spieldetails direkt im Dialog aus Spielname oder Aktion „Spieldetails“ öffnen; öffentliche Gäste sehen keine private Sammlungsbeschreibung
 - Wer hat vorgeschlagen, wie viele Stimmen
+- Vorschläge nach Gesamtstimmen (Standard), Name A–Z oder neuestem Vorschlag sortieren; Nutzer- und Gaststimmen zählen gemeinsam
 - Abstimmen / Stimme zurueckziehen
 - Gewinnerspiel hervorgehoben
 
@@ -314,7 +315,7 @@ Uebersicht der Gaeste (per oeffentlichem Link beigetreten) mit Stimmenanzahl.
 - Spiel aus eigener Sammlung vorschlagen
 - Spiel per BGG-Suche vorschlagen
 - Ueber vorgeschlagene Spiele abstimmen
-- Rangliste der Vorschlaege nach Stimmen
+- Rangliste der Vorschlaege nach Stimmen; Sortierung nach Stimmen, Name oder neuestem Vorschlag
 - Spieldetails im zugänglichen Dialog ansehen, ohne den Voting-Kontext zu verlassen
 
 ---

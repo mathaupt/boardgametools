@@ -183,4 +183,38 @@ describe("VotingClient", () => {
     expect(proposalElements[1]).toHaveAttribute("data-testid", "proposal-p3");
     expect(proposalElements[2]).toHaveAttribute("data-testid", "proposal-p1");
   });
+
+  it("sorts by name when selected", () => {
+    render(<VotingClient {...defaultProps} proposals={[
+      makeProposal("p1", "Catan", 3),
+      makeProposal("p2", "Azul", 1),
+    ]} />);
+
+    fireEvent.change(screen.getByLabelText("Sortieren"), { target: { value: "name" } });
+
+    const proposalElements = screen.getAllByTestId(/^proposal-/);
+    expect(proposalElements[0]).toHaveAttribute("data-testid", "proposal-p2");
+    expect(proposalElements[1]).toHaveAttribute("data-testid", "proposal-p1");
+  });
+
+  it("shows combined registered and guest votes", () => {
+    render(<VotingClient {...defaultProps} proposals={[
+      { ...makeProposal("p1", "Catan", 3), _count: { votes: 3, guestVotes: 2 } },
+    ]} />);
+
+    expect(screen.getByTestId("vote-count-p1")).toHaveTextContent("5");
+  });
+
+  it("keeps the selected sort after a successful vote", async () => {
+    mockFetch.mockResolvedValue({ ok: true });
+    render(<VotingClient {...defaultProps} />);
+    fireEvent.change(screen.getByLabelText("Sortieren"), { target: { value: "name" } });
+    fireEvent.click(screen.getByTestId("vote-p1"));
+
+    await waitFor(() => expect(screen.getByTestId("vote-count-p1")).toHaveTextContent("4"));
+    const proposalElements = screen.getAllByTestId(/^proposal-/);
+    expect(proposalElements[0]).toHaveAttribute("data-testid", "proposal-p2");
+    expect(proposalElements[1]).toHaveAttribute("data-testid", "proposal-p1");
+    expect(screen.getByLabelText("Sortieren")).toHaveValue("name");
+  });
 });
