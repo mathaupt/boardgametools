@@ -1179,10 +1179,199 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 ---
 
+### [BUG-037] Geschlossenes öffentliches Voting erscheint weiterhin aktiv
+
+**Status:** `open`
+**Schweregrad:** `high`
+**Entdeckt:** 2026-10-30
+**Test geschrieben:** Nein
+
+**Beschreibung:** Der tatsächliche Abstimmungsstatus und die verbindliche Auswahl werden nicht angemessen dargestellt.
+
+**Reproduktion:** Eine öffentliche Seite mit status closed und zukünftigem eventDate öffnen; als Gast Spiel- und Terminbuttons prüfen; selectedDate und selectedGame setzen.
+
+**Erwartetes Verhalten:** Geschlossenen Status, endgültigen Termin und Spiel anzeigen; nicht mehr zulässige Aktionen sperren.
+
+**Tatsächliches Verhalten:** Der Kopf zeigt Aktiv, Spiel- und Terminaktionen sind bedienbar. Im Kopf steht weiter eventDate; selectedDate erscheint erst weiter unten.
+
+**Ursache:** page.tsx und PublicEventClient verwenden überwiegend isPast; Ergebnisdaten werden nicht im Kopf dargestellt.
+
+**Lösung:** Noch nicht umgesetzt. Statusmodell, Ergebnisansicht und zugehörige serverseitige Regeln gemeinsam planen.
+
+**Prüfnachweis:** Assessment A mit echtem status closed: closed-joined-mobile.png und closed-1440.png. Nur synthetische API-Antworten; Backendannahme und Produktionsmutationen nicht getestet. Belege: `.impeccable/critique/evidence/public-event-A/` und `public-event-B/`.
+
+**Test-Status:** Kein Fix und noch kein dauerhafter Regressionstest. Bei Umsetzung ist ein Regressionstest verpflichtend.
+
+**Referenz im Changelog:** Version 0.50.24 – Prüfung der öffentlichen Eventseite dokumentiert.
+
+---
+
+### [BUG-038] Mobile Terminantworten sind teilweise verborgen und zu klein
+
+**Status:** `open`
+**Schweregrad:** `medium`
+**Entdeckt:** 2026-10-30
+**Test geschrieben:** Nein
+
+**Beschreibung:** Die mobile Terminwahl versteckt Antwortmöglichkeiten; der ausgewählte Zustand wird assistiver Technik nicht ausdrücklich vermittelt.
+
+**Reproduktion:** Als Gast bei 390 Pixeln Breite mehrere Terminvorschläge öffnen und eine Antwort wählen.
+
+**Erwartetes Verhalten:** Alle Antworten leicht auffindbar, mindestens 44 Pixel große Projekt-Touch-Flächen und programmatisch vermittelte Auswahl.
+
+**Tatsächliches Verhalten:** Die Tabelle überschreitet ihre Inhaltsfläche um etwa 81–88 Pixel; Nein ist zunächst verborgen. Antwortbuttons: 32 × 32 Pixel. aria-pressed beziehungsweise eine gleichwertige Auswahlsemantik fehlt.
+
+**Ursache:** Feste Tabellenanordnung, h-8/w-8 und ausschließlich CSS-Klassen für die Auswahl in date-voting-section.tsx.
+
+**Lösung:** Noch nicht umgesetzt. Mobile Terminzeilen mit zugänglichen Auswahlgruppen planen und prüfen.
+
+**Prüfnachweis:** date-mobile.png und observations.json aus A; Browsermessungen aus B. Weitere Hauptbuttons und Eingaben messen nur 36 Pixel Höhe und sind im selben Planungsschritt zu berücksichtigen. Belege: `.impeccable/critique/evidence/public-event-A/` und `public-event-B/`.
+
+**Test-Status:** Kein Fix und noch kein dauerhafter Regressionstest. Bei Umsetzung ist ein Regressionstest verpflichtend.
+
+**Referenz im Changelog:** Version 0.50.24 – Prüfung der öffentlichen Eventseite dokumentiert.
+
+---
+
+### [BUG-039] Statusbeschriftungen der öffentlichen Eventseite haben zu wenig Kontrast
+
+**Status:** `open`
+**Schweregrad:** `medium`
+**Entdeckt:** 2026-10-30
+**Test geschrieben:** Nein
+
+**Beschreibung:** Mehrere kleine Status- und Ergebnisbeschriftungen unterschreiten 4,5:1.
+
+**Reproduktion:** Gastbegrüßung, Terminzusagen und gewählten Termin in heller Darstellung sowie Abgesagt im dunklen Modus prüfen.
+
+**Erwartetes Verhalten:** Mindestens 4,5:1 für betroffene kleine Texte in beiden Farbschemata.
+
+**Tatsächliches Verhalten:** Gemessen: Begrüßung 3,8:1, Zusagezahlen 2,3:1, gewählter Termin 3,9:1; dunkel Abgesagt 3,3:1 und Zusagezahlen 3,2:1.
+
+**Ursache:** Statusfarben als kleine Schrift auf transparenten beziehungsweise farbigen Hintergründen ohne ausreichenden Kontrast.
+
+**Lösung:** Noch nicht umgesetzt. Text-/Flächenpaare überarbeiten und tatsächliche Farben einschließlich Transparenz messen.
+
+**Prüfnachweis:** Gerenderte detect.js-Prüfung und Browser-Kontrastmessungen aus Assessment B; keine Bewertung anhand deaktivierter Controls. Belege: `.impeccable/critique/evidence/public-event-A/` und `public-event-B/`.
+
+**Test-Status:** Kein Fix und noch kein dauerhafter Regressionstest. Bei Umsetzung ist ein Regressionstest verpflichtend.
+
+**Referenz im Changelog:** Version 0.50.24 – Prüfung der öffentlichen Eventseite dokumentiert.
+
+---
+
+### [BUG-040] BGG-Suche meldet erfolglose Suche vor dem Suchstart
+
+**Status:** `open`
+**Schweregrad:** `low`
+**Entdeckt:** 2026-10-30
+**Test geschrieben:** Nein
+
+**Beschreibung:** Die öffentliche Spielsuche zeigt vor dem ersten Suchlauf eine Meldung über fehlende Ergebnisse.
+
+**Reproduktion:** Az im BGG-Suchfeld eingeben, ohne die Suche auszulösen.
+
+**Erwartetes Verhalten:** Vor dem ersten Suchlauf neutral bleiben; Ergebnislosigkeit erst nach abgeschlossener Suche melden.
+
+**Tatsächliches Verhalten:** Keine Ergebnisse gefunden. Versuche einen anderen Suchbegriff. erscheint bereits nach Eingabe.
+
+**Ursache:** bgg-game-search.tsx prüft leere Ergebnisse, Suchtextlänge und Ladezustand, aber keinen abgeschlossenen Suchlauf.
+
+**Lösung:** Noch nicht umgesetzt. Ungesucht, ladend, Ergebnis, leer und Fehler getrennt modellieren.
+
+**Prüfnachweis:** search-before-submit.png aus A; beforeSearch-Nachweis aus B. Belege: `.impeccable/critique/evidence/public-event-A/` und `public-event-B/`.
+
+**Test-Status:** Kein Fix und noch kein dauerhafter Regressionstest. Bei Umsetzung ist ein Regressionstest verpflichtend.
+
+**Referenz im Changelog:** Version 0.50.24 – Prüfung der öffentlichen Eventseite dokumentiert.
+
+---
+
+### [BUG-041] Vorgesehenes Desktop-Raster der öffentlichen Eventseite ist unwirksam
+
+**Status:** `open`
+**Schweregrad:** `low`
+**Entdeckt:** 2026-10-30
+**Test geschrieben:** Nein
+
+**Beschreibung:** Teilnehmer und Teilnahmehinweis bleiben auf Desktop untereinander.
+
+**Reproduktion:** Öffentliche Seite bei 1440 Pixeln Breite öffnen.
+
+**Erwartetes Verhalten:** Die im Markup vorgesehene Desktop-Spaltenaufteilung wird wirksam.
+
+**Tatsächliches Verhalten:** Beide Karten bleiben untereinander und verlängern den Weg zur Gastteilnahme.
+
+**Ursache:** lg:grid-cols-[2fr,1fr] in page.tsx erzeugt keine wirksame gültige Zweispaltenaufteilung.
+
+**Lösung:** Noch nicht umgesetzt. Desktopaufteilung gemeinsam mit der Priorisierung des Gastbeitritts planen.
+
+**Prüfnachweis:** anonymous-1440.png und Layoutbeobachtungen aus A. Belege: `.impeccable/critique/evidence/public-event-A/` und `public-event-B/`.
+
+**Test-Status:** Kein Fix und noch kein dauerhafter Regressionstest. Bei Umsetzung ist ein Regressionstest verpflichtend.
+
+**Referenz im Changelog:** Version 0.50.24 – Prüfung der öffentlichen Eventseite dokumentiert.
+
+---
+
+### [BUG-042] Gästelisten auf öffentlicher Eventseite laufen auseinander
+
+**Status:** `open`
+**Schweregrad:** `low`
+**Entdeckt:** 2026-10-30
+**Test geschrieben:** Nein
+
+**Beschreibung:** Mehrfach angezeigte Gästeinformationen werden nach einem Beitritt nicht gemeinsam aktualisiert.
+
+**Reproduktion:** Als neuer Gast beitreten und die obere Gästeliste mit dem Gastbereich vergleichen.
+
+**Erwartetes Verhalten:** Konsistente Teilnehmerinformationen oder eine gemeinsame Darstellung.
+
+**Tatsächliches Verhalten:** Die clientseitige Gästeliste wird ergänzt; die obere servergerenderte Liste und Stimmenzahlen bleiben bis zum Neuladen unverändert.
+
+**Ursache:** page.tsx und GuestRegistrationPanel verwalten getrennte Darstellungen desselben Datenbestands.
+
+**Lösung:** Noch nicht umgesetzt. Gemeinsame Teilnehmerdarstellung oder abgestimmte Aktualisierung planen.
+
+**Prüfnachweis:** Beitrittsablauf und Komponentenprüfung aus A; keine echte Gastregistrierung. Belege: `.impeccable/critique/evidence/public-event-A/` und `public-event-B/`.
+
+**Test-Status:** Kein Fix und noch kein dauerhafter Regressionstest. Bei Umsetzung ist ein Regressionstest verpflichtend.
+
+**Referenz im Changelog:** Version 0.50.24 – Prüfung der öffentlichen Eventseite dokumentiert.
+
+---
+
+### [BUG-043] Öffentliche BGG-Suche hat keine dauerhafte Feldbeschriftung
+
+**Status:** `open`
+**Schweregrad:** `low`
+**Entdeckt:** 2026-10-30
+**Test geschrieben:** Nein
+
+**Beschreibung:** Das BGG-Suchfeld besitzt nur einen Platzhalter.
+
+**Reproduktion:** Suchfeld im Accessibility-Baum prüfen und Text eingeben.
+
+**Erwartetes Verhalten:** Eine zugeordnete sichtbare Beschriftung und ein stabiler zugänglicher Name.
+
+**Tatsächliches Verhalten:** Kein zugeordnetes Label und kein aria-label; der Platzhalter ist die einzige Feldbeschreibung.
+
+**Ursache:** Dem Input in bgg-game-search.tsx fehlt eine zugeordnete Beschriftung.
+
+**Lösung:** Noch nicht umgesetzt. Dauerhaftes Label und Prüfung des zugänglichen Namens planen.
+
+**Prüfnachweis:** DOM-Beschriftungsprüfung aus B und Quellprüfung aus A. Belege: `.impeccable/critique/evidence/public-event-A/` und `public-event-B/`.
+
+**Test-Status:** Kein Fix und noch kein dauerhafter Regressionstest. Bei Umsetzung ist ein Regressionstest verpflichtend.
+
+**Referenz im Changelog:** Version 0.50.24 – Prüfung der öffentlichen Eventseite dokumentiert.
+
+---
+
 ## Statistik
 
-- **Offene Bugs:** 0
+- **Offene Bugs:** 7
 - **In Bearbeitung:** 0
 - **Behoben:** 36
 - **Wontfix:** 0
-- **Gesamt:** 36
+- **Gesamt:** 43

@@ -12,6 +12,16 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.24",
+    date: "2026-10-30",
+    title: "Prüfung der öffentlichen Eventseite dokumentiert",
+    description: "Die öffentliche Teilnahme wurde auf Desktop und Smartphone geprüft. Erkannte Probleme sind für eine gesonderte Planung dokumentiert; die Funktionen bleiben unverändert.",
+    changes: [
+      { type: "internal", text: "Offene Befunde zu Abstimmungsstatus, mobiler Terminwahl, Kontrasten, Suchzuständen und Teilnehmerdarstellung erfasst" },
+      { type: "internal", text: "Unabhängige Gestaltungsprüfung und gerenderte Browsermessungen mit getrennten Beispieldaten durchgeführt" },
+    ],
+  },
+  {
     version: "0.50.23",
     date: "2026-10-30",
     title: "Geplante Voting-Verbesserungen festgehalten",

@@ -18,6 +18,8 @@ Die Impeccable-Design-Hooks sind für das Projekt aktiviert. Sie melden nach Än
 - Reine Dashboard-/Eventdarstellung: `src/components/dashboard/`; Datenabfragen verbleiben in den Server-Seiten.
 - Sammlungskarten und Filter: `collection-game-card.tsx` und `collection-filters.tsx` neben `games-list-client.tsx`.
 - Navigationstests: `tests/unit/components/club-navigation.test.tsx` und `tests/e2e/navigation_test.ts`; Dashboardzustände: `tests/unit/components/club-dashboard.test.tsx`.
+- Lokale Impeccable-Prüfberichte und Browserbelege liegen unter `.impeccable/critique/`;
+  bestätigte Fehler werden zusätzlich dauerhaft in `docs/bugs.md` erfasst.
 
 ## Native iOS-Gestaltung
 

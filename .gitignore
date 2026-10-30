@@ -82,3 +82,6 @@ next-env.d.ts
 # Downloaded Impeccable engines and developer-local hook settings
 **/skills/impeccable/scripts/bin/
 /.claude/settings.local.json
+
+# Local design critique snapshots, synthetic browser evidence and measurement scripts
+/.impeccable/critique/
