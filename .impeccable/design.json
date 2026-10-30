@@ -19,6 +19,74 @@
       "foreground": {
         "role": "neutral",
         "displayName": "Blaue Tinte"
+      },
+      "ios-tint": {
+        "role": "primary",
+        "displayName": "Natives Programmkobalt"
+      },
+      "ios-dark-tint": {
+        "role": "primary",
+        "displayName": "Natives Programmkobalt – dunkel"
+      },
+      "ios-on-tint": {
+        "role": "neutral",
+        "displayName": "Nativer Primäraktionstext"
+      },
+      "ios-dark-on-tint": {
+        "role": "neutral",
+        "displayName": "Nativer Primäraktionstext – dunkel"
+      },
+      "ios-background": {
+        "role": "neutral",
+        "displayName": "Natives blaues Papier"
+      },
+      "ios-dark-background": {
+        "role": "neutral",
+        "displayName": "Natives blaues Papier – dunkel"
+      },
+      "ios-surface": {
+        "role": "neutral",
+        "displayName": "Native Inhaltsfläche"
+      },
+      "ios-dark-surface": {
+        "role": "neutral",
+        "displayName": "Native Inhaltsfläche – dunkel"
+      },
+      "ios-ink": {
+        "role": "neutral",
+        "displayName": "Native blaue Tinte"
+      },
+      "ios-dark-ink": {
+        "role": "neutral",
+        "displayName": "Native blaue Tinte – dunkel"
+      },
+      "ios-secondary-ink": {
+        "role": "neutral",
+        "displayName": "Native Metadaten"
+      },
+      "ios-dark-secondary-ink": {
+        "role": "neutral",
+        "displayName": "Native Metadaten – dunkel"
+      },
+      "ios-soft-blue": {
+        "role": "secondary",
+        "displayName": "Natives weiches Blau"
+      },
+      "ios-dark-soft-blue": {
+        "role": "secondary",
+        "displayName": "Natives weiches Blau – dunkel"
+      },
+      "ios-date-background": {
+        "role": "secondary",
+        "displayName": "Nativer Pfirsich"
+      },
+      "ios-dark-date-background": {
+        "role": "secondary",
+        "displayName": "Nativer Pfirsich – dunkel"
+      },
+      "ios-date-ink": {
+        "role": "neutral",
+        "displayName": "Native Datumstinte"
       }
     },
     "typographyMeta": {
@@ -41,6 +109,42 @@
       "label": {
         "displayName": "Schaltflächenbeschriftung",
         "purpose": "Beschriftete Steuerelemente."
+      },
+      "ios-section-title": {
+        "displayName": "iOS section-title",
+        "purpose": "SF-Systemschrift mit Dynamic Type; SwiftUI .title3.bold(). Keine feste Web-Schriftgröße."
+      },
+      "ios-event-title": {
+        "displayName": "iOS event-title",
+        "purpose": "SF-Systemschrift mit Dynamic Type; SwiftUI .title2.bold(). Keine feste Web-Schriftgröße."
+      },
+      "ios-headline": {
+        "displayName": "iOS headline",
+        "purpose": "SF-Systemschrift mit Dynamic Type; SwiftUI .headline. Keine feste Web-Schriftgröße."
+      },
+      "ios-body": {
+        "displayName": "iOS body",
+        "purpose": "SF-Systemschrift mit Dynamic Type; SwiftUI .body. Keine feste Web-Schriftgröße."
+      },
+      "ios-metadata": {
+        "displayName": "iOS metadata",
+        "purpose": "SF-Systemschrift mit Dynamic Type; SwiftUI .subheadline. Keine feste Web-Schriftgröße."
+      },
+      "ios-status": {
+        "displayName": "iOS status",
+        "purpose": "SF-Systemschrift mit Dynamic Type; SwiftUI .footnote.weight(.semibold). Keine feste Web-Schriftgröße."
+      },
+      "ios-date-day": {
+        "displayName": "iOS date-day",
+        "purpose": "SF-Systemschrift mit Dynamic Type; SwiftUI .largeTitle.bold(), monospacedDigit. Keine feste Web-Schriftgröße."
+      },
+      "ios-date-month": {
+        "displayName": "iOS date-month",
+        "purpose": "SF-Systemschrift mit Dynamic Type; SwiftUI .caption.weight(.semibold). Keine feste Web-Schriftgröße."
+      },
+      "ios-date-year": {
+        "displayName": "iOS date-year",
+        "purpose": "SF-Systemschrift mit Dynamic Type; SwiftUI .caption2. Keine feste Web-Schriftgröße."
       }
     },
     "motion": [
@@ -72,7 +176,21 @@
         "name": "collection-three-columns",
         "value": "1280px"
       }
-    ]
+    ],
+    "nativePlatform": {
+      "minimumVersion": "iOS 17",
+      "source": "BoardGameTools/BoardGameTools/Utilities/Theme.swift#ClubTheme",
+      "scope": [
+        "Übersicht",
+        "Hauptnavigation",
+        "Sammlung",
+        "Spieleabende"
+      ],
+      "appearance": "Adaptive helle und dunkle ClubTheme-Rollen; native Systemsteuerelemente.",
+      "layout": "SwiftUI-Punkte; Übersicht maximal 720pt; Accessibility-Schriftgrößen wechseln Inhaltsgruppen ins vertikale Layout.",
+      "motion": "Systemgeführte Navigation und Sheets; keine eigene Animationskurve.",
+      "verification": "Unabhängiger Abschlussreview: ship, 13 gültige statische Simulatorbilder, einschließlich dunkler Darstellung und großer Schrift; keine Hardwareabnahme."
+    }
   },
   "components": [
     {
@@ -128,23 +246,42 @@
       "description": "Flache Eventfläche mit dem hervorgehobenen Datumsblock.",
       "html": "<article class=\"ds-event\"><div class=\"ds-event-top\"><div class=\"ds-date\"><strong>30</strong><span>Oktober</span></div><div><h3>Spieleabend</h3><p>19:00 Uhr</p></div></div><footer class=\"ds-event-footer\">Spiele gemeinsam auswählen</footer></article>",
       "css": ".ds-event{font-family:var(--font-barlow),system-ui,-apple-system,sans-serif;background:var(--card);color:var(--card-foreground);border-radius:.875rem;overflow:hidden;}.ds-event-top{display:flex;align-items:flex-start;gap:1.25rem;padding:1.5rem;}.ds-date{display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;width:4.5rem;min-height:5.25rem;padding:.65rem .4rem;border-radius:.6rem;background:var(--accent);color:var(--accent-foreground);font-variant-numeric:tabular-nums;}.ds-date strong{font-size:2.4rem;line-height:1;font-weight:700;}.ds-date span{margin-top:.45rem;font-size:.75rem;font-weight:600;}.ds-event h3{font-size:1.45rem;font-weight:700;line-height:1.2;margin:.15rem 0 .65rem;}.ds-event p{color:var(--muted-foreground);font-size:.95rem;}.ds-event-footer{padding:.65rem 1.5rem;background:var(--secondary);}@media(min-width:768px){.ds-date{width:5.75rem;min-height:6.75rem;}.ds-date strong{font-size:3.5rem;}.ds-date span{font-size:.8rem;}}"
+    },
+    {
+      "name": "Native Primäraktion – schematische Vorschau",
+      "kind": "button",
+      "refersTo": "ios-button-primary",
+      "description": "HTML zeigt die ClubTheme-Farb- und Formrollen; tatsächliche Bedienung und Dynamic Type bleiben SwiftUI.",
+      "html": "<button class=\"ds-ios-primary\">Spieleabend ansehen</button>",
+      "css": ".ds-ios-primary{font-family:-apple-system,BlinkMacSystemFont,sans-serif;font-size:17px;font-weight:600;width:100%;min-height:52px;padding:4px 12px;border:0;border-radius:10px;background:#2445b4;color:#fff;cursor:pointer}.ds-ios-primary:active{opacity:.8}.ds-ios-primary:hover{cursor:pointer}.ds-ios-primary:focus-visible{outline:2px solid currentColor;outline-offset:2px}@media(prefers-color-scheme:dark){.ds-ios-primary{background:#a8baff;color:#172648}}"
+    },
+    {
+      "name": "Nativer Datumsblock – schematische Vorschau",
+      "kind": "custom",
+      "refersTo": "ios-date",
+      "description": "Wiederverwendeter Datumsblock aus EventDateBlock; SwiftUI skaliert Breite und Typografie mit Dynamic Type.",
+      "html": "<time class=\"ds-ios-date\" datetime=\"2026-10-30\"><strong>30</strong><span>Okt.</span><small>2026</small></time>",
+      "css": ".ds-ios-date{font-family:-apple-system,BlinkMacSystemFont,sans-serif;display:inline-flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-width:66px;min-height:82px;padding:8px 0;border-radius:10px;background:#f4af85;color:#542f20}.ds-ios-date strong{font-size:34px;font-weight:700;font-variant-numeric:tabular-nums}.ds-ios-date span{font-size:12px;font-weight:600}.ds-ios-date small{font-size:11px}@media(prefers-color-scheme:dark){.ds-ios-date{background:#e8ac88}}"
     }
   ],
   "narrative": {
     "northStar": "Club Programme",
-    "overview": "Club Programme überträgt die Klarheit eines Veranstaltungsprogramms auf die gemeinsame Spielorganisation. Kobaltblaue Navigation, eine helle blaue Arbeitsfläche und klar gestufte Barlow-Schrift bilden die gemeinsame Webgestaltung.\n\nDie Oberflächen bleiben ruhig und überwiegend flach. Datumsblöcke, Trennlinien und beschriftete Aktionen führen durch Termine, Sammlung und Spielhistorie. Die Gestaltung verwendet Code und vorhandene Spielcover; zusätzliche Rastergrafiken gehören nicht zur visuellen Grundausstattung.",
+    "overview": "Club Programme überträgt die Klarheit eines Veranstaltungsprogramms auf die gemeinsame Spielorganisation. Kobaltblaue Navigation, eine helle blaue Arbeitsfläche und klar gestufte Barlow-Schrift bilden die gemeinsame Webgestaltung.\n\nDie Oberflächen bleiben ruhig und überwiegend flach. Datumsblöcke, Trennlinien und beschriftete Aktionen führen durch Termine, Sammlung und Spielhistorie. Die Gestaltung verwendet Code und vorhandene Spielcover; zusätzliche Rastergrafiken gehören nicht zur visuellen Grundausstattung.\n\nDie native iOS-Adaption gilt zunächst für Übersicht, Hauptnavigation, Sammlung und Spieleabende. Sie übernimmt die Farbrollen und das Datumsmotiv von Club Programme mit SF-Systemschrift, Dynamic Type, SF Symbols und systemgeführten Navigationen, Listen und Sheets ab iOS 17. Die Webgestaltung bleibt eigenständig erhalten; die nativen Rollen tragen das Präfix `ios-`.",
     "keyCharacteristics": [
       "Kobaltblaue Navigation mit sichtbaren Textbezeichnungen.",
       "Barlow mit deutlicher Größenhierarchie.",
       "Blaue Flächentöne und gezielte pfirsichfarbene Datumsakzente.",
-      "Flache Arbeitsbereiche mit feinen Trennlinien."
+      "Flache Arbeitsbereiche mit feinen Trennlinien.",
+      "Native iOS-Bedienmuster mit Systemschrift, Dynamic Type und SF Symbols."
     ],
     "rules": [],
     "dos": [
       "Do semantische Farbvariablen für Flächen, Text und Zustände verwenden.",
       "Do Navigation und Aktionen verständlich auf Deutsch beschriften.",
       "Do vorhandene Spielcover vollständig im Bildbereich darstellen.",
-      "Do sichtbaren Tastaturfokus und reduzierte Bewegung erhalten."
+      "Do sichtbaren Tastaturfokus und reduzierte Bewegung erhalten.",
+      "Do in nativen Club-Oberflächen `ClubTheme`, semantische Textstile und systemgeführte Navigation verwenden.",
+      "Do bei Accessibility-Schriftgrößen Inhalte vertikal anordnen und Status zusätzlich als Text zeigen."
     ],
     "donts": [
       "Don't die Desktopspalten auf schmale Ansichten übertragen.",

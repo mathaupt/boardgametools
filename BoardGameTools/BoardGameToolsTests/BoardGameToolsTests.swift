@@ -14,6 +14,34 @@ private func require(_ condition: @autoclosure () throws -> Bool, _ message: Str
     if try !condition() { throw RegressionFailure.failed(message) }
 }
 
+private func checkDashboardContent() throws {
+    let decoder = JSONDecoder()
+    let events = try decoder.decode([EventDTO].self, from: Data(#"""
+    [
+      {"id":"past","title":"Vorbei","eventDate":"2026-10-29T19:00:00Z","status":"open","createdAt":"now","updatedAt":"now"},
+      {"id":"invalid","title":"Unbekannt","eventDate":"ungültig","status":"open","createdAt":"now","updatedAt":"now"},
+      {"id":"deleted","title":"Gelöscht","eventDate":"2026-10-30T18:00:00Z","status":"planned","deletedAt":"now","createdAt":"now","updatedAt":"now"},
+      {"id":"later","title":"Später","eventDate":"2026-10-31T18:00:00Z","status":"open","createdAt":"now","updatedAt":"now"},
+      {"id":"next","title":"Heute","eventDate":"2026-10-30T21:00:00.000+02:00","status":"closed","createdAt":"now","updatedAt":"now"}
+    ]
+    """#.utf8))
+    let now = ISO8601DateFormatter().date(from: "2026-10-30T12:00:00Z")!
+    try require(ClubContent.nextEvent(in: events, now: now)?.id == "next", "next event must use actual dates, retain closed voting and exclude deleted/past/invalid events")
+    try require(ClubContent.nextEvent(in: [], now: now) == nil, "empty agenda")
+    try require(ClubContent.nextEvent(in: events, now: now.addingTimeInterval(7 * 86400)) == nil, "past agenda")
+    let sessions = try decoder.decode([SessionDTO].self, from: Data(#"""
+    [
+      {"id":"older","gameId":"g","playedAt":"2026-10-29T20:00:00Z","players":[],"createdAt":"now","updatedAt":"now"},
+      {"id":"newer","gameId":"g","playedAt":"2026-10-30T18:00:00+02:00","players":[],"createdAt":"now","updatedAt":"now"},
+      {"id":"deleted","gameId":"g","playedAt":"2026-10-30T20:00:00Z","deletedAt":"now","players":[],"createdAt":"now","updatedAt":"now"},
+      {"id":"invalid","gameId":"g","playedAt":"unbekannt","players":[],"createdAt":"now","updatedAt":"now"}
+    ]
+    """#.utf8))
+    try require(ClubContent.recentSessions(in: sessions, limit: 1).map(\.id) == ["newer"], "recent history sorted by dates and limited")
+    try require(ClubContent.recentSessions(in: sessions, limit: 3).map(\.id) == ["newer", "older"], "deleted and invalid history excluded")
+    try require(ClubContent.recentSessions(in: sessions, limit: 0).isEmpty, "zero history limit")
+}
+
 private func checkContracts() throws {
     let decoder = JSONDecoder()
     let refresh = Data(#"{"accessToken":"access","refreshToken":"refresh","expiresAt":"2026-10-29T00:00:00Z"}"#.utf8)
@@ -220,6 +248,8 @@ private func expectUnauthorized(_ api: APIClient) async throws {
 @main struct ContractTestRunner {
     @MainActor static func main() async throws {
         try checkContracts()
+        try checkDashboardContent()
+        print("PASS: next evening and recent session selection")
         print("PASS: refresh, series, upload and strict login contracts")
         try checkAccountIsolation()
         print("PASS: legacy cache, same account, second account, backend switch and logout")
@@ -229,6 +259,7 @@ private func expectUnauthorized(_ api: APIClient) async throws {
 }
 #else
 struct BoardGameToolsTests {
+    @Test func dashboardContent() throws { try checkDashboardContent() }
     @Test func mobileResponseContracts() throws { try checkContracts() }
     @Test @MainActor func accountCacheIsolation() throws { try checkAccountIsolation() }
     @Test @MainActor func authenticationRequests() async throws { try await checkAuthenticationRequests() }

@@ -11,76 +11,75 @@ struct SettingsView: View {
     @State private var successMessage: String?
 
     var body: some View {
-        NavigationStack {
-            Form {
-                Section("Verbindung") {
-                    TextField("API-URL", text: $apiURL)
-                        .autocapitalization(.none)
-                        .textContentType(.URL)
-                        .keyboardType(.URL)
+        Form {
+            Section("Verbindung") {
+                TextField("API-URL", text: $apiURL)
+                    .autocapitalization(.none)
+                    .textContentType(.URL)
+                    .keyboardType(.URL)
 
-                    Button("Speichern") {
-                        Task { await saveURL() }
-                    }
-                    .tint(Theme.primary)
-
-                    HStack {
-                        Text("Status")
-                        Spacer()
-                        Label(
-                            networkMonitor.isOnline ? "Online" : "Offline",
-                            systemImage: networkMonitor.isOnline ? "wifi" : "wifi.slash"
-                        )
-                        .foregroundStyle(networkMonitor.isOnline ? Theme.success : Theme.warning)
-                    }
+                Button("Speichern") {
+                    Task { await saveURL() }
                 }
+                .tint(Theme.primary)
 
-                Section("Account") {
-                    TextField("Name", text: $name)
-                        .textContentType(.name)
-
-                    SecureField("Aktuelles Passwort", text: $currentPassword)
-                        .textContentType(.password)
-
-                    SecureField("Neues Passwort", text: $newPassword)
-                        .textContentType(.newPassword)
-
-                    Button("Account aktualisieren") {
-                        Task { await updateProfile() }
-                    }
-                    .tint(Theme.primary)
-                    .disabled(name.isEmpty && currentPassword.isEmpty && newPassword.isEmpty)
-                }
-
-                Section {
-                    Button(role: .destructive) {
-                        Task { await logout() }
-                    } label: {
-                        Label("Abmelden", systemImage: "rectangle.portrait.and.arrow.right")
-                    }
-                }
-
-                if let successMessage = successMessage {
-                    Section {
-                        Text(successMessage)
-                            .foregroundStyle(Theme.success)
-                    }
-                }
-
-                if let errorMessage = errorMessage {
-                    Section {
-                        Text(errorMessage)
-                            .foregroundStyle(.red)
-                    }
+                HStack {
+                    Text("Status")
+                    Spacer()
+                    Label(
+                        networkMonitor.isOnline ? "Online" : "Offline",
+                        systemImage: networkMonitor.isOnline ? "wifi" : "wifi.slash"
+                    )
+                    .foregroundStyle(networkMonitor.isOnline ? Theme.success : Theme.warning)
                 }
             }
-            .navigationTitle("Einstellungen")
-            .background(Theme.background.ignoresSafeArea())
-            .onAppear {
-                apiURL = APIClient.shared.baseURL.absoluteString
-                name = authManager.currentUser?.name ?? ""
+
+            Section("Account") {
+                TextField("Name", text: $name)
+                    .textContentType(.name)
+
+                SecureField("Aktuelles Passwort", text: $currentPassword)
+                    .textContentType(.password)
+
+                SecureField("Neues Passwort", text: $newPassword)
+                    .textContentType(.newPassword)
+
+                Button("Account aktualisieren") {
+                    Task { await updateProfile() }
+                }
+                .tint(Theme.primary)
+                .disabled(name.isEmpty && currentPassword.isEmpty && newPassword.isEmpty)
+            }
+
+            Section {
+                Button(role: .destructive) {
+                    Task { await logout() }
+                } label: {
+                    Label("Abmelden", systemImage: "rectangle.portrait.and.arrow.right")
+                }
+            }
+
+            if let successMessage = successMessage {
+                Section {
+                    Text(successMessage)
+                        .foregroundStyle(Theme.success)
+                }
+            }
+
+            if let errorMessage = errorMessage {
+                Section {
+                    Text(errorMessage)
+                        .foregroundStyle(.red)
+                }
             }
         }
+        .navigationTitle("Einstellungen")
+        .background(Theme.background.ignoresSafeArea())
+        .onAppear {
+            apiURL = APIClient.shared.baseURL.absoluteString
+            name = authManager.currentUser?.name ?? ""
+        }
+
     }
 
     private func logout() async {

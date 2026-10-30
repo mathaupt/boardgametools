@@ -1,5 +1,46 @@
 import SwiftUI
 
+/// Adaptive roles for the four Club Programme surfaces.
+enum ClubTheme {
+    private static func adaptive(_ light: UInt32, _ dark: UInt32) -> Color {
+        Color(uiColor: UIColor { traits in
+            let hex = traits.userInterfaceStyle == .dark ? dark : light
+            return UIColor(red: Double((hex >> 16) & 255) / 255,
+                           green: Double((hex >> 8) & 255) / 255,
+                           blue: Double(hex & 255) / 255, alpha: 1)
+        })
+    }
+
+    static let tint = adaptive(0x2445B4, 0xA8BAFF)
+    static let onTint = adaptive(0xFFFFFF, 0x172648)
+    static let background = adaptive(0xEAF0FF, 0x151923)
+    static let surface = adaptive(0xFFFFFF, 0x202637)
+    static let ink = adaptive(0x172648, 0xEDF1FF)
+    static let secondaryInk = adaptive(0x4A5B7E, 0xB6C2DE)
+    static let softBlue = adaptive(0xDCE5FC, 0x2B3652)
+    static let dateBackground = adaptive(0xF4AF85, 0xE8AC88)
+    static let dateInk = Color(red: 84 / 255, green: 47 / 255, blue: 32 / 255)
+
+    struct Surface: ViewModifier {
+        func body(content: Content) -> some View {
+            content.padding(20).background(surface, in: .rect(cornerRadius: 14))
+        }
+    }
+
+    struct PrimaryButton: ButtonStyle {
+        func makeBody(configuration: Configuration) -> some View {
+            configuration.label
+                .font(.headline)
+                .frame(maxWidth: .infinity, minHeight: 44)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 4)
+                .foregroundStyle(onTint)
+                .background(tint, in: .rect(cornerRadius: 10))
+                .opacity(configuration.isPressed ? 0.8 : 1)
+        }
+    }
+}
+
 enum Theme {
     // Brand palette
     static let primary = Color.indigo

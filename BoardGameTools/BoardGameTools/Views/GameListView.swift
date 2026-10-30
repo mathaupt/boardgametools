@@ -65,13 +65,15 @@ struct GameListView: View {
                         GameRow(game: game)
                     }
                     .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
-                    .listRowBackground(Theme.cardBackground)
-                    .listRowSeparator(.hidden)
+                    .listRowBackground(ClubTheme.surface)
+                    .listRowSeparator(.visible)
                 }
             }
-            .listStyle(.plain)
-            .background(Theme.background.ignoresSafeArea())
+            .listStyle(.insetGrouped)
+            .scrollContentBackground(.hidden)
+            .background(ClubTheme.background.ignoresSafeArea())
             .navigationTitle("Spiele")
+            .tint(ClubTheme.tint)
             .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Spiel suchen")
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
@@ -96,7 +98,7 @@ struct GameListView: View {
                     } label: {
                         Image(systemName: hasActiveFilters ? "line.3.horizontal.decrease.circle.fill" : "line.3.horizontal.decrease.circle")
                             .font(.title3)
-                            .foregroundStyle(Theme.primaryGradient)
+                            .foregroundStyle(ClubTheme.tint)
                     }
                     .accessibilityLabel("Filter")
                 }
@@ -107,7 +109,7 @@ struct GameListView: View {
                     } label: {
                         Image(systemName: "plus.circle.fill")
                             .font(.title3)
-                            .foregroundStyle(Theme.primaryGradient)
+                            .foregroundStyle(ClubTheme.tint)
                     }
                     .accessibilityLabel("Spiel hinzufügen")
                 }
@@ -133,7 +135,26 @@ struct GameListView: View {
                 } else if let errorMessage = errorMessage {
                     EmptyStateView(icon: "exclamationmark.triangle", title: "Fehler", subtitle: errorMessage)
                 } else if filteredGames.isEmpty && !syncEngine.isSyncing {
-                    EmptyStateView(icon: "magnifyingglass", title: "Keine Spiele", subtitle: "Passe deine Filter oder Suche an.")
+                    ContentUnavailableView {
+                        Label(localGames.isEmpty ? "Deine Sammlung beginnt hier" : "Keine passenden Spiele",
+                              systemImage: localGames.isEmpty ? "dice" : "magnifyingglass")
+                    } description: {
+                        Text(localGames.isEmpty ? "Füge dein erstes Spiel hinzu oder importiere es aus BoardGameGeek." : "Ändere deine Suche oder setze die Filter zurück.")
+                    } actions: {
+                        if localGames.isEmpty {
+                            Button("Spiel hinzufügen") { isShowingAddSheet = true }
+                                .buttonStyle(.borderedProminent)
+                        } else {
+                            Button("Suche und Filter zurücksetzen") {
+                                searchText = ""
+                                selectedTags = []
+                                selectedPlayerCount = nil
+                                minComplexity = nil
+                                sortOption = .nameAsc
+                            }
+                            .buttonStyle(.bordered)
+                        }
+                    }
                 }
             }
             .onChange(of: syncEngine.errorMessage) { _, new in
@@ -144,54 +165,45 @@ struct GameListView: View {
 }
 
 struct GameRow: View {
+    @Environment(\.dynamicTypeSize) private var typeSize
     let game: LocalGame
 
     var body: some View {
-        HStack(spacing: 16) {
+        let layout = typeSize.isAccessibilitySize
+            ? AnyLayout(VStackLayout(alignment: .leading, spacing: 12))
+            : AnyLayout(HStackLayout(spacing: 16))
+        layout {
             GameCover(imageUrl: game.imageUrl, name: game.name)
-
-            VStack(alignment: .leading, spacing: 4) {
+                .accessibilityHidden(true)
+            VStack(alignment: .leading, spacing: 6) {
                 Text(game.name)
                     .font(.headline)
-                    .lineLimit(1)
-
-                HStack(spacing: 4) {
-                    Image(systemName: "person.2")
-                    Text("\(game.minPlayers)–\(game.maxPlayers)")
-                    if let time = game.playTimeMinutes {
-                        Text("·")
-                        Image(systemName: "clock")
-                        Text("\(time) min")
-                    }
-                }
-                .font(.caption)
-                .foregroundStyle(.secondary)
-
+                    .foregroundStyle(ClubTheme.ink)
+                    .fixedSize(horizontal: false, vertical: true)
+                Text(metadata)
+                    .font(.subheadline)
+                    .foregroundStyle(ClubTheme.secondaryInk)
                 if let complexity = game.complexity {
-                    HStack(spacing: 2) {
-                        ForEach(1...5, id: \.self) { index in
-                            Image(systemName: index <= complexity ? "star.fill" : "star")
-                                .font(.caption2)
-                                .foregroundStyle(index <= complexity ? Theme.secondary : .gray.opacity(0.4))
-                        }
-                    }
+                    Text("Komplexität: \(complexity) von 5")
+                        .font(.footnote)
+                        .foregroundStyle(ClubTheme.secondaryInk)
                 }
-
                 if !game.tagNames.isEmpty {
-                    Text(game.tagNames.joined(separator: ", "))
-                        .font(.caption2)
-                        .foregroundStyle(.tertiary)
-                        .lineLimit(1)
+                    Text(game.tagNames.joined(separator: " · "))
+                        .font(.footnote)
+                        .foregroundStyle(ClubTheme.secondaryInk)
+                        .lineLimit(typeSize.isAccessibilitySize ? nil : 2)
                 }
             }
-
-            Spacer()
-
-            Image(systemName: "chevron.right")
-                .font(.caption)
-                .foregroundStyle(.tertiary)
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .padding(.vertical, 4)
+        .padding(.vertical, 8)
+        .accessibilityElement(children: .combine)
+    }
+
+    private var metadata: String {
+        let players = "\(game.minPlayers)–\(game.maxPlayers) Personen"
+        return game.playTimeMinutes.map { "\(players) · \($0) Min." } ?? players
     }
 }
 
@@ -201,14 +213,12 @@ struct GameCover: View {
 
     var body: some View {
         ZStack {
+            ClubTheme.softBlue
             if let imageUrl, let url = URL(string: imageUrl) {
                 AsyncImage(url: url) { phase in
-                    switch phase {
-                    case .success(let image):
-                        image.resizable().scaledToFill()
-                    case .failure, .empty:
-                        placeholder
-                    @unknown default:
+                    if let image = phase.image {
+                        image.resizable().scaledToFit()
+                    } else {
                         placeholder
                     }
                 }
@@ -217,20 +227,13 @@ struct GameCover: View {
             }
         }
         .frame(width: 64, height: 80)
-        .clipShape(.rect(cornerRadius: 10))
-        .overlay(
-            RoundedRectangle(cornerRadius: 10)
-                .stroke(.white.opacity(0.1), lineWidth: 1)
-        )
-        .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
+        .clipShape(.rect(cornerRadius: 8))
+        .accessibilityLabel("Cover: \(name)")
     }
 
     private var placeholder: some View {
-        Theme.primaryGradient
-            .overlay(
-                Image(systemName: "dice")
-                    .font(.title2)
-                    .foregroundStyle(.white.opacity(0.7))
-            )
+        Image(systemName: "dice")
+            .font(.title2)
+            .foregroundStyle(ClubTheme.tint)
     }
 }

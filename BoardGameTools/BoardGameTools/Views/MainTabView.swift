@@ -4,7 +4,7 @@ struct MainTabView: View {
     var body: some View {
         TabView {
             DashboardView()
-                .tabItem { Label("Dashboard", systemImage: "square.grid.2x2") }
+                .tabItem { Label("Übersicht", systemImage: "house") }
 
             GameListView()
                 .tabItem { Label("Spiele", systemImage: "dice") }
@@ -13,20 +13,39 @@ struct MainTabView: View {
                 .tabItem { Label("Sessions", systemImage: "calendar") }
 
             EventListView()
-                .tabItem { Label("Events", systemImage: "person.3") }
+                .tabItem { Label("Spieleabende", systemImage: "calendar") }
 
-            SeriesListView()
-                .tabItem { Label("Reihen", systemImage: "rectangle.stack.badge.play") }
-
-            GroupListView()
-                .tabItem { Label("Gruppen", systemImage: "person.2") }
-
-            SettingsView()
-                .tabItem { Label("Einstellungen", systemImage: "gearshape") }
+            MoreView()
+                .tabItem { Label("Mehr", systemImage: "ellipsis") }
         }
-        .tint(Theme.primary)
+        .tint(ClubTheme.tint)
         .task {
             await NotificationManager.shared.requestAuthorization()
+        }
+    }
+}
+
+struct MoreView: View {
+    var body: some View {
+        NavigationStack {
+            List {
+                Section("Gemeinsam spielen") {
+                    NavigationLink { GroupListView() } label: {
+                        Label("Gruppen", systemImage: "person.2")
+                    }
+                    NavigationLink { SeriesListView() } label: {
+                        Label("Spielereihen", systemImage: "rectangle.stack")
+                    }
+                }
+                Section("Dein Konto") {
+                    NavigationLink { SettingsView() } label: {
+                        Label("Einstellungen", systemImage: "gearshape")
+                    }
+                }
+            }
+            .scrollContentBackground(.hidden)
+            .background(ClubTheme.background)
+            .navigationTitle("Mehr")
         }
     }
 }

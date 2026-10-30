@@ -9,56 +9,55 @@ struct GroupListView: View {
     @State private var isShowingAddSheet = false
 
     var body: some View {
-        NavigationStack {
-            List {
-                if !networkMonitor.isOnline {
-                    OfflineBanner()
-                        .listRowBackground(Color.clear)
-                        .listRowSeparator(.hidden)
-                }
-
-                ForEach(localGroups) { group in
-                    NavigationLink(destination: GroupDetailView(group: group.toDTO())) {
-                        GroupRow(group: group)
-                    }
-                    .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
-                    .listRowBackground(Theme.cardBackground)
+        List {
+            if !networkMonitor.isOnline {
+                OfflineBanner()
+                    .listRowBackground(Color.clear)
                     .listRowSeparator(.hidden)
+            }
+
+            ForEach(localGroups) { group in
+                NavigationLink(destination: GroupDetailView(group: group.toDTO())) {
+                    GroupRow(group: group)
                 }
-            }
-            .listStyle(.plain)
-            .background(Theme.background.ignoresSafeArea())
-            .navigationTitle("Gruppen")
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        isShowingAddSheet = true
-                    } label: {
-                        Image(systemName: "plus.circle.fill")
-                            .font(.title3)
-                            .foregroundStyle(Theme.primaryGradient)
-                    }
-                }
-            }
-            .sheet(isPresented: $isShowingAddSheet) {
-                GroupEditView(existingGroup: nil)
-                    .presentationDetents([.large])
-            }
-            .onAppear { Task { await syncEngine.sync() } }
-            .refreshable { await syncEngine.sync() }
-            .overlay {
-                if syncEngine.isSyncing && localGroups.isEmpty {
-                    LoadingOverlay(message: "Lade Gruppen...")
-                } else if let errorMessage = errorMessage {
-                    EmptyStateView(icon: "exclamationmark.triangle", title: "Fehler", subtitle: errorMessage)
-                } else if localGroups.isEmpty && !syncEngine.isSyncing {
-                    EmptyStateView(icon: "person.3", title: "Noch keine Gruppen", subtitle: "Erstelle eine Gruppe für deine Spielrunde.")
-                }
-            }
-            .onChange(of: syncEngine.errorMessage) { _, new in
-                errorMessage = new
+                .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+                .listRowBackground(Theme.cardBackground)
+                .listRowSeparator(.hidden)
             }
         }
+        .listStyle(.plain)
+        .background(Theme.background.ignoresSafeArea())
+        .navigationTitle("Gruppen")
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    isShowingAddSheet = true
+                } label: {
+                    Image(systemName: "plus.circle.fill")
+                        .font(.title3)
+                        .foregroundStyle(Theme.primaryGradient)
+                }
+            }
+        }
+        .sheet(isPresented: $isShowingAddSheet) {
+            GroupEditView(existingGroup: nil)
+                .presentationDetents([.large])
+        }
+        .onAppear { Task { await syncEngine.sync() } }
+        .refreshable { await syncEngine.sync() }
+        .overlay {
+            if syncEngine.isSyncing && localGroups.isEmpty {
+                LoadingOverlay(message: "Lade Gruppen...")
+            } else if let errorMessage = errorMessage {
+                EmptyStateView(icon: "exclamationmark.triangle", title: "Fehler", subtitle: errorMessage)
+            } else if localGroups.isEmpty && !syncEngine.isSyncing {
+                EmptyStateView(icon: "person.3", title: "Noch keine Gruppen", subtitle: "Erstelle eine Gruppe für deine Spielrunde.")
+            }
+        }
+        .onChange(of: syncEngine.errorMessage) { _, new in
+            errorMessage = new
+        }
+
     }
 }
 

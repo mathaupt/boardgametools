@@ -671,13 +671,25 @@ und alle Kernbereiche des Web-Frontends.
 | Bereich | Status |
 |---------|--------|
 | Login / Anmeldung | Anmelden per E-Mail/Passwort, Sign in with Apple vorbereitet |
-| Dashboard | Statistik-Kacheln (Spiele, Sessions, Events, Gruppen, Reihen), tippbar zu den jeweiligen Listen |
+| Übersicht | Nächster kommender Spieleabend mit Datum, Ort und Status; direkte Aktionen für Partien und Spiele; bis zu drei letzte Partien mit Spielnamen |
 | Spiele | Liste mit Suche, Tag-Filter, Spieleranzahl-Filter, Komplexitäts-Filter und Sortierung; Detailansicht mit Tags/Komplexität; BGG-Import-Endpoint nutzbar |
 | Reihen | Liste, Detailansicht, Bearbeiten, Einträge hinzufügen/entfernen, Fortschritt markieren, bewerten und umsortieren |
 | Sessions | Liste gespielter Partien mit Brettspiel-Thumbnail |
-| Events | Liste anstehender Events mit Brettspiel-Thumbnail |
+| Spieleabende | Terminliste mit lesbaren Datumsblöcken, Ort, Abstimmungsstatus und Aktion zum Planen; vorhandene Eventdetails und Bearbeitung bleiben erreichbar |
 | Gruppen | Liste eigener Gruppen |
 | Einstellungen | API-URL konfigurierbar, Abmelden, Name und Passwort bearbeiten |
+
+Die native Navigation hat fünf Hauptbereiche: Übersicht, Spiele, Sessions,
+Spieleabende und Mehr. Unter Mehr liegen Gruppen, Spielereihen und Einstellungen;
+ein gemeinsamer Navigationspfad erhält die native Zurück-Funktion.
+
+Die Übersicht wählt Termine anhand tatsächlicher Zeitpunkte einschließlich
+Zeitzonen aus. Vergangene, gelöschte und ungültige Termine erscheinen nicht als
+nächster Spieleabend. Ein geschlossener Abstimmungsstatus entfernt einen noch
+kommenden Termin nicht. Ohne kommenden Termin führt „Spieleabend planen“ zum
+bestehenden Formular. Die letzte Spielhistorie berücksichtigt gültige, nicht
+gelöschte Partien. Bei leerer Sammlung bietet die App das Hinzufügen an; bei
+ergebnisloser Suche können Suche und Filter gemeinsam zurückgesetzt werden.
 
 ### Architektur
 
@@ -695,8 +707,12 @@ und alle Kernbereiche des Web-Frontends.
 - `DashboardView`, `GameListView`, `GameDetailView`, `SessionListView`,
   `EventListView`, `GroupListView`, `SettingsView` nutzen SwiftData `@Query`
   und synchronisieren per Pull-to-Refresh.
-- Theming: indigo/violette Farbpalette, Farbverläufe, Kachel-Karten,
-  Offline-Banner, leere Zustände, Cover-Bilder per `AsyncImage`.
+- Theming: Übersicht, Navigation, Sammlung und Spieleabende verwenden die native
+  Club-Programme-Adaption mit adaptiven blauen Farbrollen, flachen Flächen,
+  Systemschrift und pfirsichfarbenen Datumsblöcken. Die dunkle Darstellung hat
+  eigene Farben; große Schrift ordnet Inhaltsgruppen vertikal an. Spielcover
+  bleiben vollständig sichtbar. Weitere Detail- und Bearbeitungsansichten
+  behalten vorerst ihre bestehende Gestaltung.
 - `GameEditView` und `BGGSearchView`: Spiele manuell anlegen/bearbeiten/löschen
   oder direkt aus BoardGameGeek importieren.
 - `SessionEditView`, `EventEditView`, `GroupEditView` plus zugehörige

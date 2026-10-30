@@ -19,6 +19,18 @@ Die Impeccable-Design-Hooks sind für das Projekt aktiviert. Sie melden nach Än
 - Sammlungskarten und Filter: `collection-game-card.tsx` und `collection-filters.tsx` neben `games-list-client.tsx`.
 - Navigationstests: `tests/unit/components/club-navigation.test.tsx` und `tests/e2e/navigation_test.ts`; Dashboardzustände: `tests/unit/components/club-dashboard.test.tsx`.
 
+## Native iOS-Gestaltung
+
+- Übersicht, Navigation, Sammlung und Spieleabende folgen der bestätigten nativen
+  Club-Programme-Adaption; Vertrag und Umfang stehen in
+  `docs/superpowers/specs/2026-10-30-ios-club-programme-design.md`.
+- Adaptive native Farbrollen liegen als `ClubTheme` in
+  `BoardGameTools/BoardGameTools/Utilities/Theme.swift`; `ClubContent` in
+  `Utilities/Date+Formatting.swift` wählt den nächsten Spieleabend und letzte Partien.
+- `MainTabView` hat fünf Tabs. `MoreView` besitzt den gemeinsamen NavigationStack
+  für Gruppen, Spielereihen und Einstellungen; diese Ziele erzeugen keinen eigenen Stack.
+- Die Auswahltests gehören zum Swift-Vertragstest-Runner (`npm run test:ios:contracts`).
+
 ## Tech Stack
 
 - **Framework**: Next.js 16.4.3 (App Router, Turbopack dev, Webpack prod)

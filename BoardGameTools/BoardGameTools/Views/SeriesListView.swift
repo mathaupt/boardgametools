@@ -63,74 +63,73 @@ struct SeriesListView: View {
     }
 
     var body: some View {
-        NavigationStack {
-            List {
-                if !networkMonitor.isOnline {
-                    OfflineBanner()
-                        .listRowBackground(Color.clear)
-                        .listRowSeparator(.hidden)
-                }
-
-                ForEach(filteredSeries) { series in
-                    NavigationLink(destination: SeriesDetailView(series: series)) {
-                        SeriesRow(series: series)
-                    }
-                    .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
-                    .listRowBackground(Theme.cardBackground)
+        List {
+            if !networkMonitor.isOnline {
+                OfflineBanner()
+                    .listRowBackground(Color.clear)
                     .listRowSeparator(.hidden)
-                }
             }
-            .listStyle(.plain)
-            .background(Theme.background.ignoresSafeArea())
-            .navigationTitle("Reihen")
-            .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Reihe suchen")
-            .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    Menu {
-                        ForEach(SeriesSortOption.allCases) { option in
-                            Button {
-                                sortOption = option
-                            } label: {
-                                Label(option.label, systemImage: sortOption == option ? "checkmark" : "")
-                            }
-                        }
-                    } label: {
-                        Image(systemName: "arrow.up.arrow.down.circle")
-                            .font(.title3)
-                            .accessibilityLabel("Sortierung")
-                    }
-                }
 
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        isShowingAddSheet = true
-                    } label: {
-                        Image(systemName: "plus.circle.fill")
-                            .font(.title3)
-                            .foregroundStyle(Theme.primaryGradient)
-                    }
-                    .accessibilityLabel("Neue Reihe")
+            ForEach(filteredSeries) { series in
+                NavigationLink(destination: SeriesDetailView(series: series)) {
+                    SeriesRow(series: series)
                 }
-            }
-            .sheet(isPresented: $isShowingAddSheet) {
-                SeriesEditView()
-                    .presentationDetents([.large])
-            }
-            .onAppear { Task { await syncEngine.sync() } }
-            .refreshable { await syncEngine.sync() }
-            .overlay {
-                if syncEngine.isSyncing && localSeries.isEmpty {
-                    LoadingOverlay(message: "Lade Reihen...")
-                } else if let errorMessage = errorMessage {
-                    EmptyStateView(icon: "exclamationmark.triangle", title: "Fehler", subtitle: errorMessage)
-                } else if filteredSeries.isEmpty && !syncEngine.isSyncing {
-                    EmptyStateView(icon: "rectangle.stack", title: "Noch keine Reihen", subtitle: "Erstelle eine Reihe für EXIT, Adventure Games oder ähnliche Serien.")
-                }
-            }
-            .onChange(of: syncEngine.errorMessage) { _, new in
-                errorMessage = new
+                .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+                .listRowBackground(Theme.cardBackground)
+                .listRowSeparator(.hidden)
             }
         }
+        .listStyle(.plain)
+        .background(Theme.background.ignoresSafeArea())
+        .navigationTitle("Reihen")
+        .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Reihe suchen")
+        .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                Menu {
+                    ForEach(SeriesSortOption.allCases) { option in
+                        Button {
+                            sortOption = option
+                        } label: {
+                            Label(option.label, systemImage: sortOption == option ? "checkmark" : "")
+                        }
+                    }
+                } label: {
+                    Image(systemName: "arrow.up.arrow.down.circle")
+                        .font(.title3)
+                        .accessibilityLabel("Sortierung")
+                }
+            }
+
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    isShowingAddSheet = true
+                } label: {
+                    Image(systemName: "plus.circle.fill")
+                        .font(.title3)
+                        .foregroundStyle(Theme.primaryGradient)
+                }
+                .accessibilityLabel("Neue Reihe")
+            }
+        }
+        .sheet(isPresented: $isShowingAddSheet) {
+            SeriesEditView()
+                .presentationDetents([.large])
+        }
+        .onAppear { Task { await syncEngine.sync() } }
+        .refreshable { await syncEngine.sync() }
+        .overlay {
+            if syncEngine.isSyncing && localSeries.isEmpty {
+                LoadingOverlay(message: "Lade Reihen...")
+            } else if let errorMessage = errorMessage {
+                EmptyStateView(icon: "exclamationmark.triangle", title: "Fehler", subtitle: errorMessage)
+            } else if filteredSeries.isEmpty && !syncEngine.isSyncing {
+                EmptyStateView(icon: "rectangle.stack", title: "Noch keine Reihen", subtitle: "Erstelle eine Reihe für EXIT, Adventure Games oder ähnliche Serien.")
+            }
+        }
+        .onChange(of: syncEngine.errorMessage) { _, new in
+            errorMessage = new
+        }
+
     }
 }
 

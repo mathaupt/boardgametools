@@ -170,8 +170,13 @@ automatischem Build und Unit-Test-Ziel:
   `SeriesListView`, `SeriesDetailView`, `SeriesEditView`, `SessionListView`, `EventListView`,
   `GroupListView`, `SettingsView`) nutzen SwiftData `@Query` und Pull-to-Refresh.
 - `GameListView` unterstützt Suche, Tag-Filter, Spieleranzahl-Filter, Komplexitäts-Filter und Sortierung.
-- Theming: indigo-violette Farbpalette, Farbverläufe, Kachel-Karten,
-  Offline-Banner, leere Zustände und Cover-Bilder per `AsyncImage`.
+- Übersicht, Navigation, Sammlung und Spieleabende verwenden die native
+  Club-Programme-Gestaltung: adaptive blaue Flächen, Systemschrift mit Dynamic
+  Type, SF Symbols und Datumsblöcke. Die Übersicht priorisiert den nächsten
+  Spieleabend, direkte Aktionen und zuletzt gespielte Partien. Fünf native Tabs
+  erschließen die Hauptbereiche; Gruppen, Reihen und Einstellungen liegen unter
+  Mehr mit gemeinsamem Zurück-Pfad. Andere Detail- und Bearbeitungsansichten
+  behalten zunächst ihre vorhandene Gestaltung.
 - `GameEditView`, `GameAddSheet` und `BGGSearchView` ermöglichen das manuelle
   Erstellen/Bearbeiten/Löschen sowie den Import aus BoardGameGeek.
 - `SessionEditView`, `EventEditView` und `GroupEditView` mit Detail-Views

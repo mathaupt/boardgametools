@@ -9,6 +9,7 @@ swiftc -D CONTRACT_TEST_RUNNER -parse-as-library -swift-version 6 \
   BoardGameTools/BoardGameTools/Networking/*.swift \
   BoardGameTools/BoardGameTools/Security/KeychainManager.swift \
   BoardGameTools/BoardGameTools/Utilities/JSON+ISO8601.swift \
+  BoardGameTools/BoardGameTools/Utilities/Date+Formatting.swift \
   BoardGameTools/BoardGameTools/Services/AuthManager.swift \
   BoardGameTools/BoardGameTools/Services/SyncEngine.swift \
   BoardGameTools/BoardGameTools/Data/LocalDataSource.swift \

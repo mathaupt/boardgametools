@@ -12,6 +12,18 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.22",
+    date: "2026-10-30",
+    title: "Der nächste Spieleabend auf dem iPhone",
+    description: "Die iOS-App übernimmt die blaue Club-Gestaltung und rückt den nächsten gemeinsamen Spieleabend in den Mittelpunkt.",
+    changes: [
+      { type: "improvement", text: "Startansicht mit nächstem Spieleabend, direkten Aktionen und zuletzt gespielten Partien" },
+      { type: "improvement", text: "Fünf übersichtliche Hauptbereiche; Gruppen, Reihen und Einstellungen sind unter Mehr erreichbar" },
+      { type: "improvement", text: "Spielesammlung mit vollständigen Covern und Spieleabende mit klaren Datumsblöcken" },
+      { type: "internal", text: "Termin- und Historienauswahl durch native Swift-Tests abgesichert" },
+    ],
+  },
+  {
     version: "0.50.21",
     date: "2026-10-30",
     title: "Gemeinsame Werkzeuge für Entwicklung und Veröffentlichung",

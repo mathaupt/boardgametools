@@ -19,8 +19,12 @@ export const faqSections: FaqSection[] = [
     description: "So startest du mit BoardGameTools.",
     items: [
       {
-        question: "Wo finde ich die Navigation auf dem Smartphone?",
+        question: "Wo finde ich die Webnavigation auf dem Smartphone?",
         answer: "Öffne das Menü oben neben BoardGameTools. Dort findest du Spiele, Sessions, Reihen, Events, Gruppen und Statistiken sowie Hilfe, Profil und Abmelden. Nach der Auswahl eines Bereichs schließt sich das Menü. Auf dem Computer stehen die Bereiche links in der blauen Navigation.",
+      },
+      {
+        question: "Was zeigt die Übersicht in der iOS-App?",
+        answer: "Zuerst siehst du deinen nächsten Spieleabend mit Datum, Ort und Abstimmungsstatus. Darunter kannst du eine Partie erfassen oder ein Spiel hinzufügen und deine letzten Partien ansehen. Wenn kein kommender Termin vorhanden ist, kannst du direkt einen Spieleabend planen. Gruppen, Spielereihen und Einstellungen findest du im Bereich Mehr.",
       },
       {
         question: "Was passiert beim Abmelden oder Kontowechsel in der iOS-App?",
