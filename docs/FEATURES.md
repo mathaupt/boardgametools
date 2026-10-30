@@ -3,7 +3,7 @@
 Geplante Erweiterungen stehen separat im [nummerierten Feature-Backlog](FEATURE-BACKLOG.md).
 Dort erfasste TODOs sind noch nicht implementiert oder zur Umsetzung freigegeben.
 
-> **Version 0.50.20** | 42 Seiten | 92 API-Endpunkte | 29 Datenbank-Modelle
+> **Version 0.50.26** | 42 Seiten | 94 API-Endpunkte | 29 Datenbank-Modelle
 >
 > Vollstaendige Dokumentation aller Nutzer-sichtbaren Features,
 > organisiert nach Bereichen mit Screenshots-Beschreibungen,
@@ -279,6 +279,7 @@ Uebersicht der Gaeste (per oeffentlichem Link beigetreten) mit Stimmenanzahl.
 
 #### Spielvorschlaege & Abstimmung
 - Vorschlaege mit Bild, Name, Spieleranzahl, Spieldauer, Komplexitaet
+- Spieldetails direkt im Dialog aus Spielname oder Aktion „Spieldetails“ öffnen; öffentliche Gäste sehen keine private Sammlungsbeschreibung
 - Wer hat vorgeschlagen, wie viele Stimmen
 - Abstimmen / Stimme zurueckziehen
 - Gewinnerspiel hervorgehoben
@@ -314,6 +315,7 @@ Uebersicht der Gaeste (per oeffentlichem Link beigetreten) mit Stimmenanzahl.
 - Spiel per BGG-Suche vorschlagen
 - Ueber vorgeschlagene Spiele abstimmen
 - Rangliste der Vorschlaege nach Stimmen
+- Spieldetails im zugänglichen Dialog ansehen, ohne den Voting-Kontext zu verlassen
 
 ---
 
@@ -771,15 +773,20 @@ Zusaetzlich: Profil-Link, Logout-Button, Versions-Badge → Changelog.
 | Spiele | 5 + BGG-Seite | 4 + 4 BGG + 1 Barcode + 1 Upload + 1 Tags |
 | Sessions | 4 | 3 |
 | Reihen | 4 | 5 |
-| Events | 6 | 15 |
+| Events | 6 | 16 |
 | Gruppen | 4 | 8 |
 | Statistiken | 1 | 1 |
 | Profil | 1 | 3 |
 | Admin | 2 | 7 |
-| Oeffentlich | 3 | 10 |
+| Oeffentlich | 3 | 11 |
 | Mobile API | — | 21 |
 | Sonstige | 4 | 3 |
-| **Gesamt** | **41** | **92** |
+| **Gesamt** | **41** | **94** |
+
+Zusätzliche Detailabfragen für Event-Vorschläge:
+
+- `GET /api/events/{id}/proposals/{proposalId}/game` — Detaildaten für den Ersteller oder eingeladene Personen
+- `GET /api/public/event/{token}/proposals/{proposalId}/game` — reduzierte Detaildaten für den öffentlichen Link, ohne lokale Sammlungsbeschreibung
 
 ### Datenbank-Modelle (27)
 

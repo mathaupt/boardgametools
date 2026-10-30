@@ -26,10 +26,11 @@ function buildHeaders(): Record<string, string> {
   return headers;
 }
 
-export async function fetchBGGGame(bggId: string): Promise<BGGGameData | null> {
+export async function fetchBGGGame(bggId: string, signal?: AbortSignal): Promise<BGGGameData | null> {
   try {
     const response = await fetch(`${BGG_API_URL}/thing?id=${bggId}&stats=1`, {
       headers: buildHeaders(),
+      signal,
     });
 
     if (!response.ok) {

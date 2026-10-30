@@ -1,6 +1,7 @@
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
 import { GameService } from "@/lib/services";
+import { privateEventAccessFilter } from "@/lib/private-event-access";
 import { notFound, redirect } from "next/navigation";
 import VotingClient from "./voting-client";
 
@@ -16,7 +17,7 @@ export default async function EventVotingPage({
   const { id } = await params;
 
   const event = await prisma.event.findFirst({
-    where: { id, deletedAt: null },
+    where: { id, deletedAt: null, ...privateEventAccessFilter(userId) },
     include: {
       createdBy: { select: { id: true, name: true, email: true } },
       invites: {

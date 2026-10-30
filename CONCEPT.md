@@ -50,6 +50,7 @@ Die Weboberfläche verwendet seit 0.50.20 die bestätigte Gestaltung „Club Pro
 - **Event erstellen**: Datum, Ort, Beschreibung
 - **Spieler einladen**: Per E-Mail oder User-Suche, mit Einladungs-Mails
 - **Spiele vorschlagen**: Eingeladene können Spiele aus der Sammlung oder per BGG-Suche vorschlagen
+- **Spieldetails ansehen**: Vorschläge öffnen einen zugänglichen Dialog mit verfügbaren Spielinformationen; öffentliche Gäste sehen keine private Sammlungsbeschreibung
 - **Voting**: Spieler stimmen für vorgeschlagene Spiele ab
 - **Ergebnis**: Spiel mit meisten Stimmen wird ausgewählt
 - **Einladungen erneut senden**: Reminder-E-Mails

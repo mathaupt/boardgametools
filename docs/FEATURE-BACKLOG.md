@@ -9,7 +9,7 @@ nicht wiederverwendet. Verbindlicher Ablauf:
 
 | ID | Feature | Status | Implementierungsplan | Umsetzungsfreigabe |
 |---|---|---|---|---|
-| FEAT-001 | Spieldetails aus dem Voting öffnen | Plan erstellt | [Gemeinsamer Plan](superpowers/plans/2026-10-30-FEAT-001-004-voting.md) | Ausstehend |
+| FEAT-001 | Spieldetails aus dem Voting öffnen | Umgesetzt (Web) | [Gemeinsamer Plan](superpowers/plans/2026-10-30-FEAT-001-004-voting.md) | Freigegeben und umgesetzt am 30.10.2026 |
 | FEAT-002 | Voting-Vorschläge sortieren | Plan erstellt | [Gemeinsamer Plan](superpowers/plans/2026-10-30-FEAT-001-004-voting.md) | Ausstehend |
 | FEAT-003 | Kompakte Voting-Liste prüfen | Prüfplan erstellt | [Gemeinsamer Plan](superpowers/plans/2026-10-30-FEAT-001-004-voting.md) | Ausstehend |
 | FEAT-004 | Voting-Vorschläge löschen | Plan erstellt | [Gemeinsamer Plan](superpowers/plans/2026-10-30-FEAT-001-004-voting.md) | Ausstehend |
@@ -23,21 +23,23 @@ zur Umsetzung freigegeben.
 
 **Implementierungsplan:** [FEAT-001 bis FEAT-004](superpowers/plans/2026-10-30-FEAT-001-004-voting.md).
 **Plattformumfang:** Web zuerst, iOS separat; am 30.10.2026 bestätigt.
-**Umsetzungsfreigabe:** Ausstehend.
+**Umsetzungsfreigabe:** Am 30.10.2026 ausdrücklich für FEAT-001 erteilt; Web umgesetzt. Native iOS-Oberfläche separat zu planen.
 
 **Ziel:** Ein vorgeschlagenes Spiel beurteilen können, ohne es separat suchen zu müssen.
 
-**Anforderung:** Ein Link am Spiel führt zur Spielansicht; alternativ öffnet sich
-eine Detailansicht als Layer beziehungsweise natives Sheet. Die passende Variante
-je Plattform wird im Implementierungsplan entschieden.
+**Umsetzung:** Spielname und Aktion „Spieldetails“ öffnen auf allen drei Web-Votingansichten
+denselben zugänglichen Dialog. Native iOS-Oberfläche separat planen.
 
 **Abnahmekriterien für die spätere Umsetzung:**
 
-- Spieldetails sind direkt aus einem Voting-Vorschlag erreichbar.
-- Nach dem Schließen beziehungsweise Zurückgehen bleibt der Voting-Kontext erhalten.
-- Sammlungsspiele und BGG-Vorschläge berücksichtigen; fehlende Details verständlich anzeigen.
-- Gästen ausschließlich freigegebene Daten zeigen. Navigation, Fokus, Tastaturbedienung
-  beziehungsweise VoiceOver mit Impeccable prüfen.
+- [x] Spieldetails sind direkt aus öffentlichen und geschützten Voting-Vorschlägen erreichbar.
+- [x] Schließen per Aktion oder Escape erhält Liste und gibt den Fokus an den Auslöser zurück.
+- [x] Sammlungsspiele und BGG-Vorschläge berücksichtigen; fehlende Details verständlich anzeigen.
+- [x] Öffentliche Gäste erhalten keine lokale Sammlungsbeschreibung; Abfrage ist token- und vorschlagsgebunden, nicht cachebar und rate-limitiert.
+- [x] Dialogbedienung mit Tastatur und Bildschirmleser über Radix-Dialog, Labels und Fokusführung unterstützt.
+- [x] Sichtprüfung bei 390/1440 px sowie Hell-/Dunkelmodus; Impeccable-Renderdetektor ohne Befund. Interner Scroll, Viewportbegrenzung, Escape und Fokus-Rückgabe geprüft.
+
+**Abgeschlossen:** 30.10.2026, Version 0.50.26. Spieldetails werden erst nach Öffnen geladen. Fehler haben eine Wiederholungsaktion; BGG-Ausfall lässt verfügbare Grunddaten bestehen. Private Datenfreigabe setzt Event-Ersteller-/Einladungszugriff voraus.
 
 ## FEAT-002 – Voting-Vorschläge sortieren
 

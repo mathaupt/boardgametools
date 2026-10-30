@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Trophy, ThumbsUp, ThumbsDown, Users, Star, Gamepad } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+import { ProposalGameDetails } from "@/components/event-voting/proposal-game-details";
 
 interface Proposal {
   id: string;
@@ -155,7 +156,13 @@ export default function VotingClient({
                 )}
               </div>
               <div className="flex-1 min-w-0">
-                <div className="font-medium text-lg text-foreground break-words">{proposal.game.name}</div>
+                <ProposalGameDetails
+                  eventId={eventId}
+                  proposalId={proposal.id}
+                  name={proposal.game.name}
+                  titleClassName="font-medium text-lg text-foreground break-words"
+                  headingLevel={3}
+                />
                 <div className="text-sm text-muted-foreground mb-2">
                   Vorgeschlagen von {proposal.proposedBy.name}
                 </div>

@@ -12,6 +12,17 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.26",
+    date: "2026-10-30",
+    title: "Spieldetails direkt im Voting öffnen",
+    description: "Spielvorschläge lassen sich in öffentlichen und geschützten Abstimmungen in einem Dialog genauer ansehen, ohne die Liste zu verlassen.",
+    changes: [
+      { type: "feature", text: "Spielname und Detailaktion öffnen einen Dialog mit verfügbaren Spieldaten und BoardGameGeek-Link" },
+      { type: "improvement", text: "Details werden bei Bedarf geladen; Tastaturbedienung, Fokus-Rückgabe und verständliche Fehlerzustände bleiben erhalten" },
+      { type: "fix", text: "Öffentliche Detailantworten geben keine private Sammlungsbeschreibung preis; private Eventseiten prüfen Ersteller- oder Einladungszugriff", bugRef: "BUG-046" },
+    ],
+  },
+  {
     version: "0.50.25",
     date: "2026-10-30",
     title: "Voting-Implementierungsplan vorbereitet",

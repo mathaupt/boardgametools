@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { SerializedPublicEvent } from "@/lib/public-event";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/components/ui/use-toast";
@@ -21,6 +21,7 @@ import { DateVotingSection } from "./date-voting-section";
 import { CollectionGameProposer } from "./collection-game-proposer";
 import { BggGameSearch } from "./bgg-game-search";
 import type { Proposal, StoredGuestState } from "./types";
+import { ProposalGameDetails } from "@/components/event-voting/proposal-game-details";
 
 interface PublicEventClientProps {
   token: string;
@@ -235,15 +236,21 @@ export function PublicEventClient({ token, event }: PublicEventClientProps) {
                           )}
                         </div>
                         <div>
-                          <CardTitle className="text-lg text-foreground" as="h2">
+                          <div className="text-lg text-foreground">
                             {index < 3 && (
                               <Trophy
                                 className={cn("mr-2 inline h-4 w-4", index === 0 && "text-warning", index === 1 && "text-muted-foreground", index === 2 && "text-warning")}
                                 aria-hidden="true"
                               />
                             )}
-                            {proposal.game.name}
-                          </CardTitle>
+                            <ProposalGameDetails
+                              token={token}
+                              proposalId={proposal.id}
+                              name={proposal.game.name}
+                              titleClassName="text-left text-lg font-semibold leading-none tracking-tight text-foreground"
+                              headingLevel={3}
+                            />
+                          </div>
                           <CardDescription>
                             Vorgeschlagen von {proposal.proposedBy?.name ?? "unbekannt"}
                           </CardDescription>

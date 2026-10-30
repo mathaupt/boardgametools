@@ -1,10 +1,12 @@
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
+import { privateEventAccessFilter } from "@/lib/private-event-access";
 import { Button } from "@/components/ui/button";
 import { PublicShareCard } from "./public-share-card";
 import { getPublicBaseUrl } from "@/lib/public-link";
 import { ArrowLeft, Mail, Vote, Share2, Download } from "lucide-react";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import DatePollClient from "./date-poll-client";
 import { EventMailDialog } from "@/components/event-mail-dialog";
 import CloseVotingButton from "./close-voting-button";
@@ -19,10 +21,11 @@ export default async function EventDetailPage({
 }) {
   const session = await auth();
   const userId = session?.user?.id;
+  if (!userId) redirect("/login");
   const { id } = await params;
 
   const event = await prisma.event.findFirst({
-    where: { id, deletedAt: null },
+    where: { id, deletedAt: null, ...privateEventAccessFilter(userId) },
     include: {
       createdBy: { select: { id: true, name: true, email: true } },
       invites: {

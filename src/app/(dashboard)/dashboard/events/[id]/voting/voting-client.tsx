@@ -169,7 +169,7 @@ export default function VotingClient({ initialEvent, initialGames, eventId }: Vo
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-4">
-          <ProposalRankingList proposals={proposals} voting={voting} deletingProposal={deletingProposal} eventIsCreator={event?.isCreator ?? false} currentUserId={event?.currentUserId ?? ""} onVote={handleVote} onRemoveVote={handleRemoveVote} onDeleteProposal={handleDeleteProposal} />
+          <ProposalRankingList eventId={eventId} proposals={proposals} voting={voting} deletingProposal={deletingProposal} eventIsCreator={event?.isCreator ?? false} currentUserId={event?.currentUserId ?? ""} onVote={handleVote} onRemoveVote={handleRemoveVote} onDeleteProposal={handleDeleteProposal} />
         </div>
         <div className="space-y-4">
           <GameProposalPanel availableGames={availableGames} collectionSearch={collectionSearch} onCollectionSearchChange={setCollectionSearch} activeTab={activeTab} onTabChange={setActiveTab} searchQuery={searchQuery} onSearchQueryChange={setSearchQuery} bggResults={bggResults} bggLoading={bggLoading} onAddProposal={handleAddProposal} onBggSearch={handleBggSearch} onBggImport={handleBggImport} />

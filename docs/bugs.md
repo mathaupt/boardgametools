@@ -1424,10 +1424,12 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 ### [BUG-046] Private Event-Serverseiten prüfen die Eventzugehörigkeit nicht ausdrücklich
 
-**Status:** `open`
+**Status:** `fixed`
 **Schweregrad:** `high`
 **Entdeckt:** 2026-10-30
-**Test geschrieben:** Nein
+**Behoben:** 2026-10-30
+**Behoben in Version:** 0.50.26
+**Test geschrieben:** Ja
 
 **Beschreibung:** Die Dashboard-Eventdetailseite und die eigene Voting-Seite laden Eventdaten per ID, ohne den Ersteller-/Einladungszugriff vor der Datenübergabe ausdrücklich zu prüfen. Der bestehende private Event-Service besitzt diese Prüfung, wird dort aber nicht verwendet.
 
@@ -1439,20 +1441,20 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 **Ursache:** Direkte Prisma-Abfragen in beiden Serverseiten umgehen die Berechtigungsregel von EventService.getById.
 
-**Lösung:** Noch nicht umgesetzt. Gemeinsame private Leseberechtigung und serverseitige Zugriffstests sind im Plan für FEAT-001 bis FEAT-004 vorgesehen.
+**Lösung:** Beide Event-Serverseiten beschränken ihre Datenbankabfrage auf den Ersteller oder eine eingeladene Person. Nicht angemeldete Personen werden zur Anmeldung geleitet.
 
-**Prüfnachweis:** Quellvergleich der beiden page.tsx, src/proxy.ts und EventService.getById; kein Zugriff auf produktive fremde Daten und noch kein vollständiger Laufzeittest.
+**Prüfnachweis:** `tests/unit/lib/private-event-access.test.ts` prüft den Datenbankfilter; `tests/unit/lib/services/event.test.ts` sichert die Ablehnung fremder Nutzer ab. Kein Zugriff auf produktive fremde Daten.
 
-**Test-Status:** Regressionstest vor der Korrektur im freigegebenen Implementierungsschritt erforderlich.
+**Test-Status:** Regressionstests geschrieben und erfolgreich ausgeführt.
 
-**Referenz im Changelog:** Version 0.50.25 – Voting-Implementierungsplan vorbereitet.
+**Referenz im Changelog:** Version 0.50.26 – Spieldetails direkt im Voting öffnen.
 
 ---
 
 ## Statistik
 
-- **Offene Bugs:** 10
+- **Offene Bugs:** 9
 - **In Bearbeitung:** 0
-- **Behoben:** 36
+- **Behoben:** 37
 - **Wontfix:** 0
 - **Gesamt:** 46

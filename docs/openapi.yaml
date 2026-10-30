@@ -81,6 +81,36 @@ components:
           example: "Nicht autorisiert"
       required: [error]
 
+    VotingGameDetail:
+      type: object
+      description: Ereignisgebundene und auf die freigegebenen Spieldaten begrenzte Antwort.
+      properties:
+        proposalId: { type: string }
+        name: { type: string }
+        description: { type: [string, 'null'] }
+        descriptionSource:
+          type: [string, 'null']
+          enum: [collection, bgg, null]
+        imageUrl: { type: [string, 'null'], format: uri }
+        minPlayers: { type: [integer, 'null'] }
+        maxPlayers: { type: [integer, 'null'] }
+        playTimeMinutes: { type: [integer, 'null'] }
+        complexity: { type: [number, 'null'] }
+        bggUrl: { type: [string, 'null'], format: uri }
+        detailsUnavailable: { type: boolean }
+      required:
+        - proposalId
+        - name
+        - description
+        - descriptionSource
+        - imageUrl
+        - minPlayers
+        - maxPlayers
+        - playTimeMinutes
+        - complexity
+        - bggUrl
+        - detailsUnavailable
+
     UserProfile:
       type: object
       properties:
@@ -951,6 +981,56 @@ paths:
       responses:
         '200': { description: Vorschlag geloescht }
 
+  /api/events/{id}/proposals/{proposalId}/game:
+    get:
+      tags: [Event Voting]
+      summary: Spieldetails eines Event-Vorschlags abrufen
+      description: Erfordert den Event-Ersteller oder eine eingeladene Person. Liefert nur freigegebene Spieldaten; Eigentümerdaten, private Notizen und Spielhistorie sind ausgeschlossen.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+        - name: proposalId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Spieldetails für ein berechtigtes Eventmitglied; nicht cachebar
+          headers:
+            Cache-Control:
+              schema: { type: string, example: 'private, no-store' }
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VotingGameDetail'
+        '401':
+          description: Anmeldung erforderlich
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '403':
+          description: Kein Zugriff auf das Event
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '404':
+          description: Event oder Spielvorschlag nicht gefunden
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '429':
+          description: Rate-Limit überschritten
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '500':
+          description: Interner Fehler
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+
   /api/events/{id}/votes:
     parameters:
       - name: id
@@ -1498,6 +1578,52 @@ paths:
       responses:
         '200': { description: Event-Details fuer oeffentlichen Zugriff }
         '404': { description: Event nicht gefunden oder nicht oeffentlich }
+
+  /api/public/event/{token}/proposals/{proposalId}/game:
+    get:
+      tags: [Public]
+      summary: Oeffentliche Spieldetails eines Vorschlags abrufen
+      description: Prüft den öffentlichen Event-Token und die Zugehörigkeit des Spielvorschlags. Lokale Sammlungsbeschreibungen werden Gästen nicht offengelegt.
+      security: []
+      parameters:
+        - name: token
+          in: path
+          required: true
+          schema: { type: string, maxLength: 512 }
+        - name: proposalId
+          in: path
+          required: true
+          schema: { type: string, maxLength: 100 }
+      responses:
+        '200':
+          description: Reduzierte Spieldetails ohne private Sammlungsbeschreibung; nicht cachebar
+          headers:
+            Cache-Control:
+              schema: { type: string, example: 'private, no-store' }
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VotingGameDetail'
+        '400':
+          description: Ungültiger Token oder Vorschlagsbezeichner
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '404':
+          description: Event, Token oder Vorschlag nicht gefunden
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '429':
+          description: Rate-Limit überschritten
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '500':
+          description: Interner Fehler
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
 
   /api/public/event/{token}/join:
     post:

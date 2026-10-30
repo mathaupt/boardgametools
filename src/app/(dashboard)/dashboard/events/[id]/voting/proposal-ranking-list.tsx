@@ -1,13 +1,15 @@
 "use client";
 
 import Image from "next/image";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Users, Star, Trophy, Vote, X, Gamepad2, Trash2 } from "lucide-react";
 import { ProposalWithDetails } from "./voting-types";
+import { ProposalGameDetails } from "@/components/event-voting/proposal-game-details";
 
 interface ProposalRankingListProps {
+  eventId: string;
   proposals: ProposalWithDetails[];
   voting: string | null;
   deletingProposal: string | null;
@@ -19,6 +21,7 @@ interface ProposalRankingListProps {
 }
 
 export default function ProposalRankingList({
+  eventId,
   proposals,
   voting,
   deletingProposal,
@@ -75,7 +78,13 @@ export default function ProposalRankingList({
                     }`}>
                       {index + 1}
                     </div>
-                    <CardTitle className="text-lg" as="h2">{proposal.game.name}</CardTitle>
+                    <ProposalGameDetails
+                      eventId={eventId}
+                      proposalId={proposal.id}
+                      name={proposal.game.name}
+                      titleClassName="text-lg font-semibold leading-none tracking-tight"
+                      headingLevel={3}
+                    />
                   </div>
                   
                   {/* Spiel-Details */}
