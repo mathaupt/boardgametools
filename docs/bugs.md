@@ -1368,10 +1368,91 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 ---
 
+### [BUG-044] Löschaktion für Eventersteller widerspricht der API-Berechtigung
+
+**Status:** `open`
+**Schweregrad:** `medium`
+**Entdeckt:** 2026-10-30
+**Test geschrieben:** Nein
+
+**Beschreibung:** Die geschützte Rankingliste zeigt Erstellern das Löschen fremder Vorschläge an, während beide DELETE-Routen nur eigene Nutzervorschläge zulassen.
+
+**Reproduktion:** Als Eventersteller einen fremden Vorschlag in der geschützten Voting-Rankingliste öffnen und Vorschlag löschen auslösen.
+
+**Erwartetes Verhalten:** Angezeigte Löschrechte und serverseitige Rechte stimmen überein; nach dem zur Freigabe vorgelegten FEAT-004-Plan darf der Ersteller alle Vorschläge verwalten.
+
+**Tatsächliches Verhalten:** Die UI prüft eventIsCreator oder proposedById, Web-/Mobile-API filtern jedoch zwingend auf proposedById des aktuellen Nutzers und liefern für fremde Vorschläge 404.
+
+**Ursache:** Getrennte Berechtigungslogik in voting/proposal-ranking-list.tsx sowie den Web-/Mobile-Proposal-DELETE-Routen.
+
+**Lösung:** Noch nicht umgesetzt. Im FEAT-004-Plan gemeinsame Capability und serverseitigen Löschservice mit Rollen-/Statusmatrix vorgesehen.
+
+**Prüfnachweis:** Quellvergleich bei der Planung von FEAT-001 bis FEAT-004; kein produktiver Schreibtest durchgeführt.
+
+**Test-Status:** Regressionstest im Implementierungsplan vorgesehen; erst bei freigegebener Umsetzung zu schreiben.
+
+**Referenz im Changelog:** Version 0.50.25 – Voting-Implementierungsplan vorbereitet.
+
+---
+
+### [BUG-045] Geschütztes Web-Voting berücksichtigt Gaststimmen nicht vollständig
+
+**Status:** `open`
+**Schweregrad:** `medium`
+**Entdeckt:** 2026-10-30
+**Test geschrieben:** Nein
+
+**Beschreibung:** Die geschützten Web-Votingclients verwenden für sichtbare Stimmen und Rangfolge überwiegend nur Nutzerstimmen, obwohl Gaststimmen ebenfalls vorhanden sind.
+
+**Reproduktion:** Vorschlag A mit zwei Nutzerstimmen und ohne Gaststimmen sowie Vorschlag B mit einer Nutzerstimme und vier Gaststimmen in einem öffentlichen Event anlegen; geschütztes Voting und öffentliche Ansicht vergleichen.
+
+**Erwartetes Verhalten:** Gesamtstimmen und Standardsortierung berücksichtigen beide Stimmenarten konsistent.
+
+**Tatsächliches Verhalten:** Die geschützten Clients sortieren und zeigen _count.votes; öffentliche Ansicht und Abschlussauswahl rechnen Nutzer- und Gaststimmen zusammen.
+
+**Ursache:** Unterschiedliche Darstellungsmodelle und lokale Sortierungen in beiden geschützten voting-client.tsx und proposal-ranking-list.tsx.
+
+**Lösung:** Noch nicht umgesetzt. Im FEAT-002-Plan gemeinsames Modell, Gesamtstimmenadapter und Regressionstests für gemischte Stimmen vorgesehen.
+
+**Prüfnachweis:** Quellvergleich bei der Planung von FEAT-001 bis FEAT-004; kein produktiver Schreibtest durchgeführt.
+
+**Test-Status:** Regressionstest im Implementierungsplan vorgesehen; erst bei freigegebener Umsetzung zu schreiben.
+
+**Referenz im Changelog:** Version 0.50.25 – Voting-Implementierungsplan vorbereitet.
+
+---
+
+### [BUG-046] Private Event-Serverseiten prüfen die Eventzugehörigkeit nicht ausdrücklich
+
+**Status:** `open`
+**Schweregrad:** `high`
+**Entdeckt:** 2026-10-30
+**Test geschrieben:** Nein
+
+**Beschreibung:** Die Dashboard-Eventdetailseite und die eigene Voting-Seite laden Eventdaten per ID, ohne den Ersteller-/Einladungszugriff vor der Datenübergabe ausdrücklich zu prüfen. Der bestehende private Event-Service besitzt diese Prüfung, wird dort aber nicht verwendet.
+
+**Reproduktion:** Mit einem angemeldeten, nicht eingeladenen Nutzer die Detail- und Voting-URL eines fremden privaten Events aufrufen. Im freigegebenen Implementierungsschritt mit isolierten Testkonten nachweisen.
+
+**Erwartetes Verhalten:** Keine privaten Eventprops oder Sammlungsdaten für fremde angemeldete Nutzer. Prüfung serverseitig vor der Datenübergabe.
+
+**Tatsächliches Verhalten laut Quellprüfung:** Die Seitenabfrage filtert auf Event-ID und deletedAt; der Proxy prüft nur die Anmeldung. isCreator steuert anschließend einzelne Aktionen, verhindert aber nicht die Datenübergabe.
+
+**Ursache:** Direkte Prisma-Abfragen in beiden Serverseiten umgehen die Berechtigungsregel von EventService.getById.
+
+**Lösung:** Noch nicht umgesetzt. Gemeinsame private Leseberechtigung und serverseitige Zugriffstests sind im Plan für FEAT-001 bis FEAT-004 vorgesehen.
+
+**Prüfnachweis:** Quellvergleich der beiden page.tsx, src/proxy.ts und EventService.getById; kein Zugriff auf produktive fremde Daten und noch kein vollständiger Laufzeittest.
+
+**Test-Status:** Regressionstest vor der Korrektur im freigegebenen Implementierungsschritt erforderlich.
+
+**Referenz im Changelog:** Version 0.50.25 – Voting-Implementierungsplan vorbereitet.
+
+---
+
 ## Statistik
 
-- **Offene Bugs:** 7
+- **Offene Bugs:** 10
 - **In Bearbeitung:** 0
 - **Behoben:** 36
 - **Wontfix:** 0
-- **Gesamt:** 43
+- **Gesamt:** 46

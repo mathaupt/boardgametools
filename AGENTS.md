@@ -321,6 +321,11 @@ Details und Prüfnachweise: `docs/DEVELOPMENT-PROCESS.md`, Abschnitt
 „Verbindlicher Feature-Ablauf“. Diese Schritte gelten für jedes neue Feature,
 auch wenn mehrere Feature-IDs gemeinsam geplant werden.
 
+Gemeinsamer Plan für FEAT-001 bis FEAT-004:
+`docs/superpowers/plans/2026-10-30-FEAT-001-004-voting.md`.
+Bestätigter Plattformumfang: Web zuerst, native iOS-Oberflächen separat planen.
+Der Plan selbst ist noch keine Umsetzungsfreigabe.
+
 ### Neues Feature nach Freigabe entwickeln
 
 1. Lies den entsprechenden Skill in `skills/`

@@ -9,10 +9,10 @@ nicht wiederverwendet. Verbindlicher Ablauf:
 
 | ID | Feature | Status | Implementierungsplan | Umsetzungsfreigabe |
 |---|---|---|---|---|
-| FEAT-001 | Spieldetails aus dem Voting öffnen | Erfasst | Ausstehend | Ausstehend |
-| FEAT-002 | Voting-Vorschläge sortieren | Erfasst | Ausstehend | Ausstehend |
-| FEAT-003 | Kompakte Voting-Liste prüfen | Prüfung vorgemerkt | Ausstehend | Ausstehend |
-| FEAT-004 | Voting-Vorschläge löschen | Erfasst | Ausstehend | Ausstehend |
+| FEAT-001 | Spieldetails aus dem Voting öffnen | Plan erstellt | [Gemeinsamer Plan](superpowers/plans/2026-10-30-FEAT-001-004-voting.md) | Ausstehend |
+| FEAT-002 | Voting-Vorschläge sortieren | Plan erstellt | [Gemeinsamer Plan](superpowers/plans/2026-10-30-FEAT-001-004-voting.md) | Ausstehend |
+| FEAT-003 | Kompakte Voting-Liste prüfen | Prüfplan erstellt | [Gemeinsamer Plan](superpowers/plans/2026-10-30-FEAT-001-004-voting.md) | Ausstehend |
+| FEAT-004 | Voting-Vorschläge löschen | Plan erstellt | [Gemeinsamer Plan](superpowers/plans/2026-10-30-FEAT-001-004-voting.md) | Ausstehend |
 
 Am 30.10.2026 aufgenommen. Bei der Planung sind Web, iOS sowie angemeldete und
 öffentliche Voting-Ansichten auf Relevanz und bereits vorhandene Teilfunktionen
@@ -20,6 +20,10 @@ zu prüfen. Der konkrete Plattformumfang wird im jeweiligen Plan festgelegt und
 zur Umsetzung freigegeben.
 
 ## FEAT-001 – Spieldetails aus dem Voting öffnen
+
+**Implementierungsplan:** [FEAT-001 bis FEAT-004](superpowers/plans/2026-10-30-FEAT-001-004-voting.md).
+**Plattformumfang:** Web zuerst, iOS separat; am 30.10.2026 bestätigt.
+**Umsetzungsfreigabe:** Ausstehend.
 
 **Ziel:** Ein vorgeschlagenes Spiel beurteilen können, ohne es separat suchen zu müssen.
 
@@ -37,6 +41,10 @@ je Plattform wird im Implementierungsplan entschieden.
 
 ## FEAT-002 – Voting-Vorschläge sortieren
 
+**Implementierungsplan:** [FEAT-001 bis FEAT-004](superpowers/plans/2026-10-30-FEAT-001-004-voting.md).
+**Plattformumfang:** Web zuerst, iOS separat; am 30.10.2026 bestätigt.
+**Umsetzungsfreigabe:** Ausstehend.
+
 **Ziel:** Führende Spiele und andere Vorschläge schnell vergleichen können.
 
 **Anforderung:** Die Vorschlagsliste erhält eine wählbare Sortierung.
@@ -51,6 +59,10 @@ Standard: **Anzahl der Stimmen, absteigend** – die meisten Votes zuerst.
 - Sortierung verändert weder Stimmen noch Voting-Ergebnisregeln.
 
 ## FEAT-003 – Kompakte Voting-Liste prüfen
+
+**Implementierungsplan:** [FEAT-001 bis FEAT-004](superpowers/plans/2026-10-30-FEAT-001-004-voting.md).
+**Plattformumfang:** Web zuerst, iOS separat; am 30.10.2026 bestätigt.
+**Umsetzungsfreigabe:** Ausstehend.
 
 **Ziel:** Bei vielen Vorschlägen mehr Überblick auf begrenztem Bildschirmraum erhalten.
 
@@ -67,6 +79,10 @@ einen bestimmten Listenmodus.
 - Empfehlung mit Vor- und Nachteilen vorlegen und vor Umsetzung freigeben lassen.
 
 ## FEAT-004 – Voting-Vorschläge löschen
+
+**Implementierungsplan:** [FEAT-001 bis FEAT-004](superpowers/plans/2026-10-30-FEAT-001-004-voting.md).
+**Plattformumfang:** Web zuerst, iOS separat; am 30.10.2026 bestätigt.
+**Umsetzungsfreigabe:** Ausstehend.
 
 **Ziel:** Nicht mehr gewünschte Einträge aus einer Abstimmung entfernen können.
 

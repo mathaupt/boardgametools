@@ -12,6 +12,16 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.25",
+    date: "2026-10-30",
+    title: "Voting-Implementierungsplan vorbereitet",
+    description: "Für Spieldetails, Sortierung, kompakte Vorschlagslisten und das Entfernen von Vorschlägen liegt ein gemeinsamer Plan zur Prüfung vor. Die Umsetzung benötigt eine gesonderte Freigabe.",
+    changes: [
+      { type: "internal", text: "Web-Erstlieferung für FEAT-001 bis FEAT-004 mit Arbeitsschritten, Datenfreigaben, Löschrechten und Qualitätsprüfungen geplant; native iOS-Oberflächen separat vorgesehen" },
+      { type: "internal", text: "Unterschiede bei Löschrechten und Gaststimmen sowie eine fehlende ausdrückliche Zugriffskontrolle der Eventseiten als offene Fehler erfasst" },
+    ],
+  },
+  {
     version: "0.50.24",
     date: "2026-10-30",
     title: "Prüfung der öffentlichen Eventseite dokumentiert",
