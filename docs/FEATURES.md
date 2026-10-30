@@ -1,5 +1,8 @@
 # BoardGameTools — Feature-Dokumentation
 
+Geplante Erweiterungen stehen separat im [nummerierten Feature-Backlog](FEATURE-BACKLOG.md).
+Dort erfasste TODOs sind noch nicht implementiert oder zur Umsetzung freigegeben.
+
 > **Version 0.50.20** | 42 Seiten | 92 API-Endpunkte | 29 Datenbank-Modelle
 >
 > Vollstaendige Dokumentation aller Nutzer-sichtbaren Features,

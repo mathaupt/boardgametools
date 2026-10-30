@@ -12,6 +12,16 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.23",
+    date: "2026-10-30",
+    title: "Geplante Voting-Verbesserungen festgehalten",
+    description: "Wünsche für übersichtlichere Abstimmungen sind als nummerierte Aufgaben für die spätere Planung dokumentiert.",
+    changes: [
+      { type: "internal", text: "Spieldetails, Sortierung nach Stimmen, eine kompaktere Liste und das Entfernen von Voting-Vorschlägen ins Feature-Backlog aufgenommen" },
+      { type: "internal", text: "Für neue Features einen verbindlichen Ablauf mit Implementierungsplan, ausdrücklicher Umsetzungsfreigabe sowie Design-, Security- und Qualitätsprüfungen festgelegt" },
+    ],
+  },
+  {
     version: "0.50.22",
     date: "2026-10-30",
     title: "Der nächste Spieleabend auf dem iPhone",

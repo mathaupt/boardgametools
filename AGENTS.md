@@ -141,6 +141,7 @@ include: { createdBy: { select: { id: true, name: true, email: true } } }
 | **Changelog** | `src/lib/changelog.ts` | JEDER Aenderung (Pflicht-Regel 1) |
 | **CONCEPT.md** | `CONCEPT.md` | Neues Feature, Tech-Stack-Aenderung, Schema-Aenderung |
 | **FEATURES.md** | `docs/FEATURES.md` | Neue Seite, neuer Endpunkt, geaenderte Funktionalitaet |
+| **Feature-Backlog** | `docs/FEATURE-BACKLOG.md` | Neue Anforderung, Plan, Umsetzungsfreigabe oder Feature-Status |
 | **OpenAPI/Swagger** | `docs/openapi.yaml` | Neuer API-Endpunkt, geaendertes Request/Response-Schema, neue Query-Parameter |
 | **FAQ** | `src/lib/faq.ts` | Neues Feature das Nutzer betrifft, geaenderte Bedienung |
 | **Deployment** | `docs/DEPLOYMENT.md` | Neue Deploy-Schritte, neue Env-Variablen, Build-Einstellungen |
@@ -297,7 +298,28 @@ boardgametools/
 
 ## Entwicklungs-Workflows
 
-### Neues Feature entwickeln
+### Verbindlicher Ablauf für neue Features
+
+1. Anforderung in `docs/FEATURE-BACKLOG.md` mit fortlaufender ID `FEAT-XXX`, Ziel,
+   Status und Abnahmekriterien erfassen. Ein TODO autorisiert keine Umsetzung.
+2. Bestehendes Verhalten, betroffene Plattformen, Daten, Berechtigungen und
+   Review-Findings prüfen; offene Entscheidungen im Implementierungsplan klären.
+3. Implementierungsplan mit Feature-ID unter `docs/superpowers/plans/` erstellen:
+   Umfang, Arbeitsschritte, Tests, Impeccable-Prüfung, Security-Prüfung und Dokumentation.
+4. Den konkreten Plan vorlegen und die ausdrückliche **Freigabe der Umsetzung**
+   abwarten; Datum und freigegebenen Umfang im Backlog festhalten.
+5. Nach Freigabe umsetzen und angemessene Tests ausführen. Bei UI-Änderungen ist
+   Impeccable einschließlich gerenderter Prüfung verpflichtend. Security-Auswirkungen
+   bei jedem Feature prüfen; relevante Berechtigungen, Validierung und Datenschutz
+   gezielt testen. Nicht zutreffende Prüfbereiche begründet dokumentieren.
+6. Changelog, betroffene Dokumentation und Backlog aktualisieren; Commit, Security-
+   und Review-Regressionscheck gemäß den bestehenden Regeln abschließen.
+
+Details und Prüfnachweise: `docs/DEVELOPMENT-PROCESS.md`, Abschnitt
+„Verbindlicher Feature-Ablauf“. Diese Schritte gelten für jedes neue Feature,
+auch wenn mehrere Feature-IDs gemeinsam geplant werden.
+
+### Neues Feature nach Freigabe entwickeln
 
 1. Lies den entsprechenden Skill in `skills/`
 2. Pruefe das Datenmodell in `prisma/schema.prisma`

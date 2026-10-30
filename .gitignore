@@ -46,6 +46,8 @@ review-evaluation.json
 # documentation snapshots & evaluations (local, generated)
 /docs/*
 !docs/bugs.md
+!docs/FEATURE-BACKLOG.md
+!docs/DEVELOPMENT-PROCESS.md
 !docs/DEPLOYMENT.md
 !docs/superpowers/
 !docs/superpowers/**
