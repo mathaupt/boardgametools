@@ -1,6 +1,6 @@
 # BoardGameTools — Feature-Dokumentation
 
-> **Version 0.49.0** | 42 Seiten | 92 API-Endpunkte | 29 Datenbank-Modelle
+> **Version 0.50.20** | 42 Seiten | 92 API-Endpunkte | 29 Datenbank-Modelle
 >
 > Vollstaendige Dokumentation aller Nutzer-sichtbaren Features,
 > organisiert nach Bereichen mit Screenshots-Beschreibungen,
@@ -35,30 +35,17 @@
 
 Das Dashboard ist die zentrale Startseite nach dem Login.
 
-### Statistik-Kacheln (4)
+### Kommende Spieleabende und Einladungen
 
-| Kachel | Wert | Verlinkt zu |
-|--------|------|-------------|
-| Spiele | Anzahl in der Sammlung | `/dashboard/games` |
-| Sessions | Gespielte Partien | `/dashboard/sessions` |
-| Gruppen | Mitgliedschaften | `/dashboard/groups` |
-| Events | Angenommene Einladungen | `/dashboard/events` |
+Der nächste Spieleabend wird mit einem großen Datumsblock, Uhrzeit, Ort und dem tatsächlichen Stand der Spielauswahl dargestellt. Weitere Termine folgen als kompakte Liste. Offene Einladungen stehen auf dem Desktop daneben und mobil direkt nach den Terminen. Zusagen und Absagen bleiben direkt erreichbar.
 
-### Schnellzugriffe (5)
+### Spielhistorie und Schnellzugriffe
 
-| Aktion | Ziel |
-|--------|------|
-| Spiel hinzufuegen | `/dashboard/games/new` |
-| BGG Import | `/dashboard/bgg` |
-| Session erstellen | `/dashboard/sessions/new` |
-| Gruppe erstellen | `/dashboard/groups/new` |
-| Event planen | `/dashboard/events/new` |
+Zuletzt gespielte Partien verlinken auf ihre Detailseiten. Kompakte Links zeigen die Anzahl der Spiele, Sessions, Gruppen und Events. Schnellzugriffe führen zu Spiel hinzufügen, BGG-Import, Session erfassen und Gruppe erstellen; die Hauptaktion plant ein Event. Leere Zustände führen zu den ersten Erstellaktionen.
 
-### Widgets
+### Navigation und Gestaltung
 
-- **Offene Einladungen** — Event-Einladungen die auf Antwort warten (Zusagen/Absagen)
-- **Kommende Events** — Die naechsten 5 Events mit Datum, Ort und Spielvorschlaegen
-- **Letzte Sessions** — Die letzten 5 gespielten Partien mit Spielname und Datum
+Seit 0.50.20: kobaltblaue Seitennavigation, hellblaue Arbeitsflächen, Barlow und pfirsichfarbene Datumsblöcke. Auf dem Smartphone öffnet ein beschrifteter Menüschalter die Navigation; Auswahl und Escape schließen sie wieder. Profil, Hilfe, Versionshistorie und Abmelden bleiben erreichbar; Administratoren sehen ihre zusätzlichen Bereiche. Sammlung und Eventübersicht nutzen dieselbe Gestaltung. Spielecover bleiben vollständig sichtbar, Entfernen-Schaltflächen sind auch ohne Hover erreichbar. Filter, Sortierung, Scanner und Import bleiben erhalten.
 
 ---
 

@@ -1098,10 +1098,91 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 ---
 
+### [BUG-034] Navigation kennzeichnet den aktuellen Bereich nicht eindeutig
+
+**Status:** `fixed`
+**Schweregrad:** `low`
+**Entdeckt:** 2026-10-30
+**Behoben:** 2026-10-30
+**Behoben in Version:** 0.50.20
+**Test geschrieben:** Ja
+
+**Beschreibung:** Die Webnavigation markierte Dashboard auch auf Unterseiten als aktiv und stellte den aktuellen Bereich für Screenreader nicht über aria-current bereit.
+
+**Reproduktion:** `/dashboard/events` oder eine Eventunterseite öffnen und die Navigationsmarkierungen prüfen.
+
+**Erwartetes Verhalten:** Ausschließlich Events ist der aktive Hauptbereich, auch programmatisch erkennbar.
+
+**Tatsächliches Verhalten vor Korrektur:** Dashboard und Events wurden gleichzeitig hervorgehoben; aria-current fehlte.
+
+**Ursache:** Der gemeinsame Pfadpräfix `/dashboard` wurde wie bei Unterbereichen ausgewertet.
+
+**Lösung:** Dashboard nur exakt zuordnen, Unterbereiche anhand ihres eigenen Präfixes zuordnen und aria-current setzen.
+
+**Test-Status:** `tests/unit/components/club-navigation.test.tsx` prüft die Zuordnung auf einer Eventunterseite. `tests/e2e/navigation_test.ts` ergänzt den Workflow für die angemeldete Testumgebung; lokale isolierte Browserprüfung erfolgreich, vollständige E2E-Suite gegen Testdatenbank nicht ausgeführt.
+
+**Referenz im Changelog:** Version 0.50.20, BUG-034.
+
+---
+
+### [BUG-035] Primäre Schaltflächen im dunklen Farbschema haben zu wenig Textkontrast
+
+**Status:** `fixed`
+**Schweregrad:** `medium`
+**Entdeckt:** 2026-10-30
+**Behoben:** 2026-10-30
+**Behoben in Version:** 0.50.20
+**Test geschrieben:** Ja
+
+**Beschreibung:** Die Abschlussprüfung der neuen Oberfläche zeigte unzureichenden Kontrast kleiner Beschriftungen auf primären Schaltflächen im dunklen Farbschema.
+
+**Reproduktion:** Das dunkle Farbschema aktivieren und den Kontrast von „Event planen“ oder „Zusagen“ messen, nachdem Farbtransitionen beendet sind.
+
+**Erwartetes Verhalten:** Mindestens 4,5:1 für normale Schaltflächenbeschriftungen, auch bei Hover.
+
+**Tatsächliches Verhalten vor Korrektur:** Die lokale Browsermessung ermittelte 3,21:1 im Grundzustand und 3,82:1 bei Hover.
+
+**Ursache:** Eine aufgehellte blaue Primärfarbe wurde weiterhin mit nahezu weißer Schrift kombiniert.
+
+**Lösung:** Helle blaue Primärfläche mit dunkler blauer Beschriftung kombinieren.
+
+**Test-Status:** `tests/e2e/helpers/button-contrast.mjs` misst im Browser die tatsächlichen Farben einschließlich transparenter Hintergründe. `tests/e2e/navigation_test.ts` prüft Grundzustand und Hover; dieselbe Messung wurde lokal in der isolierten Komponentenvorschau vor der Korrektur als fehlschlagend ausgeführt.
+
+**Referenz im Changelog:** Version 0.50.20, BUG-035.
+
+---
+
+### [BUG-036] Suchfeld erhält die vorgesehene Mindesthöhe nicht
+
+**Status:** `fixed`
+**Schweregrad:** `low`
+**Entdeckt:** 2026-10-30
+**Behoben:** 2026-10-30
+**Behoben in Version:** 0.50.20
+**Test geschrieben:** Ja
+
+**Beschreibung:** Bei der Dokumentation der neuen Gestaltung fiel ein nicht passender CSS-Selektor für Eingabefelder auf.
+
+**Reproduktion:** Die Spielesammlung bei 390 Pixeln Breite öffnen und die Höhe des Suchfelds messen.
+
+**Erwartetes Verhalten:** Mindestens 44 Pixel Höhe für das interaktive Suchfeld.
+
+**Tatsächliches Verhalten vor Korrektur:** 36 Pixel, weil Input kein data-slot-Attribut besitzt.
+
+**Ursache:** Die neue Mindesthöhe adressierte ein nicht vorhandenes data-slot-Attribut.
+
+**Lösung:** Native Eingabefelder innerhalb der Anwendungsoberfläche adressieren; Checkboxen und Radiobuttons ausnehmen.
+
+**Test-Status:** Lokale Browserprüfung reproduzierte zunächst 36 Pixel. Regression für die angemeldete Testumgebung in `tests/e2e/navigation_test.ts` ergänzt.
+
+**Referenz im Changelog:** Version 0.50.20, BUG-036.
+
+---
+
 ## Statistik
 
 - **Offene Bugs:** 0
 - **In Bearbeitung:** 0
-- **Behoben:** 33
+- **Behoben:** 36
 - **Wontfix:** 0
-- **Gesamt:** 33
+- **Gesamt:** 36

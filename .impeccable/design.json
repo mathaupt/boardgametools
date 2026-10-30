@@ -1,0 +1,155 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-30T00:00:00Z",
+  "title": "Design System: BoardGameTools",
+  "extensions": {
+    "colorMeta": {
+      "primary": {
+        "role": "primary",
+        "displayName": "Programmkobalt"
+      },
+      "accent": {
+        "role": "secondary",
+        "displayName": "Pfirsich"
+      },
+      "background": {
+        "role": "neutral",
+        "displayName": "Blaues Papier"
+      },
+      "foreground": {
+        "role": "neutral",
+        "displayName": "Blaue Tinte"
+      }
+    },
+    "typographyMeta": {
+      "headline": {
+        "displayName": "Seitenüberschrift",
+        "purpose": "Überschriften ab 768px."
+      },
+      "headline-mobile": {
+        "displayName": "Mobile Seitenüberschrift",
+        "purpose": "Überschriften unter 768px."
+      },
+      "title": {
+        "displayName": "Abschnittstitel",
+        "purpose": "Abschnittsüberschriften."
+      },
+      "body": {
+        "displayName": "Lesetext",
+        "purpose": "Allgemeine Texte."
+      },
+      "label": {
+        "displayName": "Schaltflächenbeschriftung",
+        "purpose": "Beschriftete Steuerelemente."
+      }
+    },
+    "motion": [
+      {
+        "name": "club-state",
+        "value": "160ms ease-out",
+        "purpose": "Farbwechsel bei Navigation und Sammlungskarten."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "none",
+        "purpose": "Navigation und Sammlungskarten bei reduzierter Bewegung."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "collection-two-columns",
+        "value": "640px"
+      },
+      {
+        "name": "workspace-columns",
+        "value": "768px"
+      },
+      {
+        "name": "desktop-navigation",
+        "value": "1024px"
+      },
+      {
+        "name": "collection-three-columns",
+        "value": "1280px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primäraktion",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Bestehende Schaltflächenvariante im Club-Arbeitsbereich.",
+      "html": "<button class=\"ds-button-primary\">Primäraktion</button>",
+      "css": ".ds-button-primary{font-family:var(--font-barlow),system-ui,-apple-system,sans-serif;display:inline-flex;align-items:center;justify-content:center;gap:.5rem;min-height:2.75rem;padding:.5rem 1rem;border-radius:.5rem;font-size:.875rem;font-weight:500;line-height:1.25rem;cursor:pointer;transition:color .15s,background-color .15s,box-shadow .15s;border:0;background:var(--primary);color:var(--primary-foreground);} .ds-button-primary:hover{background:color-mix(in oklab,var(--primary) 90%,transparent);} .ds-button-primary:focus-visible{outline:none;box-shadow:0 0 0 3px color-mix(in oklab,var(--ring) 50%,transparent);} .ds-button-primary:disabled{opacity:.5;pointer-events:none;}"
+    },
+    {
+      "name": "Sekundäraktion",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Bestehende Schaltflächenvariante im Club-Arbeitsbereich.",
+      "html": "<button class=\"ds-button-secondary\">Sekundäraktion</button>",
+      "css": ".ds-button-secondary{font-family:var(--font-barlow),system-ui,-apple-system,sans-serif;display:inline-flex;align-items:center;justify-content:center;gap:.5rem;min-height:2.75rem;padding:.5rem 1rem;border-radius:.5rem;font-size:.875rem;font-weight:500;line-height:1.25rem;cursor:pointer;transition:color .15s,background-color .15s,box-shadow .15s;border:0;background:var(--secondary);color:var(--secondary-foreground);} .ds-button-secondary:hover{background:color-mix(in oklab,var(--secondary) 80%,transparent);} .ds-button-secondary:focus-visible{outline:none;box-shadow:0 0 0 3px color-mix(in oklab,var(--ring) 50%,transparent);} .ds-button-secondary:disabled{opacity:.5;pointer-events:none;}"
+    },
+    {
+      "name": "Outline-Aktion",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "Bestehende Schaltflächenvariante im Club-Arbeitsbereich.",
+      "html": "<button class=\"ds-button-outline\">Outline-Aktion</button>",
+      "css": ".ds-button-outline{font-family:var(--font-barlow),system-ui,-apple-system,sans-serif;display:inline-flex;align-items:center;justify-content:center;gap:.5rem;min-height:2.75rem;padding:.5rem 1rem;border-radius:.5rem;font-size:.875rem;font-weight:500;line-height:1.25rem;cursor:pointer;transition:color .15s,background-color .15s,box-shadow .15s;border:1px solid var(--border);background:var(--background);color:var(--foreground);} .ds-button-outline:hover{background:var(--accent);color:var(--accent-foreground);} .ds-button-outline:focus-visible{outline:none;box-shadow:0 0 0 3px color-mix(in oklab,var(--ring) 50%,transparent);} .ds-button-outline:disabled{opacity:.5;pointer-events:none;}"
+    },
+    {
+      "name": "Suchfeld",
+      "kind": "input",
+      "description": "Suchfeld aus dem bestehenden Input-Primitiv.",
+      "html": "<input class=\"ds-input\" aria-label=\"Spiele durchsuchen\" placeholder=\"Spiele durchsuchen…\">",
+      "css": ".ds-input{font-family:var(--font-barlow),system-ui,-apple-system,sans-serif;height:2.25rem;min-height:2.75rem;width:100%;border:1px solid var(--input);border-radius:.5rem;background:var(--card);color:var(--foreground);padding:.25rem .75rem;font-size:.875rem;box-shadow:0 1px 3px 0 rgb(0 0 0 / .1),0 1px 2px -1px rgb(0 0 0 / .1);transition:color .15s,background-color .15s,border-color .15s;}.ds-input::placeholder{color:var(--muted-foreground);}.ds-input:focus-visible{outline:none;box-shadow:0 0 0 1px var(--ring);}.ds-input:disabled{opacity:.5;cursor:not-allowed;}"
+    },
+    {
+      "name": "Navigationseintrag",
+      "kind": "nav",
+      "refersTo": "navigation-active",
+      "description": "Aktives Ziel mit sichtbarer Beschriftung.",
+      "html": "<nav class=\"ds-nav\"><a href=\"#dashboard\" aria-current=\"page\" class=\"ds-nav-link\">Dashboard</a><a href=\"#spiele\" class=\"ds-nav-link\">Spiele</a></nav>",
+      "css": ".ds-nav{font-family:var(--font-barlow),system-ui,-apple-system,sans-serif;background:var(--sidebar);color:var(--sidebar-foreground);padding:.85rem;}.ds-nav-link{display:flex;align-items:center;gap:.8rem;min-height:2.75rem;padding:.7rem .85rem;border-radius:.5rem;font-size:1rem;font-weight:500;color:inherit;text-decoration:none;transition:background-color 160ms ease-out,color 160ms ease-out;}.ds-nav-link:hover{background:var(--sidebar-accent);color:#fff;}.ds-nav-link[aria-current=page]{background:#fff;color:#2445b4;font-weight:700;}.ds-nav-link:focus-visible{outline:3px solid var(--accent);outline-offset:2px;}@media(prefers-reduced-motion:reduce){.ds-nav-link{transition:none;}}"
+    },
+    {
+      "name": "Aktiver Filtertag",
+      "kind": "chip",
+      "description": "Ausgewählter Sammlungstag als Schaltfläche.",
+      "html": "<button class=\"ds-chip\" aria-pressed=\"true\">Alle</button>",
+      "css": ".ds-chip{font-family:var(--font-barlow),system-ui,-apple-system,sans-serif;display:inline-flex;align-items:center;justify-content:center;gap:.5rem;min-height:2.75rem;padding:.5rem 1rem;border-radius:.5rem;font-size:.875rem;font-weight:500;line-height:1.25rem;cursor:pointer;transition:color .15s,background-color .15s,box-shadow .15s;border:0;border-radius:9999px;padding:0 .5rem;font-size:.75rem;line-height:1rem;background:var(--primary);color:var(--primary-foreground);}.ds-chip:hover{background:color-mix(in oklab,var(--primary) 90%,transparent);}.ds-chip:focus-visible{outline:none;box-shadow:0 0 0 3px color-mix(in oklab,var(--ring) 50%,transparent);}"
+    },
+    {
+      "name": "Eventkarte mit Datum",
+      "kind": "card",
+      "refersTo": "event-card",
+      "description": "Flache Eventfläche mit dem hervorgehobenen Datumsblock.",
+      "html": "<article class=\"ds-event\"><div class=\"ds-event-top\"><div class=\"ds-date\"><strong>30</strong><span>Oktober</span></div><div><h3>Spieleabend</h3><p>19:00 Uhr</p></div></div><footer class=\"ds-event-footer\">Spiele gemeinsam auswählen</footer></article>",
+      "css": ".ds-event{font-family:var(--font-barlow),system-ui,-apple-system,sans-serif;background:var(--card);color:var(--card-foreground);border-radius:.875rem;overflow:hidden;}.ds-event-top{display:flex;align-items:flex-start;gap:1.25rem;padding:1.5rem;}.ds-date{display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;width:4.5rem;min-height:5.25rem;padding:.65rem .4rem;border-radius:.6rem;background:var(--accent);color:var(--accent-foreground);font-variant-numeric:tabular-nums;}.ds-date strong{font-size:2.4rem;line-height:1;font-weight:700;}.ds-date span{margin-top:.45rem;font-size:.75rem;font-weight:600;}.ds-event h3{font-size:1.45rem;font-weight:700;line-height:1.2;margin:.15rem 0 .65rem;}.ds-event p{color:var(--muted-foreground);font-size:.95rem;}.ds-event-footer{padding:.65rem 1.5rem;background:var(--secondary);}@media(min-width:768px){.ds-date{width:5.75rem;min-height:6.75rem;}.ds-date strong{font-size:3.5rem;}.ds-date span{font-size:.8rem;}}"
+    }
+  ],
+  "narrative": {
+    "northStar": "Club Programme",
+    "overview": "Club Programme überträgt die Klarheit eines Veranstaltungsprogramms auf die gemeinsame Spielorganisation. Kobaltblaue Navigation, eine helle blaue Arbeitsfläche und klar gestufte Barlow-Schrift bilden die gemeinsame Webgestaltung.\n\nDie Oberflächen bleiben ruhig und überwiegend flach. Datumsblöcke, Trennlinien und beschriftete Aktionen führen durch Termine, Sammlung und Spielhistorie. Die Gestaltung verwendet Code und vorhandene Spielcover; zusätzliche Rastergrafiken gehören nicht zur visuellen Grundausstattung.",
+    "keyCharacteristics": [
+      "Kobaltblaue Navigation mit sichtbaren Textbezeichnungen.",
+      "Barlow mit deutlicher Größenhierarchie.",
+      "Blaue Flächentöne und gezielte pfirsichfarbene Datumsakzente.",
+      "Flache Arbeitsbereiche mit feinen Trennlinien."
+    ],
+    "rules": [],
+    "dos": [
+      "Do semantische Farbvariablen für Flächen, Text und Zustände verwenden.",
+      "Do Navigation und Aktionen verständlich auf Deutsch beschriften.",
+      "Do vorhandene Spielcover vollständig im Bildbereich darstellen.",
+      "Do sichtbaren Tastaturfokus und reduzierte Bewegung erhalten."
+    ],
+    "donts": [
+      "Don't die Desktopspalten auf schmale Ansichten übertragen.",
+      "Don't die pfirsichfarbene Datumsfläche als allgemeinen Kartenhintergrund einsetzen.",
+      "Don't Schatten der Basiskarte in die flachen Sammlungskarten zurückbringen."
+    ]
+  }
+}

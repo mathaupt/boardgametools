@@ -12,6 +12,21 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.20",
+    date: "2026-10-30",
+    title: "Mehr Vorfreude auf die nächste Spielrunde",
+    description: "Die Weboberfläche erhält eine eigenständige blaue Gestaltung. Spieleabende und Einladungen stehen im Mittelpunkt; Sammlung und Events werden übersichtlicher.",
+    changes: [
+      { type: "improvement", text: "Neue blaue Navigation, klare Schrift und hervorgehobene Datumsblöcke für kommende Spieleabende" },
+      { type: "improvement", text: "Dashboard mit kommenden Terminen, Einladungen, Spielhistorie und hilfreichen Einstiegen für neue Spielrunden" },
+      { type: "improvement", text: "Spielesammlung mit vollständig sichtbaren Covern und dauerhaft erreichbaren Entfernen-Schaltflächen; Filter und Import bleiben erhalten" },
+      { type: "improvement", text: "Beschriftetes mobiles Navigationsmenü mit allen Bereichen und Profilzugriff" },
+      { type: "fix", text: "Such- und Eingabefelder mit ausreichend großen Touch-Flächen versehen", bugRef: "BUG-036" },
+      { type: "fix", text: "Textkontrast primärer Schaltflächen im dunklen Farbschema verbessert", bugRef: "BUG-035" },
+      { type: "fix", text: "Aktueller Navigationsbereich wird eindeutig markiert und für Screenreader ausgezeichnet", bugRef: "BUG-034" },
+    ],
+  },
+  {
     version: "0.50.19",
     date: "2026-10-30",
     title: "Automatische Gestaltungsprüfungen aktiviert",

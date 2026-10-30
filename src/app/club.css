@@ -1,0 +1,97 @@
+/* Club Programme: shared application shell and task surfaces. */
+.club-shell { min-height:100dvh; }
+.club-navigation { background:var(--sidebar); color:var(--sidebar-foreground); }
+.club-brand-row { display:flex; align-items:center; justify-content:space-between; padding:1rem 1.25rem; }
+.club-brand { display:flex; align-items:center; gap:.6rem; min-height:2.75rem; font-size:1.3rem; font-weight:800; letter-spacing:-.03em; color:#fff; }
+.club-menu-toggle { display:grid; place-items:center; width:2.75rem; height:2.75rem; border-radius:.5rem; color:#fff; }
+.club-navigation-body { display:none; padding:.5rem 1rem 1rem; }
+.club-navigation-body.is-open { display:flex; flex-direction:column; }
+.club-nav-links { display:flex; flex-direction:column; gap:.35rem; }
+.club-nav-link { display:flex; align-items:center; gap:.8rem; min-height:2.75rem; padding:.7rem .85rem; border-radius:.5rem; font-size:1rem; font-weight:500; text-align:left; transition:background-color 160ms ease-out,color 160ms ease-out; }
+.club-nav-link:hover { background:var(--sidebar-accent); color:#fff; }
+.club-nav-link.is-active,.club-nav-link[aria-current=page] { background:#fff; color:#2445b4; font-weight:700; }
+.club-nav-footer { margin-top:1.5rem; padding-top:1rem; border-top:1px solid var(--sidebar-border); }
+.club-profile { display:flex; align-items:center; gap:.75rem; padding:.85rem; margin-top:.5rem; border-radius:.5rem; }
+.club-avatar { display:grid; place-items:center; flex-shrink:0; width:2.5rem; height:2.5rem; border-radius:50%; background:var(--secondary); color:var(--secondary-foreground); font-weight:700; }
+.club-admin-links { margin-top:1rem; border-top:1px solid var(--sidebar-border); padding-top:1rem; }
+.club-main { min-width:0; padding:1.5rem 1.25rem 3rem; }
+.club-main h1 { font-size:2rem; font-weight:700; letter-spacing:-.03em; line-height:1.12; }
+.club-main h2 { letter-spacing:-.02em; }
+.club-topline { display:flex; align-items:center; justify-content:space-between; gap:1rem; padding-bottom:1.5rem; border-bottom:1px solid var(--border); font-size:1rem; }
+.club-heading { display:flex; flex-wrap:wrap; align-items:flex-end; justify-content:space-between; gap:1.25rem; padding:2rem 0; }
+.club-heading p { margin-top:.6rem; color:var(--muted-foreground); font-size:1.1rem; }
+.club-workspace { display:grid; gap:2rem; }
+.club-upcoming { order:1; }
+.club-actions { order:2; }
+.club-history-region { order:3; }
+.club-section-title { display:flex; align-items:baseline; justify-content:space-between; flex-wrap:wrap; gap:.75rem; margin-bottom:1.15rem; }
+.club-section-title h2 { font-size:1.45rem; font-weight:700; }
+.club-text-link { display:inline-flex; align-items:center; gap:.4rem; color:var(--primary); font-weight:600; min-height:2.75rem; text-underline-offset:.25em; }
+.club-text-link:hover { text-decoration:underline; }
+.club-event-feature { background:var(--card); color:var(--card-foreground); border-radius:.875rem; overflow:hidden; }
+.club-event-top { display:flex; align-items:flex-start; gap:1.25rem; padding:1.5rem; }
+.club-date { display:flex; flex-direction:column; align-items:center; justify-content:center; flex-shrink:0; width:4.5rem; min-height:5.25rem; padding:.65rem .4rem; border-radius:.6rem; background:var(--accent); color:var(--accent-foreground); font-variant-numeric:tabular-nums; }
+.club-date strong { font-size:2.4rem; line-height:1; font-weight:700; }
+.club-date span { margin-top:.45rem; font-size:.75rem; font-weight:600; text-align:center; }
+.club-date.is-compact { background:transparent; width:3.5rem; min-height:3.5rem; padding:0; color:var(--foreground); }
+.club-date.is-compact strong { font-size:1.9rem; }
+.club-event-top h3 { font-size:1.45rem; font-weight:700; line-height:1.2; margin:.15rem 0 .65rem; overflow-wrap:anywhere; }
+.club-event-meta { display:flex; flex-wrap:wrap; gap:.4rem 1rem; font-size:.95rem; color:var(--muted-foreground); }
+.club-state { display:inline-flex; align-items:center; gap:.4rem; padding:.3rem .6rem; margin-top:.9rem; border-radius:.35rem; background:var(--secondary); color:var(--secondary-foreground); font-size:.85rem; font-weight:600; }
+.club-event-proposals { padding:1.2rem 1.5rem; border-top:1px solid var(--border); }
+.club-event-proposals li { display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:.5rem; padding-top:.8rem; }
+.club-event-footer { display:flex; align-items:center; justify-content:space-between; gap:.75rem; flex-wrap:wrap; padding:.65rem 1.5rem; background:var(--secondary); }
+.club-event-row { display:flex; align-items:center; gap:1.1rem; padding:1.25rem 0; border-bottom:1px solid var(--border); }
+.club-event-row h3 { font-size:1.15rem; font-weight:600; overflow-wrap:anywhere; }
+.club-history { margin-top:0; }
+.club-history li { display:flex; justify-content:space-between; gap:1rem; align-items:baseline; border-top:1px solid var(--border); padding:.9rem 0; }
+.club-summary { display:flex; flex-wrap:wrap; gap:.65rem 1.25rem; align-items:center; margin-top:1.2rem; color:var(--muted-foreground); font-size:.95rem; }
+.club-invites { min-width:0; }
+.club-invites h2 { font-size:1.45rem; font-weight:700; }
+.club-invites-list > li { padding:1.25rem 0; border-top:1px solid var(--border); }
+.club-invites-list { margin-top:1.15rem; }
+.club-invites-list > li:first-child { border-top:2px solid var(--primary); }
+.club-invites-list h3 { font-size:1.2rem; font-weight:600; line-height:1.25; margin-bottom:.65rem; overflow-wrap:anywhere; }
+.club-shortcuts { margin-top:1.75rem; border-top:1px solid var(--border); padding-top:1.35rem; }
+.club-shortcuts h2 { font-size:1.2rem; margin-bottom:.5rem; font-weight:700; }
+.club-shortcuts a { display:flex; align-items:center; justify-content:space-between; gap:.5rem; min-height:2.75rem; color:var(--primary); font-weight:600; }
+.club-empty { padding:2rem 1.5rem; background:var(--card); border-radius:.875rem; }
+.club-empty h3 { font-weight:600; font-size:1.25rem; margin-bottom:.6rem; }
+.club-empty p { color:var(--muted-foreground); max-width:60ch; }
+.club-collection-filters { padding:1.25rem; border-radius:.875rem; background:var(--card); }
+.club-game-cover { position:relative; display:grid; place-items:center; height:13rem; padding:1.25rem; background:var(--secondary); }
+.club-game-cover img { object-fit:contain; padding:1.25rem; }
+.club-game-card { border:0; box-shadow:none; height:100%; overflow:hidden; transition:background-color 160ms ease-out; }
+.club-game-card:hover { background:var(--secondary); }
+.club-main [data-slot=button] { min-height:2.75rem; }
+.club-main input:not([type=checkbox]):not([type=radio]),.club-main [data-slot=select-trigger] { min-height:2.75rem; background:var(--card); }
+.club-main [data-slot=button][data-size^=icon] { min-width:2.75rem; }
+::selection { background:var(--accent); color:var(--accent-foreground); }
+input,textarea { caret-color:var(--primary); }
+a { text-underline-offset:.25em; }
+.club-navigation a:focus-visible,.club-navigation button:focus-visible { outline:3px solid var(--accent); outline-offset:2px; }
+@media (min-width:768px) {
+  .club-main h1 { font-size:2.5rem; }
+  .club-workspace { grid-template-columns:minmax(0,1fr) minmax(15rem,.46fr); align-items:start; }
+  .club-upcoming { grid-column:1; grid-row:1; }
+  .club-actions { grid-column:2; grid-row:1 / span 2; }
+  .club-history-region { grid-column:1; grid-row:2; }
+  .club-date { width:5.75rem; min-height:6.75rem; }
+  .club-date strong { font-size:3.5rem; }
+  .club-date span { font-size:.8rem; }
+}
+@media (min-width:1024px) {
+  .club-shell { display:grid; grid-template-columns:232px minmax(0,1fr); }
+  .club-navigation { position:sticky; top:0; height:100dvh; display:flex; flex-direction:column; overflow-y:auto; }
+  .club-brand-row { padding:1.8rem 1.1rem 2.6rem; }
+  .club-brand { font-size:1.15rem; gap:.45rem; }
+  .club-brand svg { width:1.2rem; }
+  .club-menu-toggle { display:none; }
+  .club-navigation-body { display:flex; flex-direction:column; flex:1; padding:0 .85rem 1rem; }
+  .club-nav-footer { margin-top:auto; padding-top:1rem; }
+  .club-main { padding:1.8rem clamp(1.5rem,3vw,2.75rem) 3rem; }
+  .club-event-top h3 { font-size:1.7rem; }
+}
+@media (prefers-reduced-motion:reduce) {
+  .club-nav-link,.club-game-card { transition:none; }
+}

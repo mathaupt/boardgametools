@@ -19,6 +19,10 @@ export const faqSections: FaqSection[] = [
     description: "So startest du mit BoardGameTools.",
     items: [
       {
+        question: "Wo finde ich die Navigation auf dem Smartphone?",
+        answer: "Öffne das Menü oben neben BoardGameTools. Dort findest du Spiele, Sessions, Reihen, Events, Gruppen und Statistiken sowie Hilfe, Profil und Abmelden. Nach der Auswahl eines Bereichs schließt sich das Menü. Auf dem Computer stehen die Bereiche links in der blauen Navigation.",
+      },
+      {
         question: "Was passiert beim Abmelden oder Kontowechsel in der iOS-App?",
         answer: "Die App entfernt lokale Spiele, Partien, Gruppen, Events und Sync-Daten. Deine Daten bleiben auf dem Server erhalten und werden nach der Anmeldung erneut geladen. Bei einem Wechsel der API-Adresse meldet sich die App zuerst beim bisherigen Server ab. Nach dem Update auf 0.50.16 kann einmalig eine erneute Anmeldung nötig sein, weil alte lokale Daten keinem Konto sicher zugeordnet waren.",
       },

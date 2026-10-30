@@ -8,6 +8,14 @@ Der bestätigte Produktkontext für Web und iOS steht in `PRODUCT.md`. Bei Produ
 
 Die Impeccable-Design-Hooks sind für das Projekt aktiviert. Sie melden nach Änderungen an UI-Dateien automatisch mechanisch erkennbare Gestaltungsprobleme. Codex erfordert beim ersten Einsatz die Freigabe über `/hooks`; in Cursor müssen Hooks in den Einstellungen aktiviert sein. Status prüfen: `.agents/skills/impeccable/scripts/impeccable hooks status`.
 
+## Webgestaltung und UI-Prüfung
+
+- `DESIGN.md` und `.impeccable/design.json` dokumentieren die bestätigte Webgestaltung „Club Programme“; Produktfakten stehen in `PRODUCT.md`.
+- Gemeinsame Anwendungsstile: `src/app/club.css`; semantische Farbvariablen: `src/app/globals.css`.
+- Reine Dashboard-/Eventdarstellung: `src/components/dashboard/`; Datenabfragen verbleiben in den Server-Seiten.
+- Sammlungskarten und Filter: `collection-game-card.tsx` und `collection-filters.tsx` neben `games-list-client.tsx`.
+- Navigationstests: `tests/unit/components/club-navigation.test.tsx` und `tests/e2e/navigation_test.ts`; Dashboardzustände: `tests/unit/components/club-dashboard.test.tsx`.
+
 ## Tech Stack
 
 - **Framework**: Next.js 16.4.3 (App Router, Turbopack dev, Webpack prod)
@@ -440,3 +448,13 @@ Falls Xcode meldet, dass das Provisioning Profile wegen `com.apple.developer.app
 3. `npm run test` ausführen
 4. `npm run build` ausführen
 5. `npm audit` prüfen und bekannte Restrisiken in `docs/code-reviews/security.md` dokumentieren
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+## This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->

@@ -1,26 +1,11 @@
 "use client";
 
+import { useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import {
-  Dice6,
-  LayoutDashboard,
-  Gamepad2,
-  CalendarDays,
-  Users,
-  BarChart3,
-  Vote,
-  Shield,
-  Library,
-  LogOut,
-  User,
-  HelpCircle,
-  Activity,
-  FileCode,
-} from "lucide-react";
 import { useSession, signOut } from "next-auth/react";
+import { Dice6, LayoutDashboard, Gamepad2, CalendarDays, Users, BarChart3, Vote, Shield, Library, LogOut, HelpCircle, Activity, FileCode, Menu, X } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { currentVersion } from "@/lib/changelog";
 
 const navigation = [
@@ -31,9 +16,7 @@ const navigation = [
   { name: "Events", href: "/dashboard/events", icon: Vote },
   { name: "Gruppen", href: "/dashboard/groups", icon: Users },
   { name: "Statistiken", href: "/dashboard/statistics", icon: BarChart3 },
-  { name: "FAQ", href: "/dashboard/faq", icon: HelpCircle },
 ];
-
 const adminNavigation = [
   { name: "Nutzerverwaltung", href: "/dashboard/admin/users", icon: Shield },
   { name: "Monitoring", href: "/dashboard/admin/monitoring", icon: Activity },
@@ -43,124 +26,47 @@ const adminNavigation = [
 export function Navbar() {
   const pathname = usePathname();
   const { data: session } = useSession();
+  const [open, setOpen] = useState(false);
+  const toggle = useRef<HTMLButtonElement>(null);
   const isAdmin = session?.user?.role === "ADMIN";
+  const close = () => setOpen(false);
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border bg-card">
-      <div className="mx-auto flex h-14 max-w-[1280px] items-center gap-2 px-3">
-        {/* Logo */}
-        <Link
-          href="/dashboard"
-          aria-label="Dashboard"
-          className="mr-1 flex shrink-0 items-center gap-2 no-underline rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-        >
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
-            <Dice6 className="h-[18px] w-[18px] text-primary" aria-hidden="true" />
-          </div>
+    <header className="club-navigation" onKeyDown={(event) => {
+      if (event.key === "Escape" && open) { close(); toggle.current?.focus(); }
+    }}>
+      <div className="club-brand-row">
+        <Link href="/dashboard" className="club-brand" onClick={close}>
+          <Dice6 className="size-6 shrink-0" aria-hidden="true" />
+          <span>BoardGameTools</span>
         </Link>
-
-        {/* Version badge */}
-        <Link
-          href="/dashboard/changelog"
-          aria-label={`Versionshistorie v${currentVersion}`}
-          className="shrink-0 rounded bg-muted px-1.5 py-0.5 text-[10px] font-semibold leading-4 text-muted-foreground no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-          suppressHydrationWarning
-        >
-          v{currentVersion}
-        </Link>
-
-        {/* Navigation links - always visible, horizontal scroll on small screens */}
-        <nav className="flex min-w-0 flex-1 items-center gap-0.5 overflow-x-auto [-webkit-overflow-scrolling:touch] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <button ref={toggle} type="button" className="club-menu-toggle" aria-controls="club-navigation-links" aria-expanded={open} aria-label={open ? "Menü schließen" : "Menü öffnen"} onClick={() => setOpen(!open)}>
+          {open ? <X aria-hidden="true" /> : <Menu aria-hidden="true" />}
+        </button>
+      </div>
+      <div id="club-navigation-links" className={cn("club-navigation-body", open && "is-open")}>
+        <nav aria-label="Hauptnavigation" className="club-nav-links">
           {navigation.map((item) => {
-            const isActive =
-              pathname === item.href ||
-              pathname.startsWith(item.href + "/");
-            return (
-              <Link
-                key={item.name}
-                href={item.href}
-                aria-label={item.name}
-                className={cn(
-                  "navbar-link flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-md px-2.5 py-[7px] text-[13px] font-medium no-underline transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                  isActive
-                    ? "navbar-link-active bg-primary text-primary-foreground"
-                    : "bg-transparent text-muted-foreground"
-                )}
-              >
-                <item.icon className="h-4 w-4 shrink-0" aria-hidden="true" />
-                <span className="nav-label">{item.name}</span>
-              </Link>
-            );
+            const active = pathname === item.href || (item.href !== "/dashboard" && pathname.startsWith(item.href + "/"));
+            return <Link key={item.href} href={item.href} onClick={close} aria-current={active ? "page" : undefined} className={cn("club-nav-link", active && "is-active")}>
+              <item.icon className="size-[18px] shrink-0" aria-hidden="true" />{item.name}
+            </Link>;
           })}
-
-          {/* Admin section */}
-          {isAdmin && (
-            <>
-              <div className="mx-1 h-6 w-px shrink-0 bg-border" />
-              {adminNavigation.map((item) => {
-                const isActive =
-                  pathname === item.href ||
-                  pathname.startsWith(item.href + "/");
-                return (
-                  <Link
-                    key={item.name}
-                    href={item.href}
-                    aria-label={item.name}
-                    className={cn(
-                      "flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-md px-2.5 py-[7px] text-[13px] font-medium no-underline transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                      isActive
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-transparent text-muted-foreground"
-                    )}
-                  >
-                    <item.icon className="h-4 w-4 shrink-0" aria-hidden="true" />
-                    <span className="nav-label">{item.name}</span>
-                  </Link>
-                );
-              })}
-            </>
-          )}
+          {isAdmin && <div className="club-admin-links">
+            <p className="px-3 pb-2 text-sm font-semibold">Administration</p>
+            {adminNavigation.map((item) => <Link key={item.href} href={item.href} onClick={close} className="club-nav-link" aria-current={pathname.startsWith(item.href) ? "page" : undefined}>
+              <item.icon className="size-[18px] shrink-0" aria-hidden="true" />{item.name}
+            </Link>)}
+          </div>}
         </nav>
-
-        {/* User section */}
-        <div className="ml-auto flex shrink-0 items-center gap-2">
-          {session?.user && (
-            <>
-              <Link
-                href="/dashboard/profile"
-                aria-label="Mein Profil"
-                className={cn(
-                  "flex items-center gap-1.5 rounded-md px-2 py-1 text-[13px] no-underline transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                  pathname.startsWith("/dashboard/profile")
-                    ? "text-primary"
-                    : "text-foreground"
-                )}
-              >
-                <div
-                  className={cn(
-                    "flex h-7 w-7 items-center justify-center rounded-full",
-                    pathname.startsWith("/dashboard/profile")
-                      ? "bg-primary/15"
-                      : "bg-primary/10"
-                  )}
-                >
-                  <User className="h-3.5 w-3.5 text-primary" aria-hidden="true" />
-                </div>
-                <span className="nav-label font-medium">
-                  {session.user.name || session.user.email}
-                </span>
-              </Link>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => signOut({ callbackUrl: "/login" })}
-                aria-label="Abmelden"
-                className="text-muted-foreground hover:text-foreground"
-              >
-                <LogOut className="h-4 w-4" aria-hidden="true" />
-              </Button>
-            </>
-          )}
+        <div className="club-nav-footer">
+          <Link href="/dashboard/faq" className="club-nav-link" onClick={close}><HelpCircle className="size-[18px]" aria-hidden="true" />Hilfe & FAQ</Link>
+          <Link href="/dashboard/changelog" className="club-nav-link" onClick={close}>Versionshistorie <span className="ml-auto text-xs">v{currentVersion}</span></Link>
+          {session?.user && <Link href="/dashboard/profile" className="club-profile" onClick={close}>
+            <span className="club-avatar" aria-hidden="true">{(session.user.name || session.user.email || "?").slice(0, 1).toUpperCase()}</span>
+            <span className="min-w-0"><span className="block truncate font-semibold">{session.user.name || session.user.email}</span><span className="text-sm">Mein Profil</span></span>
+          </Link>}
+          <button type="button" className="club-nav-link w-full" onClick={() => signOut({ callbackUrl: "/login" })}><LogOut className="size-[18px]" aria-hidden="true" />Abmelden</button>
         </div>
       </div>
     </header>

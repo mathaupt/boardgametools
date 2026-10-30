@@ -1,51 +1,52 @@
 @import "tailwindcss";
 @import "shadcn/tailwind.css";
+@import "./club.css";
 
 @custom-variant dark (&:is(.dark *));
 
 /* ============================================================
-   BoardGameTools — "Tabletop Indigo" Design System
-   Primary: Indigo  |  Accent: Warm Amber  |  Neutrals: Warm Slate
-   All values in oklch for perceptual uniformity.
+   BoardGameTools — "Club Programme" Design System
+   Primary: Cobalt  |  Accent: Peach  |  Neutrals: Blue-tinted
+   Semantic CSS tokens shared by Tailwind and the application shell.
    ============================================================ */
 
 :root {
   /* Background & Foreground */
-  --background: oklch(0.98 0.003 80);       /* warm off-white */
-  --foreground: oklch(0.18 0.02 265);       /* deep indigo-slate */
+  --background: #eaf0ff;       /* pale blue working surface */
+  --foreground: #172648;       /* dark blue ink */
 
   /* Cards */
   --card: oklch(1 0 0);                     /* pure white */
-  --card-foreground: oklch(0.18 0.02 265);
+  --card-foreground: #172648;
 
   /* Popovers */
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.18 0.02 265);
+  --popover-foreground: #172648;
 
-  /* Primary — Indigo */
-  --primary: oklch(0.48 0.2 265);           /* rich indigo */
+  /* Primary — Cobalt */
+  --primary: #2445b4;           /* cobalt */
   --primary-foreground: oklch(0.98 0 0);    /* white */
 
-  /* Secondary — Soft indigo tint */
-  --secondary: oklch(0.95 0.025 265);       /* very light indigo */
-  --secondary-foreground: oklch(0.3 0.06 265);
+  /* Secondary — Soft blue tint */
+  --secondary: #dce5fc;       /* pale blue */
+  --secondary-foreground: #244389;
 
-  /* Muted — Warm gray */
-  --muted: oklch(0.955 0.005 80);           /* warm light gray */
-  --muted-foreground: oklch(0.44 0.02 265); /* WCAG AA 4.5:1 on white */
+  /* Muted — Blue-tinted neutral */
+  --muted: #e1e9fc;           /* blue-tinted neutral */
+  --muted-foreground: #4a5b7e; /* WCAG AA 4.5:1 on white */
 
-  /* Accent — Warm amber */
-  --accent: oklch(0.82 0.13 75);            /* golden amber */
-  --accent-foreground: oklch(0.25 0.04 60); /* dark warm brown */
+  /* Accent — Peach */
+  --accent: #f4af85;            /* highlighted event date */
+  --accent-foreground: #542f20; /* dark warm brown */
 
   /* Destructive — Crimson red */
   --destructive: oklch(0.55 0.22 27);
   --destructive-foreground: oklch(0.98 0 0);
 
   /* Borders & Inputs */
-  --border: oklch(0.91 0.005 80);           /* warm gray border */
-  --input: oklch(0.91 0.005 80);
-  --ring: oklch(0.48 0.2 265);              /* matches primary for focus */
+  --border: #c7d1ed;           /* blue-tinted divider */
+  --input: #c7d1ed;
+  --ring: #2445b4;              /* matches primary for focus */
 
   /* Semantic: Success — Emerald */
   --success: oklch(0.55 0.16 155);
@@ -53,7 +54,7 @@
 
   /* Semantic: Warning — Amber */
   --warning: oklch(0.75 0.16 75);
-  --warning-foreground: oklch(0.25 0.04 60);
+  --warning-foreground: #542f20;
 
   /* Semantic: Info — Blue */
   --info: oklch(0.6 0.18 245);
@@ -69,14 +70,14 @@
   --chart-4: oklch(0.6 0.2 310);            /* violet */
   --chart-5: oklch(0.6 0.15 200);           /* teal */
 
-  /* Sidebar — Dark themed */
-  --sidebar: oklch(0.22 0.035 265);         /* deep indigo-slate */
-  --sidebar-foreground: oklch(0.88 0.01 265);
+  /* Sidebar — Cobalt shell */
+  --sidebar: #2445b4;         /* dark blue ink */
+  --sidebar-foreground: #eaf0ff;
   --sidebar-primary: oklch(0.65 0.2 265);   /* bright indigo */
   --sidebar-primary-foreground: oklch(0.98 0 0);
-  --sidebar-accent: oklch(0.28 0.04 265);   /* slightly lighter bg */
-  --sidebar-accent-foreground: oklch(0.92 0.01 265);
-  --sidebar-border: oklch(0.32 0.04 265);
+  --sidebar-accent: #3456c5;   /* slightly lighter bg */
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: #5973c6;
   --sidebar-ring: oklch(0.65 0.2 265);
 }
 
@@ -93,8 +94,8 @@
   --popover: oklch(0.19 0.02 265);
   --popover-foreground: oklch(0.94 0.005 80);
 
-  --primary: oklch(0.65 0.2 265);           /* brighter indigo */
-  --primary-foreground: oklch(0.98 0 0);
+  --primary: #a8baff;           /* brighter indigo */
+  --primary-foreground: #172648;
 
   --secondary: oklch(0.24 0.03 265);
   --secondary-foreground: oklch(0.9 0.01 265);
@@ -119,7 +120,7 @@
   --warning-foreground: oklch(0.18 0.03 60);
 
   --info: oklch(0.65 0.18 245);
-  --info-foreground: oklch(0.18 0.02 265);
+  --info-foreground: #172648;
 
   --chart-1: oklch(0.6 0.22 265);
   --chart-2: oklch(0.65 0.17 155);
@@ -128,11 +129,11 @@
   --chart-5: oklch(0.65 0.15 200);
 
   --sidebar: oklch(0.15 0.02 265);
-  --sidebar-foreground: oklch(0.88 0.01 265);
+  --sidebar-foreground: #eaf0ff;
   --sidebar-primary: oklch(0.65 0.2 265);
   --sidebar-primary-foreground: oklch(0.98 0 0);
   --sidebar-accent: oklch(0.2 0.025 265);
-  --sidebar-accent-foreground: oklch(0.92 0.01 265);
+  --sidebar-accent-foreground: #ffffff;
   --sidebar-border: oklch(0.25 0.03 265);
   --sidebar-ring: oklch(0.65 0.2 265);
 }
@@ -203,7 +204,7 @@
   }
   body {
     @apply bg-background text-foreground;
-    font-family: var(--font-geist-sans, system-ui, -apple-system, sans-serif);
+    font-family: var(--font-barlow), system-ui, -apple-system, sans-serif;
     -webkit-tap-highlight-color: transparent;
   }
   h1, h2, h3 {

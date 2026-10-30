@@ -4,6 +4,10 @@
 
 BoardGameTools ist eine Next.js Webanwendung zur Verwaltung von Brettspielen, Spielsessions und Events mit Voting-Funktionalität. Die App unterstützt registrierte Nutzer sowie öffentliche Gäste-Teilnahme über Share-Links.
 
+## Gemeinsame Webgestaltung
+
+Die Weboberfläche verwendet seit 0.50.20 die bestätigte Gestaltung „Club Programme“: kobaltblaue Seitennavigation, hellblaue Arbeitsflächen, Barlow als Schrift und hervorgehobene Datumsblöcke für Spieleabende. Das Dashboard stellt kommende Termine und Einladungen vor die kompakte Sammlungsübersicht. Mobil ist die Navigation über einen beschrifteten Menüschalter erreichbar. Die native iOS-App behält ihre Plattformgestaltung. Verbindliche Gestaltungsdetails stehen in `DESIGN.md`; der Produktkontext steht in `PRODUCT.md`.
+
 ## Features
 
 ### 1. Brettspiel-Sammlung (CRUD)

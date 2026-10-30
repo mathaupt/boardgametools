@@ -2,18 +2,10 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Card, CardContent } from "@/components/ui/card";
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -24,7 +16,9 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Plus, Users, Clock, Star, Download, ImageIcon, Trash2, Trash, ScanBarcode, Tag } from "lucide-react";
+import { Plus, Download, Trash2, Trash, ScanBarcode } from "lucide-react";
+import { CollectionFilters } from "./collection-filters";
+import { CollectionGameCard } from "./collection-game-card";
 import { BarcodeScanner } from "@/components/barcode-scanner";
 
 export interface GameItem {
@@ -157,8 +151,8 @@ export default function GamesListClient({ games: initialGames }: GamesListClient
     <>
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold">Meine Spiele</h1>
-          <p className="text-muted-foreground">Verwalte deine Brettspielsammlung</p>
+          <h1 className="font-bold">Meine Spiele</h1>
+          <p className="text-muted-foreground">Finde das passende Spiel für eure nächste Runde.</p>
         </div>
         <div className="flex flex-wrap gap-2">
           {games.length > 0 && (
@@ -194,120 +188,7 @@ export default function GamesListClient({ games: initialGames }: GamesListClient
       </div>
 
       {games.length > 0 && (
-        <div className="space-y-3">
-          <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
-            <Input
-              placeholder="Spiele durchsuchen…"
-              value={searchText}
-              onChange={(e) => setSearchText(e.target.value)}
-              className="max-w-sm"
-              aria-label="Spiele durchsuchen"
-            />
-
-            <div className="flex flex-wrap gap-2 items-center">
-              <Select value={playerCount} onValueChange={setPlayerCount}>
-                <SelectTrigger className="w-[140px]" aria-label="Spieleranzahl filtern">
-                  <SelectValue placeholder="Spieler" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Alle Spieler</SelectItem>
-                  {Array.from({ length: 12 }, (_, i) => i + 1).map((count) => (
-                    <SelectItem key={count} value={String(count)}>
-                      {count} Spieler
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-
-              <Select value={sortOption} onValueChange={setSortOption}>
-                <SelectTrigger className="w-[180px]" aria-label="Sortierung">
-                  <SelectValue placeholder="Sortierung" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="name_asc">Name (A–Z)</SelectItem>
-                  <SelectItem value="name_desc">Name (Z–A)</SelectItem>
-                  <SelectItem value="complexity_asc">Komplexität (↑)</SelectItem>
-                  <SelectItem value="complexity_desc">Komplexität (↓)</SelectItem>
-                  <SelectItem value="players_asc">Spieler (↑)</SelectItem>
-                  <SelectItem value="players_desc">Spieler (↓)</SelectItem>
-                  <SelectItem value="newest">Neueste zuerst</SelectItem>
-                </SelectContent>
-              </Select>
-
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  setSearchText("");
-                  setActiveTag(null);
-                  setPlayerCount("all");
-                  setMinComplexity(null);
-                  setSortOption("name_asc");
-                }}
-                aria-label="Filter zurücksetzen"
-              >
-                Zurücksetzen
-              </Button>
-            </div>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-3">
-            <span className="text-sm text-muted-foreground">Mindest-Komplexität:</span>
-            <div className="flex gap-1">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <Button
-                  type="button"
-                  key={star}
-                  variant="ghost"
-                  size="icon-xs"
-                  onClick={() => setMinComplexity(minComplexity === star ? null : star)}
-                  aria-label={`Mindestens ${star} Sterne`}
-                >
-                  <Star
-                    className={`h-4 w-4 ${minComplexity != null && star <= minComplexity ? "fill-amber-400 text-amber-400" : "text-muted-foreground"}`}
-                    aria-hidden="true"
-                  />
-                </Button>
-              ))}
-            </div>
-          </div>
-
-          {allTags.length > 0 && (
-            <div className="flex flex-wrap gap-2">
-              <Button
-                type="button"
-                variant={!activeTag ? "default" : "secondary"}
-                size="xs"
-                className={`rounded-full ${
-                  !activeTag
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-muted text-muted-foreground hover:bg-muted/80"
-                }`}
-                onClick={() => setActiveTag(null)}
-              >
-                Alle
-              </Button>
-              {allTags.map(([id, name]) => (
-                <Button
-                  type="button"
-                  key={id}
-                  variant={activeTag === id ? "default" : "secondary"}
-                  size="xs"
-                  className={`rounded-full ${
-                    activeTag === id
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-muted text-muted-foreground hover:bg-muted/80"
-                  }`}
-                  onClick={() => setActiveTag(activeTag === id ? null : id)}
-                >
-                  <Tag className="h-3 w-3" aria-hidden="true" />
-                  {name}
-                </Button>
-              ))}
-            </div>
-          )}
-        </div>
+        <CollectionFilters searchText={searchText} setSearchText={setSearchText} playerCount={playerCount} setPlayerCount={setPlayerCount} sortOption={sortOption} setSortOption={setSortOption} minComplexity={minComplexity} setMinComplexity={setMinComplexity} activeTag={activeTag} setActiveTag={setActiveTag} allTags={allTags} />
       )}
 
       {games.length === 0 ? (
@@ -329,79 +210,21 @@ export default function GamesListClient({ games: initialGames }: GamesListClient
           </CardContent>
         </Card>
       ) : (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
           {filteredGames.map((game) => (
             <div key={game.id} className="relative group">
               <Link
                 href={`/dashboard/games/${game.id}`}
                 className="group block rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
-                <Card className="hover:shadow-md transition-shadow h-full overflow-hidden">
-                  <div className="relative w-full h-48 bg-muted">
-                    {game.imageUrl ? (
-                      <Image
-                        src={game.imageUrl}
-                        alt={game.name}
-                        fill
-                        sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                        className="object-cover"
-                      />
-                    ) : (
-                      <div className="h-full w-full flex flex-col items-center justify-center text-muted-foreground gap-2">
-                        <ImageIcon className="h-6 w-6" aria-hidden="true" />
-                        <span className="text-xs">Kein Bild</span>
-                      </div>
-                    )}
-                  </div>
-                  <CardHeader>
-                    <CardTitle as="h2" className="line-clamp-1 pr-8">{game.name}</CardTitle>
-                    {game.description && (
-                      <CardDescription className="line-clamp-2">{game.description}</CardDescription>
-                    )}
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
-                      <div className="flex items-center gap-1">
-                        <Users className="h-4 w-4" aria-hidden="true" />
-                        <span>{game.minPlayers}-{game.maxPlayers}</span>
-                      </div>
-                      {game.playTimeMinutes && (
-                        <div className="flex items-center gap-1">
-                          <Clock className="h-4 w-4" aria-hidden="true" />
-                          <span>{game.playTimeMinutes} Min.</span>
-                        </div>
-                      )}
-                      {game.complexity && (
-                        <div className="flex items-center gap-1">
-                          <Star className="h-4 w-4" aria-hidden="true" />
-                          <span>{game.complexity}/5</span>
-                        </div>
-                      )}
-                    </div>
-                    {game.tags && game.tags.length > 0 && (
-                      <div className="flex flex-wrap gap-1 mt-2">
-                        {game.tags.slice(0, 3).map((t) => (
-                          <span key={t.tag.id} className="inline-flex items-center px-2 py-0.5 rounded-full text-xs bg-muted text-muted-foreground">
-                            {t.tag.name}
-                          </span>
-                        ))}
-                        {game.tags.length > 3 && (
-                          <span className="text-xs text-muted-foreground">+{game.tags.length - 3}</span>
-                        )}
-                      </div>
-                    )}
-                    <p className="text-xs text-muted-foreground mt-3">
-                      {game._count?.sessions ?? 0} Sessions gespielt
-                    </p>
-                  </CardContent>
-                </Card>
+                <CollectionGameCard game={game} />
               </Link>
               <Button
                 type="button"
                 variant="ghost"
                 size="icon-sm"
                 onClick={(e) => { e.preventDefault(); setDeleteTarget(game); }}
-                className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 focus-visible:opacity-100 transition-opacity hover:bg-destructive hover:text-destructive-foreground rounded-full"
+                className="absolute top-2 right-2 bg-card text-destructive hover:bg-destructive hover:text-destructive-foreground rounded-md"
                 aria-label="Spiel entfernen"
                 title="Spiel entfernen"
                 data-testid={`game-delete-${game.id}`}

@@ -2,12 +2,11 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Calendar, MapPin, Check, X, Mail } from "lucide-react";
 import { formatShortDateTime } from "@/lib/date";
 
-interface PendingInvite {
+export interface PendingInvite {
   id: string;
   eventId: string;
   status: string;
@@ -22,11 +21,11 @@ interface PendingInvite {
   };
 }
 
-export function PendingInvites({ invites: initialInvites }: { invites: PendingInvite[] }) {
+export function PendingInvites({ invites: initialInvites, compact = false, showEmpty = false }: { invites: PendingInvite[]; compact?: boolean; showEmpty?: boolean }) {
   const [invites, setInvites] = useState(initialInvites);
   const [loading, setLoading] = useState<string | null>(null);
 
-  if (invites.length === 0) return null;
+  if (invites.length === 0) return showEmpty ? <section className="club-invites"><h2>Deine Einladungen</h2><p className="mt-4 text-muted-foreground">Aktuell keine offenen Einladungen.</p></section> : null;
 
   async function respond(eventId: string, status: "accepted" | "declined") {
     setLoading(eventId);
@@ -47,29 +46,29 @@ export function PendingInvites({ invites: initialInvites }: { invites: PendingIn
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle as="h2" className="flex items-center gap-2 text-base">
+    <section className="club-invites" aria-label="Offene Einladungen">
+      <div>
+        <h2 className="flex items-center gap-2">
           <Mail className="h-4 w-4 text-primary" aria-hidden="true" />
           Offene Einladungen ({invites.length})
-        </CardTitle>
-        <CardDescription>Einladungen zu Spieleabenden, die auf deine Antwort warten</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <ul className="space-y-3">
+        </h2>
+        <p className="mt-2 text-sm text-muted-foreground">Einladungen zu Spieleabenden, die auf deine Antwort warten</p>
+      </div>
+      <div>
+        <ul className="club-invites-list">
           {invites.map((inv) => (
             <li
               key={inv.id}
-              className="flex flex-col sm:flex-row items-start sm:items-center justify-between rounded-lg border bg-card px-4 py-3 gap-2"
+              className={compact ? "space-y-4" : "flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"}
             >
               <div className="min-w-0 flex-1">
                 <Link
                   href={`/dashboard/events/${inv.event.id}`}
-                  className="font-semibold text-sm hover:underline rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  className="inline-block text-lg font-semibold hover:underline rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   {inv.event.title}
                 </Link>
-                <div className="flex flex-wrap items-center gap-3 mt-1 text-xs text-muted-foreground">
+                <div className="flex flex-wrap items-center gap-3 mt-2 text-sm text-muted-foreground">
                   <span className="flex items-center gap-1">
                     <Calendar className="h-3 w-3" aria-hidden="true" />
                     {formatShortDateTime(inv.event.eventDate)}
@@ -83,7 +82,7 @@ export function PendingInvites({ invites: initialInvites }: { invites: PendingIn
                   <span>von {inv.event.createdBy.name}</span>
                 </div>
               </div>
-              <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto justify-end">
+              <div className="flex items-center gap-2 shrink-0">
                 <Button
                   size="sm"
                   variant="default"
@@ -106,7 +105,7 @@ export function PendingInvites({ invites: initialInvites }: { invites: PendingIn
             </li>
           ))}
         </ul>
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }
