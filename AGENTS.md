@@ -10,6 +10,9 @@ Die Impeccable-Design-Hooks sind für das Projekt aktiviert. Sie melden nach Än
 
 ## Webgestaltung und UI-Prüfung
 
+- Impeccable-Skillquellen und Agenten sind in den jeweiligen Werkzeugverzeichnissen versioniert. Heruntergeladene Engines unter `**/skills/impeccable/scripts/bin/` und `.claude/settings.local.json` bleiben lokal; der versionierte Launcher kann die passende Engine beziehen und prüft den Download anhand der mitgelieferten Prüfsummen.
+- `npm run pipeline:check -- --list` zeigt optionale Provider in `scripts/pipeline-checks/`. Zugangsdaten ausschließlich über Umgebungsvariablen oder die ignorierte `.env.pipeline-check` bereitstellen. Exitcodes: 0 erfolgreich, 1 fehlgeschlagene Prüfung, 2 keine Prüfung ausgeführt oder ungültiger Aufruf. Konfiguration: `docs/DEPLOYMENT.md`.
+
 - `DESIGN.md` und `.impeccable/design.json` dokumentieren die bestätigte Webgestaltung „Club Programme“; Produktfakten stehen in `PRODUCT.md`.
 - Gemeinsame Anwendungsstile: `src/app/club.css`; semantische Farbvariablen: `src/app/globals.css`.
 - Reine Dashboard-/Eventdarstellung: `src/components/dashboard/`; Datenabfragen verbleiben in den Server-Seiten.

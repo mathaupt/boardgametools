@@ -192,3 +192,15 @@ xcodebuild -project BoardGameTools.xcodeproj -scheme BoardGameTools -destination
 ### CI-Codegenerierung ohne Datenbankzugang (0.50.17)
 
 Alle GitHub-CI-Jobs erhalten für `npm ci` eine künstliche `SQL_DATABASE_URL` auf `127.0.0.1:1`. Der automatische `postinstall`-Schritt führt `prisma generate` aus; dafür ist eine syntaktisch gültige URL erforderlich, aber keine laufende Datenbank. Dieser Wert ist ausschließlich Testkonfiguration und wird nicht in Vercel-Umgebungsvariablen übernommen. Migrationen dürfen damit nicht ausgeführt werden.
+
+## Optionale Pipeline-Prüfungen
+
+`npm run pipeline:check -- --list` zeigt die verfügbaren Provider und ihren Konfigurationsstatus. `npm run pipeline:check` führt konfigurierte Prüfungen aus; `--github`, `--vercel` oder `--health` wählen einzelne Provider. `--json` gibt eine maschinenlesbare Zusammenfassung aus. Provider sind in `scripts/pipeline-checks/` gekapselt.
+
+- GitHub Actions: `GITHUB_TOKEN` mit Leserechten für Actions; optional `GITHUB_REPO` und `CI_BRANCH`. Standardbranch ist `main`, das Repository wird aus `origin` abgeleitet.
+- Vercel: `VERCEL_TOKEN` und `VERCEL_PROJECT_ID` oder eine lokale `.vercel/project.json`; optional `VERCEL_TEAM_ID`.
+- Health: `PROD_URL`, standardmäßig `https://boardgametools.vercel.app`; optional `HEALTH_PATH`, standardmäßig `/api/health`.
+
+Zugangsdaten dürfen ausschließlich aus Umgebungsvariablen oder der lokal ignorierten `.env.pipeline-check` stammen. Keine Tokens versionieren. Unkonfigurierte Provider werden bei einem allgemeinen Lauf übersprungen; ausdrücklich ausgewählte unkonfigurierte Provider führen zu einem Fehler. Exitcodes: 0 erfolgreich, 1 fehlgeschlagene konfigurierte/ausgewählte Prüfung, 2 keine ausgeführte Prüfung oder ungültiger Aufruf. Laufende GitHub-Jobs werden als noch nicht abgeschlossen gemeldet; eine solche Meldung bestätigt keinen abgeschlossenen CI-Erfolg.
+
+Die Impeccable-Quellen und gemeinsamen Hook-Manifeste sind versioniert. Plattformspezifische Engine-Binaries werden lokal bezogen und anhand der mitgelieferten Prüfsummen geprüft; sie sind ebenso wie persönliche Claude-Hook-Einstellungen nicht Teil des Repositories. Produktiv-Build und Datenbankmigration bleiben getrennte Schritte.

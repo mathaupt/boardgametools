@@ -12,6 +12,17 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.21",
+    date: "2026-10-30",
+    title: "Gemeinsame Werkzeuge für Entwicklung und Veröffentlichung",
+    description: "Gestaltungswerkzeuge und optionale Prüfungen für CI und Bereitstellung sind jetzt gemeinsam mit dem Projekt versioniert.",
+    changes: [
+      { type: "internal", text: "Impeccable-Skills, Agenten und gemeinsame Hook-Konfigurationen für die unterstützten Entwicklungsumgebungen aufgenommen" },
+      { type: "internal", text: "Optionale Pipeline-Prüfungen für GitHub Actions, Vercel und den öffentlichen Health-Endpunkt ergänzt" },
+      { type: "internal", text: "Heruntergeladene plattformspezifische Programme und persönliche Hook-Einstellungen von der Versionierung ausgeschlossen" },
+    ],
+  },
+  {
     version: "0.50.20",
     date: "2026-10-30",
     title: "Mehr Vorfreude auf die nächste Spielrunde",
