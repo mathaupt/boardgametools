@@ -6,6 +6,8 @@ BoardGameTools ist eine Next.js 16 Webanwendung zur Verwaltung von Brettspielen,
 
 Der bestätigte Produktkontext für Web und iOS steht in `PRODUCT.md`. Bei Produkt- und Gestaltungsentscheidungen ist er gemeinsam mit den technischen Vorgaben zu berücksichtigen. Die Impeccable-Arbeitsweise steht in `.impeccable/config.json`; neue Oberflächen werden gemäß bestätigter Präferenz direkt im Code entwickelt.
 
+Die Impeccable-Design-Hooks sind für das Projekt aktiviert. Sie melden nach Änderungen an UI-Dateien automatisch mechanisch erkennbare Gestaltungsprobleme. Codex erfordert beim ersten Einsatz die Freigabe über `/hooks`; in Cursor müssen Hooks in den Einstellungen aktiviert sein. Status prüfen: `.agents/skills/impeccable/scripts/impeccable hooks status`.
+
 ## Tech Stack
 
 - **Framework**: Next.js 16.4.3 (App Router, Turbopack dev, Webpack prod)

@@ -12,6 +12,15 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.19",
+    date: "2026-10-30",
+    title: "Automatische Gestaltungsprüfungen aktiviert",
+    description: "Automatische Hinweise bei der Entwicklung unterstützen die Einhaltung der Gestaltungs- und Barrierefreiheitsvorgaben.",
+    changes: [
+      { type: "internal", text: "Impeccable-Design-Hooks für Änderungen an Oberflächendateien aktiviert und Einrichtungshinweise dokumentiert" },
+    ],
+  },
+  {
     version: "0.50.18",
     date: "2026-10-30",
     title: "Gemeinsame Produktgrundlage für Web und iOS",
