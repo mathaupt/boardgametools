@@ -4,6 +4,8 @@
 
 BoardGameTools ist eine Next.js 16 Webanwendung zur Verwaltung von Brettspielen, Spielsessions, Events mit Voting-Funktionalität, Gruppen und Spielereihen.
 
+Der bestätigte Produktkontext für Web und iOS steht in `PRODUCT.md`. Bei Produkt- und Gestaltungsentscheidungen ist er gemeinsam mit den technischen Vorgaben zu berücksichtigen. Die Impeccable-Arbeitsweise steht in `.impeccable/config.json`; neue Oberflächen werden gemäß bestätigter Präferenz direkt im Code entwickelt.
+
 ## Tech Stack
 
 - **Framework**: Next.js 16.4.3 (App Router, Turbopack dev, Webpack prod)

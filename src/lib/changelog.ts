@@ -12,6 +12,16 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.18",
+    date: "2026-10-30",
+    title: "Gemeinsame Produktgrundlage für Web und iOS",
+    description: "Zielgruppe, Kernabläufe und Anforderungen sind als gemeinsame Grundlage für die Weiterentwicklung von BoardGameTools dokumentiert.",
+    changes: [
+      { type: "internal", text: "Private Spielrunden und ihre Organisatoren als Hauptzielgruppe sowie gemeinsame Produktziele für Web und iOS festgehalten" },
+      { type: "internal", text: "Direkte Umsetzung im Code als bevorzugte Arbeitsweise für künftige Gestaltungsaufgaben gespeichert" },
+    ],
+  },
+  {
     version: "0.50.17",
     date: "2026-10-28",
     title: "Automatische Prüfungen ohne Produktionszugang starten",
