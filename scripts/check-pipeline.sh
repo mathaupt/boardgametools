@@ -35,12 +35,16 @@ NC='\033[0m'
 # CONFIGURATION — adapt this block when copying to another project
 # ════════════════════════════════════════════════════════════════════════
 
+# Project root (this script lives in <root>/scripts/):
+PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
 # Local, gitignored env file for tokens (convenience only; existing env
 # vars are still the documented interface). NEVER commit this file.
-if [[ -f ".env.pipeline-check" ]]; then
+# Location: <project root>/.env.pipeline-check
+if [[ -f "$PROJECT_ROOT/.env.pipeline-check" ]]; then
   set -a
   # shellcheck source=/dev/null
-  source ".env.pipeline-check"
+  source "$PROJECT_ROOT/.env.pipeline-check"
   set +a
 fi
 
@@ -158,7 +162,8 @@ Tokens (env vars only, never committed files):
   VERCEL_PROJECT_ID   Vercel project ID (or .vercel/project.json)
   VERCEL_TEAM_ID      optional team scope
 
-Convenience: a gitignored .env.pipeline-check file is sourced if present.
+Convenience: a gitignored .env.pipeline-check file is sourced if present
+(location: project root, next to package.json).
 
 Adding a provider: see scripts/pipeline-checks/README.md
 EOF

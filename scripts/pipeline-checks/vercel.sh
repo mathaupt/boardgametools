@@ -10,7 +10,7 @@ resolve_vercel_project_id() {
   if [[ -n "${VERCEL_PROJECT_ID:-}" ]]; then
     return 0
   fi
-  local pf=".vercel/project.json"
+  local pf="$PROJECT_ROOT/.vercel/project.json"
   if [[ -f "$pf" ]]; then
     VERCEL_PROJECT_ID="$(jq -r '.projectId // empty' "$pf" 2>/dev/null || true)"
   fi
