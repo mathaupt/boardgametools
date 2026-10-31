@@ -31,3 +31,32 @@ Der Commit-Hook blockiert SEC-45 aufgrund bestehender Entwicklungsabhängigkeite
 Vollständigen Registry-Audit geprüft, BUG-050/051 und Root-Cause im Regressionslog
 dokumentiert. Keine Paketänderung und kein Hook-Bypass. Der erforderliche Commit
 bleibt bis zur separaten Paket-/Evaluator-Korrektur offen.
+
+## Ergänzung: Planung FEAT-012 bis FEAT-014 – 0.50.30
+
+- [x] Pro Feature einen eigenständigen Plan mit Dateien, Testschritten und Abnahmegrenzen erstellt.
+- [x] Materielle Produktfrage zu FEAT-013 gestellt und Antwort „ohne Gastwechsel“ übernommen.
+- [x] Zustands-/Termin-/Identitätsverträge aus den benachbarten Plänen berücksichtigt.
+- [x] Tatsächlichen Gastzugriff der BGG-Suche sowie Autorenzuordnung serverseitig mitgeplant.
+- [x] BUG-052/053/054 als offen erfasst; keine UI-Klarstellung als Gastauthentifizierungsfix ausgegeben.
+- [x] Impeccable, Tastatur-/Screenreaderbedienung, Kontrast, Datenkonsistenz und Security in die späteren Abnahmen aufgenommen.
+- [x] Backlog, Changelog und Reviewdokumentation aktualisiert; lokale Links und Planstruktur geprüft.
+
+Kein erneuter Commitversuch, solange BUG-050/051 ungeklärt sind. Die bereits
+gespeicherte Regressionsbaseline darf nicht als Behebung dieser Befunde gelten.
+Die drei Implementierungspläne sind reviewbar gespeichert; ihre Umsetzung
+ist noch nicht freigegeben.
+
+## Ergänzung: Planung FEAT-005 bis FEAT-008 – 0.50.31
+
+- [x] Vier eigenständige Pläne mit kurzen Aktualitätschecks am Anfang erstellt.
+- [x] Nutzerregel zur Planaktualität dauerhaft in AGENTS.md und Entwicklungsprozess aufgenommen, auch für ältere/freigegebene Pläne.
+- [x] Routineanpassung innerhalb vorhandener Freigabe von wesentlicher Scope-/Kosten-/Berechtigungsänderung unterschieden.
+- [x] Health-DB-/Auth-/Logpfade gemeinsam betrachtet und BUG-055/056 offen erfasst.
+- [x] Aktuelle offizielle Vercel-Quellen für WAF, Attack Mode und Budgetbetrieb berücksichtigt.
+- [x] Monitorumstellung, tatsächlichen Konfigurationsreadback, begrenzte Tests und Rollback eingeplant.
+- [x] Backlog, Changelog und Reviewdokumentation aktualisiert; keine Produktiv- oder Billingänderung durchgeführt.
+
+Die kurze Aktualitätsprüfung gehört vor jedes künftige Feature, nicht nur
+vor dieses Betriebspaket. Das Planerstellungsdatum ersetzt keinen späteren
+Abgleich. Bekannte Commitblocker BUG-050/051 bleiben offen; kein Hook-Bypass.

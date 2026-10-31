@@ -5,6 +5,11 @@ Ein Eintrag ist keine Umsetzungsfreigabe. IDs werden fortlaufend vergeben und
 nicht wiederverwendet. Verbindlicher Ablauf:
 [Entwicklungsprozess](DEVELOPMENT-PROCESS.md#verbindlicher-feature-ablauf).
 
+Vor jeder Implementierung ist auch ein bereits erstellter/freigegebener Plan
+kurz mit dem aktuellen Stand nach vorherigen Umsetzungen abzugleichen und bei
+Bedarf zu aktualisieren. Ergebnis am jeweiligen Plan dokumentieren:
+[verbindliche Aktualitätsprüfung](DEVELOPMENT-PROCESS.md#aktualitätsprüfung-vor-jeder-implementierung).
+
 ## Übersicht
 
 | ID | Feature | Status | Implementierungsplan | Umsetzungsfreigabe |
@@ -13,16 +18,16 @@ nicht wiederverwendet. Verbindlicher Ablauf:
 | FEAT-002 | Voting-Vorschläge sortieren | Umgesetzt (Web) | [Gemeinsamer Plan](superpowers/plans/2026-10-30-FEAT-001-004-voting.md) | Freigegeben und umgesetzt am 30.10.2026 |
 | FEAT-003 | Kompakte Voting-Liste | Umgesetzt (Web) | [Gemeinsamer Plan](superpowers/plans/2026-10-30-FEAT-001-004-voting.md) | Kompakte Zeilenliste nach sichtbarem Vergleich ausdrücklich gewählt und zur Umsetzung freigegeben am 31.10.2026 |
 | FEAT-004 | Voting-Vorschläge löschen | Plan erstellt | [Gemeinsamer Plan](superpowers/plans/2026-10-30-FEAT-001-004-voting.md) | Ausstehend |
-| FEAT-005 | ApiLog-Schreiblast für `/api/health` begrenzen | Erfasst | Ausstehend | Ausstehend |
-| FEAT-006 | Health-Deep-Checks cachen oder splitten | Erfasst | Ausstehend | Ausstehend |
-| FEAT-007 | Vercel-Firewall-Regel für `/api/health` | Erfasst | Ausstehend | Ausstehend |
-| FEAT-008 | Spend-Management-Obergrenze (Billing-Schutz) | Erfasst | Ausstehend | Ausstehend |
+| FEAT-005 | ApiLog-Schreiblast für `/api/health` begrenzen | Plan erstellt | [Health-Logpolicy](superpowers/plans/2026-10-31-FEAT-005-health-apilog.md) | Ausstehend |
+| FEAT-006 | Health-Deep-Checks cachen oder splitten | Plan erstellt | [Liveness und Readiness](superpowers/plans/2026-10-31-FEAT-006-health-liveness-readiness.md) | Ausstehend |
+| FEAT-007 | Vercel-Firewall-Regel für `/api/health` | Plan erstellt | [Firewall und Monitorbetrieb](superpowers/plans/2026-10-31-FEAT-007-health-firewall.md) | Ausstehend |
+| FEAT-008 | Spend-Management-Obergrenze (Billing-Schutz) | Plan erstellt | [Budget und Betriebsreaktion](superpowers/plans/2026-10-31-FEAT-008-spend-management.md) | Ausstehend; Betrag und Teamwirkung vor Aktivierung festzulegen |
 | FEAT-009 | HTML-Entities in Spieldaten korrekt behandeln | Plan erstellt | [Textnormalisierung und Datenbereinigung](superpowers/plans/2026-10-31-FEAT-009-spieldaten-entities.md) | Ausstehend |
 | FEAT-010 | Event-Status und Ergebnis eindeutig darstellen | Plan erstellt | [Zustandsregeln und Ergebnisdarstellung](superpowers/plans/2026-10-31-FEAT-010-eventstatus-ergebnis.md) | Ausstehend |
 | FEAT-011 | Mobile und assistive Bedienung der Terminabstimmung | Plan erstellt | [Zugängliche Terminabstimmung](superpowers/plans/2026-10-31-FEAT-011-terminabstimmung-barrierefrei.md) | Ausstehend |
-| FEAT-012 | Teilnahme vor passive Listen rücken | Erfasst | Ausstehend | Ausstehend |
-| FEAT-013 | Aktive Identität verständlich machen | Erfasst | Ausstehend | Ausstehend |
-| FEAT-014 | Suchzustände und Beschriftung der BGG-Suche | Erfasst | Ausstehend | Ausstehend |
+| FEAT-012 | Teilnahme vor passive Listen rücken | Plan erstellt | [Teilnahmeweg und Teilnehmerdaten](superpowers/plans/2026-10-31-FEAT-012-oeffentliche-teilnahme.md) | Ausstehend |
+| FEAT-013 | Aktive Identität verständlich machen | Plan erstellt | [Eine aktive Identität](superpowers/plans/2026-10-31-FEAT-013-aktive-identitaet.md) | Ausstehend; Umfang ohne Gastwechsel bestätigt |
+| FEAT-014 | Suchzustände und Beschriftung der BGG-Suche | Plan erstellt | [Öffentliche BGG-Suche](superpowers/plans/2026-10-31-FEAT-014-bgg-suchzustaende.md) | Ausstehend |
 
 Am 30.10.2026 aufgenommen. Bei der Planung sind Web, iOS sowie angemeldete und
 öffentliche Voting-Ansichten auf Relevanz und bereits vorhandene Teilfunktionen
@@ -134,6 +139,11 @@ Gemeint ist der Vorschlag im Voting, nicht das Spiel in der Sammlung.
 
 ## FEAT-005 – ApiLog-Schreiblast für `/api/health` begrenzen
 
+**Implementierungsplan:** [FEAT-005](superpowers/plans/2026-10-31-FEAT-005-health-apilog.md), erstellt am 31.10.2026.
+**Umsetzungsfreigabe:** Ausstehend.
+**Planentscheidung:** Vollständiger Ausschluss statt Stichprobe; normale API-Logs und historische Rohlogs erhalten.
+**Bugbezug:** Loganteil von BUG-056; spätere DB-Leselastkorrektur in FEAT-006.
+
 **Ziel:** Verhindern, dass Hochlast oder gezielte Anfragen auf den Health-Endpoint
 die Datenbank mit Log-Schreibzugriffen fluten. Bislang schreibt jede Anfrage einen
 Eintrag in die ApiLog-Tabelle.
@@ -152,6 +162,11 @@ Stichprobe gewählt wird, legt der Implementierungsplan fest.
 
 ## FEAT-006 – Health-Deep-Checks cachen oder splitten
 
+**Implementierungsplan:** [FEAT-006](superpowers/plans/2026-10-31-FEAT-006-health-liveness-readiness.md), erstellt am 31.10.2026.
+**Umsetzungsfreigabe:** Ausstehend; Split und neue Bedeutung des öffentlichen Healthpfads zur Freigabe vorgeschlagen.
+**Planentscheidung:** Öffentliche DB-freie Liveness und geschützte DB-Readiness, einschließlich Monitorumstellung. FEAT-005 wiederverwenden.
+**Bugbezug:** BUG-055 und verbleibende DB-/Auth-Nebenpfade aus BUG-056.
+
 **Ziel:** Wiederholte Anfragen auf den Health-Endpoint dürfen die Datenbank nicht
 skalierend belasten; Erschöpfung des Verbindungspools und Beeinträchtigung echter
 Nutzeranfragen vermeiden.
@@ -167,13 +182,17 @@ fest.
 
 - Unter Last führt eine Anfrageflut zu höchstens einem Datenbank-Prüfsatz pro
   Cache-Fenster beziehungsweise zu keiner Datenbanklast auf dem Liveness-Check.
-- Der Health-Status bleibt korrekt: echte Ausfälle führen weiterhin zu 503,
-  Erholung wird zeitnah sichtbar.
-- Ein Ausfall des Caches wird abgefangen (Fallback auf direkte Prüfung), ohne den
-  Endpoint dauerhaft zu beeinträchtigen.
-- Cache-Fenster, Invalidierung und Überwachung des Caches im Plan festlegen.
+- Der Prüfstatus bleibt korrekt: echte DB-Ausfälle führen im Readinesscheck zu 503;
+  Prozess-Liveness und Datenbankbereitschaft sind getrennt benannt, Erholung wird zeitnah sichtbar.
+- Bei Wahl der Cachevariante Cacheausfall, begrenzten Direktprüfungs-Fallback,
+  Zeitfenster, Invalidierung und Überwachung festlegen. Die vorgeschlagene
+  Splitvariante benötigt keinen Redis-Statuscache.
 
 ## FEAT-007 – Vercel-Firewall-Regel für `/api/health`
+
+**Implementierungsplan:** [FEAT-007](superpowers/plans/2026-10-31-FEAT-007-health-firewall.md), erstellt am 31.10.2026.
+**Umsetzungsfreigabe:** Ausstehend; tatsächlichen Tarif, Monitorverkehr und bestehenden Regelstand vor Veröffentlichung prüfen.
+**Planentscheidung:** Exakte Health-Regel, zunächst Log, dann 429; Attack Mode als gesonderter Incident-Schritt.
 
 **Ziel:** Plattformseitige Drossel unabhängig von den anwendungsseitigen
 Rate-Limits; dokumentiertes Vorgehen im Angriffsfall.
@@ -192,6 +211,10 @@ Monitor-Dienste berücksichtigen).
   Schritt für Schritt dokumentiert.
 
 ## FEAT-008 – Spend-Management-Obergrenze
+
+**Implementierungsplan:** [FEAT-008](superpowers/plans/2026-10-31-FEAT-008-spend-management.md), erstellt am 31.10.2026.
+**Umsetzungsfreigabe:** Ausstehend; konkreter Betrag, Empfänger und teamweite Betriebswirkung müssen vor Aktivierung bestätigt sein.
+**Plattformgrenze:** Vercel-Budget ist kein garantierter harter Rechnungsdeckel; Tarif, zeitversetzte Durchsetzung und weiterlaufende Kosten berücksichtigen.
 
 **Ziel:** Kostenbegrenzung bei Traffic-Spitzen oder Angriffen; Serverless-Funktionsaufrufe
 werden abgerechnet, eine Angriffsflut verursacht also Kosten.
@@ -313,6 +336,11 @@ guest-registration-panel.tsx:90.
 
 ## FEAT-012 – Teilnahme vor passive Listen rücken
 
+**Implementierungsplan:** [FEAT-012](superpowers/plans/2026-10-31-FEAT-012-oeffentliche-teilnahme.md), erstellt am 31.10.2026.
+**Umsetzungsfreigabe:** Ausstehend.
+**Plattformumfang:** Öffentliche Web-Eventseite; native iOS-Oberflächen separat.
+**Abhängigkeiten:** Status/Termin aus FEAT-010, Terminbedienung aus FEAT-011 und gemeinsame Identitätsregeln aus FEAT-013 bei Integration zusammenführen.
+
 **Ziel:** Der Einstieg — Termin und Ort mit unmittelbarem Gastbeitritt — liegt
 unmittelbar sichtbar; lange passive Listenstrecken unterbrechen die persönliche
 Einladung nicht mehr.
@@ -339,6 +367,12 @@ guest-registration-panel.tsx:123.
 
 ## FEAT-013 – Aktive Identität verständlich machen
 
+**Implementierungsplan:** [FEAT-013](superpowers/plans/2026-10-31-FEAT-013-aktive-identitaet.md), erstellt am 31.10.2026.
+**Umsetzungsfreigabe:** Ausstehend.
+**Bestätigte Produktentscheidung:** Am 31.10.2026 „Klare Identität ohne Gastwechsel“ gewählt. Keine Übertragung oder Zusammenführung von Stimmen und keine neue Gastwechsel-/Wiederaufnahmefunktion.
+**Plattformumfang:** Web zuerst; bestehende API-Verträge erhalten, native Oberflächen separat.
+**Bugbezug:** Doppelte Autorenrelation BUG-054 im Umfang; fehlender Gastbesitznachweis BUG-053 bleibt ein eigenständiger offener Sicherheitsbefund.
+
 **Ziel:** Jede Person erkennt, als wer sie gerade handelt — angemeldet oder
 Gast — und welche Aktion welcher Identität zugeordnet ist.
 
@@ -346,8 +380,9 @@ Gast — und welche Aktion welcher Identität zugeordnet ist.
 auch Gastregistrierung beziehungsweise Gastmodus; wiederkehrende Gäste können
 ihre Identität nicht sichtbar wechseln. Die aktive Identität wird eindeutig
 angezeigt; Aktionen werden kontextgerecht benannt („Abstimmen" statt „User
-voten", „Votes", „Gastmodus" — siehe auch Befund zur Sprache). Der tatsächliche
-Bedarf für einen sichtbaren Gastwechsel ist zu klären. Quelle:
+voten", „Votes", „Gastmodus" — siehe auch Befund zur Sprache). Der Bedarf für
+einen sichtbaren Gastwechsel wurde am 31.10.2026 entschieden: zunächst klare
+Identität ohne Gastwechsel. Quelle:
 Impeccable-Prüfung vom 30.10.2026, Priorität 4;
 public-event-client.tsx:182,269,291; guest-registration-panel.tsx:78,88.
 
@@ -357,11 +392,16 @@ public-event-client.tsx:182,269,291; guest-registration-panel.tsx:78,88.
   sichtbar dargestellt.
 - Aktionen sind kontextgerecht benannt; technische Begriffe sind im
   Zielpublikum verständlich formuliert.
-- Der Bedarf für einen Gastwechsel ist geklärt; falls ja, ist der Wechsel
-  bedienbar und die Rückwirkung auf bestehende Stimmen ist im Plan geklärt.
+- Der bestätigte Umfang ohne Gastwechsel wird eingehalten; bestehende Stimmen
+  werden beim Anmelden weder übertragen noch gelöscht.
 - Angemeldete Personen sehen keinen doppelten Beitragsweg.
 
 ## FEAT-014 – Suchzustände und Beschriftung der BGG-Suche
+
+**Implementierungsplan:** [FEAT-014](superpowers/plans/2026-10-31-FEAT-014-bgg-suchzustaende.md), erstellt am 31.10.2026.
+**Umsetzungsfreigabe:** Ausstehend.
+**Plattformumfang:** Öffentliche Websuche mit tokengebundener API; allgemeine BGG-Routen bleiben geschützt.
+**Bugbezug:** BUG-040/043 und neu erkannter fehlender Gastzugriff BUG-052.
 
 **Ziel:** Die BGG-Suche kommuniziert jeden Zustand klar — ungesucht, ladend,
 Ergebnis, leer, Fehler — und ist dauerhaft beschriftet.

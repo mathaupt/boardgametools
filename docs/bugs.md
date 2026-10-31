@@ -1279,7 +1279,7 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 **Ursache:** bgg-game-search.tsx prüft leere Ergebnisse, Suchtextlänge und Ladezustand, aber keinen abgeschlossenen Suchlauf.
 
-**Lösung:** Noch nicht umgesetzt. Ungesucht, ladend, Ergebnis, leer und Fehler getrennt modellieren.
+**Lösung:** Noch nicht umgesetzt. [FEAT-014-Plan](superpowers/plans/2026-10-31-FEAT-014-bgg-suchzustaende.md): Ungesucht, ladend, Ergebnis, leer und Fehler getrennt modellieren.
 
 **Prüfnachweis:** search-before-submit.png aus A; beforeSearch-Nachweis aus B. Belege: `.impeccable/critique/evidence/public-event-A/` und `public-event-B/`.
 
@@ -1306,7 +1306,7 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 **Ursache:** lg:grid-cols-[2fr,1fr] in page.tsx erzeugt keine wirksame gültige Zweispaltenaufteilung.
 
-**Lösung:** Noch nicht umgesetzt. Desktopaufteilung gemeinsam mit der Priorisierung des Gastbeitritts planen.
+**Lösung:** Noch nicht umgesetzt. [FEAT-012-Plan](superpowers/plans/2026-10-31-FEAT-012-oeffentliche-teilnahme.md): Desktopaufteilung gemeinsam mit der Priorisierung des Gastbeitritts umsetzen.
 
 **Prüfnachweis:** anonymous-1440.png und Layoutbeobachtungen aus A. Belege: `.impeccable/critique/evidence/public-event-A/` und `public-event-B/`.
 
@@ -1333,7 +1333,7 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 **Ursache:** page.tsx und GuestRegistrationPanel verwalten getrennte Darstellungen desselben Datenbestands.
 
-**Lösung:** Noch nicht umgesetzt. Gemeinsame Teilnehmerdarstellung oder abgestimmte Aktualisierung planen.
+**Lösung:** Noch nicht umgesetzt. [FEAT-012-Plan](superpowers/plans/2026-10-31-FEAT-012-oeffentliche-teilnahme.md): eine gemeinsame Teilnehmerquelle und nachgeführte Snapshotdaten.
 
 **Prüfnachweis:** Beitrittsablauf und Komponentenprüfung aus A; keine echte Gastregistrierung. Belege: `.impeccable/critique/evidence/public-event-A/` und `public-event-B/`.
 
@@ -1360,7 +1360,7 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 **Ursache:** Dem Input in bgg-game-search.tsx fehlt eine zugeordnete Beschriftung.
 
-**Lösung:** Noch nicht umgesetzt. Dauerhaftes Label und Prüfung des zugänglichen Namens planen.
+**Lösung:** Noch nicht umgesetzt. [FEAT-014-Plan](superpowers/plans/2026-10-31-FEAT-014-bgg-suchzustaende.md): dauerhaftes Label und Prüfung des zugänglichen Namens.
 
 **Prüfnachweis:** DOM-Beschriftungsprüfung aus B und Quellprüfung aus A. Belege: `.impeccable/critique/evidence/public-event-A/` und `public-event-B/`.
 
@@ -1582,10 +1582,135 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 ---
 
+### [BUG-052] Öffentliche BGG-Suche verwendet einen anmeldungsgebundenen Endpunkt
+
+**Status:** `open`
+**Schweregrad:** `medium`
+**Entdeckt:** 2026-10-31
+**Test geschrieben:** Nein; Gastzugriffstest im FEAT-014-Plan vorgesehen.
+
+**Beschreibung:** Die öffentliche BGG-Suche verspricht eine Nutzung ohne Konto, ruft aber für Suche und Details /api/bgg auf. Dessen GET-Handler verlangt requireAuth.
+
+**Reproduktion:** Einen gültigen öffentlichen Eventlink ohne Session öffnen und in der BGG-Suche einen Begriff absenden beziehungsweise Details abrufen. Den Ablauf bei späterer Umsetzung mit isolierten Testdaten nachweisen.
+
+**Erwartetes Verhalten:** Katalogsuche ist für Besucher eines gültigen offenen Events ohne Konto möglich; Vorschlagen verlangt weiterhin eine zulässige Identität.
+
+**Tatsächliches Verhalten laut Quellprüfung:** Der Client verwendet die geschützte generische Route, die ohne Session die Anfrage abweist. Die Proxy-Ausnahme für den Pfad ersetzt die Authprüfung im Handler nicht.
+
+**Ursache:** Öffentliche Clientkomponente und Katalog-API haben unterschiedliche Zugriffsannahmen.
+
+**Lösung:** Noch nicht umgesetzt. [FEAT-014-Plan](superpowers/plans/2026-10-31-FEAT-014-bgg-suchzustaende.md): tokengebundene öffentliche Katalogroute; allgemeine BGG-Route geschützt lassen.
+
+**Prüfnachweis:** src/components/public-event/bgg-game-search.tsx, src/app/api/bgg/route.ts und src/proxy.ts am 31.10.2026 gelesen. Keine produktiven BGG-/Gastrequests durchgeführt.
+
+**Referenz im Changelog:** Version 0.50.30 – Öffentliche Teilnahme weiter geplant.
+
+---
+
+### [BUG-053] Gastzugang besitzt keinen serverseitigen Besitznachweis
+
+**Status:** `open`
+**Schweregrad:** `high`
+**Entdeckt:** 2026-10-31
+**Test geschrieben:** Nein; eigenständige Sicherheitskorrektur erforderlich.
+
+**Beschreibung:** Der Gastbeitritt führt per eventId/nickname ein upsert aus und gibt einen bestehenden Gastdatensatz erneut zurück. Gastaktionen vertrauen anschließend einer übermittelten, zum Event passenden Gast-ID, ohne den Besitz dieses Zugangs nachzuweisen.
+
+**Reproduktion:** In einer isolierten Testdatenbank einen Gast mit Stimmen anlegen. In einer zweiten Browserumgebung mit demselben öffentlichen Link und Spitznamen beitreten und die wieder ausgegebene Identität prüfen. Keine Tests gegen fremde produktive Gäste.
+
+**Erwartetes Verhalten:** Die Wiederaufnahme einer bestehenden Gastidentität verlangt einen vom Server überprüfbaren Besitznachweis; Kenntnis des Namens oder der öffentlichen ID reicht dafür nicht.
+
+**Tatsächliches Verhalten laut Quellprüfung:** join verwendet eventId_nickname als upsert-Schlüssel. Eine Session oder ein signierter Gastnachweis ist nicht erforderlich; lokale Speicherung allein beweist keinen Besitz.
+
+**Ursache:** Teilnahmebezeichnung und Authentifizierung des Gastzugangs werden nicht getrennt.
+
+**Lösung:** Offen, außerhalb des bestätigten FEAT-013-Umfangs „ohne Gastwechsel“. Ein eigener Korrekturschritt muss einen serverseitigen Besitznachweis, sichere Wiederaufnahme und eine Migration bestehender Gastzugänge definieren. Bis dahin keine neue Gastwechsel-/Übernahmefunktion anbieten.
+
+**Prüfnachweis:** Öffentliche join-/vote-Routen und clientseitiger StoredGuestState am 31.10.2026 geprüft. Keine produktive Identität übernommen.
+
+**Referenz im Changelog:** Version 0.50.30 – Öffentliche Teilnahme weiter geplant.
+
+---
+
+### [BUG-054] BGG-Vorschlag kann gleichzeitig Konto und Gast zugeordnet werden
+
+**Status:** `open`
+**Schweregrad:** `medium`
+**Entdeckt:** 2026-10-31
+**Test geschrieben:** Nein; serverseitige Regression im FEAT-013-Plan vorgesehen.
+
+**Beschreibung:** Bei vorhandener Session und gespeicherter Gast-ID sendet der BGG-Client beide Kontexte. Die Route kann gleichzeitig proposedById und guestId auf denselben neuen Vorschlag schreiben.
+
+**Reproduktion:** In einer isolierten Umgebung einen Gastzugang speichern, sich anmelden und einen BGG-Vorschlag erzeugen; Autorenrelationen des Vorschlags prüfen.
+
+**Erwartetes Verhalten:** Ein neuer Vorschlag hat genau eine aktuelle Autorenidentität. Bei Session erhält das Konto Vorrang; der alte Gast bleibt unverändert bestehen.
+
+**Tatsächliches Verhalten laut Quellprüfung:** Der Client sendet activeGuestId unabhängig von currentUserId; die create-Daten setzen proposedById aus der Session und guestId unabhängig aus dem Body.
+
+**Ursache:** Getrennte Konto-/Gast-Props ohne gemeinsame Prioritätsregel und ohne ausschließliche serverseitige Zuordnung.
+
+**Lösung:** Noch nicht umgesetzt. [FEAT-013-Plan](superpowers/plans/2026-10-31-FEAT-013-aktive-identitaet.md): ein UI-Actor und genau eine Autorenrelation bei neuen Vorschlägen. Keine automatische Bestands- oder Stimmenmigration.
+
+**Prüfnachweis:** src/components/public-event/bgg-game-search.tsx und src/app/api/public/event/[token]/propose-bgg/route.ts am 31.10.2026 gelesen.
+
+**Referenz im Changelog:** Version 0.50.30 – Öffentliche Teilnahme weiter geplant.
+
+---
+
+### [BUG-055] Öffentlicher Health-Endpoint liefert interne Diagnosedetails
+
+**Status:** `open`
+**Schweregrad:** `medium`
+**Entdeckt:** 2026-10-31
+**Test geschrieben:** Nein; sichere Antwortverträge im FEAT-006-Plan vorgesehen.
+
+**Beschreibung:** Der öffentlich freigegebene Health-Handler liefert Tabellenzähler, Migrationsnamen, Speicher-/Umgebungsdiagnosen und im Fehlerfall die rohe message einer DB-Exception.
+
+**Reproduktion:** Den Handler in einer isolierten Umgebung mit erfolgreicher Probe und anschließend mit einer künstlichen DB-Exception aufrufen; öffentliche JSON-Antwort prüfen.
+
+**Erwartetes Verhalten:** Öffentliche Liveness enthält nur notwendige grobe Betriebsinformationen. Geschützte Readiness liefert einen begrenzten Prüfstatus, keine rohen Verbindungs-/SQL-Fehler.
+
+**Tatsächliches Verhalten laut Quellprüfung:** HealthResponse enthält userCount/gameCount/sessionCount/lastMigration und memory/environment; der catch-Zweig setzt components.database.message auf error.message.
+
+**Ursache:** Interne Diagnose und öffentliche Erreichbarkeitsprüfung verwenden denselben Vertrag.
+
+**Lösung:** Noch nicht umgesetzt. [FEAT-006-Plan](superpowers/plans/2026-10-31-FEAT-006-health-liveness-readiness.md): begrenzte öffentliche Liveness und separat geschützte Readiness.
+
+**Prüfnachweis:** src/app/api/health/route.ts und öffentliche Proxyfreigabe am 31.10.2026 geprüft. Keine produktiven Fehler oder Daten abgefragt; keine Behauptung über tatsächlich offengelegte Zugangsdaten.
+
+**Referenz im Changelog:** Version 0.50.31 – Betriebsschutz und Planprüfung vorbereitet.
+
+---
+
+### [BUG-056] Öffentliche Health-Anfragen verursachen skalierende DB-Last
+
+**Status:** `open`
+**Schweregrad:** `medium`
+**Entdeckt:** 2026-10-31
+**Test geschrieben:** Nein; Logger-/Last-/Readinesstests in FEAT-005/006 vorgesehen.
+
+**Beschreibung:** Jede erfolgreiche Health-Anfrage erzeugt fünf DB-Leseprüfungen und einen asynchronen ApiLog-Write. Bei vorhandenem Sessioncookie kann zusätzlich die Sessionauflösung im auth-umschlossenen Proxy eine User-Abfrage auslösen.
+
+**Reproduktion:** In isolierter Umgebung viele Health-Anfragen mit/ohne Sessioncookie senden und Prisma-Aufrufe zählen. Mehrere Instanzen oder Ausgangs-IP-Adressen bei der späteren Lastprüfung berücksichtigen.
+
+**Erwartetes Verhalten:** Öffentliche Lebenszeichenprüfung ohne DB-Last; echte DB-Readiness nur geschützt und begrenzt. Health-Anfragen dürfen keine anfrageproportionale Log-Schreiblast erzeugen.
+
+**Tatsächliches Verhalten laut Quellprüfung:** SELECT 1, drei count-Abfragen und eine Migrationsabfrage je erfolgreichem Handlerlauf; anschließend apiLog.create. Der Health-Proxy-Ausnahmepfad liegt erst innerhalb des auth-Wrappers. Das synchrone Rate-Limit gilt nur pro Prozess/IP und ersetzt keine flottenweite Begrenzung.
+
+**Ursache:** Tiefe Betriebsdiagnose, Sessionmiddleware und persistiertes Requestlogging sind an den öffentlichen Probeaufruf gekoppelt.
+
+**Lösung:** Noch nicht umgesetzt. [FEAT-005](superpowers/plans/2026-10-31-FEAT-005-health-apilog.md) entfernt den Loganteil; [FEAT-006](superpowers/plans/2026-10-31-FEAT-006-health-liveness-readiness.md) trennt die DB-freie Liveness einschließlich Proxy von begrenzter Readiness.
+
+**Prüfnachweis:** Health-Handler, src/lib/api-logger.ts, src/proxy.ts, src/lib/auth.ts und Rate-Limiter am 31.10.2026 gelesen. Kein Lasttest gegen Produktion und kein tatsächlicher Produktionsausfall behauptet.
+
+**Referenz im Changelog:** Version 0.50.31 – Betriebsschutz und Planprüfung vorbereitet.
+
+---
+
 ## Statistik
 
-- **Offene Bugs:** 13
+- **Offene Bugs:** 18
 - **In Bearbeitung:** 0
 - **Behoben:** 38
 - **Wontfix:** 0
-- **Gesamt:** 51
+- **Gesamt:** 56

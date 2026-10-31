@@ -12,6 +12,28 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.31",
+    date: "2026-10-31",
+    title: "Betriebsschutz und Planprüfung vorbereitet",
+    description: "Für weniger Health-Datenbanklast, Firewall-Drosselung und Kostenwarnungen liegen Implementierungspläne vor. Vor jeder Umsetzung wird der Plan künftig mit dem aktuellen Stand abgeglichen.",
+    changes: [
+      { type: "internal", text: "FEAT-005 bis FEAT-008 mit Tests, Monitorumstellung, Plattformprüfung und Abnahmegrenzen geplant; keine Betriebs- oder Billingeinstellung geändert" },
+      { type: "internal", text: "Kurze Aktualitätsprüfung unmittelbar vor jeder Implementierung verpflichtend gemacht, auch für ältere und bereits freigegebene Pläne" },
+      { type: "internal", text: "Öffentliche Health-Diagnosedetails und anfrageabhängige Datenbanklast als offene Befunde dokumentiert" },
+    ],
+  },
+  {
+    version: "0.50.30",
+    date: "2026-10-31",
+    title: "Öffentliche Teilnahme weiter geplant",
+    description: "Für einen kürzeren Teilnahmeweg, eine klare Identitätsanzeige und verständliche Suchzustände liegen getrennte Implementierungspläne vor.",
+    changes: [
+      { type: "internal", text: "FEAT-012 bis FEAT-014 mit Arbeitsschritten, Tests, Design-, Sicherheits- und Abnahmekriterien geplant; Umsetzung noch freizugeben" },
+      { type: "internal", text: "Für FEAT-013 die bestätigte Begrenzung auf klare Identitätsanzeige ohne Gastwechsel und ohne Stimmenübertragung festgehalten" },
+      { type: "internal", text: "Fehlenden Gastzugriff der BGG-Suche, fehlenden Gastbesitznachweis und doppelte Vorschlagszuordnung als offene Befunde dokumentiert" },
+    ],
+  },
+  {
     version: "0.50.29",
     date: "2026-10-31",
     title: "Weitere Verbesserungen vorbereitet",

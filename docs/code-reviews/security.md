@@ -36,3 +36,26 @@ BUG-050 erfasst die Paketrisiken, BUG-051 den Evaluatorfehler. Beides ist offen.
 Keine ungeprüften Major-Overrides, kein pauschales npm audit fix und kein Umgehen
 des Hooks durchgeführt. Die zugrunde liegenden Auditdaten liegen lokal unter
 /tmp/bgt-feat-plans-audit.json; sie sind kein versioniertes Artefakt.
+
+## Quellprüfung öffentliche Teilnahme – Planung 0.50.30
+
+- BUG-052: Die öffentliche BGG-Suche verwendet eine geschützte allgemeine API. FEAT-014 plant eine tokengebundene Katalogroute statt einer pauschalen Auth-Ausnahme.
+- BUG-053: Ein Gastname beziehungsweise eine öffentlich übermittelte Gast-ID ist kein Besitznachweis. Die bestehende join-/vote-Logik prüft keinen eigenen Gastnachweis. Kein produktiver Übernahmeversuch durchgeführt.
+- BUG-054: Bei BGG-Vorschlägen können derzeit Session und guestId gleichzeitig als Autoren gespeichert werden. FEAT-013 plant ausschließliche Zuordnung bei neuen Writes.
+
+Bestätigter FEAT-013-Umfang: klare Identitätsanzeige ohne Gastwechsel. Die
+geplante UI-Verbesserung behebt BUG-053 nicht und gewährt keine zusätzlichen
+Gastberechtigungen. Eine spätere Wiederaufnahme-/Wechselfunktion erfordert
+einen eigenen serverseitig abgesicherten Besitzvertrag.
+
+## Quellprüfung Health – Planung 0.50.31
+
+BUG-055 erfasst öffentliche interne Health-Diagnose einschließlich roher
+DB-Fehlertexte. BUG-056 erfasst anfrageproportionale DB-Lese-/Loglast und
+zusätzliche Sessionabfragen über den Proxy bei vorhandenen Cookies.
+Die vorgeschlagenen FEAT-005/006-Pläne adressieren diese Pfade, sind aber
+noch nicht umgesetzt. Keine produktiven Fehler-, Last- oder Ausfalltests.
+
+FEAT-007/008 bleiben bis zur tatsächlichen Projekt-/Tarif-/Budgetprüfung
+reine Betriebspläne. Ein Readinesssecret, Firewall-Ausnahmen oder eine
+teamweite Produktionspause wurden nicht eingerichtet.

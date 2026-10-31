@@ -18,18 +18,22 @@ Seit 30.10.2026 gilt für jedes neue Feature in Web und iOS:
    Umsetzungsfreigabe erlaubt funktionale Codeänderungen. Ein TODO oder die Bitte um
    einen Plan genügt nicht. Datum und Umfang im Backlog dokumentieren; wesentliche
    Erweiterungen erneut abstimmen.
-5. **Umsetzen und testen:** Bestätigten Plan ausführen, notwendige Regressionstests
+5. **Plan unmittelbar vor Umsetzung auf Aktualität prüfen:** Aktuellen Stand und
+   vorherige Implementierungen mit dem Plan vergleichen, erforderliche Anpassungen
+   dokumentieren und erst danach beginnen. Dies gilt auch für ältere/freigegebene
+   Pläne und bei Wiederaufnahme nach relevanten Zwischenänderungen; Details unten.
+6. **Umsetzen und testen:** Bestätigten und aktualisierten Plan ausführen, notwendige Regressionstests
    ergänzen und angemessene Unit-, Integrations- und Ablaufprüfungen durchführen.
-6. **Impeccable prüfen:** UI-Änderungen mit Produkt- und Designkontext anhand gerenderter
+7. **Impeccable prüfen:** UI-Änderungen mit Produkt- und Designkontext anhand gerenderter
    Ansichten auf den betroffenen Plattformen prüfen. Relevante Zustände, Barrierefreiheit,
    mobile Darstellung beziehungsweise Dynamic Type und dunkle Darstellung einbeziehen.
    Bei Features ohne Oberfläche die Nichtanwendbarkeit dokumentieren.
-7. **Security und Qualität prüfen:** Bei jedem Feature Auswirkungen auf Authentifizierung,
+8. **Security und Qualität prüfen:** Bei jedem Feature Auswirkungen auf Authentifizierung,
    Berechtigungen, Eingabevalidierung, Datenschutz, Fehlerbehandlung und Abhängigkeiten
    prüfen. Sicherheitsfälle gezielt testen. Security- und Review-Regressionschecks
    sowie passende Build-, Typ- und Lintprüfungen ausführen; nicht betroffene Bereiche
    begründet als nicht zutreffend kennzeichnen.
-8. **Abschließen:** Changelog und betroffene Dokumentation aktualisieren, gefundene Bugs
+9. **Abschließen:** Changelog und betroffene Dokumentation aktualisieren, gefundene Bugs
    im Bugregister führen, Änderungen committen und Review-Ergebnisse dokumentieren.
    Backlogstatus und Release-Version nach tatsächlicher Fertigstellung aktualisieren.
 
@@ -37,6 +41,43 @@ Ein gemeinsamer Plan darf mehrere Feature-IDs umfassen; Abnahmekriterien und
 Freigabeumfang müssen je ID nachvollziehbar bleiben. Plan- und Prüfdokumentation
 erzeugen keine zusätzliche Funktionsfreigabe. Die folgenden historischen Regeln
 und technischen Prüflisten ergänzen diesen Ablauf.
+
+### Aktualitätsprüfung vor jeder Implementierung
+
+Seit 31.10.2026 auf ausdrücklichen Nutzerwunsch verpflichtend. Beim Start jedes
+Features und vor dem nächsten Feature eines Pakets kurz prüfen, ob der jeweilige
+Plan durch die vorherigen Umsetzungen verändert werden muss. Bei Wiederaufnahme
+nach relevanten Änderungen erneut prüfen. Keine vollständige Neuplanung bei
+jeder kleinen Korrektur innerhalb derselben Umsetzung.
+
+1. Aktuellen Commit und relevante uncommittierte Änderungen erfassen; fremde Arbeit
+   nicht überschreiben.
+2. Seit Planerstellung umgesetzte Features, Backlogstatus und bereits vorhandene
+   Teilfunktionen prüfen. Geplante neue Helfer nicht duplizieren und bereits gelöste
+   Bugs nicht erneut bearbeiten.
+3. Betroffene Dateien, APIs/DTOs, Datenmodell, Berechtigungen, Gestaltung und Tests
+   gezielt vergleichen. Bei Plattform-/Billingaufgaben zusätzlich aktuellen Tarif,
+   Konfiguration, Kostenwirkung und offizielle Providerregeln prüfen.
+4. Ergebnis am jeweiligen Plan mit Datum und geprüftem Commit/Deployment festhalten:
+   **aktuell**, **innerhalb der Freigabe angepasst** oder **wesentlich geändert**.
+   Nötige konkrete Änderungen und verbleibende Abhängigkeiten benennen.
+5. Aktuellen beziehungsweise angepassten Plan ausführen. Bereits erteilte Freigaben
+   gelten für ihren Umfang weiter. Routinekorrekturen an Pfaden, Testnamen oder
+   inzwischen vorhandenen Helfern benötigen keine erneute Freigabe. Neue
+   Funktionalität, Datenfreigaben, Berechtigungen, Geldbeträge oder veränderte
+   Betriebsfolgen vor abhängiger Umsetzung konkret abstimmen.
+
+Die Prüfung ist normalerweise ein kurzer Quell-/Statusvergleich, kein zusätzlicher
+vollständiger Auditlauf. Tests nur durchführen, wenn der Vergleich eine konkrete
+Unsicherheit zeigt oder sie zur anschließenden Umsetzung gehören. Die Erstellung
+eines Plans ersetzt diesen späteren Check nicht.
+
+Dokumentationsmuster im jeweiligen Plan:
+
+- Datum und geprüfter Commit/Deploymentstand
+- Relevante vorherige Implementierungen und Arbeitsbaumänderungen
+- Ergebnis und konkrete Plananpassung beziehungsweise „keine Änderung erforderlich“
+- Fortgeltender Freigabeumfang oder konkret neu abzustimmende Abweichung
 
 > **Lessons Learned aus 105 Findings (50 historisch + 55 Deep-Dive)**
 >

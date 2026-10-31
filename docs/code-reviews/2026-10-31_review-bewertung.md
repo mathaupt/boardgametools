@@ -35,3 +35,32 @@ Ein vollständiger Registry-Audit bestätigt 26 Entwicklungsbefunde bei unverän
 Paketdateien; der Produktionsaudit meldet 0. BUG-050/051 und das Regressionslog
 halten Paketbefunde sowie die mögliche falsche Nullbewertung bei Auditfehlern fest.
 Die Commit-Sperre bleibt bestehen; dies ändert nicht den vollständig gespeicherten Planungsstand.
+
+## Ergänzung: Planungsstand 0.50.30
+
+| Kriterium | Vorher | Nachher |
+|---|---|---|
+| FEAT-012 | Layout-/Gästelistenbefunde | Ein Teilnahmeweg, zentrale Gästedaten und messbare Layoutabnahme geplant |
+| FEAT-013 | Ungeklärter Gastwechselumfang | Ausdrücklich ohne Gastwechsel bestätigt; ein UI-Actor und eine Autorenrelation geplant |
+| FEAT-014 | Frühe Leere-Meldung und fehlendes Label | Suchzustände, Abbruchschutz und tokengebundener Gastzugriff geplant |
+| Sicherheitsgrenze | Gast-ID ohne Besitznachweis | BUG-053 ausdrücklich offen; keine Authentifizierungszusage aus der UI ableiten |
+| Review-/Auditstand | BUG-050/051 offen | Keine Korrektur oder neue erfolgreiche Evaluierung behauptet |
+
+Die drei Pläne sind unabhängig referenzierbar, ihre Integrationen verwenden
+gemeinsame Verträge. Die Produktentscheidung zu FEAT-013 ersetzt keine
+Umsetzungsfreigabe. Keine Runtime-Abnahme oder Bugbehebung erfolgt.
+
+## Ergänzung: Planungsstand 0.50.31
+
+| Kriterium | Vorher | Nachher |
+|---|---|---|
+| FEAT-005 | Stichprobe/Ausschluss offen | Vollständiger Health-Logausschluss mit konsistenten Monitoringmetriken geplant |
+| FEAT-006 | Cache/Split offen | DB-freie Liveness und geschützte Readiness samt Monitorrollout zur Freigabe vorgeschlagen |
+| FEAT-007 | Allgemeine Firewallanforderung | Exaktes Match, Beobachtungsfenster, Monitorabgleich und begrenzter Nachweis geplant |
+| FEAT-008 | Allgemeine Ausgabenobergrenze | Konkreter Betreiberentscheid mit Restkosten- und Teamwirkung vorgesehen |
+| Planaktualität | Bestandsprüfung bei Planung | Zusätzlich kurzer dokumentierter Check unmittelbar vor jeder Umsetzung |
+
+Die neuen Quellen zeigen auch Auth-/Logging-Nebenlast öffentlicher Probes.
+Die Splitvariante behebt dies erst nach tatsächlicher Umsetzung und
+Monitorumstellung. Plattformpläne unterscheiden Sollzustand, freizugebende
+Eingaben und echten Konfigurationsnachweis; keine Einstellungen aktiviert.

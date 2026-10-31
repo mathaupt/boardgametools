@@ -310,11 +310,20 @@ boardgametools/
    Umfang, Arbeitsschritte, Tests, Impeccable-Prüfung, Security-Prüfung und Dokumentation.
 4. Den konkreten Plan vorlegen und die ausdrückliche **Freigabe der Umsetzung**
    abwarten; Datum und freigegebenen Umfang im Backlog festhalten.
-5. Nach Freigabe umsetzen und angemessene Tests ausführen. Bei UI-Änderungen ist
+5. **Unmittelbar vor jeder Implementierung den Plan kurz auf Aktualität prüfen**:
+   aktuellen Code-/Deploymentstand, uncommittierte Änderungen, vorher umgesetzte
+   Features und betroffene Verträge mit dem Plan vergleichen. Datum, geprüften Stand,
+   Ergebnis und nötige Planänderungen dokumentieren. Das gilt auch für ältere und
+   bereits freigegebene Pläne sowie beim Fortsetzen nach relevanten Zwischenänderungen.
+   Routineanpassungen innerhalb der bestehenden Freigabe direkt übernehmen;
+   wesentliche Änderungen an Umfang, Datenfreigabe, Berechtigungen, Kosten oder
+   Betriebswirkung vor der Umsetzung erneut abstimmen. Nicht bei jeder kleinen
+   Codekorrektur die gesamte Planung wiederholen.
+6. Nach Freigabe und Aktualitätsprüfung umsetzen und angemessene Tests ausführen. Bei UI-Änderungen ist
    Impeccable einschließlich gerenderter Prüfung verpflichtend. Security-Auswirkungen
    bei jedem Feature prüfen; relevante Berechtigungen, Validierung und Datenschutz
    gezielt testen. Nicht zutreffende Prüfbereiche begründet dokumentieren.
-6. Changelog, betroffene Dokumentation und Backlog aktualisieren; Commit, Security-
+7. Changelog, betroffene Dokumentation und Backlog aktualisieren; Commit, Security-
    und Review-Regressionscheck gemäß den bestehenden Regeln abschließen.
 
 Details und Prüfnachweise: `docs/DEVELOPMENT-PROCESS.md`, Abschnitt
