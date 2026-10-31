@@ -110,3 +110,11 @@ kein neuer Score oder erneuter Commit gegen eine verschobene Baseline.
 - Der Befund stammt aus einer fehlerhaften Erkennungsregel, nicht aus einer
   Änderung der API-Antworten. Der parallel begonnene FEAT-010-Code ist noch
   nicht vollständig validiert.
+
+## FEAT-010 Abschlussabnahme – 0.50.34
+
+- Vollständige Unit-Suite: 740/740 Tests; TypeScript und Produktionsbuild erfolgreich.
+- PostgreSQL-Integration: 4/4; Chromium-E2E: 1/1, einschließlich veralteter Eventseite und ausbleibender Stimmenmutation.
+- Viewports 390 × 844, 1440 × 1000, hell/dunkel und 200-%-Zoom-Äquivalent geprüft; kein Überlauf.
+- Impeccable-Detektor bei 390 × 844 ohne Findings. ESLint: 0 Fehler, 651 vorhandene Warnungen.
+- Sicherheits-/Regressionsevaluator wird im Commit-Hook mit Registryzugriff final protokolliert.

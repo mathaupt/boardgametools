@@ -112,8 +112,8 @@ export default async function PublicEventPage({
             </CardHeader>
             <CardContent className="space-y-3 text-sm text-muted-foreground">
               <p>
-                Teile diese Seite mit Freunden. Sie können ohne Login als Gast teilnehmen,
-                einen Spitznamen festlegen und direkt für Spielvorschläge abstimmen.
+                Teile diese Seite mit Freunden. Sie nehmen ohne Login teil, wählen einen
+                Spitznamen und stimmen über Spielvorschläge ab.
               </p>
             </CardContent>
           </Card>

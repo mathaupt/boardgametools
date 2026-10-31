@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { SerializedPublicEvent } from "@/lib/public-event";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/components/ui/use-toast";
 import { GuestRegistrationPanel } from "./guest-registration-panel";
 import { DateVotingSection } from "./date-voting-section";
@@ -16,6 +15,7 @@ import { ProposalSortControl } from "@/components/event-voting/proposal-sort-con
 import { sortProposals } from "@/lib/voting/sort-proposals";
 import type { ProposalSort, VotingProposal } from "@/lib/voting/types";
 import { usePublicEventLifecycle } from "./use-public-event-lifecycle";
+import { PublicEventStateBadge } from "./public-event-state-badge";
 
 interface PublicEventClientProps {
   token: string;
@@ -208,9 +208,7 @@ export function PublicEventClient({ token, event }: PublicEventClientProps) {
             </p>
           </div>
           {!canVoteGame && (
-            <Badge variant="secondary" className="bg-warning/20 text-warning">
-              {eventState.label}
-            </Badge>
+            <PublicEventStateBadge label={eventState.label} />
           )}
         </div>
         <div className="mt-4 space-y-4">

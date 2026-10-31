@@ -1181,10 +1181,12 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 ### [BUG-037] Geschlossenes öffentliches Voting erscheint weiterhin aktiv
 
-**Status:** `in_progress`
+**Status:** `fixed`
 **Schweregrad:** `high`
 **Entdeckt:** 2026-10-30
-**Test geschrieben:** Ja; Unit-Tests für Statusvertrag und öffentlichen Eventkopf. PostgreSQL-/E2E-Abnahme offen.
+**Behoben:** 2026-10-31
+**Behoben in Version:** 0.50.34
+**Test geschrieben:** Ja; Zustands-/Header-Unit-Tests, vier PostgreSQL-Integrationstests und Chromium-E2E für die veraltete öffentliche Seite.
 
 **Beschreibung:** Der tatsächliche Abstimmungsstatus und die verbindliche Auswahl werden nicht angemessen dargestellt.
 
@@ -1198,13 +1200,13 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 **Ergänzende Quellprüfung 31.10.2026:** Öffentliche Beitritts-, Spielstimmen- und Terminantwort-Routen sowie mehrere private/Mobile-Schreibwege besitzen keine gemeinsame Zustandsprüfung. Der FEAT-010-Plan sieht deshalb serverseitige Sperren mit echter DB-Abnahme vor; eine reine UI-Korrektur reicht nicht aus. Keine produktiven Schreibrequests durchgeführt.
 
-**Lösung:** Gemeinsamer Statusvertrag, gesperrte Schreibaktionen und Status-/Ergebnisdarstellung sind implementiert. Echte Datenbankrennen, Browserzustände und gerenderte Impeccable-Prüfung müssen noch abgenommen werden; daher noch nicht als behoben markiert. [FEAT-010-Plan](superpowers/plans/2026-10-31-FEAT-010-eventstatus-ergebnis.md).
+**Lösung:** Gemeinsamer Statusvertrag, transaktional gesperrte Schreibaktionen und Status-/Ergebnisdarstellung sind umgesetzt. Das alte öffentliche Browserformular aktualisiert sich nach 409 und sperrt die Stimme.
 
-**Prüfnachweis:** Assessment A mit echtem status closed: closed-joined-mobile.png und closed-1440.png. Nur synthetische API-Antworten; Backendannahme und Produktionsmutationen nicht getestet. Belege: `.impeccable/critique/evidence/public-event-A/` und `public-event-B/`.
+**Prüfnachweis:** Vier PostgreSQL-Integrationstests gegen ein isoliertes Schema bestanden; Chromium-E2E schließt ein zuvor offenes Event während die öffentliche Seite geladen bleibt, bestätigt 409, geschlossenen Status, deaktivierte Stimme und null gespeicherte Votes. Zusätzlich echte gerenderte Ansicht mit Status, ausgewähltem Spiel und festem Kalendertag geprüft. Keine Produktionsdaten verändert.
 
-**Test-Status:** `tests/unit/lib/event-state.test.ts`, `tests/unit/lib/public-event.test.ts` und `tests/unit/components/public-event-header.test.tsx` ergänzt; gezielte Tests bestanden. Isolierter PostgreSQL- und E2E-Lauf ausstehend.
+**Test-Status:** `tests/unit/lib/event-state.test.ts`, `tests/unit/lib/public-event.test.ts`, `tests/unit/components/public-event-header.test.tsx`, `tests/integration/event-state.test.ts` und `tests/e2e/public_events_test.ts` bestanden.
 
-**Referenz im Changelog:** Version 0.50.24 – Prüfung der öffentlichen Eventseite dokumentiert.
+**Referenz im Changelog:** Version 0.50.34 – Statusanzeige und Schreibschutz umgesetzt.
 
 ---
 
@@ -1484,10 +1486,12 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 ### [BUG-048] Einzelne Abstimmungsrouten binden Vorschläge nicht an das Event
 
-**Status:** `in_progress`
+**Status:** `fixed`
 **Schweregrad:** `high`
 **Entdeckt:** 2026-10-31
-**Test geschrieben:** Ja; Eventzustand-Guard-Tests bestanden. Fremde Objekt-IDs/Bulk-Mischungen benötigen noch echte DB-Regressionstests.
+**Behoben:** 2026-10-31
+**Behoben in Version:** 0.50.34
+**Test geschrieben:** Ja; PostgreSQL-Route-Integrationstests weisen fremde Spielvorschläge und Terminvorschläge ab und prüfen null Writes.
 
 **Beschreibung:** Die geschützte Web-Spielstimmenroute lädt einen Vorschlag beim POST nur anhand proposalId. Ihr DELETE ignoriert die Event-ID vollständig. Die öffentliche Terminantwort-Route prüft den Gast gegen das Token-Event, jedoch nicht alle dateProposalIds gegen dasselbe Event.
 
@@ -1499,11 +1503,11 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 **Ursache:** Zugriff auf das Event und Zuordnung des Schreibobjekts werden getrennt geprüft; an den genannten Stellen fehlt die zweite Bindung.
 
-**Lösung:** Betroffene Web-, Mobile- und öffentliche Routen binden Vorschläge, Gäste und Termine an das gesperrte Event und validieren Bulk-Eingaben vor dem Schreiben. Noch nicht als behoben markiert, bis Cross-Event- und echte DB-Tests gelaufen sind. [FEAT-010-Plan](superpowers/plans/2026-10-31-FEAT-010-eventstatus-ergebnis.md).
+**Lösung:** Betroffene Web-, Mobile- und öffentliche Routen binden Vorschläge, Gäste und Termine an das gesperrte Event und validieren Bulk-Eingaben vor dem Schreiben.
 
-**Prüfnachweis:** Betroffene Routen binden Reads an `eventId`; `tests/unit/api/event-state-guards.test.ts` bestanden. `tests/integration/event-state.test.ts` ergänzt, aber mangels `BGT_TEST_DATABASE_URL` noch nicht ausgeführt. Kein Ausnutzen gegen produktive Konten oder Daten.
+**Prüfnachweis:** PostgreSQL-Integration ruft die Web-Spielstimmenrouten und öffentliche Terminantwort-Route mit IDs aus einem zweiten Event auf. Alle liefern 404; Vote- und DateVote-Zähler bleiben null. Keine produktiven Konten oder Daten verwendet.
 
-**Referenz im Changelog:** Version 0.50.29 – Weitere Verbesserungen vorbereitet.
+**Referenz im Changelog:** Version 0.50.34 – Vorschlagszugehörigkeit serverseitig geprüft.
 
 ---
 
@@ -1711,10 +1715,48 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 ---
 
+### [BUG-057] Öffentliche Gastregistrierung läuft bei 200 % Zoom horizontal über
+
+**Status:** `fixed`
+**Schweregrad:** `low`
+**Entdeckt:** 2026-10-31
+**Behoben:** 2026-10-31
+**Behoben in Version:** 0.50.34
+**Test geschrieben:** Ja – `tests/unit/components/guest-registration.test.tsx` prüft, dass Grid und Nickname-Eingabe schmal werden dürfen.
+
+**Beschreibung:** Bei einer 390-px-Ansicht mit 200 % Zoom wurde die Gastregistrierung breiter als der Viewport.
+**Reproduktion:** Öffentliche Eventseite bei 390 CSS-Pixeln beziehungsweise 195 CSS-Pixeln mit browserüblichem 200-%-Zoom öffnen und die Gastregistrierung prüfen.
+**Erwartetes Verhalten:** Die Gastregistrierung und ihre Eingabe bleiben innerhalb des Viewports; der Text darf umbrechen.
+**Tatsächliches Verhalten:** Der lange, nicht umbrechbare Eingabe-Platzhalter vergrößerte die implizite Grid-Mindestbreite auf 230 px.
+**Ursache:** Grid-Karten und Eingabe konnten wegen ihrer automatischen Mindestbreite nicht bis zur schmalen Spaltenbreite schrumpfen.
+**Lösung:** Grid, Karten und Eingabe erhalten `min-w-0`; der Renderregressionstest sichert diese Schrumpfbarkeit.
+**Referenz im Changelog:** Version 0.50.34 – Fix BUG-057.
+
+---
+
+### [BUG-058] Geschlossener Eventstatus hat zu wenig Kontrast und Innenabstand
+
+**Status:** `fixed`
+**Schweregrad:** `low`
+**Entdeckt:** 2026-10-31
+**Behoben:** 2026-10-31
+**Behoben in Version:** 0.50.34
+**Test geschrieben:** Ja – `tests/unit/components/public-event-state-badge.test.tsx` prüft semantische Warnfarbe und Mindestinnenabstand.
+
+**Beschreibung:** Das Status-Badge „Abstimmung geschlossen“ erfüllte im gerenderten öffentlichen Event bei 390 px die Kontrast- und Innenabstandsprüfung nicht.
+**Reproduktion:** Eine geschlossene öffentliche Eventseite bei 390 × 844 px mit dem Impeccable-Detektor prüfen.
+**Erwartetes Verhalten:** Der Status ist mit ausreichendem Kontrast lesbar und hat mindestens 4 px vertikalen Innenabstand.
+**Tatsächliches Verhalten:** Der Detektor meldete 1,7:1 Kontrast und 3,8 px vertikalen Innenabstand.
+**Ursache:** Das allgemeine sekundäre Badge nutzte auf der Warnfläche keine passende semantische Vordergrundfarbe und zu wenig vertikalen Innenabstand.
+**Lösung:** Ein dediziertes Status-Badge verwendet `warning-foreground` und `py-1`; ein Unit-Test sichert beide Gestaltungsregeln.
+**Referenz im Changelog:** Version 0.50.34 – Fix BUG-058.
+
+---
+
 ## Statistik
 
 - **Offene Bugs:** 15
-- **In Bearbeitung:** 2
-- **Behoben:** 39
+- **In Bearbeitung:** 0
+- **Behoben:** 43
 - **Wontfix:** 0
-- **Gesamt:** 56
+- **Gesamt:** 58

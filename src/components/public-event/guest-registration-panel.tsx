@@ -81,8 +81,8 @@ export function GuestRegistrationPanel({
   };
 
   return (
-    <section className="grid gap-6 lg:grid-cols-2">
-      <Card>
+    <section className="grid min-w-0 gap-6 lg:grid-cols-2">
+      <Card className="min-w-0">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-lg" as="h2">
             <UserPlus className="h-5 w-5" aria-hidden="true" />
@@ -112,13 +112,13 @@ export function GuestRegistrationPanel({
                 value={nickname}
                 onChange={(event) => setNickname(event.target.value)}
                 disabled={joining}
-                className="bg-background/80"
+                className="min-w-0 bg-background/80"
               />
               <Button
                 data-testid="guest-join-button"
                 onClick={handleGuestJoin}
                 disabled={joining || nickname.trim().length < 2}
-                className="w-full"
+                className="h-auto min-h-9 w-full whitespace-normal leading-tight"
               >
                 {joining ? <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" /> : <UserPlus className="mr-2 h-4 w-4" aria-hidden="true" />}
                 {joining ? "Beitritt läuft…" : "Als Gast registrieren"}
@@ -132,7 +132,7 @@ export function GuestRegistrationPanel({
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="min-w-0">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-lg" as="h2">
             <Users className="h-5 w-5" aria-hidden="true" />

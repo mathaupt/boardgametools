@@ -19,8 +19,13 @@ export const changelog: ChangelogEntry[] = [
     changes: [
       { type: "feature", text: "Öffentliche und geschützte Eventansichten zeigen den verbindlichen Status, bestätigten Termin und gespeicherten Abstimmungssieger." },
       { type: "fix", text: "Eventänderungen werden gegen aktuelle Berechtigungen, Eventstatus und Vorschlagszugehörigkeit in einer Transaktion geprüft.", bugRef: "BUG-037" },
+      { type: "fix", text: "Stimmen und Terminantworten für Vorschläge aus anderen Events werden abgewiesen, ohne Daten zu ändern.", bugRef: "BUG-048" },
+      { type: "fix", text: "Die öffentliche Gastregistrierung bleibt bei schmalen Ansichten und 200 % Zoom innerhalb des Bildschirms.", bugRef: "BUG-057" },
+      { type: "fix", text: "Der geschlossene Abstimmungsstatus ist kontrastreich und gut lesbar gestaltet.", bugRef: "BUG-058" },
+      { type: "improvement", text: "Der Einführungstext zur öffentlichen Teilnahme ist auf schmalen Bildschirmen kompakter lesbar." },
       { type: "fix", text: "Die Review-Prüfung unterscheidet erfolgreiche { message }-Antworten von Fehlerantworten und ist durch einen Regressionstest abgesichert." },
-      { type: "internal", text: "FEAT-010 deckt Web und Mobile-API ab; die Zustandsaktualisierung wurde zur Einhaltung der Komponentengröße in einen Hook ausgelagert. Echte PostgreSQL-Rennen benötigen die lokale isolierte Testdatenbank." },
+      { type: "internal", text: "Vier Integrationstests auf einem isolierten PostgreSQL-Cluster decken Wettlauf, geschlossene öffentliche Route und Cross-Event-IDs ab; der Chromium-E2E-Test prüft eine veraltete Seite nach dem Schließen." },
+      { type: "internal", text: "Der PostgreSQL-Rennintegrationstest isoliert Next.js-Cache und Auth-Hilfen, damit echte Datenbanktransaktionen außerhalb einer Request-Laufzeit geprüft werden können." },
     ],
   },
   {

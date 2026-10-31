@@ -117,8 +117,8 @@ Die Funktion enthält keine Rollen- oder Datenbanklogik. Das Feld available ist 
 
 ### Aufgabe 1 – Zeit- und Zustandsmodell mit Verhaltenstests
 
-- [ ] npm run review-evaluate:report als Vorlauf. Gezielte Impact-Analyse zu Zugriff, Transaktionen, Mobile-Verträgen und FEAT-004 durchführen.
-- [ ] tests/unit/lib/event-state.test.ts schreiben. Beispiel:
+- [x] npm run review-evaluate:report als Vorlauf. Gezielte Impact-Analyse zu Zugriff, Transaktionen, Mobile-Verträgen und FEAT-004 durchführen.
+- [x] tests/unit/lib/event-state.test.ts schreiben. Beispiel:
 
 ```ts
 it("sperrt ein zukünftiges geschlossenes Event", () => {
@@ -135,10 +135,10 @@ it("sperrt ein zukünftiges geschlossenes Event", () => {
 });
 ```
 
-- [ ] Tests für jede Matrixzeile, beide Legacy-Aliase, unbekannten Status, exact-now-Grenze, fehlendes Ergebnis, widersprüchliche Datumsfelder, Tageswechsel und Sommerzeit ergänzen. planning mit vergangenem Platzhalter bleibt offen.
-- [ ] npx vitest run tests/unit/lib/event-state.test.ts ausführen und rot nachweisen.
-- [ ] event-state.ts und event-date.ts gemäß Abschnitt 2 implementieren. Datum-/Statusfehler fail-closed behandeln, keine zufällige Client-/Server-Zeitzone verwenden.
-- [ ] Tests erneut grün ausführen. Commit: feat: define event lifecycle availability.
+- [x] Tests für jede Matrixzeile, beide Legacy-Aliase, unbekannten Status, exact-now-Grenze, fehlendes Ergebnis, widersprüchliche Datumsfelder, Tageswechsel und Sommerzeit ergänzen. planning mit vergangenem Platzhalter bleibt offen.
+- [x] npx vitest run tests/unit/lib/event-state.test.ts ausführen und rot nachweisen.
+- [x] event-state.ts und event-date.ts gemäß Abschnitt 2 implementieren. Datum-/Statusfehler fail-closed behandeln, keine zufällige Client-/Server-Zeitzone verwenden.
+- [x] Tests erneut grün ausführen. Commit: feat: define event lifecycle availability.
 
 ### Aufgabe 2 – Servermutationen unter gemeinsamer Eventsperre absichern
 
@@ -160,10 +160,10 @@ function withEventMutation<T>(
 ): Promise<T>;
 ```
 
-- [ ] Service-/Routentests zuerst schreiben: geschlossen/vergangen/abgesagt/unknown → 409 und null Writes; widerrufener Token → 404; fehlende Anmeldung → 401; fehlende Rolle → 403; fremder Vorschlag → 404.
-- [ ] Zusätzliche BUG-048-Regressionen: User mit Zugriff auf Event A übergibt Vorschlag aus B; GET-Parameter bei DELETE aus A/B mischen; Gast aus A sendet Termin aus B; gemischte Bulk-Liste darf keinen einzigen Datensatz schreiben.
-- [ ] Mit npx vitest run tests/unit/api/event-state-guards.test.ts den roten Ausgangspunkt belegen.
-- [ ] In Prisma-Transaktion zuerst die Event-ID auflösen, dann die Zeile parameterisiert sperren:
+- [x] Service-/Routentests zuerst schreiben: geschlossen/vergangen/abgesagt/unknown → 409 und null Writes; widerrufener Token → 404; fehlende Anmeldung → 401; fehlende Rolle → 403; fremder Vorschlag → 404.
+- [x] Zusätzliche BUG-048-Regressionen: User mit Zugriff auf Event A übergibt Vorschlag aus B; GET-Parameter bei DELETE aus A/B mischen; Gast aus A sendet Termin aus B; gemischte Bulk-Liste darf keinen einzigen Datensatz schreiben.
+- [x] Mit npx vitest run tests/unit/api/event-state-guards.test.ts den roten Ausgangspunkt belegen.
+- [x] In Prisma-Transaktion zuerst die Event-ID auflösen, dann die Zeile parameterisiert sperren:
 
 ```ts
 await tx.$queryRaw(Prisma.sql`SELECT id FROM "Event" WHERE id = ${eventId} FOR UPDATE`);
@@ -171,8 +171,8 @@ await tx.$queryRaw(Prisma.sql`SELECT id FROM "Event" WHERE id = ${eventId} FOR U
 
   Anschließend Event frisch lesen, bei öffentlichem Scope shareToken, isPublic und deletedAt erneut prüfen, now ermitteln, bestehenden Rollen-/Einladungszugriff prüfen und evaluateEventState auswerten. work nur bei erlaubter Aktion aufrufen. Rate-Limits bleiben vor der Transaktion; keine externen HTTP-Aufrufe bei gehaltener Sperre.
 
-- [ ] Jede betroffene Ressource vor dem Schreiben an eventId binden: GameProposal, DateProposal, GuestParticipant und zu löschende Vote-Relation. Bulk-Terminantworten vollständig validieren, doppelte IDs als 400 ablehnen, danach atomar schreiben.
-- [ ] Folgende Routen an den Guard anbinden, ohne ihre Authmechanismen oder vorhandenen Antwortfelder zu ersetzen:
+- [x] Jede betroffene Ressource vor dem Schreiben an eventId binden: GameProposal, DateProposal, GuestParticipant und zu löschende Vote-Relation. Bulk-Terminantworten vollständig validieren, doppelte IDs als 400 ablehnen, danach atomar schreiben.
+- [x] Folgende Routen an den Guard anbinden, ohne ihre Authmechanismen oder vorhandenen Antwortfelder zu ersetzen:
 
 | Route | Methoden / Aktion |
 |---|---|
@@ -193,43 +193,43 @@ await tx.$queryRaw(Prisma.sql`SELECT id FROM "Event" WHERE id = ${eventId} FOR U
 
   Mobile öffentliche join/vote sind Re-Exports: keine doppelte Implementierung; beide URLs testen. GET-Listen bleiben lesbar und prüfen weiterhin ihren Zugriff.
 
-- [ ] Erfolgreiche Writes und Event.updatedAt gemeinsam committen. Push-/E-Mail-Benachrichtigungen und Cache-Invalidierung erst nach Commit. Keine Rohdaten, Tokens oder Gastidentitäten in Diagnoseausgaben.
-- [ ] Gezielte Unit-/API-Tests und die bestehenden tests/unit/api/public-event.test.ts sowie tests/unit/app/api/mobile/v1/events.test.ts ausführen. Commit: fix: guard event mutations and proposal ownership.
+- [x] Erfolgreiche Writes und Event.updatedAt gemeinsam committen. Push-/E-Mail-Benachrichtigungen und Cache-Invalidierung erst nach Commit. Keine Rohdaten, Tokens oder Gastidentitäten in Diagnoseausgaben.
+- [x] Gezielte Unit-/API-Tests und die bestehenden tests/unit/api/public-event.test.ts sowie tests/unit/app/api/mobile/v1/events.test.ts ausführen. Commit: fix: guard event mutations and proposal ownership.
 
 ### Aufgabe 3 – Abschluss, Datumsauswahl und Statusupdates konsistent machen
 
 **Ändern:** EventService.close/update in src/lib/services/event.service.ts, beide close/route.ts, private select/reset-Routen und Mobile-PUT /api/mobile/v1/events/[id].
 
-- [ ] Tests zuerst: Schließen gegen neue Stimme, Schließen gegen Rücknahme, Terminwahl gegen Terminantwort, Zurücksetzen gegen geschlossenen Zustand; ungültige Ergebnis-ID und Ergebnis eines fremden Events abweisen.
-- [ ] Abschlussberechnung und Speicherung unter derselben Eventsperre durchführen. Vom Mobile-Client übermittelte IDs erneut am Event validieren; nicht aus der Route ungeprüft übernehmen. BGG-only-Gewinner über winningProposalId erhalten.
-- [ ] Bestehende automatische Auswahl nach Nutzer- plus Gaststimmen erhalten. Bei Gleichstand den gemeinsamen stabilen createdAt-/ID-Vergleich aus FEAT-002 verwenden; die UI-Sortierauswahl verändert keine Abschlussregel.
-- [ ] selectedDate und eventDate bei Auswahl atomar konsistent schreiben. Date-only-Semantik erhalten und keine bestätigte Uhrzeit behaupten. Beim Zurücksetzen selectedDate löschen und den Planungsstatus explizit setzen; Referenz-/Platzhalterdatum allein sperrt die Planung nicht.
-- [ ] EventService.update validiert bekannte Statuswerte samt Legacy-Aliasen. Ein angefordertes closed läuft über denselben Abschlussservice; dadurch kann ein alter nativer Editor die Sperre nicht umgehen. Geschlossene/abgesagte Events werden durch einen allgemeinen Update-Request nicht automatisch wieder geöffnet oder vom Ergebnis getrennt.
-- [ ] Allgemeine Datumsupdates dürfen selectedDate nicht widersprechen: Wechsel auf einen anderen Kalendertag bei bestehender Auswahl mit 409 abweisen, bis die zulässige explizite Zurücksetzung erfolgt. Terminale Zustände erlauben keine stillen Termin-/Ergebnisänderungen.
-- [ ] Konkurrierende Owner-Updates, Löschung, Share-Widerruf, Auswahl und Abschluss müssen dieselbe Eventzeile sperren. Vor einer Netzwerkabfrage BGG-Daten laden, anschließend unter der Sperre erneut Zustand und Objektbindung prüfen.
-- [ ] tests/unit/lib/services/event.test.ts und Mobile-Tests grün ausführen. Commit: fix: serialize event selection and closing.
+- [x] Tests zuerst: Schließen gegen neue Stimme, Schließen gegen Rücknahme, Terminwahl gegen Terminantwort, Zurücksetzen gegen geschlossenen Zustand; ungültige Ergebnis-ID und Ergebnis eines fremden Events abweisen.
+- [x] Abschlussberechnung und Speicherung unter derselben Eventsperre durchführen. Vom Mobile-Client übermittelte IDs erneut am Event validieren; nicht aus der Route ungeprüft übernehmen. BGG-only-Gewinner über winningProposalId erhalten.
+- [x] Bestehende automatische Auswahl nach Nutzer- plus Gaststimmen erhalten. Bei Gleichstand den gemeinsamen stabilen createdAt-/ID-Vergleich aus FEAT-002 verwenden; die UI-Sortierauswahl verändert keine Abschlussregel.
+- [x] selectedDate und eventDate bei Auswahl atomar konsistent schreiben. Date-only-Semantik erhalten und keine bestätigte Uhrzeit behaupten. Beim Zurücksetzen selectedDate löschen und den Planungsstatus explizit setzen; Referenz-/Platzhalterdatum allein sperrt die Planung nicht.
+- [x] EventService.update validiert bekannte Statuswerte samt Legacy-Aliasen. Ein angefordertes closed läuft über denselben Abschlussservice; dadurch kann ein alter nativer Editor die Sperre nicht umgehen. Geschlossene/abgesagte Events werden durch einen allgemeinen Update-Request nicht automatisch wieder geöffnet oder vom Ergebnis getrennt.
+- [x] Allgemeine Datumsupdates dürfen selectedDate nicht widersprechen: Wechsel auf einen anderen Kalendertag bei bestehender Auswahl mit 409 abweisen, bis die zulässige explizite Zurücksetzung erfolgt. Terminale Zustände erlauben keine stillen Termin-/Ergebnisänderungen.
+- [x] Konkurrierende Owner-Updates, Löschung, Share-Widerruf, Auswahl und Abschluss müssen dieselbe Eventzeile sperren. Vor einer Netzwerkabfrage BGG-Daten laden, anschließend unter der Sperre erneut Zustand und Objektbindung prüfen.
+- [x] tests/unit/lib/services/event.test.ts und Mobile-Tests grün ausführen. Commit: fix: serialize event selection and closing.
 
 ### Aufgabe 4 – Öffentlichen Kopf und Clients anbinden
 
 **Ändern:** src/lib/public-event.ts, src/components/public-event/public-event-client.tsx, guest-registration-panel.tsx, public-proposal-vote-actions.tsx, date-voting-section.tsx, bgg-game-search.tsx, collection-game-proposer.tsx; öffentliche Serverpage und private Voting-/Terminclients. **Neu:** public-event-header.tsx.
 
-- [ ] Kopf-/Clienttests schreiben: closed mit zukünftigem Datum zeigt nie „Aktiv“; endgültiger Termin und gespeicherter BGG-only-Gewinner sichtbar; leeres Ergebnis verständlich; kein Gastformular bei closed/past/cancelled.
-- [ ] EventState im Server berechnen und als additiven Zustand serialisieren. Bei älteren Payloads im Client mit derselben Funktion konservativ ableiten; keine dritte isPast-Regel einführen.
-- [ ] Bestehende willkürliche status-/isPast-Abfragen durch passende available-Werte ersetzen. Lesbare Vorschläge, Stimmen, Termine und Details bleiben bestehen; unzulässige Schaltflächen durch den konkreten Sperrgrund ersetzen.
-- [ ] Ein abgelehnter 409 aktualisiert Eventdaten und zeigt „Der Planungsstand hat sich geändert. Deine Änderung wurde nicht gespeichert.“ Lokale Stimmen nicht vor erfolgreicher Antwort ändern.
-- [ ] Beim Erreichen einer Zeitgrenze den Clientzustand neu auswerten, zusätzlich bei Rückkehr in den Tab. Serverseitige Prüfung bleibt maßgeblich.
-- [ ] Kopfkomponente im Club-Programme-Stil mit Status als Text, echter Ergebnisquelle, korrekter Überschriftenhierarchie und ohne neue Teilnehmer-Umsortierung bauen. FEAT-012/013 bleiben gesondert.
-- [ ] Browserprüfung bei 390/1440 px, hell/dunkel und 200 % Zoom; Impeccable-Kontext/Craft-Floor vor UI-Implementierung laden, gerenderte Detektorprüfung und manuelle Zustandsprüfung durchführen. Commit: feat: show public event status and confirmed result.
+- [x] Kopf-/Clienttests schreiben: closed mit zukünftigem Datum zeigt nie „Aktiv“; endgültiger Termin und gespeicherter BGG-only-Gewinner sichtbar; leeres Ergebnis verständlich; kein Gastformular bei closed/past/cancelled.
+- [x] EventState im Server berechnen und als additiven Zustand serialisieren. Bei älteren Payloads im Client mit derselben Funktion konservativ ableiten; keine dritte isPast-Regel einführen.
+- [x] Bestehende willkürliche status-/isPast-Abfragen durch passende available-Werte ersetzen. Lesbare Vorschläge, Stimmen, Termine und Details bleiben bestehen; unzulässige Schaltflächen durch den konkreten Sperrgrund ersetzen.
+- [x] Ein abgelehnter 409 aktualisiert Eventdaten und zeigt „Der Planungsstand hat sich geändert. Deine Änderung wurde nicht gespeichert.“ Lokale Stimmen nicht vor erfolgreicher Antwort ändern.
+- [x] Beim Erreichen einer Zeitgrenze den Clientzustand neu auswerten, zusätzlich bei Rückkehr in den Tab. Serverseitige Prüfung bleibt maßgeblich.
+- [x] Kopfkomponente im Club-Programme-Stil mit Status als Text, echter Ergebnisquelle, korrekter Überschriftenhierarchie und ohne neue Teilnehmer-Umsortierung bauen. FEAT-012/013 bleiben gesondert.
+- [x] Browserprüfung bei 390/1440 px, hell/dunkel und 200 % Zoom; Impeccable-Kontext/Craft-Floor vor UI-Implementierung laden, gerenderte Detektorprüfung und manuelle Zustandsprüfung durchführen. Commit: feat: show public event status and confirmed result.
 
 ### Aufgabe 5 – Echte Zustände und API-Verträge abnehmen
 
-- [ ] Separate vitest.integration.config.ts mit environment node, Alias @ → src, include tests/integration/**/*.test.ts und ausschließlich tests/integration/setup.ts anlegen beziehungsweise erweitern.
-- [ ] Setup verlangt BGT_TEST_DATABASE_URL auf localhost/127.0.0.1 mit Datenbankpräfix bgt_test_. Vor Prüfung kein DB-Modul importieren; niemals .env.prod oder Unit-Mocks laden.
-- [ ] npx vitest run --config vitest.integration.config.ts tests/integration/event-state.test.ts ausführen: direkte API-/Servicerequests gegen echte offene/geschlossene/abgesagte/vergangene Datensätze; Serialisierungsrennen mit zwei getrennten Verbindungen. Ergebnis entweder gültige Mutation vor Abschluss oder 409 nach Abschluss, niemals nachträglicher Write.
-- [ ] E2E in tests/e2e/public_events_test.ts ergänzen: öffentliche Seite offen laden, serverseitig schließen, anschließend aus derselben alten Seite abstimmen; Ablehnung, aktualisierter Kopf und unveränderte DB-Stimmen prüfen. Kein synthetischer Erfolgsresponse als Backendnachweis.
-- [ ] docs/openapi.yaml für additive EventState-Felder, 409-Fehler und betroffene Methoden aktualisieren; deutsche Beschreibungen und { error: string }. Keine privaten Beschreibungen oder Nutzerfelder neu freigeben.
-- [ ] npm run test, typecheck, lint, build, security-check und test:ios:contracts ausführen. Alte Swift-DTO-Fixture mit Legacy-status und neuer additiver EventState-Struktur muss dekodierbar bleiben.
-- [ ] BUG-037 und BUG-048 erst nach echten Zustands-/Zugriffstests schließen; Backlog, Feature-Dokumentation, FAQ, Konzept und Changelog aktualisieren. Review-Evaluator und drei Review-Dokumente aktualisieren, Commit erstellen.
+- [x] Separate vitest.integration.config.ts mit environment node, Alias @ → src, include tests/integration/**/*.test.ts und ausschließlich tests/integration/setup.ts anlegen beziehungsweise erweitern.
+- [x] Setup verlangt BGT_TEST_DATABASE_URL auf localhost/127.0.0.1 mit Datenbankpräfix bgt_test_. Vor Prüfung kein DB-Modul importieren; niemals .env.prod oder Unit-Mocks laden.
+- [x] npx vitest run --config vitest.integration.config.ts tests/integration/event-state.test.ts ausführen: direkte API-/Servicerequests gegen echte offene/geschlossene/abgesagte/vergangene Datensätze; Serialisierungsrennen mit zwei getrennten Verbindungen. Ergebnis entweder gültige Mutation vor Abschluss oder 409 nach Abschluss, niemals nachträglicher Write.
+- [x] E2E in tests/e2e/public_events_test.ts ergänzen: öffentliche Seite offen laden, serverseitig schließen, anschließend aus derselben alten Seite abstimmen; Ablehnung, aktualisierter Kopf und unveränderte DB-Stimmen prüfen. Kein synthetischer Erfolgsresponse als Backendnachweis.
+- [x] docs/openapi.yaml für additive EventState-Felder, 409-Fehler und betroffene Methoden aktualisieren; deutsche Beschreibungen und { error: string }. Keine privaten Beschreibungen oder Nutzerfelder neu freigeben.
+- [x] npm run test, typecheck, lint, build, security-check und test:ios:contracts ausführen. Alte Swift-DTO-Fixture mit Legacy-status und neuer additiver EventState-Struktur muss dekodierbar bleiben.
+- [x] BUG-037 und BUG-048 erst nach echten Zustands-/Zugriffstests schließen; Backlog, Feature-Dokumentation, FAQ, Konzept und Changelog aktualisieren. Review-Evaluator und drei Review-Dokumente aktualisieren, Commit erstellen.
 
 ## 5. Abnahmegrenze
 
@@ -237,7 +237,10 @@ Frontend allein genügt nicht. Die Freigabe verlangt die Zustandsmatrix an allen
 
 ## Umsetzungsstand – 2026-10-31
 
-- Zustandsmodell, Eventzeilensperre, Event- und Objektzugriffsprüfungen, konsistente Termin-/Ergebnisupdates sowie Web-/Mobile-/öffentliche Statusdarstellung umgesetzt.
-- `npm run test`: 738 Tests bestanden. `npm run typecheck`, Produktionsbuild, Lint (0 Fehler), `npm run security-check:fast` und `npm run review-evaluate:regression` mit Registryzugriff (10/10, keine Regression) erfolgreich.
-- Der PostgreSQL-Rennintegrationstest ist implementiert, konnte hier aber nicht ausgeführt werden: `BGT_TEST_DATABASE_URL` fehlt. Die Browser-/Viewportabnahme und der gerenderte Impeccable-Check bleiben ebenfalls offen; die statische Impeccable-Prüfung ergab keine Code-Regelverstöße.
-- BUG-037 und BUG-048 bleiben bis zur echten Datenbank- und Browserabnahme in Bearbeitung. Die native iOS-Oberfläche ist nicht Teil dieser Umsetzung.
+- FEAT-010 ist für Web und Mobile-API umgesetzt. Zustandsmodell, Eventzeilensperre, Event- und Objektzugriffsprüfungen, konsistente Termin-/Ergebnisupdates sowie Web-/öffentliche Statusdarstellung sind enthalten. Die native iOS-Oberfläche bleibt separat zu planen.
+- Vier PostgreSQL-Integrationstests gegen einen eigens angelegten lokalen Testcluster bestanden: Wettlauf Vote/Close, geschlossene öffentliche Vote-Route sowie fremde Spiel- und Terminvorschläge ohne Writes.
+- Chromium-E2E bestanden: öffentliche Seite offen geladen, Event serverseitig geschlossen, veraltete Seite versucht abzustimmen; die Route lehnt ab, der Status aktualisiert sich, der Button ist gesperrt und es wird keine Stimme gespeichert.
+- Gerenderte Browserabnahme bei 390 × 844 px und 1440 × 1000 px, hell und dunkel, sowie bei 195 CSS-Pixeln als 200-%-Zoom-Äquivalent durchgeführt. Keine Viewport-Überläufe; Gastbeitritt und geschlossener Zustand bleiben bedienbar.
+- Impeccable-Detektor fand bei der Erstprüfung einen Status-Badge-Kontrast-/Innenabstandsfehler (BUG-058) und einen Hinweis auf eine allein umbrechende Textzeile. BUG-058 wurde mit semantischer Farbe, zusätzlichem Innenabstand und Unit-Test behoben; die Einführung zur Teilnahme wurde gekürzt. Finale Detektorprüfung bei 390 × 844 px: keine Findings.
+- BUG-037, BUG-048, BUG-057 und BUG-058 sind behoben und mit Regressionstests beziehungsweise echten DB-/Browsernachweisen abgesichert. Produktionsdaten wurden nicht verändert.
+- Finale Validierung: 740 Unit-Tests, TypeScript, Produktionsbuild, PostgreSQL-Integration (4), Chromium-E2E (1), Impeccable-Detektor (0 Findings), iOS-Vertragstests, sowie Lint (0 Fehler; 651 vorhandene Warnungen). Der Commit-Hook führt Security- und Regressionsevaluierung aus.

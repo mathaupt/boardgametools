@@ -35,6 +35,15 @@ describe("GuestRegistrationPanel", () => {
     expect(screen.getByTestId("guest-join-button")).toBeInTheDocument();
   });
 
+  it("lets the guest registration grid and long nickname input shrink at narrow zoom widths", () => {
+    render(<GuestRegistrationPanel {...defaultProps} />);
+
+    const nicknameInput = screen.getByTestId("guest-nickname-input");
+    expect(nicknameInput.closest("section")).toHaveClass("min-w-0");
+    expect(nicknameInput).toHaveClass("min-w-0");
+    expect(screen.getByTestId("guest-join-button")).toHaveClass("whitespace-normal");
+  });
+
   it("disables join button when nickname is too short", () => {
     render(<GuestRegistrationPanel {...defaultProps} />);
 
