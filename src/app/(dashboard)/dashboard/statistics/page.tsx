@@ -1,5 +1,6 @@
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
+import { gameTextForRead } from "@/lib/game-text";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import dynamic from "next/dynamic";
@@ -78,7 +79,7 @@ export default async function StatisticsPage() {
         } else {
           gameMap.set(s.gameId, {
             gameId: s.gameId,
-            gameName: s.game.name,
+            gameName: gameTextForRead(s.game.name),
             gameImageUrl: s.game.imageUrl,
             sessionCount: 1,
             totalMinutes: s.durationMinutes ?? 0,

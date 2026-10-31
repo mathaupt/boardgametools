@@ -253,6 +253,20 @@ describe("BGG API", () => {
       expect(result!.publishers).toContain("KOSMOS");
     });
 
+    it("normalizes encoded game text while decoding only one XML layer in URLs", async () => {
+      delete process.env.BGG_AUTH_TOKEN;
+      const mockFetch = vi.fn().mockResolvedValue({
+        ok: true,
+        text: () => Promise.resolve('<items><item><name type="primary" value="Dungeons &amp;amp; Dragons"/><description>&amp;lt;p&amp;gt;A &#x1F3B2; game&amp;lt;/p&amp;gt;</description><image>https://cf.geekdo-images.com/a?x=1&amp;amp;y=2</image></item></items>'),
+      });
+      global.fetch = mockFetch;
+      const { fetchBGGGame } = await loadBGGLib();
+      const result = await fetchBGGGame("13");
+      expect(result?.name).toBe("Dungeons & Dragons");
+      expect(result?.description).toBe("A 🎲 game");
+      expect(result?.imageUrl).toBe("https://cf.geekdo-images.com/a?x=1&amp;y=2");
+    });
+
     it("returns null when no items found", async () => {
       delete process.env.BGG_AUTH_TOKEN;
       const mockFetch = vi.fn();

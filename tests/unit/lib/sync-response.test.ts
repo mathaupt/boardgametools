@@ -81,4 +81,11 @@ describe("buildSyncPayload", () => {
       })
     );
   });
+
+  it("sends normalized game text through the iOS sync DTO", async () => {
+    gameFindMany.mockReset().mockResolvedValueOnce([{ ...activeGame, name: "Dungeons &amp;amp; Dragons", description: "&#169;" }]).mockResolvedValueOnce([]);
+    const payload = await buildSyncPayload("u1");
+    expect(payload.games.created[0].name).toBe("Dungeons & Dragons");
+    expect(payload.games.created[0].description).toBe("©");
+  });
 });

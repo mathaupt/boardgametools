@@ -9,6 +9,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import type { SeriesEntry } from "./types";
+import { gameTextForRead } from "@/lib/game-text";
 
 interface SeriesDeleteDialogsProps {
   deleteSeriesOpen: boolean;
@@ -38,7 +39,7 @@ export function SeriesDeleteDialogs({
           <AlertDialogHeader>
             <AlertDialogTitle>Spiel aus Reihe entfernen</AlertDialogTitle>
             <AlertDialogDescription>
-              Möchtest du <strong>{deleteEntryTarget?.game.name}</strong> aus dieser Reihe entfernen?
+              Möchtest du <strong>{deleteEntryTarget ? gameTextForRead(deleteEntryTarget.game.name) : ""}</strong> aus dieser Reihe entfernen?
               Das Spiel bleibt in deiner Sammlung erhalten.
             </AlertDialogDescription>
           </AlertDialogHeader>

@@ -98,6 +98,15 @@ private func checkAccountIsolation() throws {
     try require(try accounts.restore(server: "https://two.example") == false, "logout retained owner")
 }
 
+@MainActor
+private func checkGameTextContract() throws {
+    let json = #"{"id":"g-entity","name":"Dungeons & Dragons","description":"Dice 🎲","minPlayers":2,"maxPlayers":4,"createdAt":"now","updatedAt":"now"}"#
+    let dto = try JSONDecoder().decode(GameDTO.self, from: Data(json.utf8))
+    let game = LocalGame(dto: dto)
+    try require(game.name == "Dungeons & Dragons", "game name was not retained as plain text")
+    try require(game.desc == "Dice 🎲", "non-BMP game text was not retained")
+}
+
 private actor MemoryTokens: TokenStorage {
     var access: String? = "old-access"
     var refresh: String? = "old-refresh"
@@ -253,6 +262,8 @@ private func expectUnauthorized(_ api: APIClient) async throws {
         print("PASS: refresh, series, upload and strict login contracts")
         try checkAccountIsolation()
         print("PASS: legacy cache, same account, second account, backend switch and logout")
+        try checkGameTextContract()
+        print("PASS: normalized game text survives DTO decoding and SwiftData storage")
         try await checkAuthenticationRequests()
         print("PASS: concurrent refresh, failed refresh, bounded retry, stale response and old-server logout")
     }
@@ -262,6 +273,7 @@ struct BoardGameToolsTests {
     @Test func dashboardContent() throws { try checkDashboardContent() }
     @Test func mobileResponseContracts() throws { try checkContracts() }
     @Test @MainActor func accountCacheIsolation() throws { try checkAccountIsolation() }
+    @Test @MainActor func gameTextContract() throws { try checkGameTextContract() }
     @Test @MainActor func authenticationRequests() async throws { try await checkAuthenticationRequests() }
 }
 #endif

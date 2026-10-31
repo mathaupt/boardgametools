@@ -18,6 +18,7 @@ Die Weboberfläche verwendet seit 0.50.20 die bestätigte Gestaltung „Club Pro
 - BGG-ID für Integration
 - EAN/Barcode für Spiel-Identifikation
 - Bulk-Delete für mehrere Spiele gleichzeitig
+- Spielnamen und Beschreibungen werden an Import- und Schreibgrenzen in stabilen Klartext normalisiert; bestehende API- und iOS-Sync-Felder bleiben JSON-Strings.
 
 ### 2. Spielsessions/Partien tracken
 - Session erstellen mit Datum, Spiel, Spielern

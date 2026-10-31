@@ -195,6 +195,18 @@ Alle GitHub-CI-Jobs erhalten für `npm ci` eine künstliche `SQL_DATABASE_URL` a
 
 ## Optionale Pipeline-Prüfungen
 
+### Kontrollierte Bereinigung von Spieltexten (FEAT-009)
+
+Das Wartungsskript `scripts/fix-html-entities.ts` greift ausschließlich auf `BGT_MAINTENANCE_DATABASE_URL` zu. Es lädt weder `.env` noch `.env.prod` und verwendet keinen `SQL_DATABASE_URL`-Fallback. Der Standardmodus ist Dry-Run und benötigt einen Manifestpfad unter `.maintenance/`:
+
+```bash
+BGT_MAINTENANCE_DATABASE_URL="$BGT_TEST_DATABASE_URL" npx tsx scripts/fix-html-entities.ts --dry-run --report .maintenance/feat009.json
+BGT_MAINTENANCE_DATABASE_URL="$BGT_TEST_DATABASE_URL" npx tsx scripts/fix-html-entities.ts --apply --manifest .maintenance/feat009.json
+BGT_MAINTENANCE_DATABASE_URL="$BGT_TEST_DATABASE_URL" npx tsx scripts/fix-html-entities.ts --rollback --manifest .maintenance/feat009.json
+```
+
+Zuerst ausschließlich auf einer isolierten Wegwerfdatenbank testen. Das Manifest enthält Ausgangs- und Zielwerte, ist vertraulich und wird mit Dateirechten `0600` gespeichert. Apply vergleicht die Ausgangswerte vor jedem Update; Konflikte werden gemeldet. Ein Produktionslauf erfordert einen separaten freigegebenen Dry-Run und ein frisches Backup. Nach einem externen CLI-Lauf erneuern sich gecachte Sammlungs-, Dashboard-, Session- und Eventdaten spätestens nach 60 Sekunden; das Skript kann Next.js Cache-Tags außerhalb eines Request-Kontexts nicht direkt invalidieren.
+
 `npm run pipeline:check -- --list` zeigt die verfügbaren Provider und ihren Konfigurationsstatus. `npm run pipeline:check` führt konfigurierte Prüfungen aus; `--github`, `--vercel` oder `--health` wählen einzelne Provider. `--json` gibt eine maschinenlesbare Zusammenfassung aus. Provider sind in `scripts/pipeline-checks/` gekapselt.
 
 - GitHub Actions: `GITHUB_TOKEN` mit Leserechten für Actions; optional `GITHUB_REPO` und `CI_BRANCH`. Standardbranch ist `main`, das Repository wird aus `origin` abgeleitet.

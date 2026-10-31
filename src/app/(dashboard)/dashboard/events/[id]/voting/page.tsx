@@ -4,6 +4,7 @@ import { GameService } from "@/lib/services";
 import { privateEventAccessFilter } from "@/lib/private-event-access";
 import { notFound, redirect } from "next/navigation";
 import VotingClient from "./voting-client";
+import { gameTextForRead } from "@/lib/game-text";
 
 export default async function EventVotingPage({
   params,
@@ -62,7 +63,14 @@ export default async function EventVotingPage({
         ? { id: proposal.guest.id, name: proposal.guest.nickname, email: "" }
         : null);
       return {
-        ...proposal, game: gameData, proposedBy: proposedByData,
+        ...proposal,
+        bggName: proposal.bggName == null ? null : gameTextForRead(proposal.bggName),
+        game: {
+          ...gameData,
+          name: gameTextForRead(gameData.name),
+          description: gameData.description == null ? null : gameTextForRead(gameData.description),
+        },
+        proposedBy: proposedByData,
         totalVotes: proposal._count.votes + proposal._count.guestVotes,
         userHasVoted: proposal.votes.length > 0,
         votes: undefined,
@@ -76,7 +84,11 @@ export default async function EventVotingPage({
   const games = await GameService.list(userId);
 
   const serializedEvent = JSON.parse(JSON.stringify(eventResponse));
-  const serializedGames = JSON.parse(JSON.stringify(games));
+  const serializedGames = JSON.parse(JSON.stringify(Array.isArray(games) ? games.map((game) => ({
+    ...game,
+    name: gameTextForRead(game.name),
+    description: game.description == null ? null : gameTextForRead(game.description),
+  })) : games));
 
   return <VotingClient initialEvent={serializedEvent} initialGames={serializedGames} eventId={id} />;
 }

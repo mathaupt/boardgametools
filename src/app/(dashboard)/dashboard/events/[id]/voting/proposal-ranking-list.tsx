@@ -9,6 +9,7 @@ import { ProposalCompactRow } from "@/components/event-voting/proposal-compact-r
 import { ProposalSortControl } from "@/components/event-voting/proposal-sort-control";
 import { proposalRanks, sortProposals } from "@/lib/voting/sort-proposals";
 import type { ProposalSort, VotingProposal } from "@/lib/voting/types";
+import { gameTextForRead } from "@/lib/game-text";
 
 interface ProposalRankingListProps {
   eventId: string;
@@ -27,7 +28,7 @@ interface ProposalRankingListProps {
 function toSortableProposal(proposal: ProposalWithDetails): VotingProposal {
   return {
     id: proposal.id,
-    name: proposal.game.name,
+    name: gameTextForRead(proposal.game.name),
     createdAt: proposal.createdAt
       ? proposal.createdAt instanceof Date
         ? proposal.createdAt.toISOString()
@@ -90,7 +91,7 @@ export default function ProposalRankingList({
               key={proposal.id}
               eventId={eventId}
               proposalId={proposal.id}
-              name={proposal.game.name}
+              name={gameTextForRead(proposal.game.name)}
               imageUrl={proposal.game.imageUrl}
               minPlayers={proposal.game.minPlayers}
               maxPlayers={proposal.game.maxPlayers}
@@ -107,7 +108,7 @@ export default function ProposalRankingList({
                   onClick={() => onDeleteProposal(proposal.id)}
                   disabled={deletingProposal === proposal.id}
                   className="min-h-11 min-w-11 text-muted-foreground hover:text-destructive"
-                  aria-label={`Vorschlag ${proposal.game.name} löschen`}
+                  aria-label={`Vorschlag ${gameTextForRead(proposal.game.name)} löschen`}
                 >
                   {deletingProposal === proposal.id ? <span className="text-xs">…</span> : <Trash2 className="h-4 w-4" aria-hidden="true" />}
                 </Button>

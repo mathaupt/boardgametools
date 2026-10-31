@@ -62,6 +62,11 @@ describe("bgg-xml", () => {
     it("returns plain text unchanged", () => {
       expect(decodeHtmlEntities("Hello World")).toBe("Hello World");
     });
+
+    it("fully normalizes known entities while preserving incomplete and unknown references", () => {
+      expect(decodeHtmlEntities("Dungeons &amp;amp; Dragons &#x1F3B2; &copy; &spiel; &amp"))
+        .toBe("Dungeons & Dragons 🎲 © &spiel; &amp");
+    });
   });
 
   // ---------------------------------------------------------------------------

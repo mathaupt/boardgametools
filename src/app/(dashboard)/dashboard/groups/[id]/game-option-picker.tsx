@@ -17,6 +17,7 @@ import {
   Clock,
 } from "lucide-react";
 import Image from "next/image";
+import { gameTextForRead } from "@/lib/game-text";
 
 interface GameItem {
   id: string;
@@ -217,7 +218,7 @@ export function GameOptionPicker({
                       key={game.id}
                       type="button"
                       variant="ghost"
-                      onClick={() => addGameAsOption(game.name)}
+                      onClick={() => addGameAsOption(gameTextForRead(game.name))}
                       className="h-auto w-full justify-start gap-3 p-2 text-left font-normal hover:bg-accent"
                     >
                       <div className="relative w-8 h-8 rounded bg-muted flex-shrink-0 overflow-hidden">
@@ -230,7 +231,7 @@ export function GameOptionPicker({
                         )}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium truncate">{game.name}</p>
+                        <p className="text-sm font-medium truncate">{gameTextForRead(game.name)}</p>
                         <div className="flex items-center gap-2 text-xs text-muted-foreground">
                           <span className="flex items-center gap-0.5">
                             <Users className="h-3 w-3" />

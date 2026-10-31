@@ -1,6 +1,14 @@
 # FEAT-009 – HTML-Entities in Spieldaten korrekt behandeln
 
-**Status:** Implementierungsplan zur Prüfung; keine Umsetzungsfreigabe und keine Produktionsfreigabe.
+**Status:** Code umgesetzt und Unit-Suite, Typprüfung, Build, iOS-Vertrag, Fast-Security-Check und Impeccable-Detektor abgeschlossen. E2E und vollständiger Security-Check sind nicht abgenommen. Produktionsbereinigung bleibt separat freigabepflichtig.
+
+## Aktualitätsprüfung vor Umsetzung – 2026-10-31
+
+- **Geprüfter Stand:** Commit `9def76f` (`added new implementation plans`); Arbeitsbaum war sauber.
+- **Ergebnis:** Planarchitektur und vereinbarter Umfang sind weiterhin passend. Ergänzend werden die bisher nicht erfasste Inline-BGG-Suche `src/app/api/bgg/route.ts` (eigene XML-Parser) und ihre Tests in der gemeinsamen Normalisierung berücksichtigt.
+- **Cache-Strategie angepasst:** Next `unstable_cache`-Einträge für Spiele, Dashboard, Sessions und Events laufen nach 60 Sekunden ab. Das externe Wartungs-CLI kann `revalidateTag` nicht zuverlässig aus einem Next Request-Kontext aufrufen. Nach einem CLI-Lauf werden betroffene Einträge daher spätestens nach 60 Sekunden erneuert; die Doku weist diese Obergrenze aus und eine produktive Sofortinvalidierung wird nicht behauptet.
+- **Abgrenzung:** Produktionsdaten werden nicht gelesen oder verändert. Implementierung, isolierte Tests und Dry-Run-/Rollback-Code sind umfasst; tatsächliche Produktionsbereinigung bleibt ein separater Freigabeschritt nach geprüftem Manifest und Backup.
+- **Keine weiteren Planänderungen nötig:** Schema, DTO-Vertrag, 8-Ebenen-Grenze, vorhandene Berechtigungen und iOS-Vertrag bleiben unverändert.
 
 **Ziel:** Spielnamen und Beschreibungen erscheinen in Web, Suche, Mobile-API und iOS mit den beabsichtigten Sonderzeichen; bestehende kodierte Daten werden kontrolliert bereinigt.
 
@@ -175,3 +183,24 @@ BGT_MAINTENANCE_DATABASE_URL="$BGT_TEST_DATABASE_URL" npx tsx scripts/fix-html-e
 ## 5. Abnahmegrenze
 
 Codeabnahme verlangt konsistente Klartextwerte in allen Importpfaden, Web-/Mobile-Ausgabe, Suche und erneutem Sync; keine zusätzliche HTML-Ausführung. Vollständige Featureabnahme verlangt zusätzlich einen freigegebenen, idempotent nachgewiesenen Bestandslauf. Die Erstellung dieses Plans autorisiert weder Installation noch Datenänderung.
+
+## Umsetzungsnachweis – 2026-10-31
+
+- Gemeinsame Normalisierung, BGG-Importe, GameService, Web-/Mobile-Ausgaben,
+  Suchpfade und sicheres Klartext-Rendering umgesetzt.
+- Wartungs-CLI verwendet ausschließlich `BGT_MAINTENANCE_DATABASE_URL`,
+  Dry-Run als Standard sowie geschützte Manifeste und konfliktgeprüfte Apply-/Rollback-Pfade.
+- 702/702 Unit-Tests bestanden; `npm run typecheck`, `npm run build`,
+  iOS-Vertragstests und `npm run security-check:fast` bestanden. Vollständiger
+  ESLint-Lauf: 0 Fehler und 651 Warnungen aus eingebundenen Impeccable-Skripten.
+- `npm audit --omit=dev`: 0 Befunde. Vollständiger Audit: 26 bestehende
+  Entwicklungsbefunde (1 hoch, 23 mittel, 2 niedrig). E2E und vollständiger
+  Security-Check wurden nicht abgenommen.
+- Keine isolierte Datenbank (`BGT_TEST_DATABASE_URL` nicht gesetzt), daher
+  kein CLI-Lauf gegen eine Datenbank. Kein Produktionszugriff und keine
+  Datenbereinigung.
+- Impeccable-Detektor: keine blockierenden Befunde; drei Typografiehinweise
+  zu bestehenden 10-px-Stellen in `series-entry-card.tsx`.
+- Der aktuelle Evaluator-Report wird wegen BUG-051 nicht als gültige
+  Bewertung gewertet; kein Regressionsergebnis behauptet. Commit bleibt
+  wegen der dokumentierten Review-Sperre BUG-050/051 aus.

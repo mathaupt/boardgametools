@@ -6,7 +6,9 @@ import {
   parseAllXMLAttributeValues,
   parseBGGSearchResponse,
   parseBGGCollectionResponse,
+  decodeXMLUrl,
 } from "./bgg-xml";
+import { normalizeGameDescriptionInput, normalizeGameNameInput } from "./game-text";
 import type { BGGGameData, BGGCollectionItem, BGGSearchResult } from "./bgg-types";
 
 // Re-export types for consumers
@@ -45,12 +47,15 @@ export async function fetchBGGGame(bggId: string, signal?: AbortSignal): Promise
     }
 
     const primaryNameMatch = xml.match(/<name type="primary"[^>]*value="([^"]*)"/);
-    const name = decodeHtmlEntities(primaryNameMatch ? primaryNameMatch[1] : null);
+    const rawName = decodeHtmlEntities(primaryNameMatch ? primaryNameMatch[1] : null);
+    const name = rawName ? normalizeGameNameInput(rawName) : null;
     if (!name) return null;
 
     const descriptionMatch = xml.match(/<description>([^]*?)<\/description>/);
-    let description = decodeHtmlEntities(descriptionMatch ? descriptionMatch[1] : "") ?? "";
-    description = description.replace(/<[^>]*>/g, "").trim();
+    let description = decodeHtmlEntities(descriptionMatch ? descriptionMatch[1].slice(0, 16_000) : "") ?? "";
+    description = description.replace(/<\/?(?:p|br|div|li|ul|ol|h[1-6])\b[^>]*>/gi, "\n");
+    description = description.replace(/<\/?[a-z][^>]*>/gi, "").trim();
+    description = normalizeGameDescriptionInput(description.slice(0, 16_000));
 
     const yearPublished = parseXMLAttributeValue(xml, "yearpublished");
     const minPlayers = parseXMLAttributeValue(xml, "minplayers");
@@ -84,8 +89,8 @@ export async function fetchBGGGame(bggId: string, signal?: AbortSignal): Promise
       minPlayTime: minPlayTime ? parseInt(minPlayTime) : null,
       maxPlayTime: maxPlayTime ? parseInt(maxPlayTime) : null,
       complexity: complexity ? Math.round(complexity * 10) / 10 : null,
-      imageUrl: imageMatch ? decodeHtmlEntities(imageMatch[1]) : null,
-      thumbnailUrl: thumbnailMatch ? decodeHtmlEntities(thumbnailMatch[1]) : null,
+      imageUrl: imageMatch ? decodeXMLUrl(imageMatch[1]) : null,
+      thumbnailUrl: thumbnailMatch ? decodeXMLUrl(thumbnailMatch[1]) : null,
       categories: decodeArray(parseAllXMLAttributeValues(xml, "link", "boardgamecategory")),
       mechanics: decodeArray(parseAllXMLAttributeValues(xml, "link", "boardgamemechanic")),
       designers: decodeArray(parseAllXMLAttributeValues(xml, "link", "boardgamedesigner")),

@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Calendar, Clock, Users, Trophy, ArrowLeft, Pencil, Trash2, Star } from "lucide-react";
 import { formatDate, formatLongDate } from "@/lib/date";
 import { useToast } from "@/components/ui/use-toast";
+import { gameTextForRead } from "@/lib/game-text";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -55,6 +56,7 @@ interface SessionDetailClientProps {
 }
 
 export default function SessionDetailClient({ session }: SessionDetailClientProps) {
+  const gameName = gameTextForRead(session.game.name);
   const router = useRouter();
   const { toast } = useToast();
 
@@ -87,12 +89,12 @@ export default function SessionDetailClient({ session }: SessionDetailClientProp
         <span>/</span>
         <Link href="/dashboard/sessions" className="hover:underline">Sessions</Link>
         <span>/</span>
-        <span className="text-foreground font-medium">{session.game.name}</span>
+        <span className="text-foreground font-medium">{gameName}</span>
       </div>
 
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold">{session.game.name}</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold">{gameName}</h1>
           <p className="text-muted-foreground">
             Session vom {formatLongDate(session.playedAt)}
           </p>
@@ -118,7 +120,7 @@ export default function SessionDetailClient({ session }: SessionDetailClientProp
             <div className="flex flex-col sm:flex-row gap-4">
               {session.game.imageUrl && (
                 <div className="relative w-24 h-24 rounded-lg overflow-hidden shrink-0">
-                  <Image src={session.game.imageUrl} alt={session.game.name} fill className="object-cover" />
+                  <Image src={session.game.imageUrl} alt={gameName} fill className="object-cover" />
                 </div>
               )}
               <div className="space-y-2">

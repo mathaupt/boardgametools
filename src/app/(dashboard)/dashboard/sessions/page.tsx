@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Plus, Calendar, Users, Clock, Trophy } from "lucide-react";
 import Link from "next/link";
 import { formatDate } from "@/lib/date";
+import { gameTextForRead } from "@/lib/game-text";
 
 export default async function SessionsPage() {
   const session = await auth();
@@ -71,7 +72,7 @@ export default async function SessionsPage() {
                       <div className="w-8 h-8 bg-primary/10 rounded flex items-center justify-center" aria-hidden="true">
                         🎲
                       </div>
-                      {session.game.name}
+                      {gameTextForRead(session.game.name)}
                     </CardTitle>
                     <CardDescription className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2">
                       <div className="flex items-center gap-1">

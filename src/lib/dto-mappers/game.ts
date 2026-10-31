@@ -1,5 +1,6 @@
 import type { GameDTO } from "@/lib/sync-types";
 import { iso } from "./utils";
+import { gameTextForRead } from "@/lib/game-text";
 
 export function toGameDto(game: {
   id: string;
@@ -20,8 +21,8 @@ export function toGameDto(game: {
 }): GameDTO {
   return {
     id: game.id,
-    name: game.name,
-    description: game.description,
+    name: gameTextForRead(game.name),
+    description: game.description == null ? null : gameTextForRead(game.description),
     minPlayers: game.minPlayers,
     maxPlayers: game.maxPlayers,
     playTimeMinutes: game.playTimeMinutes,

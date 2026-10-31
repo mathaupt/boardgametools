@@ -12,6 +12,27 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.33",
+    date: "2026-10-31",
+    title: "Sicherheitsprüfung robuster gemacht",
+    description: "Der Review-Evaluator erkennt fehlgeschlagene npm-Audits jetzt zuverlässig. Gepatchte Entwicklungsabhängigkeiten senken das Auditrisiko.",
+    changes: [
+      { type: "fix", text: "Fehlende oder fehlerhafte Auditdaten gelten nicht mehr als befundfrei." },
+      { type: "internal", text: "Kompatible Updates beheben den hohen systeminformation-Befund; weitere Entwicklungsbefunde erfordern größere Werkzeugupdates." },
+    ],
+  },
+  {
+    version: "0.50.32",
+    date: "2026-10-31",
+    title: "Spieltexte mit Sonderzeichen vereinheitlicht",
+    description: "Spielnamen und Beschreibungen werden in Import, Suche und Synchronisierung als sicherer Klartext behandelt.",
+    changes: [
+      { type: "fix", text: "Mehrfach kodierte Spielnamen und Sonderzeichen werden beim Import und Speichern zuverlässig vereinheitlicht.", bugRef: "BUG-049" },
+      { type: "improvement", text: "Die Sammlungssuche und die iOS-Synchronisierung verwenden dieselbe lesbare Textdarstellung." },
+      { type: "internal", text: "Ein abgesichertes Wartungsskript erstellt prüfbare Manifeste für bestehende Spieltexte; Produktionsdaten wurden dabei nicht verändert." },
+    ],
+  },
+  {
     version: "0.50.31",
     date: "2026-10-31",
     title: "Betriebsschutz und Planprüfung vorbereitet",

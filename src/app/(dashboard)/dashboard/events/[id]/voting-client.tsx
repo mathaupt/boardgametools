@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ThumbsUp, ThumbsDown } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+import { gameTextForRead } from "@/lib/game-text";
 import { ProposalCompactRow } from "@/components/event-voting/proposal-compact-row";
 import { ProposalSortControl } from "@/components/event-voting/proposal-sort-control";
 import { sortProposals } from "@/lib/voting/sort-proposals";
@@ -43,7 +44,7 @@ interface VotingClientProps {
 function toSortableProposal(proposal: Proposal): VotingProposal {
   return {
     id: proposal.id,
-    name: proposal.game.name,
+    name: gameTextForRead(proposal.game.name),
     createdAt: proposal.createdAt instanceof Date
       ? proposal.createdAt.toISOString()
       : proposal.createdAt ?? null,
@@ -161,7 +162,7 @@ export default function VotingClient({
             key={proposal.id}
             eventId={eventId}
             proposalId={proposal.id}
-            name={proposal.game.name}
+            name={gameTextForRead(proposal.game.name)}
             imageUrl={proposal.game.imageUrl}
             minPlayers={proposal.game.minPlayers}
             maxPlayers={proposal.game.maxPlayers}
@@ -176,7 +177,7 @@ export default function VotingClient({
                 disabled={voting === proposal.id}
                 variant="outline"
                 className="min-h-11 gap-2"
-                aria-label={`Vote für ${proposal.game.name} entfernen`}
+                aria-label={`Vote für ${gameTextForRead(proposal.game.name)} entfernen`}
                 aria-pressed="true"
                 data-testid={`remove-vote-${proposal.id}`}
               >
@@ -188,7 +189,7 @@ export default function VotingClient({
                 onClick={() => handleVote(proposal.id)}
                 disabled={voting === proposal.id}
                 className="min-h-11 gap-2"
-                aria-label={`Für ${proposal.game.name} stimmen`}
+                aria-label={`Für ${gameTextForRead(proposal.game.name)} stimmen`}
                 aria-pressed="false"
                 data-testid={`vote-${proposal.id}`}
               >

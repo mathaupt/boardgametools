@@ -16,6 +16,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { gameTextForRead } from "@/lib/game-text";
 
 interface EditGameFormProps {
   game: Game;
@@ -27,8 +28,8 @@ export default function EditGameForm({ game, onSave, onCancel }: EditGameFormPro
   const router = useRouter();
   const { toast } = useToast();
   const [formData, setFormData] = useState({
-    name: game.name,
-    description: game.description || "",
+    name: gameTextForRead(game.name),
+    description: game.description ? gameTextForRead(game.description) : "",
     minPlayers: String(game.minPlayers),
     maxPlayers: String(game.maxPlayers),
     playTimeMinutes: game.playTimeMinutes ? String(game.playTimeMinutes) : "",

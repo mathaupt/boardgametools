@@ -59,3 +59,26 @@ noch nicht umgesetzt. Keine produktiven Fehler-, Last- oder Ausfalltests.
 FEAT-007/008 bleiben bis zur tatsächlichen Projekt-/Tarif-/Budgetprüfung
 reine Betriebspläne. Ein Readinesssecret, Firewall-Ausnahmen oder eine
 teamweite Produktionspause wurden nicht eingerichtet.
+
+## FEAT-009 – Textnormalisierung und Wartungsabhängigkeit (0.50.32)
+
+`entities@8.0.0` ist als direkte Laufzeitabhängigkeit ergänzt, Lizenz BSD-2-Clause.
+Die Anwendung verwendet ausschließlich die strikte Entity-Dekodierung für
+Spielnamen und -beschreibungen; HTML wird weiterhin als Text gerendert. Das
+Wartungs-CLI verlangt `BGT_MAINTENANCE_DATABASE_URL`, vergleicht Ausgangswerte
+vor Änderungen und speichert Manifeste mit Modus 0600. Kein Produktionszugriff
+oder Datenbankupdate erfolgte. `npm audit --omit=dev` bestätigt 0
+Produktionsbefunde.
+
+## SEC-45 / BUG-050/051 – Korrektur des Commit-Blockers (0.50.33)
+
+`npm audit fix` aktualisierte kompatibel 15 Pakete. Der hohe Befund aus
+`systeminformation` wurde behoben (5.33.1 → 5.33.19); `npm audit --omit=dev`
+bleibt bei 0. Der vollständige Audit meldet nun 22 moderate und 2 niedrige
+Befunde in Entwicklungswerkzeugen. Npm bietet dafür nur Major-Upgrades von
+ESLint, CodeceptJS bzw. shadcn an; diese wurden nicht erzwungen.
+
+BUG-051 ist behoben: SEC-45 verlangt ein gültiges Audit-v2-Ergebnis mit
+vollständigen, konsistenten Metadaten sowohl für den Gesamt- als auch den
+Produktionsaudit. Netzwerkfehler oder unvollständige JSON-Antworten bleiben
+offen und können keinen sauberen Status mehr erzeugen.

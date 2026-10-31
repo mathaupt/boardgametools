@@ -4,6 +4,8 @@ import { withApiLogging } from "@/lib/api-logger";
 import { checkRateLimit, rateLimitResponse } from "@/lib/rate-limit";
 import logger from "@/lib/logger";
 import { Errors } from "@/lib/error-messages";
+import { normalizeGameDescriptionInput, normalizeGameNameInput } from "@/lib/game-text";
+import { decodeXMLUrl } from "@/lib/bgg-xml";
 import { env } from "@/lib/env";
 
 // Max response size from BGG API (2 MB) to prevent memory exhaustion
@@ -98,14 +100,15 @@ export const GET = withApiLogging(async function GET(request: NextRequest) {
         const ratingMatch = xml.match(/<average[^>]*value="([^"]*)"/);
         const rankMatch = xml.match(/<rank[^>]*value="([^"]*)"/);
         
-        result.name = nameMatch ? nameMatch[1] : "";
-        result.description = descriptionMatch ? descriptionMatch[1].substring(0, 500) : "";
+        result.name = nameMatch ? normalizeGameNameInput(nameMatch[1].slice(0, 16_000)) : "";
+        const rawDescription = descriptionMatch ? descriptionMatch[1].slice(0, 16_000) : "";
+        result.description = normalizeGameDescriptionInput(rawDescription.replace(/<\/?[a-z][^>]*>/gi, "").slice(0, 16_000));
         result.yearPublished = yearMatch ? yearMatch[1] : "";
         result.minPlayers = minPlayersMatch ? minPlayersMatch[1] : "";
         result.maxPlayers = maxPlayersMatch ? maxPlayersMatch[1] : "";
         result.playTimeMinutes = playTimeMatch ? playTimeMatch[1] : "";
         result.complexity = complexityMatch ? complexityMatch[1] : "";
-        result.imageUrl = imageMatch ? imageMatch[1] : "";
+        result.imageUrl = imageMatch ? decodeXMLUrl(imageMatch[1]) ?? "" : "";
         result.rating = ratingMatch ? ratingMatch[1] : "";
         result.rank = rankMatch ? rankMatch[1] : "";
         
@@ -153,7 +156,7 @@ export const GET = withApiLogging(async function GET(request: NextRequest) {
             
             const bggId = idMatch ? idMatch[1] : '';
             const type = typeMatch ? typeMatch[1] : 'boardgame';
-            const name = nameMatch ? nameMatch[1] : '';
+            const name = nameMatch ? normalizeGameNameInput(nameMatch[1].slice(0, 16_000)) : '';
             const yearPublished = yearMatch ? yearMatch[1] : '';
             
             if (bggId && name) {

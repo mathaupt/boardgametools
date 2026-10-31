@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { gameTextForRead } from "@/lib/game-text";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -65,6 +66,7 @@ export function SeriesEntryCard({
   onPlayDetailChange,
   onDelete,
 }: SeriesEntryCardProps) {
+  const gameName = gameTextForRead(entry.game.name);
   return (
     <Card
       className={`transition-shadow hover:shadow-sm ${
@@ -130,7 +132,7 @@ export function SeriesEntryCard({
             {entry.game.imageUrl ? (
               <Image
                 src={entry.game.imageUrl}
-                alt={entry.game.name}
+                alt={gameName}
                 className="object-cover"
                 fill
                 sizes="56px"
@@ -151,7 +153,7 @@ export function SeriesEntryCard({
                   entry.played ? "line-through decoration-1 text-muted-foreground" : ""
                 }`}
               >
-                {entry.game.name}
+                {gameName}
               </Link>
               {entry.difficulty && DIFFICULTY_CONFIG[entry.difficulty] && (
                 <Badge variant="outline" className={`text-[10px] px-1.5 py-0 h-5 ${DIFFICULTY_CONFIG[entry.difficulty].className}`}>

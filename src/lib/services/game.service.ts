@@ -5,6 +5,7 @@ import { ApiError } from "@/lib/require-auth";
 import { validateString, validateNumber, firstError } from "@/lib/validation";
 import { NOT_DELETED, SAFE_USER_SELECT, buildPagination, paginatedResponse } from "./shared";
 import { TagService } from "./tag.service";
+import { gameTextForRead, normalizeGameDescriptionInput, normalizeGameNameInput } from "@/lib/game-text";
 
 // ── Types ────────────────────────────────────────────────────────
 
@@ -46,7 +47,7 @@ export const GameService = {
         }),
         prisma.game.count({ where }),
       ]);
-      return paginatedResponse(games, total, page, limit);
+      return paginatedResponse(games.map(normalizeGameRow), total, page, limit);
     }
 
     return cachedQuery(
@@ -62,7 +63,7 @@ export const GameService = {
         }),
       ["user-games", userId, include ?? ""],
       { revalidate: 60, tags: [CacheTags.userGames(userId)] }
-    );
+    ).then((games) => games.map(normalizeGameRow));
   },
 
   /** Get a single game (owned by user) */
@@ -82,14 +83,16 @@ export const GameService = {
       },
     });
     if (!game) throw new ApiError(404, "Game not found");
-    return game;
+    return normalizeGameRow(game);
   },
 
   /** Create a new game */
   async create(userId: string, input: CreateGameInput) {
+    const name = normalizeInput(input.name, normalizeGameNameInput);
+    const description = input.description === undefined ? undefined : normalizeInput(input.description, normalizeGameDescriptionInput);
     const validationError = firstError(
-      validateString(input.name, "Name", { max: 200 }),
-      validateString(input.description, "Beschreibung", { required: false, max: 2000 }),
+      validateString(name, "Name", { max: 200 }),
+      validateString(description, "Beschreibung", { required: false, max: 2000 }),
       validateNumber(input.minPlayers, "Min. Spieler", { required: false, min: 1, max: 99 }),
       validateNumber(input.maxPlayers, "Max. Spieler", { required: false, min: 1, max: 99 }),
       validateNumber(input.playTimeMinutes, "Spieldauer", { required: false, min: 0, max: 9999 }),
@@ -99,8 +102,8 @@ export const GameService = {
 
     const game = await prisma.game.create({
       data: {
-        name: input.name,
-        description: input.description,
+        name,
+        description,
         minPlayers: input.minPlayers || 1,
         maxPlayers: input.maxPlayers || 4,
         playTimeMinutes: input.playTimeMinutes,
@@ -123,7 +126,7 @@ export const GameService = {
     });
 
     this._invalidateGameCaches(userId);
-    return result;
+    return result ? normalizeGameRow(result) : result;
   },
 
   /** Update an existing game */
@@ -133,9 +136,11 @@ export const GameService = {
     });
     if (!existing) throw new ApiError(404, "Game not found");
 
+    const name = input.name === undefined ? undefined : normalizeInput(input.name, normalizeGameNameInput);
+    const description = input.description === undefined ? undefined : normalizeInput(input.description, normalizeGameDescriptionInput);
     const validationError = firstError(
-      input.name ? validateString(input.name, "Name", { max: 200 }) : null,
-      validateString(input.description, "Beschreibung", { required: false, max: 2000 }),
+      name ? validateString(name, "Name", { max: 200 }) : null,
+      validateString(description, "Beschreibung", { required: false, max: 2000 }),
       validateNumber(input.minPlayers, "Min. Spieler", { required: false, min: 1, max: 99 }),
       validateNumber(input.maxPlayers, "Max. Spieler", { required: false, min: 1, max: 99 }),
       validateNumber(input.playTimeMinutes, "Spieldauer", { required: false, min: 0, max: 9999 }),
@@ -146,8 +151,8 @@ export const GameService = {
     const _updated = await prisma.game.update({
       where: { id: gameId },
       data: {
-        ...(input.name !== undefined && { name: input.name }),
-        ...(input.description !== undefined && { description: input.description }),
+        ...(name !== undefined && { name }),
+        ...(description !== undefined && { description }),
         ...(input.minPlayers !== undefined && { minPlayers: input.minPlayers }),
         ...(input.maxPlayers !== undefined && { maxPlayers: input.maxPlayers }),
         ...(input.playTimeMinutes !== undefined && { playTimeMinutes: input.playTimeMinutes }),
@@ -190,7 +195,7 @@ export const GameService = {
     });
 
     this._invalidateGameCaches(userId);
-    return result;
+    return result ? normalizeGameRow(result) : result;
   },
 
   /** Soft-delete a game (idempotent: already-deleted games return success) */
@@ -234,3 +239,20 @@ export const GameService = {
     invalidateTag(CacheTags.userStats(userId));
   },
 };
+
+function normalizeInput(value: string, normalize: (input: string) => string): string {
+  try {
+    return normalize(value);
+  } catch (error) {
+    if (error instanceof RangeError) throw new ApiError(400, error.message);
+    throw error;
+  }
+}
+
+function normalizeGameRow<T extends { name: string; description?: string | null }>(game: T): T {
+  return {
+    ...game,
+    name: gameTextForRead(game.name),
+    ...(game.description !== undefined && { description: game.description == null ? null : gameTextForRead(game.description) }),
+  };
+}

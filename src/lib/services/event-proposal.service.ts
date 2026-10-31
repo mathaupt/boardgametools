@@ -1,4 +1,5 @@
 import prisma from "@/lib/db";
+import { gameTextForRead } from "@/lib/game-text";
 import { findPublicEventByToken } from "@/lib/event-share";
 import { fetchBGGGame } from "@/lib/bgg";
 import { ApiError } from "@/lib/require-auth";
@@ -108,8 +109,8 @@ export const EventProposalService = {
 
     return {
       proposalId: proposal.id,
-      name: game?.name ?? proposal.bggName ?? bggGame?.name ?? "Unbekanntes Spiel",
-      description,
+      name: gameTextForRead(game?.name ?? proposal.bggName ?? bggGame?.name ?? "Unbekanntes Spiel"),
+      description: description == null ? null : gameTextForRead(description),
       descriptionSource,
       imageUrl: safeImageUrl(game?.imageUrl ?? proposal.bggImageUrl ?? bggGame?.imageUrl),
       minPlayers: game?.minPlayers ?? proposal.bggMinPlayers ?? bggGame?.minPlayers ?? null,

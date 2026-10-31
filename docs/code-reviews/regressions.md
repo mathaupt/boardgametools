@@ -126,3 +126,47 @@ Jeder Eintrag enthält Felder für Root-Cause-Analyse und Gegenmaßnahmen (manue
 **Validierung:** Registry-Audit außerhalb der Sandbox bestätigt 26 Entwicklungsbefunde; Produktionsaudit im Commit-Hook meldet 0. package.json und package-lock.json unverändert. Quelle: npm audit --json und Quellprüfung von SEC-45 in scripts/review-evaluate.mjs.
 
 ---
+
+## 2026-10-31 13:10:12
+
+| Finding | Priorität | Vorher | Jetzt | Detail |
+|---------|-----------|--------|-------|--------|
+| SEC-45: npm audit: Bekannte Vulnerabilities | P2 | resolved | partially_resolved | 1 high nur in devDependencies |
+
+**Root-Cause:** Der vollständige Audit meldete bei unverändertem Lockfile reale Dev-Advisories: zunächst 1 High, 23 moderate und 2 low. Der frühere „resolved“-Status stammte aus unvollständiger Auditfehlerbehandlung (BUG-051), der tatsächliche SEC-45-Status war teilweise gelöst.
+**Gegenmaßnahme:** Kompatible Updates entfernten den High-Befund. Der Evaluator validiert vollständiges und Produktionsaudit jetzt explizit. Verbleibende moderate/lower Dev-Advisories sind als BUG-050 dokumentiert; sie benötigen Major-Upgrades.
+**Verantwortlich:** BoardGameTools Wartung.
+**Auflösung:** 2026-10-31, siehe Nachprüfung 14:40. Der gültige Regressionslauf vergleicht `partially_resolved` mit `partially_resolved` und endet erfolgreich (Exitcode 0); der Commit ist durch diese Regression nicht mehr blockiert.
+
+---
+
+## 2026-10-31 13:26:39
+
+| Finding | Priorität | Vorher | Jetzt | Detail |
+|---------|-----------|--------|-------|--------|
+| SEC-45: npm audit: Bekannte Vulnerabilities | P2 | partially_resolved | open | npm audit lieferte keine gültigen Prüfdaten |
+
+**Root-Cause:** Der Regressionsevaluator lief in einer Umgebung ohne Registryzugriff. Die aktualisierte Validierung konnte den Audit nicht ausführen und meldete korrekt `open` statt einen Erfolg vorzutäuschen.
+**Gegenmaßnahme:** Den geschützten Commitworkflow mit Registryzugriff ausführen; bei fehlendem Registryzugriff bleibt die Prüfung absichtlich nicht bestanden.
+**Verantwortlich:** BoardGameTools Wartung.
+
+**Nachprüfung 2026-10-31 14:40:** Der Status `open` war ein korrektes Fail-Closed-Ergebnis für einen Sandboxlauf ohne Registryzugriff; er belegte keine neue Abhängigkeitsschwachstelle. Mit Registryzugriff wurden 22 moderate Dev-Befunde und 0 Produktionsbefunde bestätigt; SEC-45 ist daher `partially_resolved`, ohne Regression gegenüber dem vorherigen gültigen Snapshot. Der High-Befund wurde zwischenzeitlich durch kompatible Paketupdates beseitigt. Der Regressionsevaluator lief mit `--fail-on-regression` erfolgreich durch (Exitcode 0); dieser Eintrag ist damit geschlossen.
+
+**Root-Cause:** Der erste Regressionsevaluatorlauf hatte keinen npm-Registryzugriff. Die verschärfte Validierung meldete diesen Prüfungsfehler ausdrücklich als `open`, statt einen sauberen Audit zu erfinden.
+**Gegenmaßnahme:** Commit-Review mit Registryzugriff durchführen. Der Evaluator validiert jetzt Audit-v2-Schema und Severity-Metadaten für vollständigen und Produktionsaudit und blockiert weiter, wenn die Prüfung wirklich nicht ausführbar ist.
+**Verantwortlich:** BoardGameTools Wartung.
+
+---
+
+## 2026-10-31 14:40 – SEC-45 Commit-Blocker nachgeprüft
+
+| Finding | Priorität | Vorher | Jetzt | Detail |
+|---------|-----------|--------|-------|--------|
+| SEC-45: npm audit: Bekannte Vulnerabilities | P2 | open (Registry nicht erreichbar) | partially_resolved | 22 moderate Dev-Befunde; 0 Produktionsbefunde; keine Regression |
+
+**Root-Cause:** `systeminformation@5.33.1` und weitere transitive Dev-Pakete waren veraltet; ein früher Evaluatorlauf konnte Registryfehler als sauberen Auditstatus missverstehen.
+**Gegenmaßnahme:** Kompatible `npm audit fix`-Updates, darunter `systeminformation@5.33.19`, sowie Schemaprüfung im Evaluator. Major-Upgrades wurden nicht erzwungen.
+**Verantwortlich:** BoardGameTools Wartung.
+**Validierung:** `npm run review-evaluate:regression` mit Registryzugriff: Exitcode 0; `npm audit --omit=dev`: 0 Befunde.
+
+---

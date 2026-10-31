@@ -140,8 +140,8 @@ components:
       type: object
       properties:
         id: { type: string, format: cuid }
-        name: { type: string }
-        description: { type: string, nullable: true }
+        name: { type: string, description: Klartext mit dekodierten HTML-Entities; wird weiterhin als JSON-Text ausgegeben. }
+        description: { type: string, nullable: true, description: Klartext mit dekodierten HTML-Entities; wird weiterhin als JSON-Text ausgegeben. }
         minPlayers: { type: integer, default: 1 }
         maxPlayers: { type: integer, default: 4 }
         playTimeMinutes: { type: integer, nullable: true }

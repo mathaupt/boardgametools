@@ -59,4 +59,27 @@ ist noch nicht freigegeben.
 
 Die kurze Aktualitätsprüfung gehört vor jedes künftige Feature, nicht nur
 vor dieses Betriebspaket. Das Planerstellungsdatum ersetzt keinen späteren
-Abgleich. Bekannte Commitblocker BUG-050/051 bleiben offen; kein Hook-Bypass.
+Abgleich. BUG-050 bleibt für moderate Dev-Abhängigkeiten offen; kein Hook-Bypass.
+
+## Ergänzung: FEAT-009 Umsetzung – 0.50.32
+
+- [x] Normalisierung und Schreib-/Ausgabepfade durch Unit-Tests (702/702), TypeScript und Build geprüft.
+- [x] Swift-Vertrag und Fast-Security-Check erfolgreich; Produktionsaudit mit 0 Befunden bestätigt.
+- [x] Impeccable-Detektor ohne blockierende Befunde ausgeführt.
+- [ ] E2E, vollständiger Security-Check und isolierter Datenbanklauf offen; keine Testdatenbank vorhanden.
+- [x] Review-Regression mit Registryzugriff bestanden (Exitcode 0); BUG-051 geschlossen, kein Hook-Bypass.
+- [x] Feature-/FAQ-/Konzept-/OpenAPI-/Deployment-/Changelog-/Bug- und Review-Dokumentation aktualisiert.
+
+Keine Produktionsbereinigung ohne gesonderte Freigabe nach geprüftem Dry-Run-Manifest
+und frischem Backup. BUG-050 bleibt wegen moderater Entwicklungsbefunde offen.
+
+## SEC-45 Commit-Blocker – 0.50.33
+
+- [x] Ungültige npm-Auditantworten mit Tests abgewiesen; fehlende Metadaten werden nicht als Nullbefunde interpretiert.
+- [x] Kompatible Audit-Updates angewendet; hoher `systeminformation`-Befund beseitigt.
+- [x] Voll- und Produktionsaudit mit Registryzugriff getrennt validiert.
+- [x] Regressionsevaluator mit `--fail-on-regression` erfolgreich (Exitcode 0); SEC-45 ist teilweise gelöst, keine Regression.
+- [x] BUG-051 geschlossen; BUG-050 führt die moderaten/niedrigen Dev-Restbefunde weiter.
+
+Ohne Registryzugriff meldet der Evaluator bewusst `open` und blockiert bis
+eine belastbare Prüfung möglich ist.

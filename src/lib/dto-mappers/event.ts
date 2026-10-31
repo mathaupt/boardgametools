@@ -6,6 +6,7 @@ import type {
   DateVoteDTO,
 } from "@/lib/sync-types";
 import { iso } from "./utils";
+import { gameTextForRead } from "@/lib/game-text";
 
 export function toVoteDto(vote: { id: string; proposalId: string; userId: string; createdAt: Date }): VoteDTO {
   return {
@@ -53,7 +54,7 @@ export function toEventProposalDto(proposal: {
     gameId: proposal.gameId,
     proposedById: proposal.proposedById,
     bggId: proposal.bggId,
-    bggName: proposal.bggName,
+    bggName: proposal.bggName == null ? null : gameTextForRead(proposal.bggName),
     bggImageUrl: proposal.bggImageUrl,
     bggMinPlayers: proposal.bggMinPlayers,
     bggMaxPlayers: proposal.bggMaxPlayers,

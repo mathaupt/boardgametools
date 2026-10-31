@@ -23,6 +23,25 @@ Scenario("User can navigate to add game form", ({ I }) => {
   I.see("Spiel speichern");
 });
 
+Scenario("manual game text is normalized, searchable and rendered as text", ({ I }) => {
+  const gameName = "FEAT009 Dungeons & Dragons";
+  I.amOnPage("/dashboard/games/new");
+  I.fillField("name", "FEAT009 Dungeons &amp;amp; Dragons");
+  I.fillField("description", "&lt;script&gt;alert(1)&lt;/script&gt; &#x1F3B2;");
+  I.click("Spiel speichern");
+  I.waitForText(gameName, 5);
+  I.see("<script>alert(1)</script> 🎲");
+  I.dontSeeElement('img[src="x"]');
+  I.amOnPage("/dashboard/games");
+  I.fillField('input[placeholder="Spiele durchsuchen…"]', "FEAT009 Dungeons &amp; Dragons");
+  I.see(gameName);
+  I.click(gameName);
+  I.click("Löschen");
+  I.waitForText("Spiel löschen?", 3);
+  I.click("Löschen", ".bg-destructive");
+  I.dontSee(gameName);
+});
+
 Scenario("BGG import page loads correctly", ({ I }) => {
   I.amOnPage("/dashboard/games/import");
   I.see("Von BGG importieren");

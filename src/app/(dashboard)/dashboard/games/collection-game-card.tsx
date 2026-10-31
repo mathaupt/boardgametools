@@ -2,15 +2,18 @@ import Image from "next/image";
 import { Users, Clock, Star, ImageIcon } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import type { GameItem } from "./games-list-client";
+import { gameTextForRead } from "@/lib/game-text";
 
 export function CollectionGameCard({ game }: { game: GameItem }) {
+  const gameName = gameTextForRead(game.name);
+  const gameDescription = game.description ? gameTextForRead(game.description) : null;
   return (
 <Card className="club-game-card">
                   <div className="club-game-cover">
                     {game.imageUrl ? (
                       <Image
                         src={game.imageUrl}
-                        alt={game.name}
+                        alt={gameName}
                         fill
                         sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                         className="object-contain"
@@ -23,9 +26,9 @@ export function CollectionGameCard({ game }: { game: GameItem }) {
                     )}
                   </div>
                   <CardHeader>
-                    <CardTitle as="h2" className="line-clamp-2 text-xl leading-snug">{game.name}</CardTitle>
-                    {game.description && (
-                      <CardDescription className="line-clamp-2">{game.description}</CardDescription>
+                    <CardTitle as="h2" className="line-clamp-2 text-xl leading-snug">{gameName}</CardTitle>
+                    {gameDescription && (
+                      <CardDescription className="line-clamp-2">{gameDescription}</CardDescription>
                     )}
                   </CardHeader>
                   <CardContent>

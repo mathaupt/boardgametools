@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { gameTextForRead } from "@/lib/game-text";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -32,6 +33,8 @@ export interface SerializedGame {
 }
 
 export default function GameDetailClient({ game }: { game: SerializedGame }) {
+  const gameName = gameTextForRead(game.name);
+  const gameDescription = game.description ? gameTextForRead(game.description) : null;
   const { toast } = useToast();
   const router = useRouter();
   const [isDeleting, setIsDeleting] = useState(false);
@@ -67,8 +70,8 @@ export default function GameDetailClient({ game }: { game: SerializedGame }) {
               <Link href="/dashboard/games">Spiele</Link>
             </Button>
             <span aria-hidden="true">/</span>
-            <span className="text-foreground truncate max-w-[200px]" title={game.name}>
-              {game.name}
+            <span className="text-foreground truncate max-w-[200px]" title={gameName}>
+              {gameName}
             </span>
           </nav>
 
@@ -90,7 +93,7 @@ export default function GameDetailClient({ game }: { game: SerializedGame }) {
                   <div className="relative w-full h-64 rounded-lg overflow-hidden bg-muted">
                     <Image
                       src={game.imageUrl}
-                      alt={`Cover von ${game.name}`}
+                      alt={`Cover von ${gameName}`}
                       fill
                       sizes="(max-width: 768px) 100vw, 33vw"
                       className="object-cover"
@@ -104,8 +107,8 @@ export default function GameDetailClient({ game }: { game: SerializedGame }) {
                 )}
               </div>
               <div className="md:col-span-2">
-                <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-4">{game.name}</h1>
-                {game.description && <p className="text-muted-foreground mb-4">{game.description}</p>}
+                <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-4">{gameName}</h1>
+                {gameDescription && <p className="text-muted-foreground mb-4">{gameDescription}</p>}
                 <div className="grid grid-cols-2 gap-4 mb-4">
                   <div className="bg-muted/50 p-3 rounded">
                     <div className="text-sm text-muted-foreground">Spieleranzahl</div>
@@ -150,7 +153,7 @@ export default function GameDetailClient({ game }: { game: SerializedGame }) {
           <AlertDialogHeader>
             <AlertDialogTitle>Spiel löschen?</AlertDialogTitle>
             <AlertDialogDescription>
-              Möchtest du &ldquo;{game.name}&rdquo; wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.
+              Möchtest du &ldquo;{gameName}&rdquo; wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

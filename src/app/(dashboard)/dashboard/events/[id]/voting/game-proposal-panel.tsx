@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Plus, Search, ExternalLink, Gamepad2 } from "lucide-react";
+import { gameTextForRead } from "@/lib/game-text";
 
 interface BGGSearchResult {
   bggId: string;
@@ -45,7 +46,7 @@ export default function GameProposalPanel({
   onBggImport,
 }: GameProposalPanelProps) {
   const filteredCollection = availableGames.filter(game =>
-    game.name.toLowerCase().includes(collectionSearch.trim().toLowerCase())
+    gameTextForRead(game.name).toLowerCase().includes(gameTextForRead(collectionSearch.trim()).toLowerCase())
   );
 
   return (
@@ -114,7 +115,7 @@ export default function GameProposalPanel({
                             {game.imageUrl ? (
                               <Image 
                                 src={game.imageUrl} 
-                                alt={game.name}
+                                alt={gameTextForRead(game.name)}
                                 width={40}
                                 height={40}
                                 className="rounded-lg object-cover border border-border"
@@ -126,7 +127,7 @@ export default function GameProposalPanel({
                             )}
                           </div>
                           <div>
-                            <div className="font-medium">{game.name}</div>
+                            <div className="font-medium">{gameTextForRead(game.name)}</div>
                             <div className="text-sm text-muted-foreground">
                               {game.minPlayers}-{game.maxPlayers} Spieler
                               {game.complexity && ` • ${game.complexity}/5 Komplexität`}
@@ -177,7 +178,7 @@ export default function GameProposalPanel({
                           {game.imageUrl ? (
                             <Image 
                               src={game.imageUrl} 
-                              alt={game.name}
+                              alt={gameTextForRead(game.name)}
                               width={40}
                               height={40}
                               className="rounded-lg object-cover border border-border"
@@ -189,7 +190,7 @@ export default function GameProposalPanel({
                           )}
                         </div>
                         <div className="flex-1">
-                          <div className="font-medium">{game.name}</div>
+                          <div className="font-medium">{gameTextForRead(game.name)}</div>
                           {game.yearPublished && (
                             <div className="text-sm text-muted-foreground">{game.yearPublished}</div>
                           )}

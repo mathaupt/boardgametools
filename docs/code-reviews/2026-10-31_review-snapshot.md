@@ -69,3 +69,32 @@ Budgetbetrag, tatsächlicher Tarif/Monitorverkehr und teamweite Betriebsfolgen
 sind vor Aktivierung zu konkretisieren. Keine vorgetäuschte Plattformabnahme.
 Die bekannten Audit-/Evaluatorblocker BUG-050/051 bleiben unverändert offen;
 kein neuer Score oder erneuter Commit gegen eine verschobene Baseline.
+
+## Ergänzung: FEAT-009 Umsetzung – 0.50.32
+
+- Unit-Suite: 702/702; Typecheck und Produktionsbuild erfolgreich.
+- iOS-Vertrag und Fast-Security-Check erfolgreich; Vollaudit bestätigt 0
+  Produktionsbefunde und 26 bestehende Entwicklungsbefunde.
+- Vollständiges Lint: 0 Fehler, 651 Warnungen aus Impeccable-Skriptdateien.
+- Impeccable-Detektor: keine blockierenden Findings; drei Hinweise zu bereits
+  vorhandenen 10-px-Schriftgrößen in `series-entry-card.tsx`.
+- E2E, vollständiger Security-Check und echte Datenbankbereinigung nicht
+  ausgeführt; isolierte Test-DB-Konfiguration fehlte.
+- `review-evaluate:report` erzeugte zwar einen History-Eintrag, wird wegen des
+  offenen BUG-051 (Auditfehler als leerer Audit interpretierbar) verworfen.
+  Kein Score wurde daraus abgeleitet. BUG-051 ist unten behoben; der gültige
+  Evaluatorlauf mit Registryzugriff ist separat dokumentiert.
+
+## SEC-45/BUG-051 Korrektur – 0.50.33
+
+- `npm audit fix` entfernte den hohen `systeminformation`-Befund; aktueller
+  vollständiger Audit: 22 moderate und 2 niedrige Dev-Befunde, keine High/
+  Critical; Produktionsaudit: 0 Befunde.
+- Evaluator validiert jetzt Voll- und Produktionsaudit anhand des Audit-v2-
+  Schemas. Tests für Fehlerpayload, fehlende Metadaten, gültigen Nullbefund
+  und echte Befundzahlen bestanden.
+- `npm run review-evaluate:regression` mit Registryzugriff: Exitcode 0;
+  SEC-45 bleibt teilweise gelöst, keine Regression.
+- Nach den Audit-Evaluator-Änderungen: Unit-Suite 706/706, TypeScript,
+  Build und vollständiger Security-Check erfolgreich; Lint 0 Fehler mit
+  651 vorhandenen Warnungen aus Impeccable-Skriptdateien.

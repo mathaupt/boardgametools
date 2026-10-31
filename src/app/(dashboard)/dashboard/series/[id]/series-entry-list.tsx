@@ -8,6 +8,7 @@ import { FilterSortBar } from "./filter-sort-bar";
 import { SeriesEntryCard } from "./series-entry-card";
 import type { SeriesEntry, PlayedFilter, DifficultyFilter, EntrySortOption } from "./types";
 import { DIFFICULTY_ORDER } from "./types";
+import { gameTextForRead } from "@/lib/game-text";
 
 interface SeriesEntryListProps {
   entries: SeriesEntry[];
@@ -47,7 +48,7 @@ export function SeriesEntryList({
 
     if (search.trim()) {
       const q = search.toLowerCase().trim();
-      result = result.filter((e) => e.game.name.toLowerCase().includes(q));
+      result = result.filter((e) => gameTextForRead(e.game.name).toLowerCase().includes(gameTextForRead(q)));
     }
 
     if (playedFilter === "gespielt") {
@@ -65,10 +66,10 @@ export function SeriesEntryList({
         result.sort((a, b) => a.sortOrder - b.sortOrder);
         break;
       case "name_asc":
-        result.sort((a, b) => a.game.name.localeCompare(b.game.name, "de"));
+        result.sort((a, b) => gameTextForRead(a.game.name).localeCompare(gameTextForRead(b.game.name), "de"));
         break;
       case "name_desc":
-        result.sort((a, b) => b.game.name.localeCompare(a.game.name, "de"));
+        result.sort((a, b) => gameTextForRead(b.game.name).localeCompare(gameTextForRead(a.game.name), "de"));
         break;
       case "rating_desc":
         result.sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));

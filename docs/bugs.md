@@ -1509,10 +1509,12 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 ### [BUG-049] Entity-Dekodierung erzeugt uneinheitliche Spieltexte
 
-**Status:** `open`
+**Status:** `fixed`
 **Schweregrad:** `medium`
 **Entdeckt:** 2026-10-31
-**Test geschrieben:** Nein; Regressionen im FEAT-009-Plan vorgesehen.
+**Behoben:** 2026-10-31
+**Behoben in Version:** 0.50.32
+**Test geschrieben:** Ja; Normalisierung, Import, GameService, iOS-Sync-DTO, sicheres React-Rendering und Wartungsplan geprüft.
 
 **Beschreibung:** Mehrfach kodierte Spielnamen und allgemeine numerische beziehungsweise benannte HTML-Entities werden nicht in allen Import-, Schreib- und Ausgabewegen konsistent dekodiert.
 
@@ -1524,45 +1526,47 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 **Ursache:** Mehrere voneinander abweichende Decoder sowie fehlende gemeinsame Textgrenzen.
 
-**Lösung:** Noch nicht umgesetzt. [FEAT-009-Plan](superpowers/plans/2026-10-31-FEAT-009-spieldaten-entities.md): gemeinsamer Normalisierer, Pfadtests, sichere Textausgabe und getrennt freizugebender Bestandslauf.
+**Lösung:** Gemeinsamer idempotenter Normalisierer, Leseschutz für Bestandswerte, normalisierte Schreib-/BGG-/DTO-Pfade, sichere Textausgabe und Compare-and-Set-Wartungs-CLI umgesetzt. Die tatsächliche Produktionsdatenbereinigung ist separat freizugeben und bleibt offen. [FEAT-009-Plan](superpowers/plans/2026-10-31-FEAT-009-spieldaten-entities.md).
 
 **Prüfnachweis:** src/lib/bgg-xml.ts, src/lib/bgg.ts, scripts/fix-html-entities.ts und GameService-/DTO-Pfade am 31.10.2026 geprüft. Die Herkunft einzelner Bestandswerte bleibt bis zu einem lesenden Datenbericht unbestätigt.
 
-**Referenz im Changelog:** Version 0.50.29 – Weitere Verbesserungen vorbereitet.
+**Referenz im Changelog:** Version 0.50.32 – Spieltexte mit Sonderzeichen vereinheitlicht.
 
 ---
 
-### [BUG-050] Entwicklungsabhängigkeiten enthalten erneut hohe und mittlere Auditbefunde
+### [BUG-050] Entwicklungsabhängigkeiten enthalten ungepatchte Auditbefunde
 
 **Status:** `open`
-**Schweregrad:** `high`
+**Schweregrad:** `medium`
 **Entdeckt:** 2026-10-31
-**Test geschrieben:** Nein; keine Paketkorrektur vorgenommen.
+**Test geschrieben:** Nicht zutreffend; Paketstatus wird mit npm audit geprüft. BUG-050 bleibt wegen moderater/lower Dev-Befunde offen.
 
-**Beschreibung:** Der Registry-Audit meldet bei unverändertem Lockfile 1 hohen, 23 mittlere und 2 niedrige Befunde ausschließlich im Entwicklungsbaum. Der Commit-Hook blockiert SEC-45.
+**Beschreibung:** Der Registry-Audit meldete zunächst hohe und moderate Befunde ausschließlich im Entwicklungsbaum. Der hohe Befund ist behoben; SEC-45 bleibt wegen moderater/lower Restbefunde teilweise gelöst.
 
 **Reproduktion:** Mit funktionierendem Registry-Zugriff npm audit --json ausführen. Produktionsbaum getrennt mit npm audit --omit=dev prüfen.
 
 **Erwartetes Verhalten:** Keine ungeklärten hohen Entwicklungsbefunde und keine neu zurückgekehrten SEC-45-Befunde gegenüber dem freigegebenen Stand.
 
-**Tatsächliches Verhalten:** systeminformation 5.33.1 aus shadcn → @dotenvx/dotenvx ist vom hohen Advisory GHSA-3f7j-7jwc-fxfj betroffen; weitere mittlere Stamm-Befunde liegen in minimatch, glob und @hono/node-server. Produktionsaudit im Commit-Hook: 0 Befunde.
+**Tatsächliches Verhalten:** Der hohe systeminformation-Befund in shadcn → @dotenvx/dotenvx wurde durch ein kompatibles Update auf 5.33.19 behoben. Der aktuelle Registry-Audit meldet weiterhin 22 moderate und 2 niedrige Dev-Befunde, überwiegend in ESLint-, CodeceptJS- und shadcn-Werkzeugen. Produktionsaudit: 0 Befunde.
 
-**Ursache:** Bestehende transitive Paketversionen und aktualisierter Advisorystand; package.json und package-lock.json wurden während der Planungsarbeit nicht geändert.
+**Ursache:** Veraltete transitive Paketversionen und Advisory-Änderungen. Kompatible Fixes deckten die High-Schwachstelle ab, die verbleibenden Advisories verlangen Major-Upgrades.
 
-**Lösung:** Offen. Kompatible Paketkorrekturen mit Lockfile-/Installationsprüfung und vorgeschriebenen Tests gesondert durchführen. Gepatchte systeminformation-Version laut Advisory ab 5.33.16; keine pauschalen Major-Overrides anwenden.
+**Lösung:** Teilweise. `npm audit fix` wendete kompatible Updates an und entfernte den hohen Befund (systeminformation 5.33.19; @hono/node-server 2.1.5; TypeScript-ESLint 8.72.1). Verbleibende Advisories erfordern laut npm Major-Upgrades von ESLint, CodeceptJS oder shadcn; keine pauschalen Major-Overrides anwenden.
 
-**Prüfnachweis:** Vollständiger Registry-Audit außerhalb der Sandbox sowie [Sicherheitsstand](code-reviews/security.md); Commit vom Regressionshook blockiert, nicht umgangen.
+**Prüfnachweis:** Registry-Audit vor/nach `npm audit fix`, `npm audit --omit=dev` sowie [Sicherheitsstand](code-reviews/security.md). Der hohe Befund ist entfernt; moderate/low Findings bleiben dokumentiert.
 
-**Referenz im Changelog:** Version 0.50.29 – Weitere Verbesserungen vorbereitet.
+**Referenz im Changelog:** Version 0.50.33 – Sicherheitsprüfung robuster gemacht.
 
 ---
 
 ### [BUG-051] Review-Evaluator kann fehlgeschlagenen npm-Audit als befundfrei bewerten
 
-**Status:** `open`
+**Status:** `fixed`
 **Schweregrad:** `medium`
 **Entdeckt:** 2026-10-31
-**Test geschrieben:** Nein; Regressionstest vor einer späteren Korrektur erforderlich.
+**Behoben:** 2026-10-31
+**Behoben in Version:** 0.50.33
+**Test geschrieben:** Ja; `tests/unit/scripts/npm-audit-result.test.ts` prüft Registryfehler, fehlende/ungültige Metadaten und gültige Auditantworten.
 
 **Beschreibung:** SEC-45 verwendet bei fehlenden Audit-Metadaten einen leeren Befundsatz. Ein Netzwerkfehler mit gültigem Fehler-JSON kann dadurch als resolved statt als nicht ausführbare Prüfung erscheinen.
 
@@ -1574,11 +1578,11 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 **Ursache:** Audit-Metadaten und Fehlerobjekt werden vor der Statusberechnung nicht validiert; Exitstatus allein wird nicht zwischen echten Befunden und Ausführungsfehlern unterschieden.
 
-**Lösung:** Offen. Auditparser mit explizitem Fehler-/Metadatenschema und Tests für Netzwerkfehler, Timeout, ungültiges JSON, echte Befunde und erfolgreiches Nullresultat korrigieren. Keine Baseline eines fehlgeschlagenen Prüflaufs als neue Freigabe übernehmen.
+**Lösung:** Der Evaluator validiert Auditversion, Fehlerfeld und vollständige, konsistente Severity-Metadaten für Voll- und Produktionsaudit. Fehlerhafte oder fehlende Antworten bleiben `open`; sie können keinen sauberen Status mehr erzeugen.
 
-**Prüfnachweis:** Sandbox-Audit mit Registry-DNS-Fehler, abweichender vollständiger Registry-Audit außerhalb der Sandbox und SEC-45-Quellprüfung am 31.10.2026.
+**Prüfnachweis:** Regressionstest plus erfolgreicher Evaluatorlauf mit Registryzugriff am 31.10.2026.
 
-**Referenz im Changelog:** Version 0.50.29 – Weitere Verbesserungen vorbereitet.
+**Referenz im Changelog:** Version 0.50.33 – Sicherheitsprüfung robuster gemacht.
 
 ---
 
@@ -1709,8 +1713,8 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 ## Statistik
 
-- **Offene Bugs:** 18
+- **Offene Bugs:** 17
 - **In Bearbeitung:** 0
-- **Behoben:** 38
+- **Behoben:** 39
 - **Wontfix:** 0
 - **Gesamt:** 56

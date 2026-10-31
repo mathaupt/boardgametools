@@ -6,6 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { EventDate } from "@/components/dashboard/event-preview";
 import { PendingInvites, type PendingInvite } from "@/components/pending-invites";
+import { gameTextForRead } from "@/lib/game-text";
 
 export interface EventListItem {
   id: string; title: string; description: string | null; eventDate: Date | string; location: string | null;
@@ -122,7 +123,7 @@ export function EventsOverview({ events, invites }: { events: EventListItem[]; i
                     <h4 className="font-medium text-sm text-foreground">Spielvorschläge</h4>
                     <div className="flex flex-wrap gap-2">
                       {event.proposals.slice(0, 3).map((proposal) => {
-                        const gameName = proposal.game?.name ?? proposal.bggName ?? "Unbekannt";
+                        const gameName = gameTextForRead(proposal.game?.name ?? proposal.bggName ?? "Unbekannt");
                         const gameImage = proposal.game?.imageUrl ?? proposal.bggImageUrl ?? null;
                         return (
                         <div key={proposal.id} className="flex items-center gap-2 bg-card px-2 py-1 rounded text-sm border border-border">

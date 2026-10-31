@@ -74,6 +74,10 @@ export const faqSections: FaqSection[] = [
           'Unter "Spiele" \u2192 "Import" kannst du auf drei Arten importieren: (1) Nach Spielnamen suchen und einzeln importieren, (2) eine direkte BGG-ID eingeben, oder (3) deinen BGG-Benutzernamen eingeben um deine komplette Sammlung auf einmal zu importieren. Spieldaten wie Spieleranzahl, Dauer, Bilder, Kategorien und Mechaniken werden automatisch von BGG uebernommen.',
       },
       {
+        question: "Warum sehen Sonderzeichen in einem Spielnamen jetzt anders aus?",
+        answer: "BoardGameTools wandelt bekannte HTML-Entities beim Import und Speichern in Klartext um. Sonderzeichen werden so in der Sammlung, Suche und iOS-Synchronisierung einheitlich angezeigt.",
+      },
+      {
         question: "Kann ich Spiele per Barcode scannen?",
         answer:
           'Ja! Auf der Spiele-Uebersicht und beim Anlegen neuer Spiele findest du den Barcode-Scanner. Halte den Barcode (EAN/UPC) eines Spiels vor die Kamera \u2013 das Spiel wird automatisch erkannt und die Daten von BGG geladen. Alternativ kannst du auch ein Foto des Spielecovers machen \u2013 der Name wird per OCR (Texterkennung) erkannt und in BGG gesucht.',

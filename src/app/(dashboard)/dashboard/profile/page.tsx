@@ -1,6 +1,7 @@
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import prisma from "@/lib/db";
+import { gameTextForRead } from "@/lib/game-text";
 import { ProfileClient } from "./profile-client";
 
 export default async function ProfilePage() {
@@ -140,7 +141,7 @@ export default async function ProfilePage() {
           notes: s.notes!,
           playedAt: s.playedAt.toISOString(),
           gameId: s.game.id,
-          gameName: s.game.name,
+          gameName: gameTextForRead(s.game.name),
         }))}
     />
   );

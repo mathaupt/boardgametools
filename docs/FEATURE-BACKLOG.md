@@ -22,7 +22,7 @@ Bedarf zu aktualisieren. Ergebnis am jeweiligen Plan dokumentieren:
 | FEAT-006 | Health-Deep-Checks cachen oder splitten | Plan erstellt | [Liveness und Readiness](superpowers/plans/2026-10-31-FEAT-006-health-liveness-readiness.md) | Ausstehend |
 | FEAT-007 | Vercel-Firewall-Regel für `/api/health` | Plan erstellt | [Firewall und Monitorbetrieb](superpowers/plans/2026-10-31-FEAT-007-health-firewall.md) | Ausstehend |
 | FEAT-008 | Spend-Management-Obergrenze (Billing-Schutz) | Plan erstellt | [Budget und Betriebsreaktion](superpowers/plans/2026-10-31-FEAT-008-spend-management.md) | Ausstehend; Betrag und Teamwirkung vor Aktivierung festzulegen |
-| FEAT-009 | HTML-Entities in Spieldaten korrekt behandeln | Plan erstellt | [Textnormalisierung und Datenbereinigung](superpowers/plans/2026-10-31-FEAT-009-spieldaten-entities.md) | Ausstehend |
+| FEAT-009 | HTML-Entities in Spieldaten korrekt behandeln | Code umgesetzt; Produktionsdatenbereinigung offen | [Textnormalisierung und Datenbereinigung](superpowers/plans/2026-10-31-FEAT-009-spieldaten-entities.md) | Codeumsetzung am 31.10.2026 freigegeben; Produktionslauf separat freizugeben |
 | FEAT-010 | Event-Status und Ergebnis eindeutig darstellen | Plan erstellt | [Zustandsregeln und Ergebnisdarstellung](superpowers/plans/2026-10-31-FEAT-010-eventstatus-ergebnis.md) | Ausstehend |
 | FEAT-011 | Mobile und assistive Bedienung der Terminabstimmung | Plan erstellt | [Zugängliche Terminabstimmung](superpowers/plans/2026-10-31-FEAT-011-terminabstimmung-barrierefrei.md) | Ausstehend |
 | FEAT-012 | Teilnahme vor passive Listen rücken | Plan erstellt | [Teilnahmeweg und Teilnehmerdaten](superpowers/plans/2026-10-31-FEAT-012-oeffentliche-teilnahme.md) | Ausstehend |

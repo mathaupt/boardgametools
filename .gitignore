@@ -12,6 +12,7 @@
 
 # testing
 /coverage
+.maintenance/
 tests/e2e/output/
 
 # next.js

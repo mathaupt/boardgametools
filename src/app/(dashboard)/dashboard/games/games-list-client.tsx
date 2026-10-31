@@ -20,6 +20,7 @@ import { Plus, Download, Trash2, Trash, ScanBarcode } from "lucide-react";
 import { CollectionFilters } from "./collection-filters";
 import { CollectionGameCard } from "./collection-game-card";
 import { BarcodeScanner } from "@/components/barcode-scanner";
+import { gameTextForRead } from "@/lib/game-text";
 
 export interface GameItem {
   id: string;
@@ -66,7 +67,7 @@ export default function GamesListClient({ games: initialGames }: GamesListClient
     const selectedPlayers = playerCount === "all" ? null : Number(playerCount);
 
     const filtered = games.filter((game) => {
-      const matchesSearch = !searchText || game.name.toLowerCase().includes(searchText.toLowerCase());
+      const matchesSearch = !searchText || gameTextForRead(game.name).toLowerCase().includes(gameTextForRead(searchText).toLowerCase());
       const matchesTag = !activeTag || (game.tags ?? []).some((t) => t.tag.id === activeTag);
       const matchesPlayers =
         selectedPlayers == null || (game.minPlayers <= selectedPlayers && game.maxPlayers >= selectedPlayers);
@@ -77,9 +78,9 @@ export default function GamesListClient({ games: initialGames }: GamesListClient
     return filtered.sort((a, b) => {
       switch (sortOption) {
         case "name_asc":
-          return a.name.localeCompare(b.name, "de");
+          return gameTextForRead(a.name).localeCompare(gameTextForRead(b.name), "de");
         case "name_desc":
-          return b.name.localeCompare(a.name, "de");
+          return gameTextForRead(b.name).localeCompare(gameTextForRead(a.name), "de");
         case "complexity_asc":
           return (a.complexity ?? 0) - (b.complexity ?? 0);
         case "complexity_desc":

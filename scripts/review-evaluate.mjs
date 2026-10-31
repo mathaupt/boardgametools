@@ -25,6 +25,7 @@ import { execSync } from "child_process";
 import { join, resolve } from "path";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
+import { readAuditSummary } from "./lib/npm-audit-result.mjs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -927,15 +928,13 @@ const FINDINGS = [
         } catch (e) {
           output = e.stdout || "";
         }
-        if (!output) return { status: "open", detail: "npm audit konnte nicht ausgeführt werden" };
-        const audit = JSON.parse(output);
-        const vulns = audit.metadata?.vulnerabilities || {};
+        const vulns = readAuditSummary(output);
+        if (!vulns) return { status: "open", detail: "npm audit lieferte keine gültigen Prüfdaten" };
         const critical = vulns.critical || 0;
         const high = vulns.high || 0;
         const moderate = vulns.moderate || 0;
         // Also check production-only vulnerabilities (exclude devDependencies)
-        let prodHigh = high;
-        let prodCritical = critical;
+        let prodSummary;
         try {
           let prodOutput;
           try {
@@ -943,13 +942,11 @@ const FINDINGS = [
           } catch (e) {
             prodOutput = e.stdout || "";
           }
-          if (prodOutput) {
-            const prodAudit = JSON.parse(prodOutput);
-            const prodVulns = prodAudit.metadata?.vulnerabilities || {};
-            prodCritical = prodVulns.critical || 0;
-            prodHigh = prodVulns.high || 0;
-          }
-        } catch { /* ignore */ }
+          prodSummary = readAuditSummary(prodOutput);
+        } catch { /* invalid production audit is reported below */ }
+        if (!prodSummary) return { status: "open", detail: "Produktionsaudit lieferte keine gültigen Prüfdaten" };
+        const prodHigh = prodSummary.high;
+        const prodCritical = prodSummary.critical;
         if (prodCritical + prodHigh === 0 && moderate <= 2)
           return { status: "resolved", detail: `Keine Prod-Vulnerabilities (${high} high nur in devDeps, ${moderate} moderate)` };
         if (critical + high === 0 && moderate <= 2)

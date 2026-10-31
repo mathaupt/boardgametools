@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ImageIcon, Search, Plus, Loader2, Users, Clock, ExternalLink, ScanBarcode } from "lucide-react";
 import { BarcodeScanner } from "@/components/barcode-scanner";
+import { gameTextForRead } from "@/lib/game-text";
 
 interface CollectionGame {
   id: string;
@@ -243,7 +244,7 @@ export function AddGameDialog({
                         )}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium truncate">{game.name}</p>
+                        <p className="text-sm font-medium truncate">{gameTextForRead(game.name)}</p>
                         <div className="flex items-center gap-2 text-xs text-muted-foreground">
                           <span className="flex items-center gap-0.5">
                             <Users className="h-3 w-3" aria-hidden="true" />

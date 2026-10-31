@@ -64,3 +64,35 @@ Die neuen Quellen zeigen auch Auth-/Logging-Nebenlast öffentlicher Probes.
 Die Splitvariante behebt dies erst nach tatsächlicher Umsetzung und
 Monitorumstellung. Plattformpläne unterscheiden Sollzustand, freizugebende
 Eingaben und echten Konfigurationsnachweis; keine Einstellungen aktiviert.
+
+## Ergänzung: FEAT-009 Umsetzung 0.50.32
+
+| Prüfschritt | Ergebnis |
+|---|---|
+| Unit-Suite | 702/702 bestanden |
+| TypeScript und Build | bestanden |
+| iOS-Vertrag und Fast-Security-Check | bestanden |
+| Produktionsabhängigkeiten | 0 Auditbefunde |
+| Vollständiger Dependency-Audit | 26 Entwicklungsbefunde: 1 hoch, 23 mittel, 2 niedrig |
+| Impeccable-Detektor | Keine blockierenden Befunde; drei vorhandene Typografiehinweise |
+| E2E / isolierte DB / vollständiger Security-Check | Nicht ausgeführt |
+| Review-Evaluator | Ergebnis wegen BUG-051 ungültig; daraus kein Score/Regression abgeleitet |
+
+Die Bestandsbereinigung bleibt ausstehend, da keine isolierte Datenbank
+konfiguriert war. Produktionsdaten wurden nicht gelesen oder geändert.
+
+## SEC-45 Commit-Blocker behoben – 0.50.33
+
+| Prüfschritt | Ergebnis |
+|---|---|
+| Audit-High im Dev-Baum | Behoben durch kompatibles Update auf systeminformation 5.33.19 |
+| Vollständiger Audit | 22 moderate, 2 niedrige Dev-Befunde; keine High/Critical |
+| Produktionsaudit | 0 Befunde |
+| Evaluator Regressionstest | Fehlerhafte/unvollständige Auditantworten bleiben offen statt sauber |
+| Regressionsevaluator mit Registryzugriff | Exitcode 0; SEC-45 teilweise gelöst, keine Regression |
+
+Die verbleibenden moderaten Entwicklungsbefunde erfordern laut npm
+Major-Upgrades. Sie bleiben dokumentiert; der Commit-Hook blockiert aktuell nicht.
+Nach der Evaluator- und Dependency-Korrektur bestanden zusätzlich 706/706
+Unit-Tests, TypeScript, Build und Security-Check. Lint: 0 Fehler, 651
+vorhandene Warnungen in Impeccable-Skriptdateien.

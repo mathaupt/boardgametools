@@ -98,6 +98,12 @@ describe("GameService", () => {
       expect(result).toEqual([fakeGame]);
     });
 
+    it("normalizes legacy game strings on cached read results", async () => {
+      vi.mocked(prisma.game.findMany).mockResolvedValue([{ ...fakeGame, name: "Dungeons &amp;amp; Dragons", description: "&#169;" }] as never);
+      const result = await GameService.list(USER_ID);
+      expect(result).toEqual([expect.objectContaining({ name: "Dungeons & Dragons", description: "©" })]);
+    });
+
     it("returns paginated result when page/limit provided", async () => {
       const games = [fakeGame];
       vi.mocked(prisma.game.findMany).mockResolvedValue(games as never);
@@ -176,6 +182,20 @@ describe("GameService", () => {
       });
       expect(invalidateTag).toHaveBeenCalledTimes(4);
       expect(result).toEqual(fullGame);
+    });
+
+    it("normalizes recognized entities before writing names and descriptions", async () => {
+      vi.mocked(prisma.game.create).mockResolvedValue({ id: GAME_ID } as never);
+      vi.mocked(prisma.game.findUnique).mockResolvedValue(fakeGame as never);
+      await GameService.create(USER_ID, { name: "Dungeons &amp;amp; Dragons", description: "A &#169; game" });
+      expect(prisma.game.create).toHaveBeenCalledWith({
+        data: expect.objectContaining({ name: "Dungeons & Dragons", description: "A © game" }),
+      });
+    });
+
+    it("rejects values beyond the bounded normalization input size", async () => {
+      await expect(GameService.create(USER_ID, { name: "a".repeat(2_001) })).rejects.toMatchObject({ statusCode: 400 });
+      expect(prisma.game.create).not.toHaveBeenCalled();
     });
 
     it("throws ApiError(400) on validation error", async () => {

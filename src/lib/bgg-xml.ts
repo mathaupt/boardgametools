@@ -1,6 +1,8 @@
 /** BGG XML parsing utilities */
 
 import logger from "./logger";
+import { decodeXML } from "entities";
+import { gameTextForRead } from "./game-text";
 import type { BGGCollectionItem, BGGSearchResult } from "./bgg-types";
 
 export function decodeHtmlEntities(value: string | null | undefined): string | null {
@@ -8,15 +10,12 @@ export function decodeHtmlEntities(value: string | null | undefined): string | n
     return value ?? null;
   }
 
-  return value
-    .replace(/&amp;/gi, "&")
-    .replace(/&lt;/gi, "<")
-    .replace(/&gt;/gi, ">")
-    .replace(/&quot;/gi, '"')
-    .replace(/&#39;|&apos;|&#x27;/gi, "'")
-    .replace(/&#10;|&#x0a;/gi, "\n")
-    .replace(/&#13;|&#x0d;/gi, "\r")
-    .replace(/&nbsp;/gi, " ");
+  return gameTextForRead(value);
+}
+
+/** Decode only the XML transport layer for image URLs; never recursively alter URL data. */
+export function decodeXMLUrl(value: string | null | undefined): string | null {
+  return value == null ? value ?? null : decodeXML(value);
 }
 
 export function parseXMLValue(xml: string, tag: string): string | null {
@@ -107,8 +106,8 @@ export function parseBGGCollectionResponse(xml: string): BGGCollectionItem[] {
       bggId,
       name,
       yearPublished: yearMatch ? parseInt(yearMatch[1]) : null,
-      thumbnailUrl: thumbnailMatch ? (decodeHtmlEntities(thumbnailMatch[1])?.trim() ?? null) : null,
-      imageUrl: imageMatch ? (decodeHtmlEntities(imageMatch[1])?.trim() ?? null) : null,
+      thumbnailUrl: thumbnailMatch ? (decodeXMLUrl(thumbnailMatch[1])?.trim() ?? null) : null,
+      imageUrl: imageMatch ? (decodeXMLUrl(imageMatch[1])?.trim() ?? null) : null,
       minPlayers: minPlayersMatch ? parseInt(minPlayersMatch[1]) : null,
       maxPlayers: maxPlayersMatch ? parseInt(maxPlayersMatch[1]) : null,
       playTimeMinutes: playTimeMatch ? parseInt(playTimeMatch[1]) : null,

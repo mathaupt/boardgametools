@@ -3,7 +3,7 @@
 Geplante Erweiterungen stehen separat im [nummerierten Feature-Backlog](FEATURE-BACKLOG.md).
 Dort erfasste TODOs sind noch nicht implementiert oder zur Umsetzung freigegeben.
 
-> **Version 0.50.26** | 42 Seiten | 94 API-Endpunkte | 29 Datenbank-Modelle
+> **Version 0.50.32** | 42 Seiten | 94 API-Endpunkte | 29 Datenbank-Modelle
 >
 > Vollstaendige Dokumentation aller Nutzer-sichtbaren Features,
 > organisiert nach Bereichen mit Screenshots-Beschreibungen,
@@ -53,6 +53,8 @@ Seit 0.50.20: kobaltblaue Seitennavigation, hellblaue Arbeitsflächen, Barlow un
 ---
 
 ## 2. Spielesammlung
+
+Spielnamen und Beschreibungen werden beim Import und Speichern vereinheitlicht. Bekannte HTML-Entities werden in Klartext überführt; die Anzeige behandelt diesen Inhalt weiterhin als Text. Suche und Web-/Mobile-Ausgabe verwenden dieselbe Darstellung. Eine kontrollierte Bereinigung bestehender Produktionsdaten ist separat freizugeben.
 
 ### Uebersicht
 

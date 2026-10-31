@@ -866,7 +866,7 @@ const isValid = await compare(inputPassword, group.password);
 
 ## Evaluator-Feedback (automatisch generiert)
 
-> Letzter Lauf: 2026-10-31 12:07:03
+> Letzter Lauf: 2026-10-31 13:49:49
 > Gesamt-Score: **10/10**
 
 ### Kategorie-Scores
@@ -907,7 +907,7 @@ const isValid = await compare(inputPassword, group.password);
 - ✅ **P2-19** Duplikat: Prisma-Client-Dateien: Duplikat entfernt
 - ✅ **P2-20** Duplikat: BGG-Logik: Kein dupliziertes XML-Parsing
 - ✅ **P2-21** next/image statt <img>: Keine <img> Tags
-- ✅ **P2-22** Fehlende Unit Tests: 80 Test-Dateien
+- ✅ **P2-22** Fehlende Unit Tests: 84 Test-Dateien
 - ✅ **P2-23** Inkonsistente Error-Responses: Konsistent: 265 error, 24 message
 - ✅ **P2-24** CONCEPT.md aktualisieren: Tech-Stack aktuell
 - ✅ **P2-25** Pendende Invites dupliziert: Shared Query extrahiert
@@ -938,4 +938,4 @@ const isValid = await compare(inputPassword, group.password);
 
 ### Teilweise gelöst (1)
 
-- 🔶 **SEC-45** npm audit: Bekannte Vulnerabilities: 1 high nur in devDependencies
+- 🔶 **SEC-45** npm audit: Bekannte Vulnerabilities: 22 moderate Vulnerabilities

@@ -11,6 +11,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus, Trash2, Trophy, Users } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+import { gameTextForRead } from "@/lib/game-text";
 
 export interface GameOption {
   id: string;
@@ -131,7 +132,7 @@ export default function SessionFormClient({ games, users }: SessionFormClientPro
                   <SelectContent>
                     {games.map((game) => (
                       <SelectItem key={game.id} value={game.id}>
-                        {game.name} ({game.minPlayers}-{game.maxPlayers} Spieler)
+                        {gameTextForRead(game.name)} ({game.minPlayers}-{game.maxPlayers} Spieler)
                       </SelectItem>
                     ))}
                   </SelectContent>

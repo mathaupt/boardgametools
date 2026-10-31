@@ -1,5 +1,6 @@
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
+import { gameTextForRead } from "@/lib/game-text";
 import { privateEventAccessFilter } from "@/lib/private-event-access";
 import { Button } from "@/components/ui/button";
 import { PublicShareCard } from "./public-share-card";
@@ -105,7 +106,12 @@ export default async function EventDetailPage({
     const proposedBy = proposal.proposedBy ?? (proposal.guest
       ? { name: proposal.guest.nickname }
       : { name: "Gast" });
-    return { ...proposal, game, proposedBy };
+    return {
+      ...proposal,
+      bggName: proposal.bggName == null ? null : gameTextForRead(proposal.bggName),
+      game: { ...game, name: gameTextForRead(game.name) },
+      proposedBy,
+    };
   });
 
   return (

@@ -1,4 +1,5 @@
 import { Prisma } from "@/generated/prisma/client";
+import { gameTextForRead } from "@/lib/game-text";
 
 interface PublicEventRaw {
   id: string;
@@ -248,10 +249,10 @@ export function serializePublicEvent(
       name: invite.user?.name || (invite.email ? invite.email.replace(/(.{2}).*(@.*)/, "$1***$2") : "Gast"),
       status: invite.status,
     })),
-    selectedGame: event.selectedGame,
+    selectedGame: event.selectedGame ? { ...event.selectedGame, name: gameTextForRead(event.selectedGame.name) } : null,
     winningProposal: event.winningProposal ? {
       id: event.winningProposal.id,
-      bggName: event.winningProposal.bggName,
+      bggName: event.winningProposal.bggName == null ? null : gameTextForRead(event.winningProposal.bggName),
       bggImageUrl: event.winningProposal.bggImageUrl,
     } : null,
     proposals: event.proposals.map((proposal: PublicEventRaw["proposals"][number]) => {
@@ -260,7 +261,7 @@ export function serializePublicEvent(
       const userHasVoted = currentUserId ? (proposal.votes?.length ?? 0) > 0 : false;
 
       // Merge game data: prefer DB game, fallback to inline BGG fields
-      const gameData = proposal.game ?? {
+      const rawGameData = proposal.game ?? {
         id: `bgg-${proposal.bggId}`,
         name: proposal.bggName ?? "Unbekanntes Spiel",
         imageUrl: proposal.bggImageUrl ?? null,
@@ -268,6 +269,7 @@ export function serializePublicEvent(
         maxPlayers: proposal.bggMaxPlayers ?? null,
         playTimeMinutes: proposal.bggPlayTimeMinutes ?? null,
       };
+      const gameData = { ...rawGameData, name: gameTextForRead(rawGameData.name) };
 
       // Merge proposedBy: prefer DB user, fallback to guest
       const proposedByData = proposal.proposedBy ?? (proposal.guest
