@@ -114,5 +114,6 @@ Die Implementierung ist mit echten isolierten PostgreSQL- und Chromium-Tests
 abgenommen. 740 Unit-Tests sowie die Viewport- und Impeccable-Prüfung sind
 erfolgreich. Die Erstprüfung fand einen Kontrast-/Abstandsfehler und eine
 ungünstige Textzeile; beide Punkte wurden korrigiert und erneut gerendert.
-Score und Regressionsergebnis werden nach dem finalen Commit-Hook anhand des
-gültigen Registrylaufs ergänzt.
+Der finale Commit-Hook bestätigt 10/10 und keine Regressionen. Der Security-Check
+ist bestanden; er meldet 0 Fehler und 2 bestehende Warnungen. Der Regression-Snapshot
+ist `history/2026-10-31_2357.json`.

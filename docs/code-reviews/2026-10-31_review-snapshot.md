@@ -117,4 +117,4 @@ kein neuer Score oder erneuter Commit gegen eine verschobene Baseline.
 - PostgreSQL-Integration: 4/4; Chromium-E2E: 1/1, einschließlich veralteter Eventseite und ausbleibender Stimmenmutation.
 - Viewports 390 × 844, 1440 × 1000, hell/dunkel und 200-%-Zoom-Äquivalent geprüft; kein Überlauf.
 - Impeccable-Detektor bei 390 × 844 ohne Findings. ESLint: 0 Fehler, 651 vorhandene Warnungen.
-- Sicherheits-/Regressionsevaluator wird im Commit-Hook mit Registryzugriff final protokolliert.
+- Commit-Hook: Security-Check bestanden (0 Fehler; 2 Warnungen); Regressionsevaluator 10/10, keine Regression. History: `history/2026-10-31_2357.json`.

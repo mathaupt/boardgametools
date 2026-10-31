@@ -103,4 +103,4 @@ falsch positiven P2-23-Findings ändert keine API-Verträge.
 - [x] Responsive Darstellung bei 390/1440 px, hellem/dunklem Modus und 200-%-Zoom-Äquivalent geprüft.
 - [x] Impeccable-Detektor erneut ausgeführt; initiale Kontrast-, Innenabstands- und Copy-Hinweise behoben, finale Prüfung ohne Findings.
 - [x] Vollständige Unit-Suite (740), TypeScript, Produktionsbuild und Lint (0 Fehler) erfolgreich.
-- [ ] Security- und Regressionsevaluator im finalen Commit-Hook protokollieren.
+- [x] Security-Check im Commit-Hook bestanden (0 Fehler, 2 Warnungen); Regressionsevaluator 10/10 ohne Regression, Snapshot `history/2026-10-31_2357.json`.
