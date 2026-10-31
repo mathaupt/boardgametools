@@ -23,6 +23,7 @@ interface ProposalRankingListProps {
   onDeleteProposal: (proposalId: string) => void;
   winningProposalId?: string | null;
   selectedGameId?: string | null;
+  canChangeVoting?: boolean;
 }
 
 function toSortableProposal(proposal: ProposalWithDetails): VotingProposal {
@@ -54,6 +55,7 @@ export default function ProposalRankingList({
   onDeleteProposal,
   winningProposalId,
   selectedGameId,
+  canChangeVoting = true,
 }: ProposalRankingListProps) {
   const [sort, setSort] = useState<ProposalSort>("votes");
   const visibleProposals = useMemo(
@@ -106,7 +108,7 @@ export default function ProposalRankingList({
                   variant="ghost"
                   size="icon"
                   onClick={() => onDeleteProposal(proposal.id)}
-                  disabled={deletingProposal === proposal.id}
+                  disabled={!canChangeVoting || deletingProposal === proposal.id}
                   className="min-h-11 min-w-11 text-muted-foreground hover:text-destructive"
                   aria-label={`Vorschlag ${gameTextForRead(proposal.game.name)} löschen`}
                 >
@@ -115,7 +117,7 @@ export default function ProposalRankingList({
               )}
               <Button
                 onClick={() => proposal.userVoted ? onRemoveVote(proposal.id) : onVote(proposal.id)}
-                disabled={voting === proposal.id}
+                disabled={!canChangeVoting || voting === proposal.id}
                 variant={proposal.userVoted ? "outline" : "default"}
                 className="min-h-11 gap-2"
                 aria-pressed={proposal.userVoted}

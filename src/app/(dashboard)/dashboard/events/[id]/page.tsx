@@ -14,6 +14,7 @@ import CloseVotingButton from "./close-voting-button";
 import { EventInfoCard } from "./event-info-card";
 import { EventGuestCard } from "./event-guest-card";
 import { EventProposalsCard } from "./event-proposals-card";
+import { evaluateEventState } from "@/lib/events/event-state";
 
 export default async function EventDetailPage({
   params,
@@ -79,8 +80,9 @@ export default async function EventDetailPage({
   }
 
   const isCreator = event.createdById === userId;
-  const eventDate = new Date(event.eventDate);
-  const isPast = eventDate < new Date();
+  const eventState = evaluateEventState(event, new Date());
+  const isTerminal = eventState.phase === "closed" || eventState.phase === "cancelled" || eventState.phase === "past" || eventState.phase === "unavailable";
+  const isPast = isTerminal;
   const publicUrl = event.shareToken ? `${await getPublicBaseUrl()}/public/event/${event.shareToken}` : null;
   const guestVoteCount = event.guestParticipants.reduce((sum, guest) => sum + (guest._count?.votes ?? 0), 0);
   const acceptedCount = event.invites.filter((inv) => inv.status === "accepted").length;
@@ -154,7 +156,7 @@ export default async function EventDetailPage({
                   Voting
                 </Link>
               </Button>
-              {event.status !== "closed" && (
+              {eventState.available.close && (
                 <CloseVotingButton eventId={event.id} />
               )}
             </>
@@ -168,7 +170,7 @@ export default async function EventDetailPage({
         </div>
       </div>
 
-      <EventInfoCard event={event} isPast={isPast} />
+      <EventInfoCard event={event} eventState={eventState} />
 
       {/* Public link + guest overview */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
@@ -190,7 +192,7 @@ export default async function EventDetailPage({
         eventId={event.id}
         userId={userId || null}
         isCreator={isCreator}
-        isPast={isPast}
+        isPast={isTerminal}
         initialProposals={event.dateProposals.map((p) => ({
           ...p,
           date: p.date.toISOString(),
@@ -203,7 +205,7 @@ export default async function EventDetailPage({
         proposals={normalizedProposals}
         userId={userId || null}
         userVoteIds={userVoteIds}
-        isPast={isPast}
+        isPast={!eventState.available.voteGame}
         isCreator={isCreator}
         selectedGameId={event.selectedGame?.id}
         winningProposalId={event.winningProposalId ?? undefined}

@@ -3,7 +3,7 @@
 Geplante Erweiterungen stehen separat im [nummerierten Feature-Backlog](FEATURE-BACKLOG.md).
 Dort erfasste TODOs sind noch nicht implementiert oder zur Umsetzung freigegeben.
 
-> **Version 0.50.32** | 42 Seiten | 94 API-Endpunkte | 29 Datenbank-Modelle
+> **Version 0.50.34** | 42 Seiten | 94 API-Endpunkte | 29 Datenbank-Modelle
 >
 > Vollstaendige Dokumentation aller Nutzer-sichtbaren Features,
 > organisiert nach Bereichen mit Screenshots-Beschreibungen,
@@ -266,7 +266,7 @@ Oben: **Offene Einladungen** mit Zusagen/Absagen-Buttons.
 Die zentrale Seite fuer Event-Management mit folgenden Bereichen:
 
 #### Event-Info
-Datum, Ort, Status (Entwurf / Abstimmung / Abgeschlossen), Beschreibung.
+Datum, Ort, serverseitig abgeleiteter Status (Planung / Abstimmung / geschlossen / abgesagt / vergangen), Beschreibung und gespeichertes Abstimmungsergebnis. Ein ausgewählter Termin wird als Datum ohne erfundene Uhrzeit angezeigt.
 
 #### Oeffentlicher Link
 - Status-Badge (Oeffentlich / Nicht veroeffentlicht)
@@ -287,6 +287,7 @@ Uebersicht der Gaeste (per oeffentlichem Link beigetreten) mit Stimmenanzahl.
 - Sichtbare Abstimmungsaktionen und berechtigte Löschaktionen ohne horizontales Scrollen
 - Abstimmen / Stimme zurueckziehen
 - Gewinnerspiel hervorgehoben
+- Schreibaktionen prüfen den aktuellen Eventstatus und die Zugehörigkeit von Spiel- und Terminvorschlägen; abgewiesene veraltete Änderungen liefern HTTP 409.
 
 #### Organizer-Aktionen (nur Ersteller)
 | Aktion | Beschreibung |

@@ -9,6 +9,10 @@ import { encryptId } from "@/lib/crypto";
 import { NOT_DELETED, SAFE_USER_SELECT, buildPagination, paginatedResponse } from "./shared";
 import logger from "@/lib/logger";
 import * as PushService from "@/lib/services/push.service";
+import { withEventMutation } from "@/lib/services/event-mutation.service";
+import { getDateOnlyKey } from "@/lib/events/event-date";
+import { evaluateEventState } from "@/lib/events/event-state";
+import { closeEvent } from "@/lib/services/event-close.service";
 
 // ── Types ────────────────────────────────────────────────────────
 
@@ -209,48 +213,11 @@ export const EventService = {
 
   /** Close an event (set status to "closed") */
   async close(userId: string, eventId: string, selectedGameId?: string, winningProposalId?: string) {
-    const event = await prisma.event.findFirst({
-      where: { id: eventId, createdById: userId, ...NOT_DELETED },
-      include: {
-        invites: { include: { user: { select: SAFE_USER_SELECT } } },
-      },
-    });
-    if (!event) throw new ApiError(404, "Event not found");
-
-    const updated = await prisma.event.update({
-      where: { id: eventId },
-      data: {
-        status: "closed",
-        ...(selectedGameId && { selectedGameId }),
-        ...(winningProposalId && { winningProposalId }),
-      },
-      include: {
-        selectedGame: true,
-      },
-    });
-
-    // Notify all invitees (and the creator) about the closed vote
-    const winningGameName = updated.selectedGame?.name;
-    for (const invite of event.invites) {
-      try {
-        await PushService.notifyEventClosed(invite.userId ?? invite.user?.id ?? userId, eventId, event.title, winningGameName);
-      } catch (pushErr) {
-        logger.error({ err: pushErr, inviteId: invite.id }, "Failed to send event closed push");
-      }
-    }
-
-    invalidateTag(CacheTags.userEvents(userId));
-    invalidateTag(CacheTags.userDashboard(userId));
-    return updated;
+    return closeEvent(userId, eventId, selectedGameId, winningProposalId);
   },
 
   /** Update an existing event */
   async update(userId: string, eventId: string, input: UpdateEventInput) {
-    const existing = await prisma.event.findFirst({
-      where: { id: eventId, createdById: userId, ...NOT_DELETED },
-    });
-    if (!existing) throw new ApiError(404, "Event not found");
-
     const validationError = firstError(
       input.title ? validateString(input.title, "Titel", { max: 200 }) : null,
       validateString(input.description, "Beschreibung", { required: false, max: 2000 }),
@@ -258,38 +225,52 @@ export const EventService = {
     );
     if (validationError) throw new ApiError(400, validationError);
 
-    const updated = await prisma.event.update({
-      where: { id: eventId },
-      data: {
-        ...(input.title !== undefined && { title: input.title }),
-        ...(input.description !== undefined && { description: input.description }),
-        ...(input.eventDate !== undefined && { eventDate: new Date(input.eventDate) }),
-        ...(input.location !== undefined && { location: input.location }),
-        ...(input.groupId !== undefined && { groupId: input.groupId || null }),
-        ...(input.status !== undefined && { status: input.status }),
-      },
-      include: eventListInclude,
-    });
+    const requestedDate = input.eventDate === undefined ? undefined : new Date(input.eventDate);
+    if (requestedDate && !Number.isFinite(requestedDate.getTime())) throw new ApiError(400, "Ungültiges Eventdatum.");
 
-    invalidateTag(CacheTags.userEvents(userId));
-    invalidateTag(CacheTags.userDashboard(userId));
-    return updated;
+    if (input.status === "closed") return closeEvent(userId, eventId);
+    if (input.status !== undefined && !["planned", "draft", "planning", "open", "voting"].includes(input.status)) {
+      throw new ApiError(400, "Unknown event status.");
+    }
+
+    return withEventMutation({ kind: "user", eventId, userId }, null, async ({ tx, event, now }) => {
+      if (event.createdById !== userId) throw new ApiError(403, "Only the event creator may update this event.");
+      if (input.status !== undefined && input.status !== event.status) {
+        const state = evaluateEventState(event, now);
+        if (state.phase !== "planning" && state.phase !== "open") {
+          throw new ApiError(409, "Closed, cancelled, or past events cannot be reopened.");
+        }
+      }
+      if (requestedDate && event.selectedDate && getDateOnlyKey(requestedDate) !== getDateOnlyKey(event.selectedDate)) {
+        throw new ApiError(409, "Das ausgewählte Datum muss vor einer Terminänderung zurückgesetzt werden.");
+      }
+      if (requestedDate && requestedDate.getTime() !== event.eventDate.getTime()) {
+        const state = evaluateEventState(event, now);
+        if (state.phase === "closed" || state.phase === "cancelled" || state.phase === "past") {
+          throw new ApiError(409, "Geschlossene, abgesagte oder vergangene Events können nicht umdatiert werden.");
+        }
+      }
+      return tx.event.update({
+        where: { id: eventId },
+        data: {
+          ...(input.title !== undefined && { title: input.title }),
+          ...(input.description !== undefined && { description: input.description }),
+          ...(requestedDate && { eventDate: requestedDate }),
+          ...(input.location !== undefined && { location: input.location }),
+          ...(input.groupId !== undefined && { groupId: input.groupId || null }),
+          ...(input.status !== undefined && { status: input.status }),
+        },
+        include: eventListInclude,
+      });
+    });
   },
 
   /** Soft-delete an event */
   async delete(userId: string, eventId: string) {
-    const event = await prisma.event.findFirst({
-      where: { id: eventId, createdById: userId, ...NOT_DELETED },
+    await withEventMutation({ kind: "user", eventId, userId }, null, async ({ tx, event, now }) => {
+      if (event.createdById !== userId) throw new ApiError(403, "Only the event creator may delete this event.");
+      await tx.event.update({ where: { id: eventId }, data: { deletedAt: now } });
     });
-    if (!event) throw new ApiError(404, "Event not found");
-
-    await prisma.event.update({
-      where: { id: eventId },
-      data: { deletedAt: new Date() },
-    });
-
-    invalidateTag(CacheTags.userEvents(userId));
-    invalidateTag(CacheTags.userDashboard(userId));
     return { message: "Event deleted" };
   },
 };

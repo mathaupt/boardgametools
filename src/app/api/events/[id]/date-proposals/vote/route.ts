@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requireAuth, handleApiError } from "@/lib/require-auth";
-import prisma from "@/lib/db";
+import { requireAuth, handleApiError, ApiError } from "@/lib/require-auth";
 import { withApiLogging } from "@/lib/api-logger";
+import { withEventMutation } from "@/lib/services/event-mutation.service";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -19,67 +19,26 @@ export const POST = withApiLogging(async function POST(
     const body = await request.json();
     const { dateProposalId, availability } = body;
 
-    if (!dateProposalId || !availability) {
-      return NextResponse.json(
-        { error: "Missing required fields: dateProposalId, availability" },
-        { status: 400 }
-      );
-    }
+    if (!dateProposalId || !availability) throw new ApiError(400, "Missing required fields: dateProposalId, availability");
 
     if (!["yes", "maybe", "no"].includes(availability)) {
-      return NextResponse.json(
-        { error: "availability must be 'yes', 'maybe', or 'no'" },
-        { status: 400 }
-      );
+      throw new ApiError(400, "availability must be 'yes', 'maybe', or 'no'");
     }
 
-    // Prüfe ob Event existiert und User Zugang hat
-    const event = await prisma.event.findFirst({
-      where: { id, deletedAt: null },
-      include: { invites: { select: { userId: true } } },
-    });
-
-    if (!event) {
-      return NextResponse.json({ error: "Event not found" }, { status: 404 });
-    }
-
-    const isInvited = event.invites.some((i) => i.userId === userId);
-    const hasAccess = event.createdById === userId || isInvited;
-
-    if (!hasAccess) {
-      return NextResponse.json({ error: "Access denied" }, { status: 403 });
-    }
-
-    // Prüfe ob DateProposal zum Event gehört
-    const proposal = await prisma.dateProposal.findFirst({
-      where: { id: dateProposalId, eventId: id },
-    });
-
-    if (!proposal) {
-      return NextResponse.json(
-        { error: "Date proposal not found for this event" },
-        { status: 404 }
-      );
-    }
-
-    // Upsert Vote
-    const vote = await prisma.dateVote.upsert({
-      where: {
-        dateProposalId_userId: {
-          dateProposalId,
-          userId: userId,
-        },
-      },
-      update: { availability },
-      create: {
-        dateProposalId,
-        userId: userId,
-        availability,
-      },
-      include: {
-        user: { select: { id: true, name: true, email: true } },
-      },
-    });
+    const vote = await withEventMutation(
+      { kind: "user", eventId: id, userId },
+      "voteDate",
+      async ({ tx }) => {
+        const proposal = await tx.dateProposal.findFirst({ where: { id: dateProposalId, eventId: id }, select: { id: true } });
+        if (!proposal) throw new ApiError(404, "Date proposal not found for this event");
+        return tx.dateVote.upsert({
+          where: { dateProposalId_userId: { dateProposalId, userId } },
+          update: { availability },
+          create: { dateProposalId, userId, availability },
+          include: { user: { select: { id: true, name: true, email: true } } },
+        });
+      }
+    );
 
     return NextResponse.json(vote, { status: 200 });
   } catch (error) {
@@ -101,58 +60,41 @@ export const PUT = withApiLogging(async function PUT(
     const body = await request.json();
     const { votes } = body;
 
-    if (!votes || !Array.isArray(votes) || votes.length === 0) {
-      return NextResponse.json(
-        { error: "Provide a non-empty 'votes' array" },
-        { status: 400 }
-      );
-    }
+    if (!votes || !Array.isArray(votes) || votes.length === 0) throw new ApiError(400, "Provide a non-empty 'votes' array");
 
     const validAvailabilities = ["yes", "maybe", "no"];
     for (const v of votes) {
       if (!v.availability || !validAvailabilities.includes(v.availability)) {
-        return NextResponse.json(
-          { error: "availability must be 'yes', 'maybe', or 'no'" },
-          { status: 400 }
-        );
+        throw new ApiError(400, "availability must be 'yes', 'maybe', or 'no'");
       }
     }
 
-    // Prüfe ob Event existiert und User Zugang hat
-    const event = await prisma.event.findFirst({
-      where: { id, deletedAt: null },
-      include: { invites: { select: { userId: true } } },
-    });
+    const proposalIds = votes.map((vote: { dateProposalId: string }) => vote.dateProposalId);
+    if (proposalIds.some((proposalId: string) => !proposalId)) throw new ApiError(400, "Missing dateProposalId");
+    if (new Set(proposalIds).size !== proposalIds.length) throw new ApiError(400, "Terminvorschläge dürfen nicht doppelt enthalten sein.");
 
-    if (!event) {
-      return NextResponse.json({ error: "Event not found" }, { status: 404 });
-    }
-
-    const isInvited = event.invites.some((i) => i.userId === userId);
-    const hasAccess = event.createdById === userId || isInvited;
-
-    if (!hasAccess) {
-      return NextResponse.json({ error: "Access denied" }, { status: 403 });
-    }
-
-    // Bulk upsert in transaction
-    const results = await prisma.$transaction(
-      votes.map((v: { dateProposalId: string; availability: string }) =>
-        prisma.dateVote.upsert({
+    const results = await withEventMutation(
+      { kind: "user", eventId: id, userId },
+      "voteDate",
+      async ({ tx }) => {
+        const found = await tx.dateProposal.findMany({ where: { id: { in: proposalIds }, eventId: id }, select: { id: true } });
+        if (found.length !== proposalIds.length) throw new ApiError(404, "Date proposal not found for this event");
+        const results = [];
+        for (const vote of votes as { dateProposalId: string; availability: string }[]) {
+          results.push(await tx.dateVote.upsert({
           where: {
-            dateProposalId_userId: {
-              dateProposalId: v.dateProposalId,
-              userId: userId,
-            },
+            dateProposalId_userId: { dateProposalId: vote.dateProposalId, userId },
           },
-          update: { availability: v.availability },
+          update: { availability: vote.availability },
           create: {
-            dateProposalId: v.dateProposalId,
-            userId: userId,
-            availability: v.availability,
+            dateProposalId: vote.dateProposalId,
+            userId,
+            availability: vote.availability,
           },
-        })
-      )
+          }));
+        }
+        return results;
+      }
     );
 
     return NextResponse.json(results);

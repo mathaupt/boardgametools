@@ -96,3 +96,14 @@ Major-Upgrades. Sie bleiben dokumentiert; der Commit-Hook blockiert aktuell nich
 Nach der Evaluator- und Dependency-Korrektur bestanden zusätzlich 706/706
 Unit-Tests, TypeScript, Build und Security-Check. Lint: 0 Fehler, 651
 vorhandene Warnungen in Impeccable-Skriptdateien.
+
+## Regressionserkennung korrigiert – 0.50.34
+
+| Finding | Ursache der scheinbaren Regression | Korrektur / Nachweis |
+|---|---|---|
+| P2-23 | Erfolgreiche API-Antworten `{ message }` wurden als Fehler gezählt | Evaluator prüft nur `message`-Antworten mit 4xx/5xx-Status; 3 Unit-Tests bestanden |
+| SEC-45 | Sandboxlauf lieferte keine gültigen npm-Auditdaten | Mit Registryzugriff erneut geprüft: 22 moderate Dev-Befunde, Produktionsaudit 0; keine Regression |
+
+Der Regressionsevaluator endete mit `--fail-on-regression` erfolgreich (Exitcode
+0). Gesamtwertung 10/10. Das Ergebnis bestätigt nur den Evaluatorstand und ist
+keine Abnahme der noch laufenden FEAT-010-Implementierung.

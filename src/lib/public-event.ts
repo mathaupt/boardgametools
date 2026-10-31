@@ -1,5 +1,6 @@
 import { Prisma } from "@/generated/prisma/client";
 import { gameTextForRead } from "@/lib/game-text";
+import { evaluateEventState, type EventState } from "@/lib/events/event-state";
 
 interface PublicEventRaw {
   id: string;
@@ -228,12 +229,14 @@ export interface SerializedPublicEvent {
     }>;
   }>;
   selectedDate: string | null;
+  eventState: EventState;
   currentUserId: string | null;
 }
 
 export function serializePublicEvent(
   event: PublicEventRaw,
-  currentUserId: string | null
+  currentUserId: string | null,
+  now = new Date()
 ): SerializedPublicEvent {
   return {
     id: event.id,
@@ -242,6 +245,14 @@ export function serializePublicEvent(
     eventDate: event.eventDate.toISOString(),
     location: event.location,
     status: event.status,
+    eventState: evaluateEventState({
+      status: event.status,
+      eventDate: event.eventDate,
+      selectedDate: event.selectedDate,
+      selectedGameId: event.selectedGame?.id ?? null,
+      winningProposalId: event.winningProposal?.id ?? null,
+      deletedAt: null,
+    }, now),
     shareToken: event.shareToken,
     isPublic: event.isPublic,
     createdBy: event.createdBy,

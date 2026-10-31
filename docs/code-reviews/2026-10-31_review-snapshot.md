@@ -98,3 +98,15 @@ kein neuer Score oder erneuter Commit gegen eine verschobene Baseline.
 - Nach den Audit-Evaluator-Änderungen: Unit-Suite 706/706, TypeScript,
   Build und vollständiger Security-Check erfolgreich; Lint 0 Fehler mit
   651 vorhandenen Warnungen aus Impeccable-Skriptdateien.
+
+## Regressionsevaluierung nach FEAT-010-Arbeitsbeginn – 0.50.34
+
+- P2-23 wurde durch den Evaluator fälschlich wieder geöffnet, weil erfolgreiche
+  `{ message }`-Antworten als inkonsistente Fehlerantworten gezählt wurden.
+- Die Prüfung zählt solche Felder jetzt nur mit explizitem 4xx/5xx-Status;
+  drei Unit-Tests für Erfolg, Fehler und normale Meldungen bestanden.
+- Regressionsevaluator mit Registryzugriff: Exitcode 0, keine Regression;
+  P2-23 resolved, SEC-45 teilweise gelöst, 10/10 Gesamtwertung.
+- Der Befund stammt aus einer fehlerhaften Erkennungsregel, nicht aus einer
+  Änderung der API-Antworten. Der parallel begonnene FEAT-010-Code ist noch
+  nicht vollständig validiert.

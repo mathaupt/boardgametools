@@ -12,7 +12,8 @@ interface PublicProposalVoteActionsProps {
   guestHasVoted: boolean;
   userVoting: string | null;
   guestVoting: string | null;
-  isPast: boolean;
+  canVote?: boolean;
+  isPast?: boolean;
   onUserVote: () => void;
   onGuestVote: () => void;
 }
@@ -25,16 +26,18 @@ export function PublicProposalVoteActions({
   guestHasVoted,
   userVoting,
   guestVoting,
+  canVote,
   isPast,
   onUserVote,
   onGuestVote,
 }: PublicProposalVoteActionsProps) {
+  const votingEnabled = canVote ?? !isPast;
   return (
     <>
       {currentUserId && (
         <Button
           data-testid={`user-vote-${proposalId}`}
-          disabled={!!userVoting || isPast}
+          disabled={!!userVoting || !votingEnabled}
           onClick={onUserVote}
           variant={userHasVoted ? "outline" : "default"}
           className={cn("min-h-11 gap-2", userHasVoted && "border-success text-success")}
@@ -46,7 +49,7 @@ export function PublicProposalVoteActions({
       )}
       <Button
         data-testid={`guest-vote-${proposalId}`}
-        disabled={!!guestVoting || isPast || !activeGuest}
+        disabled={!!guestVoting || !votingEnabled || !activeGuest}
         onClick={onGuestVote}
         variant={guestHasVoted ? "secondary" : "outline"}
         className={cn("min-h-11 gap-2", guestHasVoted && "border-primary text-primary", !activeGuest && "opacity-50")}

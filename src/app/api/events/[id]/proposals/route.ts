@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requireAuth, handleApiError } from "@/lib/require-auth";
+import { requireAuth, handleApiError, ApiError } from "@/lib/require-auth";
 import prisma from "@/lib/db";
 import { withApiLogging } from "@/lib/api-logger";
 import { Errors } from "@/lib/error-messages";
 import * as PushService from "@/lib/services/push.service";
 import logger from "@/lib/logger";
+import { withEventMutation } from "@/lib/services/event-mutation.service";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -26,60 +27,25 @@ export const POST = withApiLogging(async function POST(
       }, { status: 400 });
     }
 
-    // Prüfe ob Event existiert und User Berechtigung hat
-    const event = await prisma.event.findFirst({
-      where: { id, deletedAt: null },
-      include: {
-        invites: {
-          select: { userId: true }
-        }
+    const { event, proposal } = await withEventMutation(
+      { kind: "user", eventId: id, userId },
+      "proposeGame",
+      async ({ tx, event }) => {
+        const game = await tx.game.findFirst({ where: { id: gameId, ownerId: userId, deletedAt: null } });
+        if (!game) throw new ApiError(404, Errors.GAME_NOT_FOUND);
+        const existingProposal = await tx.gameProposal.findFirst({ where: { eventId: id, gameId } });
+        if (existingProposal) throw new ApiError(400, Errors.GAME_ALREADY_PROPOSED);
+        const proposal = await tx.gameProposal.create({
+          data: { eventId: id, gameId, proposedById: userId },
+          include: {
+            game: true,
+            proposedBy: { select: { id: true, name: true, email: true } },
+            _count: { select: { votes: true, guestVotes: true } },
+          },
+        });
+        return { event, proposal };
       }
-    });
-
-    if (!event) {
-      return NextResponse.json({ error: Errors.EVENT_NOT_FOUND }, { status: 404 });
-    }
-
-    const isInvited = event.invites.some((invite) => invite.userId === userId);
-    const hasAccess = event.createdById === userId || isInvited || event.isPublic;
-
-    if (!hasAccess) {
-      return NextResponse.json({ error: Errors.ACCESS_DENIED }, { status: 403 });
-    }
-
-    // Prüfe ob Spiel dem User gehört
-    const game = await prisma.game.findFirst({
-      where: { id: gameId, ownerId: userId, deletedAt: null }
-    });
-
-    if (!game) {
-      return NextResponse.json({ error: Errors.GAME_NOT_FOUND }, { status: 404 });
-    }
-
-    // Prüfe ob Spiel bereits vorgeschlagen wurde
-    const existingProposal = await prisma.gameProposal.findFirst({
-      where: { eventId: id, gameId }
-    });
-
-    if (existingProposal) {
-      return NextResponse.json({ 
-        error: Errors.GAME_ALREADY_PROPOSED 
-      }, { status: 400 });
-    }
-
-    // Erstelle Game Proposal
-    const proposal = await prisma.gameProposal.create({
-      data: {
-        eventId: id,
-        gameId,
-        proposedById: userId
-      },
-      include: {
-        game: true,
-        proposedBy: { select: { id: true, name: true, email: true } },
-        _count: { select: { votes: true, guestVotes: true } }
-      }
-    });
+    );
 
     // Notify the event creator about the new proposal
     if (event.createdById !== userId) {
@@ -122,23 +88,18 @@ export const DELETE = withApiLogging(async function DELETE(
   }
 
   try {
-    // Prüfe ob Proposal existiert und User Berechtigung hat
-    const proposal = await prisma.gameProposal.findFirst({
-      where: { 
-        id: proposalId, 
-        eventId: id,
-        proposedById: userId 
+    await withEventMutation(
+      { kind: "user", eventId: id, userId },
+      "proposeGame",
+      async ({ tx }) => {
+        const proposal = await tx.gameProposal.findFirst({
+          where: { id: proposalId, eventId: id, proposedById: userId },
+          select: { id: true },
+        });
+        if (!proposal) throw new ApiError(404, Errors.PROPOSAL_NOT_FOUND);
+        await tx.gameProposal.delete({ where: { id: proposalId } });
       }
-    });
-
-    if (!proposal) {
-      return NextResponse.json({ error: Errors.PROPOSAL_NOT_FOUND }, { status: 404 });
-    }
-
-    // Lösche Proposal und dazugehörige Votes
-    await prisma.gameProposal.delete({
-      where: { id: proposalId }
-    });
+    );
 
     return NextResponse.json({ message: Errors.PROPOSAL_DELETED });
   } catch (error) {

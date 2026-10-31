@@ -7,6 +7,7 @@ import { Errors } from "@/lib/error-messages";
 import { toDateProposalDto } from "@/lib/dto-mappers";
 import { NOT_DELETED, SAFE_USER_SELECT } from "@/lib/services/shared";
 import { hasEventAccess } from "../_helpers";
+import { withEventMutation } from "@/lib/services/event-mutation.service";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -55,19 +56,6 @@ export const POST = withApiLogging(async function POST(
     if (!session) throw new ApiError(401, Errors.UNAUTHORIZED);
 
     const { id } = await params;
-    const event = await prisma.event.findFirst({
-      where: { id, ...NOT_DELETED },
-    });
-
-    if (!event) throw new ApiError(404, Errors.EVENT_NOT_FOUND);
-    if (event.createdById !== session.user.id) {
-      throw new ApiError(403, Errors.ONLY_CREATOR_CAN_CREATE_DATES);
-    }
-
-    if (event.selectedDate) {
-      throw new ApiError(400, Errors.DATE_POLL_ALREADY_FINALIZED);
-    }
-
     const body = (await request.json()) as {
       dates?: string[];
       startDate?: string;
@@ -114,21 +102,22 @@ export const POST = withApiLogging(async function POST(
       return normalized;
     });
 
-    await prisma.$transaction(
-      normalizedDates.map((date) =>
-        prisma.dateProposal.upsert({
-          where: { eventId_date: { eventId: id, date } },
-          update: {},
-          create: { eventId: id, date },
-        })
-      )
+    const allProposals = await withEventMutation(
+      { kind: "user", eventId: id, userId: session.user.id },
+      "manageDates",
+      async ({ tx, event }) => {
+        if (event.createdById !== session.user.id) throw new ApiError(403, Errors.ONLY_CREATOR_CAN_CREATE_DATES);
+        if (event.selectedDate) throw new ApiError(409, Errors.DATE_POLL_ALREADY_FINALIZED);
+        for (const date of normalizedDates) {
+          await tx.dateProposal.upsert({
+            where: { eventId_date: { eventId: id, date } },
+            update: {},
+            create: { eventId: id, date },
+          });
+        }
+        return tx.dateProposal.findMany({ where: { eventId: id }, include: dateProposalInclude, orderBy: { date: "asc" } });
+      }
     );
-
-    const allProposals = await prisma.dateProposal.findMany({
-      where: { eventId: id },
-      include: dateProposalInclude,
-      orderBy: { date: "asc" },
-    });
 
     return NextResponse.json(allProposals.map(toDateProposalDto), { status: 201 });
   } catch (error) {

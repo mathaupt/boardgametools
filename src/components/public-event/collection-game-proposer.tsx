@@ -13,6 +13,7 @@ interface CollectionGameProposerProps {
   currentUserId: string;
   proposedGameIds: Set<string>;
   onProposalAdded: (proposal: Proposal) => void;
+  onStateConflict?: () => void | Promise<void>;
 }
 
 export function CollectionGameProposer({
@@ -20,6 +21,7 @@ export function CollectionGameProposer({
   currentUserId,
   proposedGameIds,
   onProposalAdded,
+  onStateConflict,
 }: CollectionGameProposerProps) {
   const { toast } = useToast();
   const [games, setGames] = useState<GameSummary[]>([]);
@@ -72,6 +74,8 @@ export function CollectionGameProposer({
       });
       if (!response.ok) {
         const data = await response.json().catch(() => null);
+        if (response.status === 409) await onStateConflict?.();
+        if (response.status === 409) throw new Error("Der Planungsstand hat sich geändert. Deine Änderung wurde nicht gespeichert.");
         throw new Error(data?.error ?? "Vorschlag fehlgeschlagen");
       }
       const proposal: Proposal = await response.json();

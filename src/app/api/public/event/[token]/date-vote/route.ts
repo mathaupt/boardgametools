@@ -1,11 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import prisma from "@/lib/db";
-import { findPublicEventByToken } from "@/lib/event-share";
 import { withApiLogging } from "@/lib/api-logger";
 import { validateString } from "@/lib/validation";
 import { checkRateLimit, rateLimitResponse } from "@/lib/rate-limit";
-import logger from "@/lib/logger";
 import { Errors } from "@/lib/error-messages";
+import { ApiError, handleApiError } from "@/lib/require-auth";
+import { withEventMutation } from "@/lib/services/event-mutation.service";
 
 type RouteContext = { params: Promise<{ token: string }> };
 
@@ -22,74 +21,65 @@ export const POST = withApiLogging(async function POST(
   const { token } = await params;
 
   try {
-    const event = await findPublicEventByToken(token);
-
-    if (!event) {
-      return NextResponse.json({ error: Errors.EVENT_NOT_FOUND }, { status: 404 });
-    }
-
     const body = await request.json();
     const { guestId, votes } = body;
 
     const guestIdError = validateString(guestId, "guestId", { max: 100 });
-    if (guestIdError) return NextResponse.json({ error: guestIdError }, { status: 400 });
+    if (guestIdError) throw new ApiError(400, guestIdError);
 
     if (!guestId || !votes || !Array.isArray(votes) || votes.length === 0) {
-      return NextResponse.json(
-        { error: Errors.MISSING_GUEST_VOTES },
-        { status: 400 }
-      );
+      throw new ApiError(400, Errors.MISSING_GUEST_VOTES);
     }
 
     if (votes.length > 366) {
-      return NextResponse.json({ error: "Too many votes" }, { status: 400 });
+      throw new ApiError(400, "Too many votes");
     }
 
     const validAvailabilities = ["yes", "maybe", "no"];
     for (const v of votes) {
       if (!v.availability || !validAvailabilities.includes(v.availability)) {
-        return NextResponse.json(
-          { error: "availability must be 'yes', 'maybe', or 'no'" },
-          { status: 400 }
-        );
+        throw new ApiError(400, "availability must be 'yes', 'maybe', or 'no'");
       }
     }
 
-    // Prüfe ob Gast zum Event gehört
-    const guest = await prisma.guestParticipant.findFirst({
-      where: { id: guestId, eventId: event.id },
-    });
+    const proposalIds = votes.map((vote: { dateProposalId?: string }) => vote.dateProposalId);
+    if (proposalIds.some((proposalId) => !proposalId)) throw new ApiError(400, Errors.MISSING_DATE_PROPOSAL_ID);
+    if (new Set(proposalIds).size !== proposalIds.length) throw new ApiError(400, "Terminvorschläge dürfen nicht doppelt enthalten sein.");
 
-    if (!guest) {
-      return NextResponse.json(
-        { error: Errors.GUEST_NOT_FOUND_FOR_EVENT },
-        { status: 404 }
-      );
-    }
-
-    // Bulk upsert in transaction
-    const results = await prisma.$transaction(
-      votes.map((v: { dateProposalId: string; availability: string }) =>
-        prisma.guestDateVote.upsert({
+    const results = await withEventMutation(
+      { kind: "public", token, guestId },
+      "voteDate",
+      async ({ tx, eventId }) => {
+        const guest = await tx.guestParticipant.findFirst({ where: { id: guestId, eventId }, select: { id: true } });
+        if (!guest) throw new ApiError(404, Errors.GUEST_NOT_FOUND_FOR_EVENT);
+        const found = await tx.dateProposal.findMany({
+          where: { id: { in: proposalIds as string[] }, eventId },
+          select: { id: true },
+        });
+        if (found.length !== proposalIds.length) throw new ApiError(404, Errors.DATE_PROPOSAL_NOT_FOUND);
+        const results = [];
+        for (const vote of votes as { dateProposalId: string; availability: string }[]) {
+          results.push(await tx.guestDateVote.upsert({
           where: {
             dateProposalId_guestId: {
-              dateProposalId: v.dateProposalId,
+              dateProposalId: vote.dateProposalId,
               guestId,
             },
           },
-          update: { availability: v.availability },
+          update: { availability: vote.availability },
           create: {
-            dateProposalId: v.dateProposalId,
+            dateProposalId: vote.dateProposalId,
             guestId,
-            availability: v.availability,
+            availability: vote.availability,
           },
-        })
-      )
+          }));
+        }
+        return results;
+      }
     );
 
     return NextResponse.json(results);
   } catch (error) {
-    logger.error({ err: error }, "Error guest date voting");
-    return NextResponse.json({ error: Errors.INTERNAL_SERVER_ERROR }, { status: 500 });
+    return handleApiError(error);
   }
 });

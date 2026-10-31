@@ -17,6 +17,7 @@ vi.mock("@/lib/db", () => ({
       update: vi.fn(),
       count: vi.fn(),
     },
+    $transaction: vi.fn(),
     user: { findUnique: vi.fn() },
   },
 }));
@@ -59,12 +60,35 @@ const fakeEvent = {
   id: EVENT_ID,
   title: "Spieleabend",
   createdById: USER_ID,
-  eventDate: new Date("2026-04-01"),
+  eventDate: new Date("2026-11-10T18:00:00.000Z"),
+  status: "voting",
+  selectedDate: null,
+  selectedGameId: null,
+  winningProposalId: null,
+  deletedAt: null,
+  isPublic: false,
+  shareToken: null,
   invites: [{ userId: USER_ID, status: "accepted" }],
   proposals: [],
   selectedGame: null,
   _count: { proposals: 0, invites: 1 },
 };
+
+function mockEventTransaction(event: typeof fakeEvent | null = fakeEvent) {
+  const tx = {
+    $queryRaw: vi.fn().mockResolvedValue(event ? [{ id: event.id }] : []),
+    event: {
+      findFirst: vi.fn().mockResolvedValue(event),
+      update: vi.fn().mockImplementation(({ data }: { data: Record<string, unknown> }) =>
+        Promise.resolve({ ...event, ...data, selectedGame: null })
+      ),
+    },
+    gameProposal: { findMany: vi.fn().mockResolvedValue([]) },
+    game: { findFirst: vi.fn().mockResolvedValue(null) },
+  };
+  vi.mocked(prisma.$transaction).mockImplementation((async (callback: (client: unknown) => unknown) => callback(tx)) as never);
+  return tx;
+}
 
 // ── Tests ────────────────────────────────────────────────────────
 
@@ -233,20 +257,18 @@ describe("EventService", () => {
   describe("close", () => {
     it("closes event, fetches selected game and invalidates caches", async () => {
       const closedEvent = { ...fakeEvent, status: "closed" };
-      vi.mocked(prisma.event.findFirst).mockResolvedValue(fakeEvent as never);
-      vi.mocked(prisma.event.update).mockResolvedValue(closedEvent as never);
+      const tx = mockEventTransaction();
+      tx.event.update.mockImplementationOnce(() => Promise.resolve({ ...closedEvent, selectedGame: null }));
 
       const result = await EventService.close(USER_ID, EVENT_ID);
 
-      expect(prisma.event.findFirst).toHaveBeenCalledWith(
-        expect.objectContaining({
-          where: { id: EVENT_ID, createdById: USER_ID, deletedAt: null },
-        })
+      expect(tx.event.findFirst).toHaveBeenCalledWith(
+        expect.objectContaining({ where: { id: EVENT_ID, deletedAt: null } })
       );
-      expect(prisma.event.update).toHaveBeenCalledWith(
+      expect(tx.event.update).toHaveBeenCalledWith(
         expect.objectContaining({
           where: { id: EVENT_ID },
-          data: { status: "closed" },
+          data: { status: "closed", selectedGameId: null, winningProposalId: null },
         })
       );
       expect(invalidateTag).toHaveBeenCalledWith(`events-${USER_ID}`);
@@ -256,7 +278,7 @@ describe("EventService", () => {
     });
 
     it("throws ApiError(404) when event not found or not owned", async () => {
-      vi.mocked(prisma.event.findFirst).mockResolvedValue(null as never);
+      mockEventTransaction(null);
 
       await expect(EventService.close(USER_ID, "nope")).rejects.toThrow(ApiError);
       await expect(EventService.close(USER_ID, "nope")).rejects.toThrow("Event not found");
@@ -268,19 +290,17 @@ describe("EventService", () => {
   describe("update", () => {
     it("updates event and invalidates caches", async () => {
       const updatedEvent = { ...fakeEvent, title: "Neuer Spieleabend" };
-      vi.mocked(prisma.event.findFirst).mockResolvedValue(fakeEvent as never);
-      vi.mocked(prisma.event.update).mockResolvedValue(updatedEvent as never);
+      const tx = mockEventTransaction();
+      tx.event.update.mockImplementationOnce(() => Promise.resolve(updatedEvent));
 
       const result = await EventService.update(USER_ID, EVENT_ID, {
         title: "Neuer Spieleabend",
       });
 
-      expect(prisma.event.findFirst).toHaveBeenCalledWith(
-        expect.objectContaining({
-          where: { id: EVENT_ID, createdById: USER_ID, deletedAt: null },
-        })
+      expect(tx.event.findFirst).toHaveBeenCalledWith(
+        expect.objectContaining({ where: { id: EVENT_ID, deletedAt: null } })
       );
-      expect(prisma.event.update).toHaveBeenCalledWith(
+      expect(tx.event.update).toHaveBeenCalledWith(
         expect.objectContaining({
           where: { id: EVENT_ID },
           data: expect.objectContaining({ title: "Neuer Spieleabend" }),
@@ -293,7 +313,7 @@ describe("EventService", () => {
     });
 
     it("throws ApiError(404) when event not found or not owned", async () => {
-      vi.mocked(prisma.event.findFirst).mockResolvedValue(null as never);
+      mockEventTransaction(null);
 
       await expect(
         EventService.update(USER_ID, "nope", { title: "X" })
@@ -303,26 +323,30 @@ describe("EventService", () => {
         EventService.update(USER_ID, "nope", { title: "X" })
       ).rejects.toThrow("Event not found");
     });
+
+    it("does not let a generic update reopen a closed event", async () => {
+      mockEventTransaction({ ...fakeEvent, status: "closed" });
+      await expect(EventService.update(USER_ID, EVENT_ID, { status: "voting" })).rejects.toMatchObject({ statusCode: 409 });
+    });
+
+    it("routes a requested close through the locked close lifecycle", async () => {
+      const tx = mockEventTransaction();
+      const result = await EventService.update(USER_ID, EVENT_ID, { status: "closed" });
+      expect(tx.event.update).toHaveBeenCalledWith(expect.objectContaining({ data: expect.objectContaining({ status: "closed" }) }));
+      expect(result.status).toBe("closed");
+    });
   });
 
   // ── delete ───────────────────────────────────────────────────
 
   describe("delete", () => {
     it("soft-deletes event and invalidates caches", async () => {
-      vi.mocked(prisma.event.findFirst).mockResolvedValue(fakeEvent as never);
-      vi.mocked(prisma.event.update).mockResolvedValue({} as never);
+      const tx = mockEventTransaction();
 
       const result = await EventService.delete(USER_ID, EVENT_ID);
 
-      expect(prisma.event.findFirst).toHaveBeenCalledWith(
-        expect.objectContaining({
-          where: { id: EVENT_ID, createdById: USER_ID, deletedAt: null },
-        })
-      );
-      expect(prisma.event.update).toHaveBeenCalledWith({
-        where: { id: EVENT_ID },
-        data: { deletedAt: expect.any(Date) },
-      });
+      expect(tx.event.findFirst).toHaveBeenCalledWith(expect.objectContaining({ where: { id: EVENT_ID, deletedAt: null } }));
+      expect(tx.event.update).toHaveBeenCalledWith({ where: { id: EVENT_ID }, data: { deletedAt: expect.any(Date) } });
       expect(invalidateTag).toHaveBeenCalledWith(`events-${USER_ID}`);
       expect(invalidateTag).toHaveBeenCalledWith(`dash-${USER_ID}`);
       expect(invalidateTag).toHaveBeenCalledTimes(2);
@@ -330,7 +354,7 @@ describe("EventService", () => {
     });
 
     it("throws ApiError(404) when event not found or not owned", async () => {
-      vi.mocked(prisma.event.findFirst).mockResolvedValue(null as never);
+      mockEventTransaction(null);
 
       await expect(EventService.delete(USER_ID, "nope")).rejects.toThrow(ApiError);
       await expect(EventService.delete(USER_ID, "nope")).rejects.toThrow("Event not found");

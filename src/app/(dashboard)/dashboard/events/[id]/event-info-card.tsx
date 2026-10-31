@@ -1,8 +1,10 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, MapPin, Users, Gamepad } from "lucide-react";
-import { formatDate, formatShortDateTime } from "@/lib/date";
+import { formatDate } from "@/lib/date";
 import Image from "next/image";
+import type { EventState } from "@/lib/events/event-state";
+import { formatEventDate } from "@/lib/events/event-date";
 
 interface Invite {
   id: string;
@@ -16,6 +18,8 @@ interface EventInfoCardProps {
     title: string;
     description: string | null;
     eventDate: Date;
+    status: string;
+    selectedDate: Date | null;
     location: string | null;
     createdAt: Date;
     createdBy: { name: string | null };
@@ -23,11 +27,12 @@ interface EventInfoCardProps {
     selectedGame?: { id: string; name: string; imageUrl: string | null } | null;
     winningProposal?: { bggName: string | null; bggImageUrl: string | null } | null;
   };
-  isPast: boolean;
+  eventState: EventState;
 }
 
-export function EventInfoCard({ event, isPast }: EventInfoCardProps) {
-  const eventDate = new Date(event.eventDate);
+export function EventInfoCard({ event, eventState }: EventInfoCardProps) {
+  const eventDate = eventState.effectiveDate ? new Date(eventState.effectiveDate) : new Date(event.eventDate);
+  const gameName = event.selectedGame?.name ?? event.winningProposal?.bggName;
 
   return (
     <Card>
@@ -43,7 +48,7 @@ export function EventInfoCard({ event, isPast }: EventInfoCardProps) {
             <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-3 text-sm sm:text-base text-muted-foreground">
               <div className="flex items-center gap-1">
                 <Calendar className="h-4 w-4" aria-hidden="true" />
-                {formatShortDateTime(eventDate)}
+                {formatEventDate(eventDate, eventState.dateKind)}
               </div>
               {event.location && (
                 <div className="flex items-center gap-1">
@@ -55,13 +60,22 @@ export function EventInfoCard({ event, isPast }: EventInfoCardProps) {
                 <Users className="h-4 w-4" aria-hidden="true" />
                 {event.invites.length} Eingeladene
               </div>
-              <Badge variant={isPast ? "secondary" : "default"}>
-                {isPast ? "Vergangen" : "Anstehend"}
+              <Badge variant={eventState.phase === "open" || eventState.phase === "planning" ? "default" : "secondary"}>
+                {eventState.label}
               </Badge>
             </div>
           </div>
         </div>
       </CardHeader>
+
+      {(gameName || event.status === "closed") && (
+        <CardContent className="pt-0">
+          <p className="flex items-center gap-2 text-sm font-medium text-foreground" role="status">
+            <Gamepad className="h-4 w-4" aria-hidden="true" />
+            {gameName ? `Ausgewähltes Spiel: ${gameName}` : "Abstimmung geschlossen; kein Spiel festgelegt."}
+          </p>
+        </CardContent>
+      )}
 
       {event.description && (
         <CardContent>

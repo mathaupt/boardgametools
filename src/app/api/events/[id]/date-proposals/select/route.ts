@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requireAuth, handleApiError } from "@/lib/require-auth";
-import prisma from "@/lib/db";
+import { requireAuth, handleApiError, ApiError } from "@/lib/require-auth";
 import { withApiLogging } from "@/lib/api-logger";
 import { Errors } from "@/lib/error-messages";
+import { withEventMutation } from "@/lib/services/event-mutation.service";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -17,48 +17,23 @@ export const POST = withApiLogging(async function POST(
   const { id } = await params;
 
   try {
-    const event = await prisma.event.findFirst({ where: { id, deletedAt: null } });
-
-    if (!event) {
-      return NextResponse.json({ error: Errors.EVENT_NOT_FOUND }, { status: 404 });
-    }
-
-    if (event.createdById !== userId) {
-      return NextResponse.json(
-        { error: Errors.ONLY_CREATOR_CAN_SELECT },
-        { status: 403 }
-      );
-    }
-
     const body = await request.json();
     const { dateProposalId } = body;
 
     if (!dateProposalId) {
-      return NextResponse.json(
-        { error: Errors.MISSING_DATE_PROPOSAL_ID },
-        { status: 400 }
-      );
+      throw new ApiError(400, Errors.MISSING_DATE_PROPOSAL_ID);
     }
 
-    const proposal = await prisma.dateProposal.findFirst({
-      where: { id: dateProposalId, eventId: id },
-    });
-
-    if (!proposal) {
-      return NextResponse.json(
-        { error: Errors.DATE_PROPOSAL_NOT_FOUND },
-        { status: 404 }
-      );
-    }
-
-    // Aktualisiere Event mit ausgewähltem Datum
-    const updatedEvent = await prisma.event.update({
-      where: { id },
-      data: {
-        selectedDate: proposal.date,
-        eventDate: proposal.date,
-      },
-    });
+    const updatedEvent = await withEventMutation(
+      { kind: "user", eventId: id, userId },
+      "selectDate",
+      async ({ tx, event }) => {
+        if (event.createdById !== userId) throw new ApiError(403, Errors.ONLY_CREATOR_CAN_SELECT);
+        const proposal = await tx.dateProposal.findFirst({ where: { id: dateProposalId, eventId: id } });
+        if (!proposal) throw new ApiError(404, Errors.DATE_PROPOSAL_NOT_FOUND);
+        return tx.event.update({ where: { id }, data: { selectedDate: proposal.date, eventDate: proposal.date } });
+      }
+    );
 
     return NextResponse.json({
       message: Errors.DATE_SELECTED,

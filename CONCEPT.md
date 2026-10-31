@@ -53,6 +53,7 @@ Die Weboberfläche verwendet seit 0.50.20 die bestätigte Gestaltung „Club Pro
 - **Spiele vorschlagen**: Eingeladene können Spiele aus der Sammlung oder per BGG-Suche vorschlagen
 - **Spieldetails ansehen**: Vorschläge öffnen einen zugänglichen Dialog mit verfügbaren Spielinformationen; öffentliche Gäste sehen keine private Sammlungsbeschreibung
 - **Voting**: Spieler stimmen für vorgeschlagene Spiele ab
+- **Lebenszyklus**: Öffentliche und geschützte Ansichten zeigen den serverseitig abgeleiteten Planungs-, Abstimmungs- oder Abschlussstatus, den bestätigten Termin und das gespeicherte Ergebnis. Schreibaktionen teilen einen transaktionalen Status- und Zuordnungsschutz.
 - **Sortierung**: Web-Abstimmungen lassen sich nach Gesamtstimmen, deutschem Namen oder Zeitpunkt des Vorschlags sortieren
 - **Übersicht**: Öffentliche und geschützte Web-Votinglisten zeigen Vorschläge kompakt in Zeilen mit dauerhaft erreichbaren Details und Aktionen.
 - **Ergebnis**: Spiel mit meisten Stimmen wird ausgewählt

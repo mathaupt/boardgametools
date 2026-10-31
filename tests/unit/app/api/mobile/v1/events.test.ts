@@ -14,6 +14,9 @@ vi.mock("@/lib/db", () => ({
       delete: vi.fn(),
       count: vi.fn(),
     },
+    guestParticipant: { findFirst: vi.fn(), upsert: vi.fn() },
+    guestVote: { findFirst: vi.fn(), create: vi.fn(), deleteMany: vi.fn() },
+    guestDateVote: { upsert: vi.fn() },
     gameProposal: {
       findMany: vi.fn(),
       findFirst: vi.fn(),
@@ -43,6 +46,7 @@ vi.mock("@/lib/db", () => ({
     game: { findFirst: vi.fn() },
   },
 }));
+vi.mock("@/lib/cache", () => ({ invalidateTag: vi.fn() }));
 
 vi.mock("@/lib/api-auth", () => ({ apiAuth: vi.fn() }));
 vi.mock("@/lib/auth", () => ({ auth: vi.fn() }));
@@ -90,6 +94,7 @@ const mockedDateProposalFindFirst = vi.mocked(prisma.dateProposal.findFirst);
 const mockedDateProposalUpsert = vi.mocked(prisma.dateProposal.upsert);
 const mockedDateVoteUpsert = vi.mocked(prisma.dateVote.upsert);
 const mockedTransaction = vi.mocked(prisma.$transaction);
+const mockedLockedEventFindFirst = vi.fn();
 
 function authUser() {
   return { user: { id: "u1", email: "u1@test.de", name: "Max", role: "USER" } };
@@ -102,7 +107,7 @@ function routeContext(id = "e1") {
 const baseEventFields = {
   title: "Spieleabend",
   description: null,
-  eventDate: new Date("2026-04-01T00:00:00.000Z"),
+  eventDate: new Date("2026-11-15T18:00:00.000Z"),
   location: null,
   status: "voting",
   groupId: null,
@@ -179,6 +184,25 @@ const sampleDateVote = {
 describe("Mobile Event Routes", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockedEventFindFirst.mockResolvedValue({ id: "e1", ...baseEventFields, createdById: "u1", invites: [] } as never);
+    const lockedEvent = {
+      id: "e1", ...baseEventFields, createdById: "u1", selectedDate: null,
+      invites: [],
+    };
+    mockedLockedEventFindFirst.mockResolvedValue(lockedEvent);
+    mockedDateProposalFindMany.mockResolvedValue([sampleDateProposal] as never);
+    mockedTransaction.mockImplementation((async (callback: (tx: unknown) => unknown) => callback({
+      $queryRaw: vi.fn().mockResolvedValue([{ id: "e1" }]),
+      event: { findFirst: mockedLockedEventFindFirst, update: vi.fn().mockResolvedValue(lockedEvent) },
+      gameProposal: prisma.gameProposal,
+      dateProposal: prisma.dateProposal,
+      dateVote: prisma.dateVote,
+      vote: prisma.vote,
+      game: prisma.game,
+      guestParticipant: prisma.guestParticipant,
+      guestVote: prisma.guestVote,
+      guestDateVote: prisma.guestDateVote,
+    })) as never);
   });
 
   describe("GET /api/mobile/v1/events", () => {
@@ -771,7 +795,6 @@ describe("Mobile Event Routes", () => {
         createdById: "u1",
         selectedDate: null,
       } as never);
-      mockedTransaction.mockResolvedValue([sampleDateProposal] as never);
       mockedDateProposalFindMany.mockResolvedValue([sampleDateProposal] as never);
 
       const res = await createDateProposals(
@@ -795,7 +818,6 @@ describe("Mobile Event Routes", () => {
         createdById: "u1",
         selectedDate: null,
       } as never);
-      mockedTransaction.mockResolvedValue([] as never);
       mockedDateProposalFindMany.mockResolvedValue([] as never);
 
       const res = await createDateProposals(
@@ -816,6 +838,9 @@ describe("Mobile Event Routes", () => {
         id: "e1",
         createdById: "u2",
         selectedDate: null,
+      } as never);
+      mockedLockedEventFindFirst.mockResolvedValue({
+        id: "e1", ...baseEventFields, createdById: "u2", selectedDate: null, invites: [],
       } as never);
 
       const res = await createDateProposals(
@@ -840,7 +865,7 @@ describe("Mobile Event Routes", () => {
         isPublic: false,
       } as never);
       mockedDateProposalFindMany.mockResolvedValue([{ id: "dp1", eventId: "e1" }] as never);
-      mockedTransaction.mockResolvedValue([sampleDateVote] as never);
+      mockedDateVoteUpsert.mockResolvedValue(sampleDateVote as never);
 
       const res = await voteDateProposals(
         new NextRequest("http://localhost:3000/api/mobile/v1/events/e1/date-proposals/vote", {

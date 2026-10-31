@@ -188,11 +188,29 @@ components:
         description: { type: string, nullable: true }
         eventDate: { type: string, format: date-time, nullable: true }
         location: { type: string, nullable: true }
-        status: { type: string, enum: [draft, voting, closed] }
+        status: { type: string, enum: [draft, planned, planning, open, voting, closed, cancelled] }
         isPublic: { type: boolean }
         shareToken: { type: string, nullable: true }
         selectedGame: { type: string, nullable: true }
+        selectedDate: { type: string, format: date-time, nullable: true }
+        eventState: { $ref: '#/components/schemas/EventState' }
         createdById: { type: string }
+
+    EventState:
+      type: object
+      description: Serverseitig abgeleiteter Status-, Termin- und Aktionsvertrag für Web und Mobile.
+      properties:
+        phase: { type: string, enum: [planning, open, closed, cancelled, past, unavailable] }
+        label: { type: string }
+        effectiveDate: { type: string, nullable: true, description: Date-only bei bestätigtem Termin oder ISO-Zeitpunkt bei Startzeit }
+        dateKind: { type: string, enum: [provisional, date, datetime] }
+        evaluatedAt: { type: string, format: date-time }
+        available:
+          type: object
+          additionalProperties: { type: boolean }
+          description: Zulässigkeit von join, proposeGame, voteGame, voteDate, manageDates, selectDate, resetDates und close.
+        blockedReason: { type: string, nullable: true }
+      required: [phase, label, effectiveDate, dateKind, evaluatedAt, available, blockedReason]
 
     GameProposal:
       type: object
@@ -970,6 +988,7 @@ paths:
       responses:
         '201': { description: Vorschlag erstellt }
         '400': { description: Spiel bereits vorgeschlagen }
+        '409': { description: Spielvorschläge sind gesperrt, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
     delete:
       tags: [Event Voting]
       summary: Vorschlag zurueckziehen
@@ -980,6 +999,7 @@ paths:
           schema: { type: string }
       responses:
         '200': { description: Vorschlag geloescht }
+        '409': { description: Event akzeptiert keine Änderungen mehr, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
 
   /api/events/{id}/proposals/{proposalId}/game:
     get:
@@ -1051,6 +1071,7 @@ paths:
                 proposalId: { type: string }
       responses:
         '201': { description: Stimme abgegeben }
+        '409': { description: Spielabstimmung ist geschlossen, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
     delete:
       tags: [Event Voting]
       summary: Stimme zurueckziehen
@@ -1061,6 +1082,7 @@ paths:
           schema: { type: string }
       responses:
         '200': { description: Stimme entfernt }
+        '409': { description: Spielabstimmung ist geschlossen, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
 
   /api/events/{id}/close:
     post:
@@ -1074,6 +1096,7 @@ paths:
       description: Setzt Status auf "closed" und waehlt das Spiel mit den meisten Stimmen
       responses:
         '200': { description: Event geschlossen mit Gewinnerspiel }
+        '409': { description: Event kann in diesem Zustand nicht geschlossen werden, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
 
   /api/events/{id}/publish:
     post:
@@ -1251,11 +1274,13 @@ paths:
                     weekdays: { type: array, items: { type: integer, minimum: 0, maximum: 6 } }
       responses:
         '201': { description: Vorschlaege erstellt }
+        '409': { description: Terminplanung ist in diesem Zustand gesperrt, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
     delete:
       tags: [Date Polling]
       summary: Alle Terminvorschlaege loeschen
       responses:
         '200': { description: Vorschlaege geloescht }
+        '409': { description: Terminplanung ist in diesem Zustand gesperrt, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
 
   /api/events/{id}/date-proposals/vote:
     parameters:
@@ -1278,6 +1303,7 @@ paths:
                 availability: { type: string, enum: [yes, maybe, no] }
       responses:
         '200': { description: Stimme abgegeben (Upsert) }
+        '409': { description: Terminabstimmung ist geschlossen, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
     put:
       tags: [Date Polling]
       summary: Bulk-Terminabstimmung
@@ -1299,6 +1325,7 @@ paths:
                       availability: { type: string, enum: [yes, maybe, no] }
       responses:
         '200': { description: Stimmen aktualisiert }
+        '409': { description: Terminabstimmung ist geschlossen, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
 
   /api/events/{id}/date-proposals/select:
     post:
@@ -1320,6 +1347,7 @@ paths:
                 dateProposalId: { type: string }
       responses:
         '200': { description: Termin ausgewaehlt und Event-Datum aktualisiert }
+        '409': { description: Termin kann in diesem Eventzustand nicht ausgewählt werden, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
 
   /api/events/{id}/date-proposals/reset:
     post:
@@ -1332,6 +1360,7 @@ paths:
           schema: { type: string }
       responses:
         '200': { description: Alle Vorschlaege geloescht, selectedDate zurueckgesetzt }
+        '409': { description: Terminabstimmung ist geschlossen, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
 
   # ===== GROUPS =====
   /api/groups:
@@ -1576,7 +1605,15 @@ paths:
           required: true
           schema: { type: string }
       responses:
-        '200': { description: Event-Details fuer oeffentlichen Zugriff }
+        '200':
+          description: Öffentliche Event-Details mit EventState und gespeichertem Ergebnis
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  eventState: { $ref: '#/components/schemas/EventState' }
+                  selectedDate: { type: string, format: date-time, nullable: true }
         '404': { description: Event nicht gefunden oder nicht oeffentlich }
 
   /api/public/event/{token}/proposals/{proposalId}/game:
@@ -1646,6 +1683,7 @@ paths:
                 nickname: { type: string, minLength: 1, maxLength: 80 }
       responses:
         '201': { description: Gast-Teilnehmer erstellt }
+        '409': { description: Event nimmt keine Änderungen mehr an, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
 
   /api/public/event/{token}/propose:
     post:
@@ -1667,6 +1705,7 @@ paths:
                 gameId: { type: string }
       responses:
         '201': { description: Vorschlag erstellt }
+        '409': { description: Spielvorschläge sind gesperrt, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
 
   /api/public/event/{token}/propose-bgg:
     post:
@@ -1692,6 +1731,7 @@ paths:
                 guestId: { type: string, description: Optional — Gast-ID }
       responses:
         '201': { description: BGG-Vorschlag erstellt }
+        '409': { description: Spielvorschläge sind gesperrt, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
 
   /api/public/event/{token}/vote:
     post:
@@ -1715,6 +1755,7 @@ paths:
                 guestId: { type: string }
       responses:
         '201': { description: Stimme abgegeben }
+        '409': { description: Spielabstimmung ist geschlossen, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
     delete:
       tags: [Public]
       summary: Stimme zurueckziehen (Gast oder angemeldet)
@@ -1733,6 +1774,7 @@ paths:
           schema: { type: string }
       responses:
         '200': { description: Stimme entfernt }
+        '409': { description: Spielabstimmung ist geschlossen, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
 
   /api/public/event/{token}/date-vote:
     post:
@@ -1763,6 +1805,7 @@ paths:
                       availability: { type: string, enum: [yes, maybe, no] }
       responses:
         '200': { description: Termin-Stimmen aktualisiert }
+        '409': { description: Terminabstimmung ist geschlossen, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
 
   /api/public/group/{token}:
     get:
@@ -2427,6 +2470,7 @@ paths:
       responses:
         '200': { description: Geschlossenes Event }
         '401': { $ref: '#/components/responses/Unauthorized' }
+        '409': { description: Event kann in diesem Zustand nicht geschlossen werden, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
 
   /api/mobile/v1/events/{id}/proposals:
     get:
@@ -2455,6 +2499,7 @@ paths:
       responses:
         '201': { description: Vorschlag erstellt }
         '401': { $ref: '#/components/responses/Unauthorized' }
+        '409': { description: Spielvorschläge sind gesperrt, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
 
   /api/mobile/v1/events/{id}/votes:
     post:
@@ -2473,6 +2518,7 @@ paths:
       responses:
         '200': { description: Abstimmung gespeichert }
         '401': { $ref: '#/components/responses/Unauthorized' }
+        '409': { description: Spielabstimmung ist geschlossen, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
 
   /api/mobile/v1/events/{id}/date-proposals:
     get:
@@ -2499,6 +2545,7 @@ paths:
       responses:
         '201': { description: Terminvorschlag erstellt }
         '401': { $ref: '#/components/responses/Unauthorized' }
+        '409': { description: Terminplanung ist in diesem Zustand gesperrt, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
 
   /api/mobile/v1/events/{id}/date-proposals/vote:
     post:
@@ -2517,6 +2564,7 @@ paths:
       responses:
         '200': { description: Termin-Stimmen gespeichert }
         '401': { $ref: '#/components/responses/Unauthorized' }
+        '409': { description: Terminabstimmung ist geschlossen, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
 
   /api/mobile/v1/groups:
     get:

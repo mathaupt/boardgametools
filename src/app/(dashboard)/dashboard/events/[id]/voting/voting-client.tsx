@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Game } from "@/generated/prisma/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -28,8 +29,25 @@ interface VotingClientProps {
 
 export default function VotingClient({ initialEvent, initialGames, eventId }: VotingClientProps) {
   const { toast } = useToast();
+  const router = useRouter();
 
   const [event] = useState<EventResponse>(initialEvent);
+  const [eventState, setEventState] = useState(initialEvent.eventState);
+  const canChangeVoting = eventState.available.voteGame;
+  const canProposeGame = eventState.available.proposeGame;
+
+  const refreshEventState = useCallback(async () => {
+    router.refresh();
+    try {
+      const response = await fetch(`/api/events/${event.id}`);
+      if (response.ok) {
+        const latest = await response.json();
+        if (latest.eventState) setEventState(latest.eventState);
+      }
+    } catch {
+      // The mutation API remains authoritative if refreshing fails.
+    }
+  }, [event.id, router]);
   const [proposals, setProposals] = useState<ProposalWithDetails[]>(() => {
     return initialEvent.proposals.map((p) => ({
       ...p,
@@ -46,13 +64,20 @@ export default function VotingClient({ initialEvent, initialGames, eventId }: Vo
   const [deletingProposal, setDeletingProposal] = useState<string | null>(null);
 
   const handleVote = async (proposalId: string) => {
+    if (!canChangeVoting) return;
     setVoting(proposalId);
     try {
       const res = await fetch(`/api/events/${eventId}/votes`, {
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ proposalId }),
       });
-      if (!res.ok) throw new Error("Fehler beim Abstimmen");
+      if (!res.ok) {
+        if (res.status === 409) {
+          await refreshEventState();
+          throw new Error("Der Planungsstand hat sich geändert. Deine Änderung wurde nicht gespeichert.");
+        }
+        throw new Error("Fehler beim Abstimmen");
+      }
       setProposals((prev) => prev.map((p) =>
         p.id === proposalId ? {
           ...p,
@@ -63,15 +88,22 @@ export default function VotingClient({ initialEvent, initialGames, eventId }: Vo
       ));
     } catch (error) {
       console.error("Vote error:", error);
-      toast({ title: "Fehler beim Abstimmen", description: "Bitte versuche es erneut.", variant: "destructive" });
+      toast({ title: "Fehler beim Abstimmen", description: error instanceof Error ? error.message : "Bitte versuche es erneut.", variant: "destructive" });
     } finally { setVoting(null); }
   };
 
   const handleRemoveVote = async (proposalId: string) => {
+    if (!canChangeVoting) return;
     setVoting(proposalId);
     try {
       const res = await fetch(`/api/events/${eventId}/votes?proposalId=${proposalId}`, { method: "DELETE" });
-      if (!res.ok) throw new Error("Fehler beim Entfernen");
+      if (!res.ok) {
+        if (res.status === 409) {
+          await refreshEventState();
+          throw new Error("Der Planungsstand hat sich geändert. Deine Änderung wurde nicht gespeichert.");
+        }
+        throw new Error("Fehler beim Entfernen");
+      }
       setProposals((prev) => prev.map((p) =>
         p.id === proposalId ? {
           ...p,
@@ -82,7 +114,7 @@ export default function VotingClient({ initialEvent, initialGames, eventId }: Vo
       ));
     } catch (error) {
       console.error("Remove vote error:", error);
-      toast({ title: "Fehler", description: "Bitte versuche es erneut.", variant: "destructive" });
+      toast({ title: "Fehler", description: error instanceof Error ? error.message : "Bitte versuche es erneut.", variant: "destructive" });
     } finally { setVoting(null); }
   };
 
@@ -92,7 +124,11 @@ export default function VotingClient({ initialEvent, initialGames, eventId }: Vo
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ gameId }),
       });
-      if (!res.ok) { const d = await res.json().catch(() => null); throw new Error(d?.error || "Fehler"); }
+      if (!res.ok) {
+        const d = await res.json().catch(() => null);
+        if (res.status === 409) await refreshEventState();
+        throw new Error(res.status === 409 ? "Der Planungsstand hat sich geändert. Deine Änderung wurde nicht gespeichert." : d?.error || "Fehler");
+      }
       const newProposal = await res.json();
       setProposals((prev) => [...prev, { ...newProposal, userVoted: false }]);
     } catch (error) {
@@ -105,7 +141,11 @@ export default function VotingClient({ initialEvent, initialGames, eventId }: Vo
     setDeletingProposal(proposalId);
     try {
       const res = await fetch(`/api/events/${eventId}/proposals?proposalId=${proposalId}`, { method: "DELETE" });
-      if (!res.ok) { const d = await res.json().catch(() => null); throw new Error(d?.error || "Fehler"); }
+      if (!res.ok) {
+        const d = await res.json().catch(() => null);
+        if (res.status === 409) await refreshEventState();
+        throw new Error(res.status === 409 ? "Der Planungsstand hat sich geändert. Deine Änderung wurde nicht gespeichert." : d?.error || "Fehler");
+      }
       setProposals((prev) => prev.filter((p) => p.id !== proposalId));
       toast({ title: "Vorschlag gelöscht" });
     } catch (error) {
@@ -180,10 +220,10 @@ export default function VotingClient({ initialEvent, initialGames, eventId }: Vo
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-4">
-          <ProposalRankingList eventId={eventId} proposals={proposals} voting={voting} deletingProposal={deletingProposal} eventIsCreator={event?.isCreator ?? false} currentUserId={event?.currentUserId ?? ""} winningProposalId={event.winningProposalId} selectedGameId={event.selectedGameId} onVote={handleVote} onRemoveVote={handleRemoveVote} onDeleteProposal={handleDeleteProposal} />
+          <ProposalRankingList eventId={eventId} proposals={proposals} voting={voting} deletingProposal={deletingProposal} eventIsCreator={event?.isCreator ?? false} currentUserId={event?.currentUserId ?? ""} winningProposalId={event.winningProposalId} selectedGameId={event.selectedGameId} canChangeVoting={canChangeVoting} onVote={handleVote} onRemoveVote={handleRemoveVote} onDeleteProposal={handleDeleteProposal} />
         </div>
         <div className="space-y-4">
-          <GameProposalPanel availableGames={availableGames} collectionSearch={collectionSearch} onCollectionSearchChange={setCollectionSearch} activeTab={activeTab} onTabChange={setActiveTab} searchQuery={searchQuery} onSearchQueryChange={setSearchQuery} bggResults={bggResults} bggLoading={bggLoading} onAddProposal={handleAddProposal} onBggSearch={handleBggSearch} onBggImport={handleBggImport} />
+          {canProposeGame ? <GameProposalPanel availableGames={availableGames} collectionSearch={collectionSearch} onCollectionSearchChange={setCollectionSearch} activeTab={activeTab} onTabChange={setActiveTab} searchQuery={searchQuery} onSearchQueryChange={setSearchQuery} bggResults={bggResults} bggLoading={bggLoading} onAddProposal={handleAddProposal} onBggSearch={handleBggSearch} onBggImport={handleBggImport} /> : <p className="rounded-xl bg-muted p-4 text-sm text-muted-foreground" role="status">{eventState.blockedReason ?? "Für dieses Event sind keine weiteren Spielvorschläge möglich."}</p>}
         </div>
       </div>
     </div>

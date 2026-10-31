@@ -1,12 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import prisma from "@/lib/db";
 import { apiAuth } from "@/lib/api-auth";
 import { withApiLogging } from "@/lib/api-logger";
 import { ApiError, handleApiError } from "@/lib/require-auth";
 import { Errors } from "@/lib/error-messages";
 import { toVoteDto } from "@/lib/dto-mappers";
-import { NOT_DELETED } from "@/lib/services/shared";
-import { hasEventAccess } from "../_helpers";
+import { withEventMutation } from "@/lib/services/event-mutation.service";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -25,33 +23,17 @@ export const POST = withApiLogging(async function POST(
       throw new ApiError(400, Errors.MISSING_PROPOSAL_ID);
     }
 
-    const event = await prisma.event.findFirst({
-      where: { id, ...NOT_DELETED },
-      include: { invites: { select: { userId: true } } },
-    });
-
-    if (!event) throw new ApiError(404, Errors.EVENT_NOT_FOUND);
-    if (!hasEventAccess(event, session.user.id)) {
-      throw new ApiError(403, Errors.ACCESS_DENIED);
-    }
-
-    const proposal = await prisma.gameProposal.findFirst({
-      where: { id: proposalId, eventId: id },
-    });
-
-    if (!proposal) throw new ApiError(404, Errors.PROPOSAL_NOT_FOUND);
-
-    const existing = await prisma.vote.findUnique({
-      where: {
-        proposalId_userId: { proposalId, userId: session.user.id },
-      },
-    });
-
-    if (existing) throw new ApiError(400, Errors.ALREADY_VOTED);
-
-    const vote = await prisma.vote.create({
-      data: { proposalId, userId: session.user.id },
-    });
+    const vote = await withEventMutation(
+      { kind: "user", eventId: id, userId: session.user.id },
+      "voteGame",
+      async ({ tx }) => {
+        const proposal = await tx.gameProposal.findFirst({ where: { id: proposalId, eventId: id }, select: { id: true } });
+        if (!proposal) throw new ApiError(404, Errors.PROPOSAL_NOT_FOUND);
+        const existing = await tx.vote.findUnique({ where: { proposalId_userId: { proposalId, userId: session.user.id } } });
+        if (existing) throw new ApiError(400, Errors.ALREADY_VOTED);
+        return tx.vote.create({ data: { proposalId, userId: session.user.id } });
+      }
+    );
 
     return NextResponse.json(toVoteDto(vote), { status: 201 });
   } catch (error) {
@@ -75,27 +57,16 @@ export const DELETE = withApiLogging(async function DELETE(
       throw new ApiError(400, Errors.MISSING_PROPOSAL_ID);
     }
 
-    const event = await prisma.event.findFirst({
-      where: { id, ...NOT_DELETED },
-      include: { invites: { select: { userId: true } } },
-    });
-
-    if (!event) throw new ApiError(404, Errors.EVENT_NOT_FOUND);
-    if (!hasEventAccess(event, session.user.id)) {
-      throw new ApiError(403, Errors.ACCESS_DENIED);
-    }
-
-    const proposal = await prisma.gameProposal.findFirst({
-      where: { id: proposalId, eventId: id },
-    });
-
-    if (!proposal) throw new ApiError(404, Errors.PROPOSAL_NOT_FOUND);
-
-    const deleted = await prisma.vote.deleteMany({
-      where: { proposalId, userId: session.user.id },
-    });
-
-    if (deleted.count === 0) throw new ApiError(404, Errors.VOTE_NOT_FOUND);
+    await withEventMutation(
+      { kind: "user", eventId: id, userId: session.user.id },
+      "voteGame",
+      async ({ tx }) => {
+        const proposal = await tx.gameProposal.findFirst({ where: { id: proposalId, eventId: id }, select: { id: true } });
+        if (!proposal) throw new ApiError(404, Errors.PROPOSAL_NOT_FOUND);
+        const deleted = await tx.vote.deleteMany({ where: { proposalId, userId: session.user.id } });
+        if (deleted.count === 0) throw new ApiError(404, Errors.VOTE_NOT_FOUND);
+      }
+    );
 
     return NextResponse.json({ message: Errors.VOTE_REMOVED });
   } catch (error) {

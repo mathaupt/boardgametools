@@ -83,3 +83,16 @@ und frischem Backup. BUG-050 bleibt wegen moderater Entwicklungsbefunde offen.
 
 Ohne Registryzugriff meldet der Evaluator bewusst `open` und blockiert bis
 eine belastbare Prüfung möglich ist.
+
+## False Positive P2-23 und SEC-45-Nachprüfung – 0.50.34
+
+- [x] P2-23 auf echte Fehlerantworten begrenzt; erfolgreiche `message`-Bodies
+  werden nicht mehr als Error-Contract gezählt.
+- [x] Drei Unit-Regressionstests für Success-, Error- und plain-message-Zeilen.
+- [x] SEC-45 nach dem Sandbox-Fehllauf mit Registryzugriff verifiziert;
+  22 moderate Dev-Befunde, Produktionsaudit ohne Befunde.
+- [x] `review-evaluate:regression --fail-on-regression`: Exitcode 0, keine
+  Regression, 10/10.
+
+Bei nicht erreichbarer Registry bleibt SEC-45 fail-closed. Die Behebung des
+falsch positiven P2-23-Findings ändert keine API-Verträge.

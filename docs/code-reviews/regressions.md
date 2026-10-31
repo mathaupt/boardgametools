@@ -170,3 +170,31 @@ Jeder Eintrag enthält Felder für Root-Cause-Analyse und Gegenmaßnahmen (manue
 **Validierung:** `npm run review-evaluate:regression` mit Registryzugriff: Exitcode 0; `npm audit --omit=dev`: 0 Befunde.
 
 ---
+
+## 2026-10-31 21:53:21
+
+| Finding | Priorität | Vorher | Jetzt | Detail |
+|---------|-----------|--------|-------|--------|
+| P2-23: Inkonsistente Error-Responses | P2 | resolved | partially_resolved | Inkonsistent: 197× {error}, 26× {message} |
+| SEC-45: npm audit: Bekannte Vulnerabilities | P2 | partially_resolved | open | npm audit lieferte keine gültigen Prüfdaten |
+
+**Root-Cause:** P2-23 wertete jedes `{ message }`-Feld als Fehlerformat; 26 der Treffer waren erfolgreiche Lösch-/Aktionsantworten. SEC-45 lief in der Sandbox ohne gültige Registry-Auditdaten und lieferte fail-closed `open`; das ist ein Prüfungsfehler, kein neuer Paketbefund.
+**Gegenmaßnahme:** P2-23 zählt `message` nur bei einer expliziten 4xx/5xx-Antwort als Fehlervertrag. Drei Unit-Tests sichern Erfolg, Fehler und reine Nachrichtenfelder ab. SEC-45 wurde danach mit Registryzugriff erneut ausgewertet.
+**Verantwortlich:** BoardGameTools Wartung.
+**Auflösung 2026-10-31 21:54:** `npm run review-evaluate:regression` mit Registryzugriff: Exitcode 0, keine Regression; P2-23 resolved, SEC-45 teilweise gelöst (bekannte Dev-Befunde, keine Produktionsbefunde). Der Regressionstest lief erfolgreich.
+
+---
+
+## 2026-10-31 22:06:08
+
+| Finding | Priorität | Vorher | Jetzt | Detail |
+|---------|-----------|--------|-------|--------|
+| SEC-45: npm audit: Bekannte Vulnerabilities | P2 | partially_resolved | open | npm audit lieferte keine gültigen Prüfdaten |
+
+**Root-Cause:** Dieser Lauf wurde nach dem erfolgreichen Registrylauf erneut in der Sandbox gestartet. Dort ist die npm-Registry nicht erreichbar; der Evaluator bewertet ungültige Auditdaten absichtlich als `open`. Das ist eine Prüfbedingung, keine neu aufgetretene Abhängigkeitsschwachstelle.
+**Gegenmaßnahme:** Für den Commit-Blocker gilt ausschließlich ein gültiger Regressionsevaluatorlauf mit Registryzugriff. Fehlgeschlagene Sandbox-Audits werden nicht als bestanden interpretiert; der Review wird mit Registryzugriff wiederholt.
+**Verantwortlich:** BoardGameTools Wartung.
+
+**Auflösung 2026-10-31 23:13:** `npm run review-evaluate:regression` mit Registryzugriff erfolgreich, Exitcode 0, 10/10, keine Regressionen; SEC-45 `partially_resolved`, 0 offene Security-Findings. Commit-Blocker behoben.
+
+---

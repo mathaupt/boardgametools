@@ -42,6 +42,7 @@ interface BggGameSearchProps {
   activeGuestId: string | null;
   currentUserId: string | null;
   onProposalAdded: (proposal: Proposal) => void;
+  onStateConflict?: () => void | Promise<void>;
 }
 
 export function BggGameSearch({
@@ -49,6 +50,7 @@ export function BggGameSearch({
   activeGuestId,
   currentUserId,
   onProposalAdded,
+  onStateConflict,
 }: BggGameSearchProps) {
   const { toast } = useToast();
   const [bggQuery, setBggQuery] = useState("");
@@ -125,6 +127,8 @@ export function BggGameSearch({
       });
       if (!res.ok) {
         const data = await res.json().catch(() => null);
+        if (res.status === 409) await onStateConflict?.();
+        if (res.status === 409) throw new Error("Der Planungsstand hat sich geändert. Deine Änderung wurde nicht gespeichert.");
         throw new Error(data?.error ?? "Vorschlag fehlgeschlagen");
       }
       const proposal: Proposal = await res.json();

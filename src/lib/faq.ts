@@ -126,6 +126,10 @@ export const faqSections: FaqSection[] = [
           "Jeder eingeladene Teilnehmer kann Spiele aus seiner eigenen Sammlung oder per BGG-Suche vorschlagen. Alle Teilnehmer stimmen dann ueber die vorgeschlagenen Spiele ab. Das Spiel mit den meisten Stimmen gewinnt. Du siehst in Echtzeit, wer fuer welches Spiel gestimmt hat. Als Organisator kannst du die Abstimmung schliessen und das Gewinnerspiel festlegen.",
       },
       {
+        question: "Warum kann ich bei einem Event nicht mehr abstimmen?",
+        answer: "Die Eventseite zeigt den aktuellen Planungsstatus. Nach dem Abstimmungsende oder einem vergangenen bestätigten Termin sind Änderungen gesperrt. Wird die Seite währenddessen geöffnet gelassen, lädt sie den aktuellen Stand nach und erklärt, warum die Änderung nicht gespeichert wurde.",
+      },
+      {
         question: "Wie sehe ich weitere Informationen zu einem Spielvorschlag?",
         answer: "Klicke in der Abstimmung auf den Spielnamen oder auf „Spieldetails“. Die Informationen öffnen sich in einem Dialog, der sich per Schließen-Schaltfläche oder Escape wieder schließen lässt. Öffentliche Gäste sehen keine privat verfasste Sammlungsbeschreibung.",
       },

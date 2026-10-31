@@ -6,6 +6,7 @@ import { ApiError, handleApiError } from "@/lib/require-auth";
 import { Errors } from "@/lib/error-messages";
 import { NOT_DELETED } from "@/lib/services/shared";
 import { hasEventAccess, mapProposal, proposalInclude } from "../_helpers";
+import { withEventMutation } from "@/lib/services/event-mutation.service";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -58,36 +59,20 @@ export const POST = withApiLogging(async function POST(
       throw new ApiError(400, Errors.MISSING_GAME_ID);
     }
 
-    const event = await prisma.event.findFirst({
-      where: { id, ...NOT_DELETED },
-      include: { invites: { select: { userId: true } } },
-    });
-
-    if (!event) throw new ApiError(404, Errors.EVENT_NOT_FOUND);
-    if (!hasEventAccess(event, session.user.id)) {
-      throw new ApiError(403, Errors.ACCESS_DENIED);
-    }
-
-    const game = await prisma.game.findFirst({
-      where: { id: gameId, ownerId: session.user.id, deletedAt: null },
-    });
-
-    if (!game) throw new ApiError(404, Errors.GAME_NOT_FOUND);
-
-    const existing = await prisma.gameProposal.findFirst({
-      where: { eventId: id, gameId },
-    });
-
-    if (existing) throw new ApiError(400, Errors.GAME_ALREADY_PROPOSED);
-
-    const proposal = await prisma.gameProposal.create({
-      data: {
-        eventId: id,
-        gameId,
-        proposedById: session.user.id,
-      },
-      include: proposalInclude,
-    });
+    const proposal = await withEventMutation(
+      { kind: "user", eventId: id, userId: session.user.id },
+      "proposeGame",
+      async ({ tx }) => {
+        const game = await tx.game.findFirst({ where: { id: gameId, ownerId: session.user.id, deletedAt: null } });
+        if (!game) throw new ApiError(404, Errors.GAME_NOT_FOUND);
+        const existing = await tx.gameProposal.findFirst({ where: { eventId: id, gameId } });
+        if (existing) throw new ApiError(400, Errors.GAME_ALREADY_PROPOSED);
+        return tx.gameProposal.create({
+          data: { eventId: id, gameId, proposedById: session.user.id },
+          include: proposalInclude,
+        });
+      }
+    );
 
     return NextResponse.json(
       mapProposal(proposal, session.user.id),
@@ -114,13 +99,18 @@ export const DELETE = withApiLogging(async function DELETE(
       throw new ApiError(400, Errors.MISSING_PROPOSAL_ID);
     }
 
-    const proposal = await prisma.gameProposal.findFirst({
-      where: { id: proposalId, eventId: id, proposedById: session.user.id },
-    });
-
-    if (!proposal) throw new ApiError(404, Errors.PROPOSAL_NOT_FOUND);
-
-    await prisma.gameProposal.delete({ where: { id: proposalId } });
+    await withEventMutation(
+      { kind: "user", eventId: id, userId: session.user.id },
+      "proposeGame",
+      async ({ tx }) => {
+        const proposal = await tx.gameProposal.findFirst({
+          where: { id: proposalId, eventId: id, proposedById: session.user.id },
+          select: { id: true },
+        });
+        if (!proposal) throw new ApiError(404, Errors.PROPOSAL_NOT_FOUND);
+        await tx.gameProposal.delete({ where: { id: proposalId } });
+      }
+    );
 
     return NextResponse.json({ message: Errors.PROPOSAL_DELETED });
   } catch (error) {

@@ -83,6 +83,20 @@ describe("serializePublicEvent", () => {
     expect(result.eventDate).toBe("2026-04-01T18:00:00.000Z");
   });
 
+  it("exposes closed status and selected calendar date as a server-derived state", () => {
+    const result = serializePublicEvent(makeEvent({
+      status: "closed",
+      eventDate: new Date("2026-11-10T18:00:00.000Z"),
+      selectedDate: new Date("2026-11-01T00:00:00.000Z"),
+      winningProposal: { id: "bgg-proposal", bggId: "13", bggName: "Catan", bggImageUrl: null, bggMinPlayers: 3, bggMaxPlayers: 4, bggPlayTimeMinutes: 60, gameId: null },
+    }), null, new Date("2026-10-31T12:00:00.000Z"));
+
+    expect(result.eventState.phase).toBe("closed");
+    expect(result.eventState.effectiveDate).toBe("2026-11-01");
+    expect(result.eventState.available.join).toBe(false);
+    expect(result.winningProposal?.bggName).toBe("Catan");
+  });
+
   it("masks email for invite without linked user", () => {
     const result = serializePublicEvent(makeEvent(), null);
     const pendingInvite = result.invites.find((i) => i.status === "pending");

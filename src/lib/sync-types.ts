@@ -107,6 +107,16 @@ export interface EventDTO {
   groupId?: string | null;
   selectedGameId?: string | null;
   winningProposalId?: string | null;
+  selectedDate?: string | null;
+  eventState?: {
+    phase: "planning" | "open" | "closed" | "cancelled" | "past" | "unavailable";
+    label: string;
+    effectiveDate: string | null;
+    dateKind: "provisional" | "date" | "datetime";
+    evaluatedAt: string;
+    available: Record<string, boolean>;
+    blockedReason: string | null;
+  };
   isPublic?: boolean | null;
   shareToken?: string | null;
   proposals?: EventProposalDTO[];

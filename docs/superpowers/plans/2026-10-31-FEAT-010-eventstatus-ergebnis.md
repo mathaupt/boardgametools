@@ -1,6 +1,15 @@
 # FEAT-010 – Eventstatus und Ergebnis eindeutig darstellen
 
-**Status:** Implementierungsplan zur Prüfung; keine Umsetzungsfreigabe.
+**Status:** Umsetzung durch Nutzer freigegeben; Aktualitätscheck abgeschlossen.
+
+## Aktualitätsprüfung vor Umsetzung – 2026-10-31
+
+- **Geprüfter Stand:** Commit `c9db58c` (`fix: resolve SEC-45 review regression`); Arbeitsbaum sauber.
+- **Ergebnis:** Zustands-/API-Architektur bleibt passend. FEAT-009 ergänzt `public-event.ts` und die Proposal-Textnormalisierung, ändert aber weder Status noch Mutationen.
+- **Abhängigkeiten:** FEAT-004 ist weiterhin ausstehend. Löschregeln und Rollen werden nicht vorweggenommen; bestehende Event- und Eventzeilen-Sperren in FEAT-010 berücksichtigen künftige Löschmutationen.
+- **Prüfumgebung:** `vitest.integration.config.ts` fehlt und `BGT_TEST_DATABASE_URL` ist nicht gesetzt. Unit-/API-Vertragstests und sichere Integrationstest-Konfiguration sind Teil der Umsetzung; echte DB-Rennen bleiben nur bei verfügbarer isolierter Testdatenbank nachweisbar.
+- **Review-Vorlauf:** `npm run review-evaluate:report` mit Registryzugriff, 10/10; SEC-45 teilweise gelöst (22 moderate Dev-Befunde), Produktionsaudit 0. Keine Regression.
+- **Scope-Entscheid:** Die im Plan dokumentierten Zustands- und Zeitregeln sind durch „implement FEAT-010“ zur Umsetzung freigegeben. Keine Schema-Migration, kein Gastwechsel, keine FEAT-004-Löschberechtigung und keine Produktionsdatenänderung.
 
 **Ziel:** Öffentliche Gäste und angemeldete Teilnehmer erkennen Status, verbindlichen Termin und ausgewähltes Spiel sofort; geschlossene Aktionen werden durch Web- und Mobile-APIs zuverlässig abgewiesen.
 
@@ -225,3 +234,10 @@ await tx.$queryRaw(Prisma.sql`SELECT id FROM "Event" WHERE id = ${eventId} FOR U
 ## 5. Abnahmegrenze
 
 Frontend allein genügt nicht. Die Freigabe verlangt die Zustandsmatrix an allen betroffenen Schreibwegen, echte DB-Nachweise für Objektbindung und Rennen sowie eine sichtbare korrekte Ergebnisdarstellung. Ein fehlender isolierter PostgreSQL-Testlauf bleibt ein ausdrücklich offener Abnahmepunkt. Die Regeln zu Zeit, Legacy-Status und geschlossener Terminwahl sind mit diesem Plan zur Bestätigung vorgelegt.
+
+## Umsetzungsstand – 2026-10-31
+
+- Zustandsmodell, Eventzeilensperre, Event- und Objektzugriffsprüfungen, konsistente Termin-/Ergebnisupdates sowie Web-/Mobile-/öffentliche Statusdarstellung umgesetzt.
+- `npm run test`: 738 Tests bestanden. `npm run typecheck`, Produktionsbuild, Lint (0 Fehler), `npm run security-check:fast` und `npm run review-evaluate:regression` mit Registryzugriff (10/10, keine Regression) erfolgreich.
+- Der PostgreSQL-Rennintegrationstest ist implementiert, konnte hier aber nicht ausgeführt werden: `BGT_TEST_DATABASE_URL` fehlt. Die Browser-/Viewportabnahme und der gerenderte Impeccable-Check bleiben ebenfalls offen; die statische Impeccable-Prüfung ergab keine Code-Regelverstöße.
+- BUG-037 und BUG-048 bleiben bis zur echten Datenbank- und Browserabnahme in Bearbeitung. Die native iOS-Oberfläche ist nicht Teil dieser Umsetzung.

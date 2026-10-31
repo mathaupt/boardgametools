@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -22,9 +22,11 @@ interface DateVotingSectionProps {
   token: string;
   currentUserId: string | null;
   activeGuest: StoredGuestState | null;
-  isPast: boolean;
+  canVote?: boolean;
+  isPast?: boolean;
   selectedDate: string | null;
   initialDateProposals: DateProposal[];
+  onStateConflict?: () => void | Promise<void>;
 }
 
 export function DateVotingSection({
@@ -32,13 +34,17 @@ export function DateVotingSection({
   token,
   currentUserId,
   activeGuest,
+  canVote,
   isPast,
   selectedDate,
   initialDateProposals,
+  onStateConflict,
 }: DateVotingSectionProps) {
+  const votingEnabled = canVote ?? !isPast;
   const { toast } = useToast();
   const [dateProposals, setDateProposals] = useState<DateProposal[]>(initialDateProposals);
   const [dateVotingLoading, setDateVotingLoading] = useState<string | null>(null);
+  useEffect(() => setDateProposals(initialDateProposals), [initialDateProposals]);
 
   const handleDateVote = async (dateProposalId: string, availability: string) => {
     setDateVotingLoading(dateProposalId);
@@ -52,6 +58,8 @@ export function DateVotingSection({
         });
         if (!res.ok) {
           const data = await res.json().catch(() => null);
+          if (res.status === 409) await onStateConflict?.();
+          if (res.status === 409) throw new Error("Der Planungsstand hat sich geändert. Deine Änderung wurde nicht gespeichert.");
           throw new Error(data?.error ?? "Vote fehlgeschlagen");
         }
       } else if (activeGuest) {
@@ -66,6 +74,8 @@ export function DateVotingSection({
         });
         if (!res.ok) {
           const data = await res.json().catch(() => null);
+          if (res.status === 409) await onStateConflict?.();
+          if (res.status === 409) throw new Error("Der Planungsstand hat sich geändert. Deine Änderung wurde nicht gespeichert.");
           throw new Error(data?.error ?? "Gast-Vote fehlgeschlagen");
         }
       }
@@ -142,7 +152,7 @@ export function DateVotingSection({
                 <tr className="border-b border-border">
                   <th className="text-left p-2 min-w-[140px] text-muted-foreground">Datum</th>
                   <th className="text-center p-2 min-w-[60px] text-muted-foreground">Zusagen</th>
-                  {(activeGuest || currentUserId) && !isPast && (
+                  {(activeGuest || currentUserId) && votingEnabled && (
                     <th className="text-center p-2 min-w-[180px] text-muted-foreground">Deine Stimme</th>
                   )}
                 </tr>
@@ -204,7 +214,7 @@ export function DateVotingSection({
                           )}
                         </div>
                       </td>
-                      {(activeGuest || currentUserId) && !isPast && (
+                      {(activeGuest || currentUserId) && votingEnabled && (
                         <td className="text-center p-2">
                           {dateVotingLoading === dp.id ? (
                             <Loader2 className="h-4 w-4 animate-spin mx-auto" aria-hidden="true" />

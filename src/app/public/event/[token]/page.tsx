@@ -4,9 +4,9 @@ import { findPublicEventByToken } from "@/lib/event-share";
 import { buildPublicEventInclude, serializePublicEvent } from "@/lib/public-event";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, MapPin, Share2, Users, UserCircle, Check, X, Clock } from "lucide-react";
-import { formatLongDateWithWeekday, formatTime } from "@/lib/date";
+import { Share2, Users, UserCircle, Check, X, Clock } from "lucide-react";
 import { PublicEventClient } from "@/components/public-event/public-event-client";
+import { PublicEventHeader } from "@/components/public-event/public-event-header";
 
 export const revalidate = 0;
 
@@ -28,49 +28,10 @@ export default async function PublicEventPage({
   }
 
   const serialized = serializePublicEvent(event, session?.user?.id ?? null);
-  const eventDate = new Date(serialized.eventDate);
-  const isPast = eventDate < new Date();
-
   return (
     <div className="min-h-screen bg-background bg-gradient-to-b from-background via-muted to-background py-12 text-foreground">
       <div className="mx-auto w-full max-w-5xl px-4 sm:px-6 lg:px-8">
-        <div className="rounded-3xl border border-border bg-card p-6 shadow-2xl">
-          <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-            <div>
-              <div className="inline-flex items-center gap-2 rounded-full border border-border bg-muted px-3 py-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                <Share2 className="h-4 w-4" aria-hidden="true" /> Öffentliches Voting
-              </div>
-              <h1 className="mt-4 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-                {serialized.title}
-              </h1>
-              {serialized.description && (
-                <p className="mt-3 text-base text-muted-foreground">{serialized.description}</p>
-              )}
-            </div>
-            <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
-              <div className="flex items-center gap-2 rounded-2xl border border-border bg-muted px-3 py-2">
-                <Calendar className="h-4 w-4" aria-hidden="true" />
-                <span>
-                  {formatLongDateWithWeekday(eventDate)}
-                  {serialized.status !== "planning" && (
-                    <span className="block text-xs text-muted-foreground">
-                      {formatTime(eventDate)}
-                    </span>
-                  )}
-                </span>
-              </div>
-              {serialized.location && (
-                <div className="flex items-center gap-2 rounded-2xl border border-border bg-muted px-3 py-2">
-                  <MapPin className="h-4 w-4" aria-hidden="true" />
-                  <span>{serialized.location}</span>
-                </div>
-              )}
-              <Badge variant={isPast ? "secondary" : "default"} className="rounded-2xl px-3 py-2 text-xs">
-                {isPast ? "Beendet" : "Aktiv"}
-              </Badge>
-            </div>
-          </div>
-        </div>
+        <PublicEventHeader event={serialized} />
 
         <div className="mt-8 grid gap-6 lg:grid-cols-[2fr,1fr]">
           <Card className="border-border bg-card text-foreground">

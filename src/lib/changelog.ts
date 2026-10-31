@@ -12,6 +12,18 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.34",
+    date: "2026-10-31",
+    title: "Eventstatus und Abstimmungsende abgesichert",
+    description: "Öffentliche Events zeigen den gespeicherten Status, Termin und das gewählte Spiel. Schreibaktionen werden beim Eventzustand und ihrer Zugehörigkeit geprüft.",
+    changes: [
+      { type: "feature", text: "Öffentliche und geschützte Eventansichten zeigen den verbindlichen Status, bestätigten Termin und gespeicherten Abstimmungssieger." },
+      { type: "fix", text: "Eventänderungen werden gegen aktuelle Berechtigungen, Eventstatus und Vorschlagszugehörigkeit in einer Transaktion geprüft.", bugRef: "BUG-037" },
+      { type: "fix", text: "Die Review-Prüfung unterscheidet erfolgreiche { message }-Antworten von Fehlerantworten und ist durch einen Regressionstest abgesichert." },
+      { type: "internal", text: "FEAT-010 deckt Web und Mobile-API ab; die Zustandsaktualisierung wurde zur Einhaltung der Komponentengröße in einen Hook ausgelagert. Echte PostgreSQL-Rennen benötigen die lokale isolierte Testdatenbank." },
+    ],
+  },
+  {
     version: "0.50.33",
     date: "2026-10-31",
     title: "Sicherheitsprüfung robuster gemacht",

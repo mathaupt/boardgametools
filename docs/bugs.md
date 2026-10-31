@@ -1181,10 +1181,10 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 ### [BUG-037] Geschlossenes öffentliches Voting erscheint weiterhin aktiv
 
-**Status:** `open`
+**Status:** `in_progress`
 **Schweregrad:** `high`
 **Entdeckt:** 2026-10-30
-**Test geschrieben:** Nein
+**Test geschrieben:** Ja; Unit-Tests für Statusvertrag und öffentlichen Eventkopf. PostgreSQL-/E2E-Abnahme offen.
 
 **Beschreibung:** Der tatsächliche Abstimmungsstatus und die verbindliche Auswahl werden nicht angemessen dargestellt.
 
@@ -1198,11 +1198,11 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 **Ergänzende Quellprüfung 31.10.2026:** Öffentliche Beitritts-, Spielstimmen- und Terminantwort-Routen sowie mehrere private/Mobile-Schreibwege besitzen keine gemeinsame Zustandsprüfung. Der FEAT-010-Plan sieht deshalb serverseitige Sperren mit echter DB-Abnahme vor; eine reine UI-Korrektur reicht nicht aus. Keine produktiven Schreibrequests durchgeführt.
 
-**Lösung:** Noch nicht umgesetzt. Statusmodell, Ergebnisansicht und zugehörige serverseitige Regeln gemeinsam planen.
+**Lösung:** Gemeinsamer Statusvertrag, gesperrte Schreibaktionen und Status-/Ergebnisdarstellung sind implementiert. Echte Datenbankrennen, Browserzustände und gerenderte Impeccable-Prüfung müssen noch abgenommen werden; daher noch nicht als behoben markiert. [FEAT-010-Plan](superpowers/plans/2026-10-31-FEAT-010-eventstatus-ergebnis.md).
 
 **Prüfnachweis:** Assessment A mit echtem status closed: closed-joined-mobile.png und closed-1440.png. Nur synthetische API-Antworten; Backendannahme und Produktionsmutationen nicht getestet. Belege: `.impeccable/critique/evidence/public-event-A/` und `public-event-B/`.
 
-**Test-Status:** Kein Fix und noch kein dauerhafter Regressionstest. Bei Umsetzung ist ein Regressionstest verpflichtend.
+**Test-Status:** `tests/unit/lib/event-state.test.ts`, `tests/unit/lib/public-event.test.ts` und `tests/unit/components/public-event-header.test.tsx` ergänzt; gezielte Tests bestanden. Isolierter PostgreSQL- und E2E-Lauf ausstehend.
 
 **Referenz im Changelog:** Version 0.50.24 – Prüfung der öffentlichen Eventseite dokumentiert.
 
@@ -1484,10 +1484,10 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 ### [BUG-048] Einzelne Abstimmungsrouten binden Vorschläge nicht an das Event
 
-**Status:** `open`
+**Status:** `in_progress`
 **Schweregrad:** `high`
 **Entdeckt:** 2026-10-31
-**Test geschrieben:** Nein; Regressionen im FEAT-010-Plan vorgesehen.
+**Test geschrieben:** Ja; Eventzustand-Guard-Tests bestanden. Fremde Objekt-IDs/Bulk-Mischungen benötigen noch echte DB-Regressionstests.
 
 **Beschreibung:** Die geschützte Web-Spielstimmenroute lädt einen Vorschlag beim POST nur anhand proposalId. Ihr DELETE ignoriert die Event-ID vollständig. Die öffentliche Terminantwort-Route prüft den Gast gegen das Token-Event, jedoch nicht alle dateProposalIds gegen dasselbe Event.
 
@@ -1499,9 +1499,9 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 **Ursache:** Zugriff auf das Event und Zuordnung des Schreibobjekts werden getrennt geprüft; an den genannten Stellen fehlt die zweite Bindung.
 
-**Lösung:** Noch nicht umgesetzt. [FEAT-010-Plan](superpowers/plans/2026-10-31-FEAT-010-eventstatus-ergebnis.md): vollständige Objektbindung, atomare Bulkvalidierung und gemeinsamer transaktionaler Zustandsschutz.
+**Lösung:** Betroffene Web-, Mobile- und öffentliche Routen binden Vorschläge, Gäste und Termine an das gesperrte Event und validieren Bulk-Eingaben vor dem Schreiben. Noch nicht als behoben markiert, bis Cross-Event- und echte DB-Tests gelaufen sind. [FEAT-010-Plan](superpowers/plans/2026-10-31-FEAT-010-eventstatus-ergebnis.md).
 
-**Prüfnachweis:** src/app/api/events/[id]/votes/route.ts und src/app/api/public/event/[token]/date-vote/route.ts sowie Prisma-Relationen am 31.10.2026 gelesen. Kein Ausnutzen gegen produktive Konten oder Daten.
+**Prüfnachweis:** Betroffene Routen binden Reads an `eventId`; `tests/unit/api/event-state-guards.test.ts` bestanden. `tests/integration/event-state.test.ts` ergänzt, aber mangels `BGT_TEST_DATABASE_URL` noch nicht ausgeführt. Kein Ausnutzen gegen produktive Konten oder Daten.
 
 **Referenz im Changelog:** Version 0.50.29 – Weitere Verbesserungen vorbereitet.
 
@@ -1713,8 +1713,8 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 ## Statistik
 
-- **Offene Bugs:** 17
-- **In Bearbeitung:** 0
+- **Offene Bugs:** 15
+- **In Bearbeitung:** 2
 - **Behoben:** 39
 - **Wontfix:** 0
 - **Gesamt:** 56

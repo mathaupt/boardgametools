@@ -1,11 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import prisma from "@/lib/db";
-import { resolveEventIdFromToken } from "@/lib/event-share";
 import { withApiLogging } from "@/lib/api-logger";
 import { validateString } from "@/lib/validation";
 import { checkRateLimit, rateLimitResponse } from "@/lib/rate-limit";
-import logger from "@/lib/logger";
-import { Errors } from "@/lib/error-messages";
+import { ApiError, handleApiError } from "@/lib/require-auth";
+import { withEventMutation } from "@/lib/services/event-mutation.service";
 
 type RouteContext = { params: Promise<{ token: string }> };
 
@@ -18,38 +16,27 @@ export const POST = withApiLogging(async function POST(
   if (!allowed) return rateLimitResponse(retryAfterMs);
 
   const { token } = await params;
-  const eventId = await resolveEventIdFromToken(token);
-
-  if (!eventId) {
-    return NextResponse.json({ error: Errors.EVENT_NOT_FOUND }, { status: 404 });
-  }
-
   try {
     const body = await request.json();
     const nickname = (body?.nickname as string | undefined)?.trim();
 
     const validationError = validateString(nickname, "nickname", { min: 1, max: 80 });
     if (validationError) {
-      return NextResponse.json({ error: validationError }, { status: 400 });
+      throw new ApiError(400, validationError);
     }
 
-    const participant = await prisma.guestParticipant.upsert({
-      where: {
-        eventId_nickname: {
-          eventId,
-          nickname: nickname!,
-        },
-      },
-      create: {
-        eventId,
-        nickname: nickname!,
-      },
-      update: {},
-    });
+    const participant = await withEventMutation(
+      { kind: "public", token },
+      "join",
+      async ({ tx, eventId }) => tx.guestParticipant.upsert({
+        where: { eventId_nickname: { eventId, nickname: nickname! } },
+        create: { eventId, nickname: nickname! },
+        update: {},
+      })
+    );
 
     return NextResponse.json(participant, { status: 201 });
   } catch (error) {
-    logger.error({ err: error }, "Error joining public event");
-    return NextResponse.json({ error: Errors.INTERNAL_SERVER_ERROR }, { status: 500 });
+    return handleApiError(error);
   }
 });

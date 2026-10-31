@@ -26,6 +26,7 @@ import { join, resolve } from "path";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 import { readAuditSummary } from "./lib/npm-audit-result.mjs";
+import { isLegacyMessageErrorResponse } from "./lib/error-response-audit.mjs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -716,10 +717,13 @@ const FINDINGS = [
     category: "api",
     title: "Inkonsistente Error-Responses",
     verify() {
-      const messageCount = grepCount('{ message:', "*.ts", "src/app/api");
+      // `{ message }` is also the established success-response shape. Count it
+      // only when the same response explicitly carries an HTTP error status.
+      const messageCount = grepLines("message:", "*.ts", "src/app/api")
+        .filter(isLegacyMessageErrorResponse).length;
       const errorCount = grepCount('{ error:', "*.ts", "src/app/api");
       const total = messageCount + errorCount;
-      if (total === 0) return { status: "resolved", detail: "Keine Error-Responses gefunden" };
+      if (messageCount === 0) return { status: "resolved", detail: `Konsistent: ${errorCount}× {error}; {message} wird nur für Erfolgsmeldungen verwendet` };
       const ratio = messageCount / total;
       if (ratio < 0.1) return { status: "resolved", detail: `Konsistent: ${errorCount} error, ${messageCount} message` };
       return {

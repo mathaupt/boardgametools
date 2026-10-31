@@ -5,6 +5,7 @@ import { privateEventAccessFilter } from "@/lib/private-event-access";
 import { notFound, redirect } from "next/navigation";
 import VotingClient from "./voting-client";
 import { gameTextForRead } from "@/lib/game-text";
+import { evaluateEventState } from "@/lib/events/event-state";
 
 export default async function EventVotingPage({
   params,
@@ -47,6 +48,7 @@ export default async function EventVotingPage({
 
   const eventResponse = {
     ...event,
+    eventState: evaluateEventState(event, new Date()),
     proposals: event.proposals.map((proposal) => {
       const gameData = proposal.game ?? {
         id: `bgg-${proposal.bggId}`,

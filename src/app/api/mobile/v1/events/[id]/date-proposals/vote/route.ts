@@ -1,12 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import prisma from "@/lib/db";
 import { apiAuth } from "@/lib/api-auth";
 import { withApiLogging } from "@/lib/api-logger";
 import { ApiError, handleApiError } from "@/lib/require-auth";
 import { Errors } from "@/lib/error-messages";
 import { toDateVoteDto } from "@/lib/dto-mappers";
-import { NOT_DELETED } from "@/lib/services/shared";
-import { hasEventAccess } from "../../_helpers";
+import { withEventMutation } from "@/lib/services/event-mutation.service";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -39,33 +37,24 @@ export const POST = withApiLogging(async function POST(
       }
     }
 
-    const event = await prisma.event.findFirst({
-      where: { id, ...NOT_DELETED },
-      include: { invites: { select: { userId: true } } },
-    });
-
-    if (!event) throw new ApiError(404, Errors.EVENT_NOT_FOUND);
-    if (!hasEventAccess(event, session.user.id)) {
-      throw new ApiError(403, Errors.ACCESS_DENIED);
+    const proposalIds = votes.map((v) => v.dateProposalId as string);
+    if (new Set(proposalIds).size !== proposalIds.length) {
+      throw new ApiError(400, "Terminvorschläge dürfen nicht doppelt enthalten sein.");
     }
 
-    const proposalIds = [...new Set(votes.map((v) => v.dateProposalId).filter(Boolean))];
+    const results = await withEventMutation(
+      { kind: "user", eventId: id, userId: session.user.id },
+      "voteDate",
+      async ({ tx }) => {
+        const existingProposals = await tx.dateProposal.findMany({
+          where: { id: { in: proposalIds }, eventId: id },
+          select: { id: true },
+        });
+        if (existingProposals.length !== proposalIds.length) throw new ApiError(404, Errors.DATE_PROPOSAL_NOT_FOUND);
 
-    if (proposalIds.length === 0) {
-      throw new ApiError(400, Errors.MISSING_DATE_PROPOSAL_ID);
-    }
-
-    const existingProposals = await prisma.dateProposal.findMany({
-      where: { id: { in: proposalIds as string[] }, eventId: id },
-    });
-
-    if (existingProposals.length !== proposalIds.length) {
-      throw new ApiError(404, Errors.DATE_PROPOSAL_NOT_FOUND);
-    }
-
-    const results = await prisma.$transaction(
-      votes.map((vote) =>
-        prisma.dateVote.upsert({
+        const results = [];
+        for (const vote of votes) {
+          results.push(await tx.dateVote.upsert({
           where: {
             dateProposalId_userId: {
               dateProposalId: vote.dateProposalId as string,
@@ -78,8 +67,10 @@ export const POST = withApiLogging(async function POST(
             userId: session.user.id,
             availability: vote.availability as string,
           },
-        })
-      )
+          }));
+        }
+        return results;
+      }
     );
 
     return NextResponse.json(results.map(toDateVoteDto));

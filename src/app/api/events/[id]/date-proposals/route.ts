@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requireAuth, handleApiError } from "@/lib/require-auth";
+import { requireAuth, handleApiError, ApiError } from "@/lib/require-auth";
 import prisma from "@/lib/db";
 import { withApiLogging } from "@/lib/api-logger";
 import { Errors } from "@/lib/error-messages";
+import { withEventMutation } from "@/lib/services/event-mutation.service";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -65,26 +66,6 @@ export const POST = withApiLogging(async function POST(
   const { id } = await params;
 
   try {
-    const event = await prisma.event.findFirst({ where: { id, deletedAt: null } });
-
-    if (!event) {
-      return NextResponse.json({ error: Errors.EVENT_NOT_FOUND }, { status: 404 });
-    }
-
-    if (event.createdById !== userId) {
-      return NextResponse.json(
-        { error: Errors.ONLY_CREATOR_CAN_CREATE_DATES },
-        { status: 403 }
-      );
-    }
-
-    if (event.selectedDate) {
-      return NextResponse.json(
-        { error: Errors.DATE_POLL_ALREADY_FINALIZED },
-        { status: 400 }
-      );
-    }
-
     const body = await request.json();
     let dates: Date[] = [];
 
@@ -141,35 +122,29 @@ export const POST = withApiLogging(async function POST(
       return normalized;
     });
 
-    // Erstelle Proposals – überspringe bereits existierende
-    const _created = await prisma.$transaction(
-      normalizedDates.map((date) =>
-        prisma.dateProposal.upsert({
-          where: {
-            eventId_date: { eventId: id, date },
+    const allProposals = await withEventMutation(
+      { kind: "user", eventId: id, userId },
+      "manageDates",
+      async ({ tx, event }) => {
+        if (event.createdById !== userId) throw new ApiError(403, Errors.ONLY_CREATOR_CAN_CREATE_DATES);
+        if (event.selectedDate) throw new ApiError(409, Errors.DATE_POLL_ALREADY_FINALIZED);
+        for (const date of normalizedDates) {
+          await tx.dateProposal.upsert({
+            where: { eventId_date: { eventId: id, date } },
+            update: {},
+            create: { eventId: id, date },
+          });
+        }
+        return tx.dateProposal.findMany({
+          where: { eventId: id },
+          include: {
+            votes: { include: { user: { select: { id: true, name: true, email: true } } } },
+            guestVotes: { include: { guest: { select: { id: true, nickname: true } } } },
           },
-          update: {},
-          create: {
-            eventId: id,
-            date,
-          },
-        })
-      )
+          orderBy: { date: "asc" },
+        });
+      }
     );
-
-    // Lade alle Proposals mit Votes
-    const allProposals = await prisma.dateProposal.findMany({
-      where: { eventId: id },
-      include: {
-        votes: {
-          include: { user: { select: { id: true, name: true, email: true } } },
-        },
-        guestVotes: {
-          include: { guest: { select: { id: true, nickname: true } } },
-        },
-      },
-      orderBy: { date: "asc" },
-    });
 
     return NextResponse.json(allProposals, { status: 201 });
   } catch (error) {
@@ -187,20 +162,15 @@ export const DELETE = withApiLogging(async function DELETE(
   const { id } = await params;
 
   try {
-    const event = await prisma.event.findFirst({ where: { id, deletedAt: null } });
-
-    if (!event) {
-      return NextResponse.json({ error: Errors.EVENT_NOT_FOUND }, { status: 404 });
-    }
-
-    if (event.createdById !== userId) {
-      return NextResponse.json(
-        { error: Errors.ONLY_CREATOR_CAN_DELETE_DATES },
-        { status: 403 }
-      );
-    }
-
-    await prisma.dateProposal.deleteMany({ where: { eventId: id } });
+    await withEventMutation(
+      { kind: "user", eventId: id, userId },
+      "manageDates",
+      async ({ tx, event }) => {
+        if (event.createdById !== userId) throw new ApiError(403, Errors.ONLY_CREATOR_CAN_DELETE_DATES);
+        if (event.selectedDate) throw new ApiError(409, Errors.DATE_POLL_ALREADY_FINALIZED);
+        await tx.dateProposal.deleteMany({ where: { eventId: id } });
+      }
+    );
 
     return NextResponse.json({ message: Errors.DATE_PROPOSALS_DELETED });
   } catch (error) {

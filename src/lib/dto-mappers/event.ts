@@ -7,6 +7,7 @@ import type {
 } from "@/lib/sync-types";
 import { iso } from "./utils";
 import { gameTextForRead } from "@/lib/game-text";
+import { evaluateEventState } from "@/lib/events/event-state";
 
 export function toVoteDto(vote: { id: string; proposalId: string; userId: string; createdAt: Date }): VoteDTO {
   return {
@@ -90,6 +91,7 @@ export function toEventDto(event: {
   groupId: string | null;
   selectedGameId: string | null;
   winningProposalId: string | null;
+  selectedDate?: Date | null;
   isPublic: boolean;
   shareToken: string | null;
   createdAt: Date;
@@ -106,6 +108,15 @@ export function toEventDto(event: {
     groupId: event.groupId,
     selectedGameId: event.selectedGameId,
     winningProposalId: event.winningProposalId,
+    selectedDate: iso(event.selectedDate ?? null),
+    eventState: evaluateEventState({
+      status: event.status,
+      eventDate: event.eventDate,
+      selectedDate: event.selectedDate ?? null,
+      selectedGameId: event.selectedGameId,
+      winningProposalId: event.winningProposalId,
+      deletedAt: event.deletedAt,
+    }, new Date()),
     isPublic: event.isPublic,
     shareToken: event.shareToken,
     createdAt: iso(event.createdAt) as string,

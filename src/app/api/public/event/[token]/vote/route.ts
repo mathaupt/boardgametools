@@ -1,11 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import prisma from "@/lib/db";
-import { resolveEventIdFromToken } from "@/lib/event-share";
 import { withApiLogging } from "@/lib/api-logger";
 import { validateString, firstError } from "@/lib/validation";
 import { checkRateLimit, rateLimitResponse } from "@/lib/rate-limit";
-import logger from "@/lib/logger";
 import { Errors } from "@/lib/error-messages";
+import { ApiError, handleApiError } from "@/lib/require-auth";
+import { withEventMutation } from "@/lib/services/event-mutation.service";
 
 type RouteContext = { params: Promise<{ token: string }> };
 
@@ -18,12 +17,6 @@ export const POST = withApiLogging(async function POST(
   if (!allowed) return rateLimitResponse(retryAfterMs);
 
   const { token } = await params;
-  const eventId = await resolveEventIdFromToken(token);
-
-  if (!eventId) {
-    return NextResponse.json({ error: Errors.EVENT_NOT_FOUND }, { status: 404 });
-  }
-
   try {
     const body = await request.json();
     const guestId = body?.guestId as string | undefined;
@@ -34,60 +27,31 @@ export const POST = withApiLogging(async function POST(
       validateString(proposalId, "proposalId", { max: 100 })
     );
     if (validationError) {
-      return NextResponse.json({ error: validationError }, { status: 400 });
+      throw new ApiError(400, validationError);
     }
 
     if (!guestId || !proposalId) {
-      return NextResponse.json({ error: Errors.GUEST_ID_AND_PROPOSAL_REQUIRED }, { status: 400 });
+      throw new ApiError(400, Errors.GUEST_ID_AND_PROPOSAL_REQUIRED);
     }
 
-    const participant = await prisma.guestParticipant.findFirst({
-      where: { id: guestId, eventId },
-    });
-
-    if (!participant) {
-      return NextResponse.json({ error: Errors.GUEST_NOT_FOUND }, { status: 404 });
-    }
-
-    const proposal = await prisma.gameProposal.findFirst({
-      where: { id: proposalId, eventId },
-      select: { id: true },
-    });
-
-    if (!proposal) {
-      return NextResponse.json({ error: Errors.PROPOSAL_NOT_FOUND }, { status: 404 });
-    }
-
-    const existingVote = await prisma.guestVote.findFirst({
-      where: { guestId, proposalId },
-    });
-
-    if (existingVote) {
-      return NextResponse.json({ error: Errors.GUEST_ALREADY_VOTED }, { status: 400 });
-    }
-
-    await prisma.guestVote.create({
-      data: {
-        guestId,
-        proposalId,
-      },
-    });
-
-    const counts = await prisma.gameProposal.findUnique({
-      where: { id: proposalId },
-      select: {
-        _count: { select: { votes: true, guestVotes: true } },
-      },
-    });
-
-    return NextResponse.json({
-      message: Errors.VOTE_RECORDED,
-      totalVotes: (counts?._count.votes ?? 0) + (counts?._count.guestVotes ?? 0),
-      voteCounts: counts?._count ?? { votes: 0, guestVotes: 0 },
-    });
+    const result = await withEventMutation(
+      { kind: "public", token, guestId },
+      "voteGame",
+      async ({ tx, eventId }) => {
+        const participant = await tx.guestParticipant.findFirst({ where: { id: guestId, eventId }, select: { id: true } });
+        if (!participant) throw new ApiError(404, Errors.GUEST_NOT_FOUND_FOR_EVENT);
+        const proposal = await tx.gameProposal.findFirst({ where: { id: proposalId, eventId }, select: { id: true } });
+        if (!proposal) throw new ApiError(404, Errors.PROPOSAL_NOT_FOUND);
+        const existingVote = await tx.guestVote.findFirst({ where: { guestId, proposalId }, select: { id: true } });
+        if (existingVote) throw new ApiError(400, Errors.GUEST_ALREADY_VOTED);
+        await tx.guestVote.create({ data: { guestId, proposalId } });
+        const counts = await tx.gameProposal.findUnique({ where: { id: proposalId }, select: { _count: { select: { votes: true, guestVotes: true } } } });
+        return { message: Errors.VOTE_RECORDED, totalVotes: (counts?._count.votes ?? 0) + (counts?._count.guestVotes ?? 0), voteCounts: counts?._count ?? { votes: 0, guestVotes: 0 } };
+      }
+    );
+    return NextResponse.json(result);
   } catch (error) {
-    logger.error({ err: error }, "Error creating guest vote");
-    return NextResponse.json({ error: Errors.INTERNAL_SERVER_ERROR }, { status: 500 });
+    return handleApiError(error);
   }
 });
 
@@ -100,12 +64,6 @@ export const DELETE = withApiLogging(async function DELETE(
   if (!allowed) return rateLimitResponse(retryAfterMs);
 
   const { token } = await params;
-  const eventId = await resolveEventIdFromToken(token);
-
-  if (!eventId) {
-    return NextResponse.json({ error: Errors.EVENT_NOT_FOUND }, { status: 404 });
-  }
-
   try {
     const { searchParams } = new URL(request.url);
     const guestId = searchParams.get("guestId");
@@ -116,52 +74,29 @@ export const DELETE = withApiLogging(async function DELETE(
       validateString(proposalId, "proposalId", { max: 100 })
     );
     if (deleteValidationError) {
-      return NextResponse.json({ error: deleteValidationError }, { status: 400 });
+      throw new ApiError(400, deleteValidationError);
     }
 
     if (!guestId || !proposalId) {
-      return NextResponse.json({ error: Errors.GUEST_ID_AND_PROPOSAL_REQUIRED }, { status: 400 });
+      throw new ApiError(400, Errors.GUEST_ID_AND_PROPOSAL_REQUIRED);
     }
 
-    const participant = await prisma.guestParticipant.findFirst({
-      where: { id: guestId, eventId },
-    });
-
-    if (!participant) {
-      return NextResponse.json({ error: Errors.GUEST_NOT_FOUND }, { status: 404 });
-    }
-
-    const proposal = await prisma.gameProposal.findFirst({
-      where: { id: proposalId, eventId },
-      select: { id: true },
-    });
-
-    if (!proposal) {
-      return NextResponse.json({ error: Errors.PROPOSAL_NOT_FOUND }, { status: 404 });
-    }
-
-    const deleted = await prisma.guestVote.deleteMany({
-      where: { guestId, proposalId },
-    });
-
-    if (deleted.count === 0) {
-      return NextResponse.json({ error: Errors.VOTE_NOT_FOUND }, { status: 404 });
-    }
-
-    const counts = await prisma.gameProposal.findUnique({
-      where: { id: proposalId },
-      select: {
-        _count: { select: { votes: true, guestVotes: true } },
-      },
-    });
-
-    return NextResponse.json({
-      message: Errors.VOTE_REMOVED,
-      totalVotes: (counts?._count.votes ?? 0) + (counts?._count.guestVotes ?? 0),
-      voteCounts: counts?._count ?? { votes: 0, guestVotes: 0 },
-    });
+    const result = await withEventMutation(
+      { kind: "public", token, guestId },
+      "voteGame",
+      async ({ tx, eventId }) => {
+        const participant = await tx.guestParticipant.findFirst({ where: { id: guestId, eventId }, select: { id: true } });
+        if (!participant) throw new ApiError(404, Errors.GUEST_NOT_FOUND_FOR_EVENT);
+        const proposal = await tx.gameProposal.findFirst({ where: { id: proposalId, eventId }, select: { id: true } });
+        if (!proposal) throw new ApiError(404, Errors.PROPOSAL_NOT_FOUND);
+        const deleted = await tx.guestVote.deleteMany({ where: { guestId, proposalId } });
+        if (!deleted.count) throw new ApiError(404, Errors.VOTE_NOT_FOUND);
+        const counts = await tx.gameProposal.findUnique({ where: { id: proposalId }, select: { _count: { select: { votes: true, guestVotes: true } } } });
+        return { message: Errors.VOTE_REMOVED, totalVotes: (counts?._count.votes ?? 0) + (counts?._count.guestVotes ?? 0), voteCounts: counts?._count ?? { votes: 0, guestVotes: 0 } };
+      }
+    );
+    return NextResponse.json(result);
   } catch (error) {
-    logger.error({ err: error }, "Error removing guest vote");
-    return NextResponse.json({ error: Errors.INTERNAL_SERVER_ERROR }, { status: 500 });
+    return handleApiError(error);
   }
 });

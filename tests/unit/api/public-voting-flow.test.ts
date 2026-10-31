@@ -11,6 +11,11 @@ vi.mock("next/server", () => ({
 
 vi.mock("@/lib/api-logger", () => ({ withApiLogging: vi.fn((handler: unknown) => handler) }));
 vi.mock("@/lib/logger", () => ({ default: { error: vi.fn(), warn: vi.fn(), info: vi.fn(), debug: vi.fn() } }));
+vi.mock("@/lib/require-auth", () => {
+  class ApiError extends Error { statusCode: number; constructor(statusCode: number, message: string) { super(message); this.statusCode = statusCode; } }
+  return { ApiError, handleApiError: (error: unknown) => ({ status: (error as ApiError).statusCode ?? 500, body: { error: (error as Error).message } }) };
+});
+vi.mock("@/lib/services/event-mutation.service", () => ({ withEventMutation: vi.fn() }));
 
 vi.mock("@/lib/db", () => {
   return { default: {
@@ -42,6 +47,7 @@ vi.mock("@/lib/error-messages", () => ({
 
 import prisma from "@/lib/db";
 import { resolveEventIdFromToken, findPublicEventByToken } from "@/lib/event-share";
+import { withEventMutation } from "@/lib/services/event-mutation.service";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { validateString } from "@/lib/validation";
 import { POST as JoinPOST } from "@/app/api/public/event/[token]/join/route";
@@ -59,6 +65,19 @@ describe("Public Voting Flow", () => {
     vi.mocked(checkRateLimit).mockReturnValue({ allowed: true, retryAfterMs: 0 });
     vi.mocked(resolveEventIdFromToken).mockResolvedValue(EVENT_ID);
     vi.mocked(validateString).mockReturnValue(null);
+    vi.mocked(withEventMutation).mockImplementation((async (scope: { kind: string; token?: string }, _action: unknown, write: (context: unknown) => unknown) => {
+      if (scope.kind === "public" && scope.token === "bad") throw Object.assign(new Error("Event nicht gefunden"), { statusCode: 404 });
+      return write({
+        eventId: EVENT_ID,
+        tx: {
+          guestParticipant: prisma.guestParticipant,
+          gameProposal: prisma.gameProposal,
+          guestVote: prisma.guestVote,
+          guestDateVote: prisma.guestDateVote,
+          dateProposal: { findMany: vi.fn().mockResolvedValue([{ id: "dp-1" }]) },
+        },
+      });
+    }) as never);
   });
 
   describe("POST /join", () => {

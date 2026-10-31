@@ -5,8 +5,6 @@ import { SerializedPublicEvent } from "@/lib/public-event";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/components/ui/use-toast";
-import {
-} from "lucide-react";
 import { GuestRegistrationPanel } from "./guest-registration-panel";
 import { DateVotingSection } from "./date-voting-section";
 import { CollectionGameProposer } from "./collection-game-proposer";
@@ -17,6 +15,7 @@ import { ProposalCompactRow } from "@/components/event-voting/proposal-compact-r
 import { ProposalSortControl } from "@/components/event-voting/proposal-sort-control";
 import { sortProposals } from "@/lib/voting/sort-proposals";
 import type { ProposalSort, VotingProposal } from "@/lib/voting/types";
+import { usePublicEventLifecycle } from "./use-public-event-lifecycle";
 
 interface PublicEventClientProps {
   token: string;
@@ -29,15 +28,16 @@ export function PublicEventClient({ token, event }: PublicEventClientProps) {
   const { toast } = useToast();
   const [activeGuest, setActiveGuest] = useState<StoredGuestState | null>(null);
   const [guestVotes, setGuestVotes] = useState<Set<string>>(new Set());
-  const [proposals, setProposals] = useState<Proposal[]>(event.proposals);
   const [proposalSort, setProposalSort] = useState<ProposalSort>("votes");
   const [userVoting, setUserVoting] = useState<string | null>(null);
   const [guestVoting, setGuestVoting] = useState<string | null>(null);
+  const { eventState, proposals, setProposals, dateProposals, refreshEventState } = usePublicEventLifecycle(token, event);
 
   const storageKey = `${STORAGE_PREFIX}${token}`;
-  const isPast = useMemo(() => {
-    return new Date(event.eventDate) < new Date();
-  }, [event.eventDate]);
+  const canVoteGame = eventState.available.voteGame;
+  const canProposeGame = eventState.available.proposeGame;
+  const canVoteDate = eventState.available.voteDate;
+  const canJoin = eventState.available.join;
 
   const proposedGameIds = useMemo(
     () => new Set(proposals.map((p) => p.game.id)),
@@ -82,7 +82,7 @@ export function PublicEventClient({ token, event }: PublicEventClientProps) {
 
   const handleProposalAdded = useCallback((proposal: Proposal) => {
     setProposals((prev) => [...prev, proposal]);
-  }, []);
+  }, [setProposals]);
 
   const updateProposalState = (
     proposalId: string,
@@ -94,7 +94,7 @@ export function PublicEventClient({ token, event }: PublicEventClientProps) {
   };
 
   const handleUserVote = async (proposalId: string, shouldVote: boolean) => {
-    if (!event.currentUserId || isPast) return;
+    if (!event.currentUserId || !canVoteGame) return;
     setUserVoting(proposalId);
     try {
       const endpoint = `/api/events/${event.id}/votes${shouldVote ? "" : `?proposalId=${proposalId}`}`;
@@ -105,6 +105,8 @@ export function PublicEventClient({ token, event }: PublicEventClientProps) {
       });
       if (!response.ok) {
         const data = await response.json().catch(() => null);
+        if (response.status === 409) await refreshEventState();
+        if (response.status === 409) throw new Error("Der Planungsstand hat sich geändert. Deine Änderung wurde nicht gespeichert.");
         throw new Error(data?.error ?? "Vote fehlgeschlagen");
       }
       updateProposalState(proposalId, (proposal) => {
@@ -133,7 +135,7 @@ export function PublicEventClient({ token, event }: PublicEventClientProps) {
   };
 
   const handleGuestVote = async (proposalId: string, shouldVote: boolean) => {
-    if (!activeGuest || isPast) {
+    if (!activeGuest || !canVoteGame) {
       toast({ title: "Gastzugang erforderlich", description: "Bitte zuerst als Gast beitreten." });
       return;
     }
@@ -146,6 +148,8 @@ export function PublicEventClient({ token, event }: PublicEventClientProps) {
       });
       if (!response.ok) {
         const data = await response.json().catch(() => null);
+        if (response.status === 409) await refreshEventState();
+        if (response.status === 409) throw new Error("Der Planungsstand hat sich geändert. Deine Änderung wurde nicht gespeichert.");
         throw new Error(data?.error ?? "Gast-Vote fehlgeschlagen");
       }
       setGuestVotes((prev) => {
@@ -190,6 +194,9 @@ export function PublicEventClient({ token, event }: PublicEventClientProps) {
         initialGuestList={event.guestParticipants}
         onGuestJoined={handleGuestJoined}
         persistGuest={persistGuest}
+        canJoin={canJoin}
+        blockedReason={eventState.blockedReason}
+        onStateConflict={refreshEventState}
       />
 
       <section>
@@ -200,9 +207,9 @@ export function PublicEventClient({ token, event }: PublicEventClientProps) {
               Stimme für deine Favoriten oder bring eigene Vorschläge ein.
             </p>
           </div>
-          {isPast && (
+          {!canVoteGame && (
             <Badge variant="secondary" className="bg-warning/20 text-warning">
-              Event abgeschlossen
+              {eventState.label}
             </Badge>
           )}
         </div>
@@ -246,7 +253,7 @@ export function PublicEventClient({ token, event }: PublicEventClientProps) {
                     guestHasVoted={guestHasVoted}
                     userVoting={userVoting}
                     guestVoting={guestVoting}
-                    isPast={isPast}
+                    canVote={canVoteGame}
                     onUserVote={() => handleUserVote(proposal.id, !userHasVoted)}
                     onGuestVote={() => handleGuestVote(proposal.id, !guestHasVoted)}
                   />
@@ -264,9 +271,10 @@ export function PublicEventClient({ token, event }: PublicEventClientProps) {
         token={token}
         currentUserId={event.currentUserId}
         activeGuest={activeGuest}
-        isPast={isPast}
+        canVote={canVoteDate}
+        onStateConflict={refreshEventState}
         selectedDate={event.selectedDate}
-        initialDateProposals={event.dateProposals}
+        initialDateProposals={dateProposals}
       />
 
       {event.currentUserId && (
@@ -275,16 +283,18 @@ export function PublicEventClient({ token, event }: PublicEventClientProps) {
           currentUserId={event.currentUserId}
           proposedGameIds={proposedGameIds}
           onProposalAdded={handleProposalAdded}
+          onStateConflict={refreshEventState}
         />
       )}
 
       {/* BGG-Import: available to everyone (guests + logged-in) */}
-      {!isPast && (
+      {canProposeGame && (
         <BggGameSearch
           token={token}
           activeGuestId={activeGuest?.id ?? null}
           currentUserId={event.currentUserId}
           onProposalAdded={handleProposalAdded}
+          onStateConflict={refreshEventState}
         />
       )}
     </div>

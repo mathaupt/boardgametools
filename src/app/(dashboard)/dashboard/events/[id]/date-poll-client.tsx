@@ -77,6 +77,11 @@ export default function DatePollClient({
     }
   }, [eventId]);
 
+  const reportStateConflict = useCallback(() => {
+    setError("Der Planungsstand hat sich geändert. Deine Änderung wurde nicht gespeichert.");
+    router.refresh();
+  }, [router]);
+
   const handleCreateProposals = async () => {
     if (pollClosed) return;
     if (!startDate || !endDate) {
@@ -104,6 +109,10 @@ export default function DatePollClient({
 
       if (!res.ok) {
         const data = await res.json();
+        if (res.status === 409) {
+          reportStateConflict();
+          return;
+        }
         setError(data.error || "Fehler beim Erstellen");
         return;
       }
@@ -132,6 +141,8 @@ export default function DatePollClient({
       });
       if (res.ok) {
         setProposals([]);
+      } else if (res.status === 409) {
+        reportStateConflict();
       }
     } catch {
       setError("Fehler beim Löschen");
@@ -154,6 +165,8 @@ export default function DatePollClient({
 
       if (res.ok) {
         await refreshProposals();
+      } else if (res.status === 409) {
+        reportStateConflict();
       }
     } catch {
       // ignore
@@ -181,6 +194,8 @@ export default function DatePollClient({
           setPollClosed(true);
         }
         router.refresh();
+      } else if (res.status === 409) {
+        reportStateConflict();
       }
     } catch {
       setError("Fehler bei der Terminauswahl");
@@ -199,6 +214,8 @@ export default function DatePollClient({
       });
       if (!res.ok) {
         const data = await res.json().catch(() => null);
+        if (res.status === 409) reportStateConflict();
+        if (res.status === 409) return;
         setError(data?.error ?? "Fehler beim Zurücksetzen");
         return;
       }

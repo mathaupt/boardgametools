@@ -17,6 +17,9 @@ interface GuestRegistrationPanelProps {
   initialGuestList: Guest[];
   onGuestJoined: (guest: StoredGuestState) => void;
   persistGuest: (guest: StoredGuestState, votes: Set<string>) => void;
+  canJoin?: boolean;
+  blockedReason?: string | null;
+  onStateConflict?: () => void | Promise<void>;
 }
 
 export function GuestRegistrationPanel({
@@ -25,6 +28,9 @@ export function GuestRegistrationPanel({
   initialGuestList,
   onGuestJoined,
   persistGuest,
+  canJoin = true,
+  blockedReason = null,
+  onStateConflict,
 }: GuestRegistrationPanelProps) {
   const { toast } = useToast();
   const [nickname, setNickname] = useState("");
@@ -45,6 +51,8 @@ export function GuestRegistrationPanel({
       });
       if (!response.ok) {
         const data = await response.json().catch(() => null);
+        if (response.status === 409) await onStateConflict?.();
+        if (response.status === 409) throw new Error("Der Planungsstand hat sich geändert. Deine Änderung wurde nicht gespeichert.");
         throw new Error(data?.error ?? "Beitritt fehlgeschlagen");
       }
       const participant: Guest = await response.json();
@@ -92,7 +100,7 @@ export function GuestRegistrationPanel({
                 Du kannst jetzt als Gast abstimmen. Deine Stimme wird unter deinem Nickname gezählt.
               </p>
             </div>
-          ) : (
+          ) : canJoin ? (
             <>
               <label htmlFor="guest-nickname" className="text-sm font-medium text-muted-foreground">
                 Spitzname
@@ -116,6 +124,10 @@ export function GuestRegistrationPanel({
                 {joining ? "Beitritt läuft…" : "Als Gast registrieren"}
               </Button>
             </>
+          ) : (
+            <p className="rounded-lg bg-muted p-4 text-sm text-muted-foreground" role="status">
+              {blockedReason ?? "Eine Registrierung ist für dieses Event nicht mehr möglich."}
+            </p>
           )}
         </CardContent>
       </Card>

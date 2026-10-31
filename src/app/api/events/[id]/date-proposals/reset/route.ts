@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requireAuth, handleApiError } from "@/lib/require-auth";
-import prisma from "@/lib/db";
+import { requireAuth, handleApiError, ApiError } from "@/lib/require-auth";
 import { withApiLogging } from "@/lib/api-logger";
 import { Errors } from "@/lib/error-messages";
+import { withEventMutation } from "@/lib/services/event-mutation.service";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -15,26 +15,15 @@ export const POST = withApiLogging(async function POST(
   const { id } = await params;
 
   try {
-    const event = await prisma.event.findFirst({ where: { id, deletedAt: null } });
-
-    if (!event) {
-      return NextResponse.json({ error: Errors.EVENT_NOT_FOUND }, { status: 404 });
-    }
-
-    if (event.createdById !== userId) {
-      return NextResponse.json(
-        { error: Errors.ONLY_CREATOR_CAN_RESET },
-        { status: 403 }
-      );
-    }
-
-    await prisma.$transaction([
-      prisma.dateProposal.deleteMany({ where: { eventId: id } }),
-      prisma.event.update({
-        where: { id },
-        data: { selectedDate: null },
-      }),
-    ]);
+    await withEventMutation(
+      { kind: "user", eventId: id, userId },
+      "resetDates",
+      async ({ tx, event, now }) => {
+        if (event.createdById !== userId) throw new ApiError(403, Errors.ONLY_CREATOR_CAN_RESET);
+        await tx.dateProposal.deleteMany({ where: { eventId: id } });
+        await tx.event.update({ where: { id }, data: { selectedDate: null, status: "planning", updatedAt: now } });
+      }
+    );
 
     return NextResponse.json({ message: Errors.DATE_POLL_RESET });
   } catch (error) {

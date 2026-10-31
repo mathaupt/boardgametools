@@ -6,8 +6,9 @@ import { withApiLogging } from "@/lib/api-logger";
 import { validateString, firstError } from "@/lib/validation";
 import { fetchBGGGame } from "@/lib/bgg";
 import { checkRateLimit, rateLimitResponse } from "@/lib/rate-limit";
-import logger from "@/lib/logger";
 import { Errors } from "@/lib/error-messages";
+import { ApiError, handleApiError } from "@/lib/require-auth";
+import { withEventMutation } from "@/lib/services/event-mutation.service";
 
 type RouteContext = { params: Promise<{ token: string }> };
 
@@ -32,105 +33,66 @@ export const POST = withApiLogging(async function POST(
     const { bggId, guestId } = body ?? {};
 
     const validationError = firstError(
-      validateString(String(bggId), "bggId", { min: 1, max: 20 }),
+      validateString(bggId == null ? "" : String(bggId), "bggId", { min: 1, max: 20 }),
       validateString(guestId, "guestId", { required: false, max: 100 })
     );
     if (validationError) {
-      return NextResponse.json({ error: validationError }, { status: 400 });
+      throw new ApiError(400, validationError);
     }
 
     // Must be either a logged-in user or a registered guest
     if (!session?.user?.id && !guestId) {
-      return NextResponse.json(
-        { error: "Bitte als Gast registrieren oder einloggen" },
-        { status: 401 }
-      );
+      throw new ApiError(401, "Bitte als Gast registrieren oder einloggen");
     }
 
-    const event = await prisma.event.findFirst({
-      where: { id: eventId, deletedAt: null },
-    });
-
-    if (!event || !event.isPublic) {
-      return NextResponse.json({ error: Errors.EVENT_NOT_FOUND }, { status: 404 });
-    }
-
-    if (event.status === "closed") {
-      return NextResponse.json(
-        { error: "Event ist bereits abgeschlossen" },
-        { status: 400 }
-      );
-    }
-
-    // Validate guest if provided
+    const eventId = await resolveEventIdFromToken(token);
+    if (!eventId) throw new ApiError(404, Errors.EVENT_NOT_FOUND);
     if (guestId) {
-      const guest = await prisma.guestParticipant.findFirst({
-        where: { id: guestId, eventId },
-      });
-      if (!guest) {
-        return NextResponse.json(
-          { error: "Gast nicht gefunden" },
-          { status: 404 }
-        );
-      }
-    }
-
-    // Check for duplicate BGG proposal on this event
-    const existingBggProposal = await prisma.gameProposal.findFirst({
-      where: { eventId, bggId: String(bggId) },
-    });
-
-    if (existingBggProposal) {
-      return NextResponse.json(
-        { error: "Dieses Spiel wurde bereits vorgeschlagen" },
-        { status: 400 }
-      );
-    }
-
-    // Also check if the same BGG game exists as a collection game proposal
-    const existingCollectionProposal = await prisma.gameProposal.findFirst({
-      where: {
-        eventId,
-        game: { bggId: String(bggId) },
-      },
-    });
-
-    if (existingCollectionProposal) {
-      return NextResponse.json(
-        { error: "Dieses Spiel wurde bereits vorgeschlagen" },
-        { status: 400 }
-      );
+      const guest = await prisma.guestParticipant.findFirst({ where: { id: guestId, eventId }, select: { id: true } });
+      if (!guest) throw new ApiError(404, Errors.GUEST_NOT_FOUND_FOR_EVENT);
     }
 
     // Fetch game data from BGG using the robust library function (handles 202, retries, auth token)
     const bggGame = await fetchBGGGame(String(bggId));
 
     if (!bggGame) {
-      return NextResponse.json(
-        { error: "Spiel konnte auf BGG nicht gefunden werden. Bitte versuche es erneut." },
-        { status: 404 }
-      );
+      throw new ApiError(404, "Spiel konnte auf BGG nicht gefunden werden. Bitte versuche es erneut.");
     }
 
-    const proposal = await prisma.gameProposal.create({
-      data: {
-        eventId,
-        proposedById: session?.user?.id ?? null,
-        guestId: guestId ?? null,
-        bggId: String(bggId),
-        bggName: bggGame.name,
-        bggImageUrl: bggGame.imageUrl,
-        bggMinPlayers: bggGame.minPlayers,
-        bggMaxPlayers: bggGame.maxPlayers,
-        bggPlayTimeMinutes: bggGame.playTimeMinutes,
-      },
-      include: {
-        game: true,
-        proposedBy: { select: { id: true, name: true } },
-        guest: { select: { id: true, nickname: true } },
-        _count: { select: { votes: true, guestVotes: true } },
-      },
-    });
+    const proposal = await withEventMutation(
+      { kind: "public", token, userId: session?.user?.id, guestId: guestId ?? undefined },
+      "proposeGame",
+      async ({ tx, eventId: lockedEventId }) => {
+        if (guestId) {
+          const guest = await tx.guestParticipant.findFirst({ where: { id: guestId, eventId: lockedEventId }, select: { id: true } });
+          if (!guest) throw new ApiError(404, Errors.GUEST_NOT_FOUND_FOR_EVENT);
+        }
+        const duplicate = await tx.gameProposal.findFirst({
+          where: { eventId: lockedEventId, OR: [{ bggId: String(bggId) }, { game: { bggId: String(bggId) } }] },
+          select: { id: true },
+        });
+        if (duplicate) throw new ApiError(400, "Dieses Spiel wurde bereits vorgeschlagen");
+        return tx.gameProposal.create({
+          data: {
+            eventId: lockedEventId,
+            proposedById: session?.user?.id ?? null,
+            guestId: guestId ?? null,
+            bggId: String(bggId),
+            bggName: bggGame.name,
+            bggImageUrl: bggGame.imageUrl,
+            bggMinPlayers: bggGame.minPlayers,
+            bggMaxPlayers: bggGame.maxPlayers,
+            bggPlayTimeMinutes: bggGame.playTimeMinutes,
+          },
+          include: {
+            game: true,
+            proposedBy: { select: { id: true, name: true } },
+            guest: { select: { id: true, nickname: true } },
+            _count: { select: { votes: true, guestVotes: true } },
+          },
+        });
+      }
+    );
 
     // Build a unified response matching the serialized proposal format
     const gameData = {
@@ -160,10 +122,6 @@ export const POST = withApiLogging(async function POST(
       { status: 201 }
     );
   } catch (error) {
-    logger.error({ err: error }, "Error proposing BGG game via public link");
-    return NextResponse.json(
-      { error: Errors.INTERNAL_SERVER_ERROR },
-      { status: 500 }
-    );
+    return handleApiError(error);
   }
 });
