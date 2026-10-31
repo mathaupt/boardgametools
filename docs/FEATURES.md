@@ -278,10 +278,11 @@ Uebersicht der Gaeste (per oeffentlichem Link beigetreten) mit Stimmenanzahl.
 → Siehe [Abschnitt 7: Terminabstimmung](#7-terminabstimmung)
 
 #### Spielvorschlaege & Abstimmung
-- Vorschlaege mit Bild, Name, Spieleranzahl, Spieldauer, Komplexitaet
+- Kompakte Zeilen mit Bild, umbrechendem Namen, Spieleranzahl, Spieldauer und Einreicher
 - Spieldetails direkt im Dialog aus Spielname oder Aktion „Spieldetails“ öffnen; öffentliche Gäste sehen keine private Sammlungsbeschreibung
-- Wer hat vorgeschlagen, wie viele Stimmen
+- Gesamtstimmen und bei öffentlichen Events die Aufschlüsselung für Nutzer und Gäste
 - Vorschläge nach Gesamtstimmen (Standard), Name A–Z oder neuestem Vorschlag sortieren; Nutzer- und Gaststimmen zählen gemeinsam
+- Sichtbare Abstimmungsaktionen und berechtigte Löschaktionen ohne horizontales Scrollen
 - Abstimmen / Stimme zurueckziehen
 - Gewinnerspiel hervorgehoben
 
@@ -316,6 +317,7 @@ Uebersicht der Gaeste (per oeffentlichem Link beigetreten) mit Stimmenanzahl.
 - Spiel per BGG-Suche vorschlagen
 - Ueber vorgeschlagene Spiele abstimmen
 - Rangliste der Vorschlaege nach Stimmen; Sortierung nach Stimmen, Name oder neuestem Vorschlag
+- Kompakte Zeilenliste in der öffentlichen Ansicht, Eventdetailseite und Voting-Seite; bei 200 % Zoom ohne horizontalen Überlauf
 - Spieldetails im zugänglichen Dialog ansehen, ohne den Voting-Kontext zu verlassen
 
 ---

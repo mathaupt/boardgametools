@@ -1,27 +1,19 @@
 "use client";
 
-import Image from "next/image";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { SerializedPublicEvent } from "@/lib/public-event";
-import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/components/ui/use-toast";
 import {
-  Loader2,
-  Trophy,
-  Vote,
-  Gamepad2,
-  ThumbsUp,
-  ThumbsDown,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { GuestRegistrationPanel } from "./guest-registration-panel";
 import { DateVotingSection } from "./date-voting-section";
 import { CollectionGameProposer } from "./collection-game-proposer";
 import { BggGameSearch } from "./bgg-game-search";
+import { PublicProposalVoteActions } from "./public-proposal-vote-actions";
 import type { Proposal, StoredGuestState } from "./types";
-import { ProposalGameDetails } from "@/components/event-voting/proposal-game-details";
+import { ProposalCompactRow } from "@/components/event-voting/proposal-compact-row";
 import { ProposalSortControl } from "@/components/event-voting/proposal-sort-control";
 import { sortProposals } from "@/lib/voting/sort-proposals";
 import type { ProposalSort, VotingProposal } from "@/lib/voting/types";
@@ -227,118 +219,41 @@ export function PublicEventClient({ token, event }: PublicEventClientProps) {
               </CardContent>
             </Card>
           ) : (
-            visibleProposals.map((proposal) => {
+            <ul className="min-w-0 overflow-hidden rounded-xl border border-border bg-card">
+            {visibleProposals.map((proposal) => {
               const userHasVoted = proposal.userHasVoted ?? false;
               const guestHasVoted = guestVotes.has(proposal.id);
               return (
-                <Card key={proposal.id} className="border-border/60 bg-background/60">
-                  <CardHeader>
-                    <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-                      <div className="flex items-start gap-4">
-                        <div className="flex-shrink-0">
-                          {proposal.game.imageUrl ? (
-                            <Image
-                              src={proposal.game.imageUrl}
-                              alt={proposal.game.name}
-                              width={56}
-                              height={56}
-                              className="rounded-lg object-cover"
-                            />
-                          ) : (
-                            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted/40 md:h-14 md:w-14">
-                              <Gamepad2 className="h-5 w-5 text-muted-foreground md:h-6 md:w-6" aria-hidden="true" />
-                            </div>
-                          )}
-                        </div>
-                        <div>
-                          <div className="text-lg text-foreground">
-                            {(event.winningProposal?.id === proposal.id || event.selectedGame?.id === proposal.game.id) && (
-                              <Trophy
-                                className="mr-2 inline h-4 w-4 text-warning"
-                                aria-hidden="true"
-                              />
-                            )}
-                            <ProposalGameDetails
-                              token={token}
-                              proposalId={proposal.id}
-                              name={proposal.game.name}
-                              titleClassName="text-left text-lg font-semibold leading-none tracking-tight text-foreground"
-                              headingLevel={3}
-                            />
-                          </div>
-                          <CardDescription>
-                            Vorgeschlagen von {proposal.proposedBy?.name ?? "unbekannt"}
-                          </CardDescription>
-                          <div className="mt-2 flex flex-wrap gap-2 text-xs text-muted-foreground">
-                            <span>
-                              {proposal.game.minPlayers ?? "?"}-{proposal.game.maxPlayers ?? "?"} Spieler
-                            </span>
-                            {proposal.game.playTimeMinutes && <span>• {proposal.game.playTimeMinutes} Min.</span>}
-                          </div>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <div className="text-center">
-                          <p className="text-2xl font-bold text-foreground">{proposal.totalVotes}</p>
-                          <p className="text-xs text-muted-foreground">Gesamt</p>
-                        </div>
-                        <div className="text-xs text-muted-foreground">
-                          <div><span aria-hidden="true">👤</span> {proposal.voteCounts.registered} Nutzer</div>
-                          <div><span aria-hidden="true">🎟️</span> {proposal.voteCounts.guests} Gäste</div>
-                        </div>
-                      </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-                      <div className="flex flex-wrap gap-3">
-                        {event.currentUserId && (
-                          <Button
-                            data-testid={`user-vote-${proposal.id}`}
-                            disabled={!!userVoting || isPast}
-                            onClick={() => handleUserVote(proposal.id, !userHasVoted)}
-                            variant={userHasVoted ? "outline" : "default"}
-                            className={cn("gap-2", userHasVoted && "border-success text-success")}
-                          >
-                            {userVoting === proposal.id ? (
-                              <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
-                            ) : userHasVoted ? (
-                              <ThumbsDown className="h-4 w-4" aria-hidden="true" />
-                            ) : (
-                              <ThumbsUp className="h-4 w-4" aria-hidden="true" />
-                            )}
-                            {userHasVoted ? "Vote entfernen" : "Als User voten"}
-                          </Button>
-                        )}
-                        <Button
-                          data-testid={`guest-vote-${proposal.id}`}
-                          disabled={!!guestVoting || isPast || !activeGuest}
-                          onClick={() => handleGuestVote(proposal.id, !guestHasVoted)}
-                          variant={guestHasVoted ? "secondary" : "outline"}
-                          className={cn(
-                            "gap-2",
-                            guestHasVoted && "border-primary text-primary",
-                            !activeGuest && "opacity-50"
-                          )}
-                        >
-                          {guestVoting === proposal.id ? (
-                            <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
-                          ) : (
-                            <Vote className="h-4 w-4" aria-hidden="true" />
-                          )}
-                          {guestHasVoted ? "Gast-Stimme entfernen" : activeGuest ? "Als Gast voten" : "Gastmodus nötig"}
-                        </Button>
-                      </div>
-                      {!event.currentUserId && !activeGuest && (
-                        <p className="text-xs text-muted-foreground">
-                          Logge dich ein oder registriere dich als Gast, um abstimmen zu können.
-                        </p>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
+                <ProposalCompactRow
+                  key={proposal.id}
+                  token={token}
+                  proposalId={proposal.id}
+                  name={proposal.game.name}
+                  imageUrl={proposal.game.imageUrl}
+                  minPlayers={proposal.game.minPlayers}
+                  maxPlayers={proposal.game.maxPlayers}
+                  playTimeMinutes={proposal.game.playTimeMinutes}
+                  proposedBy={proposal.proposedBy?.name ?? "unbekannt"}
+                  totalVotes={proposal.totalVotes}
+                  voteSummary={`${proposal.voteCounts.registered} Nutzer · ${proposal.voteCounts.guests} Gäste`}
+                  selected={event.winningProposal?.id === proposal.id || event.selectedGame?.id === proposal.game.id}
+                >
+                  <PublicProposalVoteActions
+                    proposalId={proposal.id}
+                    currentUserId={event.currentUserId}
+                    activeGuest={!!activeGuest}
+                    userHasVoted={userHasVoted}
+                    guestHasVoted={guestHasVoted}
+                    userVoting={userVoting}
+                    guestVoting={guestVoting}
+                    isPast={isPast}
+                    onUserVote={() => handleUserVote(proposal.id, !userHasVoted)}
+                    onGuestVote={() => handleGuestVote(proposal.id, !guestHasVoted)}
+                  />
+                </ProposalCompactRow>
               );
-            })
+            })}
+            </ul>
           )}
         </div>
       </section>

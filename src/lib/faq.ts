@@ -130,6 +130,10 @@ export const faqSections: FaqSection[] = [
         answer: "Standardmäßig stehen die Vorschläge mit den meisten Stimmen oben. Über „Sortieren“ kannst du stattdessen alphabetisch nach Name oder nach den neuesten Vorschlägen ordnen. Nutzer- und Gaststimmen werden gemeinsam gezählt.",
       },
       {
+        question: "Wo finde ich alle Informationen zu einem kompakten Spielvorschlag?",
+        answer: "In der kompakten Zeile siehst du die wichtigsten Spieldaten und die Gesamtstimmen. Über den Spielnamen oder „Spieldetails“ öffnest du die vollständigen verfügbaren Informationen; öffentliche Events zeigen zusätzlich die Aufteilung in Nutzer- und Gaststimmen.",
+      },
+      {
         question: "Wie funktioniert die Terminabstimmung?",
         answer:
           'In der Event-Detailseite kannst du mehrere Terminvorschlaege hinzufuegen. Teilnehmer (und Gaeste) stimmen mit "Ja", "Vielleicht" oder "Nein" fuer jeden Termin ab \u2013 aehnlich wie bei Doodle. Du siehst eine Uebersichtsmatrix aller Antworten und kannst am Ende den besten Termin festlegen. Die Terminabstimmung kann bei Bedarf zurueckgesetzt werden.',

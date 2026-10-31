@@ -1451,10 +1451,39 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 ---
 
+### [BUG-047] Voting-Listen laufen bei 200 % Zoom horizontal über
+
+**Status:** `fixed`
+**Schweregrad:** `medium`
+**Entdeckt:** 2026-10-30
+**Behoben:** 2026-10-31
+**Behoben in Version:** 0.50.28
+**Test geschrieben:** Ja
+
+**Beschreibung:** Bei 200 % Zoom überliefen Sortierauswahl, Vorschlagsdetails und Aktionen den sichtbaren Bereich der Voting-Liste.
+
+**Reproduktion:** Eine öffentliche oder geschützte Voting-Ansicht bei 390 CSS-Pixeln öffnen und den Browserzoom auf 200 % setzen.
+
+**Erwartetes Verhalten:** Sortierung, Spielname, Stimme und verfügbare Aktionen bleiben ohne horizontales Scrollen erreichbar.
+
+**Tatsächliches Verhalten:** Der Sortierer und die langen Aktionsreihen verbreiterten die Seite; Stimmen und Spielinformationen konnten sich bei schmaler Breite überlagern.
+
+**Ursache:** Starre Zeilen- und Selektorbreiten ohne Umbruchverhalten für eine effektive Viewportbreite von etwa 195 CSS-Pixeln.
+
+**Lösung:** Gemeinsame kompakte Zeilen mit begrenzten Grid-Spalten, umbrechenden Inhalten und gestapelten Aktionen; die Sortierauswahl nutzt bei schmalen Breiten die verfügbare Zeilenbreite.
+
+**Prüfnachweis:** Browser-Renderprüfung bei 390/1440 px und 200 % Zoom ohne horizontalen Überlauf; Regressionstests für kompakte Zeilen und Voting-Aktionen erfolgreich.
+
+**Test-Status:** `tests/unit/components/proposal-ranking-list.test.tsx`, `tests/unit/components/public-proposal-vote-actions.test.tsx` sowie lokale 200-%-Browsermessung.
+
+**Referenz im Changelog:** Version 0.50.28 – Mehr Übersicht in Voting-Listen.
+
+---
+
 ## Statistik
 
 - **Offene Bugs:** 9
 - **In Bearbeitung:** 0
-- **Behoben:** 37
+- **Behoben:** 38
 - **Wontfix:** 0
-- **Gesamt:** 46
+- **Gesamt:** 47

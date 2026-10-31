@@ -11,7 +11,7 @@ nicht wiederverwendet. Verbindlicher Ablauf:
 |---|---|---|---|---|
 | FEAT-001 | Spieldetails aus dem Voting öffnen | Umgesetzt (Web) | [Gemeinsamer Plan](superpowers/plans/2026-10-30-FEAT-001-004-voting.md) | Freigegeben und umgesetzt am 30.10.2026 |
 | FEAT-002 | Voting-Vorschläge sortieren | Umgesetzt (Web) | [Gemeinsamer Plan](superpowers/plans/2026-10-30-FEAT-001-004-voting.md) | Freigegeben und umgesetzt am 30.10.2026 |
-| FEAT-003 | Kompakte Voting-Liste prüfen | Prüfplan erstellt | [Gemeinsamer Plan](superpowers/plans/2026-10-30-FEAT-001-004-voting.md) | Ausstehend |
+| FEAT-003 | Kompakte Voting-Liste | Umgesetzt (Web) | [Gemeinsamer Plan](superpowers/plans/2026-10-30-FEAT-001-004-voting.md) | Kompakte Zeilenliste nach sichtbarem Vergleich ausdrücklich gewählt und zur Umsetzung freigegeben am 31.10.2026 |
 | FEAT-004 | Voting-Vorschläge löschen | Plan erstellt | [Gemeinsamer Plan](superpowers/plans/2026-10-30-FEAT-001-004-voting.md) | Ausstehend |
 | FEAT-005 | ApiLog-Schreiblast für `/api/health` begrenzen | Erfasst | Ausstehend | Ausstehend |
 | FEAT-006 | Health-Deep-Checks cachen oder splitten | Erfasst | Ausstehend | Ausstehend |
@@ -88,25 +88,28 @@ Standard: **Anzahl der Stimmen, absteigend** – die meisten Votes zuerst.
 
 **Abgeschlossen:** 30.10.2026, Version 0.50.27. Web-Ansichten sortieren standardmäßig nach kombinierten Nutzer- und Gaststimmen; Name und Erstellungszeitpunkt sind zusätzlich wählbar.
 
-## FEAT-003 – Kompakte Voting-Liste prüfen
+## FEAT-003 – Kompakte Voting-Liste
 
 **Implementierungsplan:** [FEAT-001 bis FEAT-004](superpowers/plans/2026-10-30-FEAT-001-004-voting.md).
 **Plattformumfang:** Web zuerst, iOS separat; am 30.10.2026 bestätigt.
-**Umsetzungsfreigabe:** Ausstehend.
+**Umsetzungsfreigabe:** Kompakte Zeilenliste nach sichtbarem Vergleich ausdrücklich gewählt und am 31.10.2026 zur Umsetzung freigegeben. iOS bleibt separat zu planen.
 
 **Ziel:** Bei vielen Vorschlägen mehr Überblick auf begrenztem Bildschirmraum erhalten.
 
-**Prüfauftrag:** Eine kürzere Listendarstellung gegenüber der bisherigen Darstellung
-untersuchen. Dies ist eine offene Gestaltungsprüfung, noch keine Entscheidung für
-einen bestimmten Listenmodus.
+**Entscheidung:** Die kompakte Zeilenliste wurde nach dem visuellen Vergleich der
+bisherigen Kartenansicht vorgezogen. Bei zehn synthetischen Vorschlägen waren auf
+390 px fünf statt zwei Einträge vollständig sichtbar. Umsetzung für öffentliche
+Events, Eventdetails und die eigene Voting-Seite.
 
-**Abnahmekriterien für die spätere Planung:**
+**Abnahmekriterien:**
 
-- Varianten mit realistischen Vorschlagsmengen vergleichen, auch mobil und mit langen Namen.
-- Spielname, Stimmenzahl, Abstimmungsaktion und Zugang zu Details bleiben verständlich;
-  Löschaktionen berücksichtigen.
-- Lesbarkeit, Touch-Flächen, große Schrift und Screenreader-Nutzung mit Impeccable prüfen.
-- Empfehlung mit Vor- und Nachteilen vorlegen und vor Umsetzung freigeben lassen.
+- [x] Vorschläge mit Cover, umbrechendem Namen, Spielerzahl, Dauer, Einreicher und Gesamtstimmen kompakt darstellen.
+- [x] Spieldetails, Stimmenaufschlüsselung und vorhandene Abstimmungsaktionen bleiben erreichbar; Löschaktion bleibt für berechtigte Personen sichtbar.
+- [x] Sortierung und Gleichstandsränge bleiben erhalten; Nutzer- und Gaststimmen zählen gemeinsam.
+- [x] Aktionsziele mindestens 44 × 44 px, keine Hover-Pflicht und keine horizontal versteckten Aktionen.
+- [x] Browservergleich bei 390/1440 px, Hell-/Dunkelmodus, 0/1/10/30 Vorschlägen und 200 % Zoom; bei 200 % kein horizontaler Überlauf.
+
+**Abgeschlossen:** 31.10.2026, Version 0.50.28. Web umgesetzt. Native iOS-Oberflächen separat zu planen.
 
 ## FEAT-004 – Voting-Vorschläge löschen
 

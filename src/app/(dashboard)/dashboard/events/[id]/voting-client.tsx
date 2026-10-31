@@ -1,12 +1,10 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Trophy, ThumbsUp, ThumbsDown, Users, Star, Gamepad } from "lucide-react";
+import { ThumbsUp, ThumbsDown } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
-import { ProposalGameDetails } from "@/components/event-voting/proposal-game-details";
+import { ProposalCompactRow } from "@/components/event-voting/proposal-compact-row";
 import { ProposalSortControl } from "@/components/event-voting/proposal-sort-control";
 import { sortProposals } from "@/lib/voting/sort-proposals";
 import type { ProposalSort, VotingProposal } from "@/lib/voting/types";
@@ -157,111 +155,50 @@ export default function VotingClient({
       <div className="flex justify-end">
         <ProposalSortControl value={sort} onChange={setSort} id="event-detail-proposal-sort" />
       </div>
-      {sortedProposals.map((proposal) => (
-          <div key={proposal.id} data-testid={`proposal-${proposal.id}`} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 border border-border rounded-lg hover:bg-accent/50 focus-within:ring-2 focus-within:ring-ring transition-colors bg-card gap-4 sm:gap-0">
-            <div className="flex items-start sm:items-center gap-3 flex-1">
-              {(selectedGameId === proposal.game.id || winningProposalId === proposal.id) && (
-                <Trophy className="h-5 w-5 text-warning flex-shrink-0 mt-0.5 sm:mt-0" aria-hidden="true" />
-              )}
-              {/* Game Image */}
-              <div className="flex-shrink-0">
-                {proposal.game.imageUrl ? (
-                  <Image 
-                    src={proposal.game.imageUrl} 
-                    alt={proposal.game.name}
-                    width={64}
-                    height={64}
-                    className="rounded-lg object-cover border border-border"
-                  />
-                ) : (
-                  <div className="w-16 h-16 rounded-lg bg-muted border border-border flex items-center justify-center">
-                    <Gamepad className="h-8 w-8 text-muted-foreground" aria-hidden="true" />
-                  </div>
-                )}
-              </div>
-              <div className="flex-1 min-w-0">
-                <ProposalGameDetails
-                  eventId={eventId}
-                  proposalId={proposal.id}
-                  name={proposal.game.name}
-                  titleClassName="font-medium text-lg text-foreground break-words"
-                  headingLevel={3}
-                />
-                <div className="text-sm text-muted-foreground mb-2">
-                  Vorgeschlagen von {proposal.proposedBy.name}
-                </div>
-                
-                {/* Spiel-Details */}
-                <div className="flex flex-wrap gap-2">
-                  <Badge variant="outline" className="flex items-center gap-1 border-border bg-card">
-                    <Users className="h-3 w-3" aria-hidden="true" />
-                    {proposal.game.minPlayers}-{proposal.game.maxPlayers} Spieler
-                  </Badge>
-                  
-                  {proposal.game.playTimeMinutes && (
-                    <Badge variant="outline" className="flex items-center gap-1 border-border bg-card">
-                      ⏱️ {proposal.game.playTimeMinutes} Min.
-                    </Badge>
-                  )}
-                  
-                  {proposal.game.complexity && (
-                    <Badge variant="outline" className="flex items-center gap-1 border-border bg-card">
-                      <Star className="h-3 w-3" aria-hidden="true" />
-                      {"★".repeat(proposal.game.complexity)}{"☆".repeat(5 - proposal.game.complexity)}
-                    </Badge>
-                  )}
-                </div>
-              </div>
-            </div>
-            
-            <div className="flex items-center gap-3 sm:gap-3">
-              {/* Vote Count */}
-              <div className="text-center min-w-[60px]">
-                <div className="text-2xl font-bold text-foreground" data-testid={`vote-count-${proposal.id}`}>{proposal._count.votes + (proposal._count.guestVotes ?? 0)}</div>
-                <div className="text-xs text-muted-foreground">Stimmen</div>
-              </div>
-              
-              {/* Voting Buttons */}
-              {userId && !isPast && (
-                <div className="flex gap-1">
-                  {hasVoted(proposal.id) ? (
-                    <Button
-                      onClick={() => handleRemoveVote(proposal.id)}
-                      disabled={voting === proposal.id}
-                      variant="outline"
-                      size="sm"
-                      className="flex items-center gap-1 border-border bg-card hover:bg-accent"
-                      aria-label={`Vote für ${proposal.game.name} entfernen`}
-                      data-testid={`remove-vote-${proposal.id}`}
-                    >
-                      <ThumbsDown className="h-4 w-4" aria-hidden="true" />
-                      <span className="hidden sm:inline">{voting === proposal.id ? 'Wird entfernt…' : 'Entfernen'}</span>
-                      <span className="sm:hidden">{voting === proposal.id ? '…' : '✕'}</span>
-                    </Button>
-                  ) : (
-                    <Button
-                      onClick={() => handleVote(proposal.id)}
-                      disabled={voting === proposal.id}
-                      size="sm"
-                      className="flex items-center gap-1 bg-primary text-primary-foreground hover:bg-primary/90"
-                      aria-label={`Für ${proposal.game.name} stimmen`}
-                      data-testid={`vote-${proposal.id}`}
-                    >
-                      <ThumbsUp className="h-4 w-4" aria-hidden="true" />
-                      <span className="hidden sm:inline">{voting === proposal.id ? 'Wird abgestimmt…' : 'Vote'}</span>
-                      <span className="sm:hidden">{voting === proposal.id ? '…' : '✓'}</span>
-                    </Button>
-                  )}
-                </div>
-              )}
-              
-              {/* Selected Badge */}
-              {(selectedGameId === proposal.game.id || winningProposalId === proposal.id) && (
-                <Badge variant="default" className="bg-success text-success-foreground border-success">Ausgewählt</Badge>
-              )}
-            </div>
-          </div>
-      ))}
+      <ul className="min-w-0 overflow-hidden rounded-xl border border-border bg-card">
+        {sortedProposals.map((proposal) => (
+          <ProposalCompactRow
+            key={proposal.id}
+            eventId={eventId}
+            proposalId={proposal.id}
+            name={proposal.game.name}
+            imageUrl={proposal.game.imageUrl}
+            minPlayers={proposal.game.minPlayers}
+            maxPlayers={proposal.game.maxPlayers}
+            playTimeMinutes={proposal.game.playTimeMinutes}
+            proposedBy={proposal.proposedBy.name}
+            totalVotes={proposal._count.votes + (proposal._count.guestVotes ?? 0)}
+            selected={selectedGameId === proposal.game.id || winningProposalId === proposal.id}
+          >
+            {userId && !isPast && (hasVoted(proposal.id) ? (
+              <Button
+                onClick={() => handleRemoveVote(proposal.id)}
+                disabled={voting === proposal.id}
+                variant="outline"
+                className="min-h-11 gap-2"
+                aria-label={`Vote für ${proposal.game.name} entfernen`}
+                aria-pressed="true"
+                data-testid={`remove-vote-${proposal.id}`}
+              >
+                <ThumbsDown className="h-4 w-4" aria-hidden="true" />
+                Stimme entfernen
+              </Button>
+            ) : (
+              <Button
+                onClick={() => handleVote(proposal.id)}
+                disabled={voting === proposal.id}
+                className="min-h-11 gap-2"
+                aria-label={`Für ${proposal.game.name} stimmen`}
+                aria-pressed="false"
+                data-testid={`vote-${proposal.id}`}
+              >
+                <ThumbsUp className="h-4 w-4" aria-hidden="true" />
+                {voting === proposal.id ? "Wird abgestimmt …" : "Abstimmen"}
+              </Button>
+            ))}
+          </ProposalCompactRow>
+        ))}
+      </ul>
     </div>
   );
 }

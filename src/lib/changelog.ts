@@ -12,6 +12,17 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.28",
+    date: "2026-10-31",
+    title: "Mehr Übersicht in Voting-Listen",
+    description: "Spielvorschläge werden kompakt dargestellt und bleiben auch bei starker Vergrößerung bedienbar.",
+    changes: [
+      { type: "improvement", text: "Öffentliche und geschützte Voting-Listen zeigen mehr Vorschläge auf einen Blick; Spieldetails, Stimmen und verfügbare Abstimmungsaktionen bleiben direkt erreichbar" },
+      { type: "fix", text: "Voting-Listen und Sortierung laufen bei 200 % Zoom nicht mehr horizontal über den Bildschirm", bugRef: "BUG-047" },
+      { type: "internal", text: "FEAT-003 nach visuellem Variantenvergleich mit ausdrücklicher Wahl der kompakten Zeilenliste umgesetzt; iOS bleibt separat zu planen" },
+    ],
+  },
+  {
     version: "0.50.27",
     date: "2026-10-30",
     title: "Spielvorschläge sortieren",
