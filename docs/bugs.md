@@ -1196,6 +1196,8 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 **Ursache:** page.tsx und PublicEventClient verwenden überwiegend isPast; Ergebnisdaten werden nicht im Kopf dargestellt.
 
+**Ergänzende Quellprüfung 31.10.2026:** Öffentliche Beitritts-, Spielstimmen- und Terminantwort-Routen sowie mehrere private/Mobile-Schreibwege besitzen keine gemeinsame Zustandsprüfung. Der FEAT-010-Plan sieht deshalb serverseitige Sperren mit echter DB-Abnahme vor; eine reine UI-Korrektur reicht nicht aus. Keine produktiven Schreibrequests durchgeführt.
+
 **Lösung:** Noch nicht umgesetzt. Statusmodell, Ergebnisansicht und zugehörige serverseitige Regeln gemeinsam planen.
 
 **Prüfnachweis:** Assessment A mit echtem status closed: closed-joined-mobile.png und closed-1440.png. Nur synthetische API-Antworten; Backendannahme und Produktionsmutationen nicht getestet. Belege: `.impeccable/critique/evidence/public-event-A/` und `public-event-B/`.
@@ -1480,10 +1482,110 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 ---
 
+### [BUG-048] Einzelne Abstimmungsrouten binden Vorschläge nicht an das Event
+
+**Status:** `open`
+**Schweregrad:** `high`
+**Entdeckt:** 2026-10-31
+**Test geschrieben:** Nein; Regressionen im FEAT-010-Plan vorgesehen.
+
+**Beschreibung:** Die geschützte Web-Spielstimmenroute lädt einen Vorschlag beim POST nur anhand proposalId. Ihr DELETE ignoriert die Event-ID vollständig. Die öffentliche Terminantwort-Route prüft den Gast gegen das Token-Event, jedoch nicht alle dateProposalIds gegen dasselbe Event.
+
+**Reproduktion:** In einer isolierten Testdatenbank zwei Events A/B anlegen. Mit einem berechtigten Nutzer für A einen Vorschlag aus B an POST /api/events/A/votes übergeben. Mit Gast aus A eine Terminantwort für einen Vorschlag aus B an die öffentliche date-vote-Route für A senden. DELETE mit abweichender Event-ID prüfen.
+
+**Erwartetes Verhalten:** Vorschlag, Gast, Stimme und freigegebenes Event müssen zusammengehören. Bei fremder ID 404 und keine einzige Mutation, auch in einer gemischten Bulk-Liste.
+
+**Tatsächliches Verhalten laut Quellprüfung:** Web-POST filtert gameProposal nur nach ID; DELETE filtert nur proposalId/userId. Öffentliche Terminantworten werden anhand dateProposalId/guestId ohne Eventbindung upserted. Die Datenbankrelationen verhindern diese Kombination nicht.
+
+**Ursache:** Zugriff auf das Event und Zuordnung des Schreibobjekts werden getrennt geprüft; an den genannten Stellen fehlt die zweite Bindung.
+
+**Lösung:** Noch nicht umgesetzt. [FEAT-010-Plan](superpowers/plans/2026-10-31-FEAT-010-eventstatus-ergebnis.md): vollständige Objektbindung, atomare Bulkvalidierung und gemeinsamer transaktionaler Zustandsschutz.
+
+**Prüfnachweis:** src/app/api/events/[id]/votes/route.ts und src/app/api/public/event/[token]/date-vote/route.ts sowie Prisma-Relationen am 31.10.2026 gelesen. Kein Ausnutzen gegen produktive Konten oder Daten.
+
+**Referenz im Changelog:** Version 0.50.29 – Weitere Verbesserungen vorbereitet.
+
+---
+
+### [BUG-049] Entity-Dekodierung erzeugt uneinheitliche Spieltexte
+
+**Status:** `open`
+**Schweregrad:** `medium`
+**Entdeckt:** 2026-10-31
+**Test geschrieben:** Nein; Regressionen im FEAT-009-Plan vorgesehen.
+
+**Beschreibung:** Mehrfach kodierte Spielnamen und allgemeine numerische beziehungsweise benannte HTML-Entities werden nicht in allen Import-, Schreib- und Ausgabewegen konsistent dekodiert.
+
+**Reproduktion:** Den BGG-Parser mit `Horrified: Dungeons &amp;amp; Dragons` und einer Beschreibung mit `&#x1F3B2;` verwenden; manuell erfassten Entity-Text über GameService speichern und Web-/Mobile-Ausgabe vergleichen. Erst in isolierten Fixtures beziehungsweise Testdaten nachweisen.
+
+**Erwartetes Verhalten:** Ein gemeinsamer idempotenter Klartextvertrag, Unicode korrekt und dieselben Sonderzeichen in Import, Suche, Web und Mobile-API.
+
+**Tatsächliches Verhalten laut Quellprüfung:** bgg-xml.ts verarbeitet nur eine feste Teilmenge und entfernt nicht alle verschachtelten Ebenen. Das Bereinigungsskript besitzt einen anderen Decoder und verwendet String.fromCharCode auch für Zeichen oberhalb U+FFFF. Manuelle GameService-Writes und DTO-Ausgabe normalisieren nicht.
+
+**Ursache:** Mehrere voneinander abweichende Decoder sowie fehlende gemeinsame Textgrenzen.
+
+**Lösung:** Noch nicht umgesetzt. [FEAT-009-Plan](superpowers/plans/2026-10-31-FEAT-009-spieldaten-entities.md): gemeinsamer Normalisierer, Pfadtests, sichere Textausgabe und getrennt freizugebender Bestandslauf.
+
+**Prüfnachweis:** src/lib/bgg-xml.ts, src/lib/bgg.ts, scripts/fix-html-entities.ts und GameService-/DTO-Pfade am 31.10.2026 geprüft. Die Herkunft einzelner Bestandswerte bleibt bis zu einem lesenden Datenbericht unbestätigt.
+
+**Referenz im Changelog:** Version 0.50.29 – Weitere Verbesserungen vorbereitet.
+
+---
+
+### [BUG-050] Entwicklungsabhängigkeiten enthalten erneut hohe und mittlere Auditbefunde
+
+**Status:** `open`
+**Schweregrad:** `high`
+**Entdeckt:** 2026-10-31
+**Test geschrieben:** Nein; keine Paketkorrektur vorgenommen.
+
+**Beschreibung:** Der Registry-Audit meldet bei unverändertem Lockfile 1 hohen, 23 mittlere und 2 niedrige Befunde ausschließlich im Entwicklungsbaum. Der Commit-Hook blockiert SEC-45.
+
+**Reproduktion:** Mit funktionierendem Registry-Zugriff npm audit --json ausführen. Produktionsbaum getrennt mit npm audit --omit=dev prüfen.
+
+**Erwartetes Verhalten:** Keine ungeklärten hohen Entwicklungsbefunde und keine neu zurückgekehrten SEC-45-Befunde gegenüber dem freigegebenen Stand.
+
+**Tatsächliches Verhalten:** systeminformation 5.33.1 aus shadcn → @dotenvx/dotenvx ist vom hohen Advisory GHSA-3f7j-7jwc-fxfj betroffen; weitere mittlere Stamm-Befunde liegen in minimatch, glob und @hono/node-server. Produktionsaudit im Commit-Hook: 0 Befunde.
+
+**Ursache:** Bestehende transitive Paketversionen und aktualisierter Advisorystand; package.json und package-lock.json wurden während der Planungsarbeit nicht geändert.
+
+**Lösung:** Offen. Kompatible Paketkorrekturen mit Lockfile-/Installationsprüfung und vorgeschriebenen Tests gesondert durchführen. Gepatchte systeminformation-Version laut Advisory ab 5.33.16; keine pauschalen Major-Overrides anwenden.
+
+**Prüfnachweis:** Vollständiger Registry-Audit außerhalb der Sandbox sowie [Sicherheitsstand](code-reviews/security.md); Commit vom Regressionshook blockiert, nicht umgangen.
+
+**Referenz im Changelog:** Version 0.50.29 – Weitere Verbesserungen vorbereitet.
+
+---
+
+### [BUG-051] Review-Evaluator kann fehlgeschlagenen npm-Audit als befundfrei bewerten
+
+**Status:** `open`
+**Schweregrad:** `medium`
+**Entdeckt:** 2026-10-31
+**Test geschrieben:** Nein; Regressionstest vor einer späteren Korrektur erforderlich.
+
+**Beschreibung:** SEC-45 verwendet bei fehlenden Audit-Metadaten einen leeren Befundsatz. Ein Netzwerkfehler mit gültigem Fehler-JSON kann dadurch als resolved statt als nicht ausführbare Prüfung erscheinen.
+
+**Reproduktion:** npm audit --json in einer Umgebung ohne Registry-Zugriff ausführen; Fehler-JSON ohne metadata mit der SEC-45-Auswertung in scripts/review-evaluate.mjs verarbeiten.
+
+**Erwartetes Verhalten:** Nicht ausgeführte oder ungültige Auditantworten liefern einen klaren Prüfungsfehler und keinen befundfreien beziehungsweise gelösten Sicherheitsstatus.
+
+**Tatsächliches Verhalten laut Quellprüfung:** audit.metadata?.vulnerabilities wird bei Fehlen durch ein leeres Objekt ersetzt; critical/high/moderate werden auf 0 gesetzt. Der Auswertungspfad kann resolved zurückgeben, obwohl npm einen Registry-DNS-Fehler geliefert hat.
+
+**Ursache:** Audit-Metadaten und Fehlerobjekt werden vor der Statusberechnung nicht validiert; Exitstatus allein wird nicht zwischen echten Befunden und Ausführungsfehlern unterschieden.
+
+**Lösung:** Offen. Auditparser mit explizitem Fehler-/Metadatenschema und Tests für Netzwerkfehler, Timeout, ungültiges JSON, echte Befunde und erfolgreiches Nullresultat korrigieren. Keine Baseline eines fehlgeschlagenen Prüflaufs als neue Freigabe übernehmen.
+
+**Prüfnachweis:** Sandbox-Audit mit Registry-DNS-Fehler, abweichender vollständiger Registry-Audit außerhalb der Sandbox und SEC-45-Quellprüfung am 31.10.2026.
+
+**Referenz im Changelog:** Version 0.50.29 – Weitere Verbesserungen vorbereitet.
+
+---
+
 ## Statistik
 
-- **Offene Bugs:** 9
+- **Offene Bugs:** 13
 - **In Bearbeitung:** 0
 - **Behoben:** 38
 - **Wontfix:** 0
-- **Gesamt:** 47
+- **Gesamt:** 51

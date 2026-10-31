@@ -866,14 +866,14 @@ const isValid = await compare(inputPassword, group.password);
 
 ## Evaluator-Feedback (automatisch generiert)
 
-> Letzter Lauf: 2026-10-31 00:17:57
+> Letzter Lauf: 2026-10-31 00:43:33
 > Gesamt-Score: **10/10**
 
 ### Kategorie-Scores
 
 | Kategorie | Score | Treffsicherheit | Aktualität | Abdeckung | Umsetzung | Handlung |
 |-----------|-------|-----------------|------------|-----------|-----------|----------|
-| Sicherheit | **10/10** | 10 | 10 | 10 | 10 | 10 |
+| Sicherheit | **9.9/10** | 10 | 10 | 10 | 9.8 | 10 |
 | TypeScript | **10/10** | 10 | 10 | 10 | 10 | 10 |
 | Architektur | **10/10** | 10 | 10 | 10 | 10 | 10 |
 | Performance | **10/10** | 10 | 10 | 10 | 10 | 10 |
@@ -884,7 +884,7 @@ const isValid = await compare(inputPassword, group.password);
 | Best Practices | **10/10** | 10 | 10 | 10 | 10 | 10 |
 | Skalierung | **10/10** | 10 | 10 | 10 | 10 | 10 |
 
-### Erledigte Findings (50)
+### Erledigte Findings (49)
 
 - ✅ **P0-1** Debug-Routes in Produktion: NODE_ENV Guard vorhanden
 - ✅ **P0-2** DB-Init ohne Auth: Auth-Check vorhanden
@@ -920,7 +920,6 @@ const isValid = await compare(inputPassword, group.password);
 - ✅ **P3-33** Links zu /terms und /privacy fehlen: Beide Seiten vorhanden
 - ✅ **P3-35** Fehlende DB-Indices: 33 @@index Definitionen
 - ✅ **SEC-44** Fehlende Security Headers: CSP, X-Frame-Options, X-Content-Type-Options vorhanden
-- ✅ **SEC-45** npm audit: Bekannte Vulnerabilities: Keine Prod-Vulnerabilities (1 high nur in devDeps, 1 moderate)
 - ✅ **SEC-46** XSS: dangerouslySetInnerHTML ohne Sanitization: Kein dangerouslySetInnerHTML verwendet
 - ✅ **PERF-47** Schwere Libraries ohne Dynamic Import: 5 dynamic() + 7 await import() Lazy-Loads
 - ✅ **PERF-48** Keine Bundle-Analyse konfiguriert: @next/bundle-analyzer konfiguriert
@@ -936,3 +935,7 @@ const isValid = await compare(inputPassword, group.password);
 - ✅ **SCALE-58** Kein Caching-Layer: Redis Cache vorhanden
 - ✅ **SCALE-59** Kein strukturiertes Logging: Strukturiertes Logging-Framework vorhanden
 - ✅ **SCALE-60** DB Connection Pooling nicht konfiguriert: Connection Pool konfiguriert
+
+### Teilweise gelöst (1)
+
+- 🔶 **SEC-45** npm audit: Bekannte Vulnerabilities: 1 high nur in devDependencies

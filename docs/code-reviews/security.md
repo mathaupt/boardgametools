@@ -19,3 +19,20 @@ Build ohne Datenbankänderungen. Explizite Migrationen brechen bei Fehlern ab; k
 ## Abgrenzung
 
 Dies behebt die freigegebenen hohen Befunde und den unmittelbar zugehörigen Upload-Vertragsfehler. Vollständiger Offline-Schreibsync, Event-/Gruppen-Detailabgleich, Tokenfamilien/atomare Rotation und Apple-Releasefunktionen bleiben gesonderte Maßnahmen des Prüfberichts.
+
+## Aktualisierung 31.10.2026 – Commit der FEAT-009/010/011-Pläne blockiert
+
+Die Paketdateien wurden in dieser Planungsaufgabe nicht verändert. Ein vollständiger
+Registry-Audit meldet aktuell 26 Entwicklungsbefunde: 1 hoch, 23 mittel, 2 niedrig.
+Der Produktionsaudit im Commit-Hook meldet weiterhin 0. SEC-45 wird dadurch als
+partially_resolved bewertet; der Regressionshook hat den Commit korrekt blockiert.
+
+- systeminformation 5.33.1 gelangt über shadcn → @dotenvx/dotenvx in den Entwicklungsbaum. Der hohe Befund [GHSA-3f7j-7jwc-fxfj](https://github.com/advisories/GHSA-3f7j-7jwc-fxfj) ist ab 5.33.16 behoben.
+- Mittlere Stamm-Befunde betreffen [minimatch](https://github.com/advisories/GHSA-g3hv-75wg-m249), [glob](https://github.com/advisories/GHSA-3g3m-2fjr-6pw4) und [@hono/node-server](https://github.com/advisories/GHSA-rmxm-3fg6-px4f). Abhängige Toolpakete werden im npm-Bericht zusätzlich gezählt.
+- Niedrige Befunde betreffen die vorhandene deepmerge-Kette.
+- Der Evaluator SEC-45 validiert erfolgreiche Audit-Metadaten nicht: Fehler-JSON ohne metadata kann fälschlich als 0 Befunde gelten. Ein Sandboxlauf lieferte einen Registry-DNS-Fehler; ein vollständiger Lauf außerhalb der Sandbox lieferte den obigen Befundsatz.
+
+BUG-050 erfasst die Paketrisiken, BUG-051 den Evaluatorfehler. Beides ist offen.
+Keine ungeprüften Major-Overrides, kein pauschales npm audit fix und kein Umgehen
+des Hooks durchgeführt. Die zugrunde liegenden Auditdaten liegen lokal unter
+/tmp/bgt-feat-plans-audit.json; sie sind kein versioniertes Artefakt.

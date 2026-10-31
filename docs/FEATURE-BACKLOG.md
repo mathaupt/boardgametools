@@ -17,9 +17,9 @@ nicht wiederverwendet. Verbindlicher Ablauf:
 | FEAT-006 | Health-Deep-Checks cachen oder splitten | Erfasst | Ausstehend | Ausstehend |
 | FEAT-007 | Vercel-Firewall-Regel für `/api/health` | Erfasst | Ausstehend | Ausstehend |
 | FEAT-008 | Spend-Management-Obergrenze (Billing-Schutz) | Erfasst | Ausstehend | Ausstehend |
-| FEAT-009 | HTML-Entities in Spieldaten korrekt behandeln | Erfasst | Ausstehend | Ausstehend |
-| FEAT-010 | Event-Status und Ergebnis eindeutig darstellen | Erfasst | Ausstehend | Ausstehend |
-| FEAT-011 | Mobile und assistive Bedienung der Terminabstimmung | Erfasst | Ausstehend | Ausstehend |
+| FEAT-009 | HTML-Entities in Spieldaten korrekt behandeln | Plan erstellt | [Textnormalisierung und Datenbereinigung](superpowers/plans/2026-10-31-FEAT-009-spieldaten-entities.md) | Ausstehend |
+| FEAT-010 | Event-Status und Ergebnis eindeutig darstellen | Plan erstellt | [Zustandsregeln und Ergebnisdarstellung](superpowers/plans/2026-10-31-FEAT-010-eventstatus-ergebnis.md) | Ausstehend |
+| FEAT-011 | Mobile und assistive Bedienung der Terminabstimmung | Plan erstellt | [Zugängliche Terminabstimmung](superpowers/plans/2026-10-31-FEAT-011-terminabstimmung-barrierefrei.md) | Ausstehend |
 | FEAT-012 | Teilnahme vor passive Listen rücken | Erfasst | Ausstehend | Ausstehend |
 | FEAT-013 | Aktive Identität verständlich machen | Erfasst | Ausstehend | Ausstehend |
 | FEAT-014 | Suchzustände und Beschriftung der BGG-Suche | Erfasst | Ausstehend | Ausstehend |
@@ -208,14 +208,20 @@ Limit (Drosselung beziehungsweise Abschaltung) bewerten und dokumentieren.
 
 ## FEAT-009 – HTML-Entities in Spieldaten korrekt behandeln
 
+**Implementierungsplan:** [FEAT-009](superpowers/plans/2026-10-31-FEAT-009-spieldaten-entities.md), erstellt am 31.10.2026.
+**Umsetzungsfreigabe:** Ausstehend; ein Produktions-Bereinigungslauf benötigt zusätzlich ein geprüftes konkretes Manifest und Backup.
+**Plattformumfang:** Gemeinsame Backend-/Import-/Mobile-Ausgabe und Webdarstellung; iOS-Sync-Verträge prüfen, keine zusätzliche native Dekodierungslogik.
+**Bugbezug:** BUG-049; Datenherkunft einzelner Produktionswerte erst durch einen lesenden Bericht prüfen.
+
 **Ziel:** Spieldaten werden überall so angezeigt, wie sie gemeint sind — `&`,
 `<`, `>`, Anführungszeichen und Apostrophe erscheinen als Zeichen, nicht als
 Entities. Beispiel aus dem Bestand: „Horrified: Dungeons &amp; Dragons" muss
 als „Horrified: Dungeons & Dragons" erscheinen.
 
 **Anforderung:** HTML-Entities in aus BGG importierten und manuell erfassten
-Spieldaten (Name, Beschreibung) werden verlässlich genau einmal dekodiert —
-beim Import und in der Anzeige. Bereits vorhandene Teilfunktionen sind im Plan
+Spieldaten (Name, Beschreibung) werden in einem idempotenten Normalisierungsschritt
+bis zum stabilen Klartext dekodiert. Import und Ausgabe verwenden denselben
+Vertrag; wiederholte Verarbeitung ändert bereits normalisierte Werte nicht. Bereits vorhandene Teilfunktionen sind im Plan
 auf Relevanz und Lücken zu prüfen: die Entity-Dekodierung in `bgg-xml.ts` und
 das Bereinigungsskript `scripts/fix-html-entities.ts`. Die Ursache für
 verbliebene Entities ist im Plan zu klären (Doppel-Escaping, weitere
@@ -235,11 +241,16 @@ Importpfade wie BGG-Suche, Sammlungs-Import, EAN-Import). Ein Bereinigungslauf
 - Der vorhandene Datenbestand ist bereinigt; der Bereinigungslauf ist
   idempotent.
 - Suche und Filter funktionieren mit Sonderzeichen im Namen.
-- Kein XSS-Risiko durch die Dekodierung: Dekodierung ausschließlich für die
-  Anzeige, kein Einfügen von rohem HTML.
+- Sichere Klartextverarbeitung beim Speichern und Lesen; Ausgabe ausschließlich
+  als Text, kein Einfügen von rohem HTML.
 - Regressionstests für Import und Anzeige mit Entities im Namen.
 
 ## FEAT-010 – Event-Status und Ergebnis eindeutig darstellen
+
+**Implementierungsplan:** [FEAT-010](superpowers/plans/2026-10-31-FEAT-010-eventstatus-ergebnis.md), erstellt am 31.10.2026.
+**Umsetzungsfreigabe:** Ausstehend; vorgeschlagene Zustands-, Zeit- und Kompatibilitätsregeln sind im Plan zur Bestätigung markiert.
+**Plattformumfang:** Web zuerst, iOS-Oberflächen separat; serverseitige Zustandsregeln gelten auch für Mobile-APIs.
+**Bugbezug:** BUG-037 sowie neu erfasste eventübergreifende Schreibmöglichkeiten BUG-048.
 
 **Ziel:** Gäste erkennen auf einen Blick den tatsächlichen Planungsstand, ohne
 falsche Erwartungen zu übernehmen — etwa eine Stimmabgabe auf ein bereits
@@ -267,6 +278,11 @@ public-event-client.tsx:41,293; date-voting-section.tsx:146.
   dies ab (Prüfung mit echten Zuständen, nicht nur synthetischen Antworten).
 
 ## FEAT-011 – Mobile und assistive Bedienung der Terminabstimmung
+
+**Implementierungsplan:** [FEAT-011](superpowers/plans/2026-10-31-FEAT-011-terminabstimmung-barrierefrei.md), erstellt am 31.10.2026.
+**Umsetzungsfreigabe:** Ausstehend.
+**Plattformumfang:** Öffentliche und geschützte Web-Terminabstimmung; native iOS-Oberflächen separat.
+**Abhängigkeit:** Gemeinsame Zustandsregeln und Serverabsicherung aus FEAT-010.
 
 **Ziel:** Die Terminabstimmung ist auf kleinen Bildschirmen vollständig
 sichtbar, mit ausreichend großen Bedienzielen, klarer Auswahlsemantik und

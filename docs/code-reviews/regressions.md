@@ -112,3 +112,17 @@ Jeder Eintrag enthält Felder für Root-Cause-Analyse und Gegenmaßnahmen (manue
 **Verantwortlich:** BoardGameTools Wartung
 
 **Validierung:** Ursprünglicher PrismaConfigEnvError reproduziert; mit Korrektur 648 Tests, Typecheck und Lint erfolgreich.
+
+## 2026-10-31 00:35:29
+
+| Finding | Priorität | Vorher | Jetzt | Detail |
+|---------|-----------|--------|-------|--------|
+| SEC-45: npm audit: Bekannte Vulnerabilities | P2 | resolved | partially_resolved | 1 high nur in devDependencies |
+
+**Root-Cause:** Vollständiger Registry-Audit während der Planungsaufgabe meldet bei unveränderten Paketdateien 1 hohen, 23 mittlere und 2 niedrige Befunde ausschließlich in Entwicklungsabhängigkeiten. Hoher Befund: systeminformation 5.33.1 über shadcn → dotenvx; weitere mittlere Befunde betreffen insbesondere minimatch, glob und @hono/node-server. Die lokale Sandbox kann die npm-Registry nicht erreichen. Der Evaluator behandelt Audit-Fehler-JSON ohne metadata fälschlich wie einen leeren Befundsatz, was den vorherigen resolved-Stand erklären kann.
+**Gegenmaßnahme:** BUG-050/051 offen erfassen; Paketkorrektur und verlässliche Fehlerbehandlung gesondert durchführen. Keine Paketdateien im Rahmen der angeforderten Planungsarbeit verändern, keinen Hook abschalten und keinen erneuten Commit gegen die durch den fehlgeschlagenen Lauf bereits verschobene Baseline versuchen. Planungsunterlagen bleiben reviewbar gespeichert; Commit ist blockiert.
+**Verantwortlich:** BoardGameTools Wartung; Korrekturumfang getrennt von FEAT-009 bis FEAT-011.
+
+**Validierung:** Registry-Audit außerhalb der Sandbox bestätigt 26 Entwicklungsbefunde; Produktionsaudit im Commit-Hook meldet 0. package.json und package-lock.json unverändert. Quelle: npm audit --json und Quellprüfung von SEC-45 in scripts/review-evaluate.mjs.
+
+---

@@ -12,6 +12,17 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.29",
+    date: "2026-10-31",
+    title: "Weitere Verbesserungen vorbereitet",
+    description: "Für korrekte Sonderzeichen, verständliche Eventzustände und eine zugängliche Terminabstimmung liegen getrennte Implementierungspläne zur Prüfung vor.",
+    changes: [
+      { type: "internal", text: "FEAT-009 bis FEAT-011 mit konkreten Arbeitsschritten, Tests, Impeccable-, Sicherheits- und Abnahmekriterien geplant; Umsetzung noch freizugeben" },
+      { type: "internal", text: "Unvollständige Entity-Verarbeitung und fehlende Eventbindung einzelner Abstimmungsaktionen als offene Fehler dokumentiert" },
+      { type: "internal", text: "Bestehende Paketbefunde und eine unzuverlässige Audit-Fehlerauswertung dokumentiert; der Commit der Planungsunterlagen bleibt durch die Regressionsprüfung blockiert" },
+    ],
+  },
+  {
     version: "0.50.28",
     date: "2026-10-31",
     title: "Mehr Übersicht in Voting-Listen",
