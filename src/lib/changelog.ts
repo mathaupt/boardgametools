@@ -23,6 +23,7 @@ export const changelog: ChangelogEntry[] = [
       { type: "improvement", text: "Gastbegrüßung, Zähler und ausgewählter Termin nutzen besser lesbare Vordergrundfarben; die vollständige Theme-Kontrastmessung steht noch aus." },
       { type: "internal", text: "Webtests decken Tastaturbedienung, gespeicherte Antworten und schmale Ansichten ab; manuelle VoiceOver- und vollständige Dark-Theme-Prüfung bleiben offen." },
       { type: "internal", text: "Der Commit-Hook hat Tests, ESLint, Security-Check und Regressionsevaluierung erfolgreich abgeschlossen; Review-Gesamtwertung 10/10." },
+      { type: "internal", text: "FEAT-011 im Backlog als umgesetzt markiert; offene VoiceOver- und Theme-Abnahmen getrennt ausgewiesen." },
     ],
   },
   {

@@ -24,7 +24,7 @@ Bedarf zu aktualisieren. Ergebnis am jeweiligen Plan dokumentieren:
 | FEAT-008 | Spend-Management-Obergrenze (Billing-Schutz) | Plan erstellt | [Budget und Betriebsreaktion](superpowers/plans/2026-10-31-FEAT-008-spend-management.md) | Ausstehend; Betrag und Teamwirkung vor Aktivierung festzulegen |
 | FEAT-009 | HTML-Entities in Spieldaten korrekt behandeln | Code umgesetzt; Produktionsdatenbereinigung offen | [Textnormalisierung und Datenbereinigung](superpowers/plans/2026-10-31-FEAT-009-spieldaten-entities.md) | Codeumsetzung am 31.10.2026 freigegeben; Produktionslauf separat freizugeben |
 | FEAT-010 | Event-Status und Ergebnis eindeutig darstellen | Umgesetzt und abgenommen (Web/Mobile-API) | [Zustandsregeln und Ergebnisdarstellung](superpowers/plans/2026-10-31-FEAT-010-eventstatus-ergebnis.md) | Am 31.10.2026 freigegeben und mit isolierter PostgreSQL- und Chromium-Abnahme abgeschlossen; native iOS-Oberfläche bleibt separat |
-| FEAT-011 | Mobile und assistive Bedienung der Terminabstimmung | Implementiert (Web) | [Zugängliche Terminabstimmung](superpowers/plans/2026-10-31-FEAT-011-terminabstimmung-barrierefrei.md) | iOS separat planen |
+| FEAT-011 | Mobile und assistive Bedienung der Terminabstimmung | Implementiert (Web; Restabnahme offen) | [Zugängliche Terminabstimmung](superpowers/plans/2026-10-31-FEAT-011-terminabstimmung-barrierefrei.md) | Web am 01.11.2026 umgesetzt; VoiceOver-/Theme-Abnahme offen, iOS separat |
 | FEAT-012 | Teilnahme vor passive Listen rücken | Plan erstellt | [Teilnahmeweg und Teilnehmerdaten](superpowers/plans/2026-10-31-FEAT-012-oeffentliche-teilnahme.md) | Ausstehend |
 | FEAT-013 | Aktive Identität verständlich machen | Plan erstellt | [Eine aktive Identität](superpowers/plans/2026-10-31-FEAT-013-aktive-identitaet.md) | Ausstehend; Umfang ohne Gastwechsel bestätigt |
 | FEAT-014 | Suchzustände und Beschriftung der BGG-Suche | Plan erstellt | [Öffentliche BGG-Suche](superpowers/plans/2026-10-31-FEAT-014-bgg-suchzustaende.md) | Ausstehend |
@@ -141,7 +141,7 @@ Gemeint ist der Vorschlag im Voting, nicht das Spiel in der Sammlung.
 ## FEAT-005 – ApiLog-Schreiblast für `/api/health` begrenzen
 
 **Implementierungsplan:** [FEAT-005](superpowers/plans/2026-10-31-FEAT-005-health-apilog.md), erstellt am 31.10.2026.
-**Umsetzungsfreigabe:** Ausstehend.
+**Umsetzungsfreigabe:** Erteilt am 01.11.2026 durch „implementiere FEAT-011“; Web-Implementierung abgeschlossen.
 **Planentscheidung:** Vollständiger Ausschluss statt Stichprobe; normale API-Logs und historische Rohlogs erhalten.
 **Bugbezug:** Loganteil von BUG-056; spätere DB-Leselastkorrektur in FEAT-006.
 
@@ -308,7 +308,9 @@ public-event-client.tsx:41,293; date-voting-section.tsx:146.
 **Plattformumfang:** Öffentliche und geschützte Web-Terminabstimmung; native iOS-Oberflächen separat.
 **Abhängigkeit:** Gemeinsame Zustandsregeln und Serverabsicherung aus FEAT-010.
 
-**Ergebnis:** Öffentliche und geschützte Terminabstimmungen verwenden gemeinsame, beschriftete Radiogruppen. Antworten bleiben während des Speicherns im DOM; gespeicherte Auswahl, Fehler und gesperrte Zustände werden textlich vermittelt. Teilnehmerdetails sind aufklappbar, die Desktopmatrix ist eine beschriftete Leseansicht. Tastatur- und schmale Viewport-Abläufe sind getestet. Bei 98 CSS-Pixeln ist nur die Terminfläche (nicht die gesamte Eventseite) geprüft. VoiceOver und vollständige manuelle Theme-Kontrastmessung bleiben als Abnahme offen.
+**Status der Restabnahme:** Die Web-Implementierung ist abgeschlossen. VoiceOver, vollständige manuelle Theme-Kontrastmessung und der Seitenscroll der übrigen Eventseite bei 400-%-Äquivalent sind noch nicht abgenommen; BUG-038 bleibt in Bearbeitung und BUG-039 offen. Die Terminfläche selbst wurde bei 98 CSS-Pixeln geprüft.
+
+**Ergebnis:** Öffentliche und geschützte Terminabstimmungen verwenden gemeinsame, beschriftete Radiogruppen. Antworten bleiben während des Speicherns im DOM; gespeicherte Auswahl, Fehler und gesperrte Zustände werden textlich vermittelt. Teilnehmerdetails sind aufklappbar, die Desktopmatrix ist eine beschriftete Leseansicht. Tastatur- und schmale Viewport-Abläufe sind getestet.
 
 **Anforderung:** Die interne Termintabelle erfordert bei 390 Pixeln 81–88
 Pixel Seitenscrollen; „Nein" ist zunächst verborgen. Antwortbuttons messen
