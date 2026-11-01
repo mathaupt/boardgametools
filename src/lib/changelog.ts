@@ -12,6 +12,15 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.45",
+    date: "2026-11-01",
+    title: "Dashboard-Renderfehler erfassen",
+    description: "Ein gemeldeter Fehler beim Laden des angemeldeten Dashboards ist zur Ursachenklärung dokumentiert. Für die Diagnose wird der React-Digest aus den Serverlogs benötigt.",
+    changes: [
+      { type: "internal", text: "BUG-061 erfasst: React-Fehler #441 weist auf eine fehlgeschlagene Server-Component-Ausgabe hin; Ursache und Regressionstest stehen nach Logkorrelation aus.", bugRef: "BUG-061" },
+    ],
+  },
+  {
     version: "0.50.44",
     date: "2026-11-01",
     title: "Offene Betriebs- und Plattformarbeit dokumentieren",
