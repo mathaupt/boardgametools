@@ -203,3 +203,9 @@ it("zeigt vor dem Absenden keine leere Suche", async () => {
 ## 6. Abnahmegrenze
 
 Eine optisch richtige Leere-Meldung genügt nicht: Auch Gastzugriff und tatsächliche Upstreamfehler müssen korrekt abgebildet werden. Die Planung selbst führt keine BGG-Abfragen, Gastregistrierungen oder API-Änderungen aus.
+
+### Ergänzende nicht schreibende Abnahme – 2026-11-01
+
+- BGG-Such-/Detailkomponenten waren Teil des gezielten UI-Laufs; zusammen mit FEAT-011/012/013 bestanden 48 Tests in zehn Dateien.
+- Impeccable-Detektor ohne Findings für die BGG-Suche und angrenzende Eventkomponenten.
+- Browser-E2E, reale Suchzustände und 390/1440-px-, Theme- und Zoommessungen bleiben offen. Es gibt keine isolierte E2E-Datenbank und keine verfügbare Browser-Session; auf Wunsch wurden keine mutierenden Abläufe ausgeführt.

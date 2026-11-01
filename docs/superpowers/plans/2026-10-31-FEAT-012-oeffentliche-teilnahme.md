@@ -141,3 +141,10 @@ it("führt denselben Gast einmal zusammen und erhält echte Zähler", () => {
 ## 6. Abnahmegrenze
 
 Erfolg ist am sichtbaren Teilnahmeweg und konsistenten Daten nach echten Aktionen belegt. Ein Screenshot ohne Beitritts-/Stimmenablauf genügt nicht. Die Erstellung dieses Plans ändert weder öffentliche Oberflächen noch die bestehende Gastauthentifizierung.
+
+### Ergänzende nicht schreibende Abnahme – 2026-11-01
+
+- Die gezielten UI-Tests für öffentliche Eventteilnahme und Identität bestanden; zusammen mit FEAT-011/014 waren es 48 Tests in zehn Dateien.
+- Impeccable-Detektor auf den betroffenen Eventseiten-Komponenten ohne Findings.
+- Browser-E2E und 390/1440-px-, Theme- und Zoommessungen wurden nicht ausgeführt. Es fehlt `BGT_TEST_DATABASE_URL`; die vorhandene `.env`-Datenbank ist nicht als isoliert bestätigt und der lokale PostgreSQL-Dienst ist nicht erreichbar. Die Browser-Session war ebenfalls nicht verfügbar.
+- Auf Wunsch ausschließlich nicht schreibend geprüft. BUG-041 bleibt bis zur tatsächlichen gerenderten Desktoprastermessung offen; BUG-053 bleibt unabhängig davon offen.

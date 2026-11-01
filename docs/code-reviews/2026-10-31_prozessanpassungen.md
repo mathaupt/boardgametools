@@ -147,5 +147,12 @@ falsch positiven P2-23-Findings ändert keine API-Verträge.
 - [x] 822 Unit-Tests, Typecheck, Lint (0 Fehler), Build, Security-Check, OpenAPI-Parsing und iOS-Vertragstests bestanden.
 - [x] Backlog, Feature-Dokumentation, FAQ, Konzept, OpenAPI, Bugs, Changelog, Pläne und Reviewdokumentation aktualisiert.
 - [ ] Browser-E2E mit isolierten Daten, 390/1440 px, hell/dunkel, 200-%-Zoom und manueller Screenreaderprüfung durchführen; BUG-041 und BUG-053 nicht vorzeitig schließen.
+
+## Arbeitspaket A – nicht schreibende Vorprüfung – 0.50.41
+
+- [x] Planstände FEAT-011/012/013/014 gegen aktuellen Quell- und E2E-Teststand abgeglichen.
+- [x] Gezielte UI-Tests (48) und Impeccable-Detektor ohne Findings ausgeführt.
+- [x] E2E-Ausführung gegen die nicht als isoliert bestätigte lokale Datenbank unterlassen; Userpräferenz auf nicht schreibende Prüfungen übernommen.
+- [ ] Browser-E2E, Viewport-/Theme-/Zoommessung und manuelle VoiceOver-Abnahme nach Vorliegen einer freigegebenen Testumgebung abschließen.
 - [x] Review-Regressionslauf mit Registryzugriff: 10/10, SEC-45 teilweise gelöst, keine Regression; Snapshot `history/2026-11-01_2215.json`.
 - [ ] Browser-E2E mit isolierten Daten, 390/1440 px, hell/dunkel, 200-%-Zoom und manueller Screenreaderprüfung durchführen; BUG-041 und BUG-053 nicht vorzeitig schließen.

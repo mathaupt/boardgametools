@@ -160,3 +160,10 @@ Eine aktive Identität und ein Teilnahmeweg sind über alle Webaktionen konsiste
 Die ausdrücklich gewählte Begrenzung „ohne Gastwechsel“ bleibt erhalten.
 Das Feature verbessert keine fehlende Gastbesitzprüfung und darf nicht als
 abgesicherte Gastauthentifizierung oder Stimmenzusammenführung dokumentiert werden.
+
+### Ergänzende nicht schreibende Abnahme – 2026-11-01
+
+- Identitäts- und Teilnahme-UI-Tests innerhalb des gezielten Laufs bestanden; insgesamt 48 UI-Tests in zehn Dateien.
+- Impeccable-Detektor für Identitätsanzeige, Stimmenaktionen, Teilnehmendenbereich und Eventseite ohne Findings.
+- Browserabläufe mit Konto-/Gastwechsel, gespeicherten Stimmen, Sessionablauf und Viewportvarianten wurden nicht ausgeführt. Eine isolierte Testdatenbank und eine nutzbare Browser-Session fehlen; keine Datenänderungen vorgenommen.
+- BUG-053 bleibt offen. Die klare Identitätsanzeige ist kein Besitznachweis.

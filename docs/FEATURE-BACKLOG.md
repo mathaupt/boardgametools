@@ -45,6 +45,13 @@ Es erteilt keine neue Umsetzungsfreigabe.
 
 Umgesetzte Features: FEAT-011 bis FEAT-014. Noch ausstehend:
 
+**Prüfstand 01.11.2026:** 48 gezielte UI-Tests bestanden; der Impeccable-Detektor
+meldet keine Findings für die Eventseiten-Komponenten. Browser-, Datenbank- und
+VoiceOver-Abnahmen wurden nicht ausgeführt. Es ist keine `BGT_TEST_DATABASE_URL`
+konfiguriert, PostgreSQL läuft lokal nicht, und die Browser-Session ist derzeit
+nicht verfügbar. Auf ausdrücklichen Wunsch wurden ausschließlich nicht
+schreibende Prüfungen vorgenommen.
+
 - FEAT-011: manuelle VoiceOver-/Screenreaderprüfung für Identität, Terminantworten,
   gespeicherte Auswahl, Fehler und Fokusverhalten; BUG-038 bis dahin offen.
 - FEAT-012/013: Browser-E2E mit isolierten Identitäten und echten Testdaten sowie

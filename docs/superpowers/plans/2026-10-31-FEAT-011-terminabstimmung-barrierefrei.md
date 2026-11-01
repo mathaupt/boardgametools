@@ -183,6 +183,13 @@ it("vermittelt Datum, Antwort und Tastaturauswahl", async () => {
 
 Das Feature gilt erst als abgenommen, wenn die Hauptantworten mobil ohne horizontales Scrollen bedienbar sind, eine echte gespeicherte Auswahl semantisch erkennbar ist und Kontrast-/Touchmessungen sowie Tastatur- und VoiceOver-Prüfung vorliegen. Ein fehlender manueller Screenreadertest bleibt offen dokumentiert. Native iOS-Terminoberflächen sind nicht Bestandteil dieses Webplans.
 
+### Ergänzende nicht schreibende Abnahme – 2026-11-01
+
+- 48 gezielte Event-UI-Tests aus FEAT-011 bis FEAT-014 bestanden.
+- Impeccable-Detektor auf öffentliche Eventseite, Terminabstimmung, Identität, Teilnehmendenbereich, persönliche Auswahl und BGG-Suche ausgeführt; keine Findings.
+- Die manuelle Safari-VoiceOver-Abnahme wurde nicht ausgeführt: Es liegt keine laufende Browser-Session mit einer freigegebenen öffentlichen Testveranstaltung vor. Die vorhandene lokale Datenbank ist nicht als isolierte Testdatenbank ausgewiesen und PostgreSQL läuft nicht.
+- Keine Stimmen oder Eventdaten geschrieben. BUG-038 bleibt bis zur manuellen VoiceOver-Abnahme in Bearbeitung.
+
 ### Umsetzungsnachweis – 2026-11-01
 
 - Implementiert: gemeinsames Availability-Modell, native Radiogruppe, Terminzeile und Teilnehmerliste; öffentliche und geschützte Ansichten verwenden dieselben Controls.

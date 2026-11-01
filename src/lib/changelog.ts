@@ -12,6 +12,15 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.41",
+    date: "2026-11-01",
+    title: "Nicht schreibende Eventprüfungen dokumentieren",
+    description: "Die ersten offenen Abnahmen der öffentlichen Eventseite wurden ohne Datenänderungen geprüft; Browser- und Screenreaderläufe bleiben klar als offen markiert.",
+    changes: [
+      { type: "internal", text: "48 gezielte UI-Tests bestanden und Impeccable-Detektor ohne Findings; Browser-E2E/Viewport- und VoiceOver-Abnahme mangels isolierter Testumgebung nicht ausgeführt." },
+    ],
+  },
+  {
     version: "0.50.40",
     date: "2026-11-01",
     title: "Offene Backlog-Arbeiten gebündelt",

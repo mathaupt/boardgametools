@@ -134,6 +134,18 @@ FEAT-012 und FEAT-013 sind automatisiert umgesetzt. Die visuelle Abnahme,
 reale Browserabläufe und Screenreaderprüfung bleiben Teil der offenen Abnahme;
 BUG-041 und BUG-053 werden daher nicht geschlossen.
 
+## Arbeitspaket A – Prüfstand 0.50.41 (2026-11-01)
+
+| Kriterium | Ergebnis | Einschränkung |
+|---|---|---|
+| Gezielte Event-UI-Tests | 48/48 bestanden, zehn Dateien | Keine DB-/Browser-E2E |
+| Impeccable-Detektor | Keine Findings | Statische Prüfung, keine gerenderte Ansicht |
+| Browser-/Viewport-/VoiceOver-Abnahme | Nicht ausgeführt | Keine isolierte Testdatenbank oder verfügbare Browser-Session; VoiceOver-Safari-Session fehlt |
+| Code-Review-Evaluator | Nicht erneut ausgeführt | Keine Codeänderung; letzter Stand 10/10 ohne offene Findings |
+
+Die Prüfung hat keine Stimme oder Eventdaten geschrieben. Die offenen
+Abnahmepunkte bleiben unverändert und sind keine negativen Testergebnisse.
+
 ## Regressionserkennung korrigiert – 0.50.34
 
 | Finding | Ursache der scheinbaren Regression | Korrektur / Nachweis |

@@ -157,3 +157,10 @@ als separate Restabnahmen offen; es wurden keine Produktdateien geändert.
 - Review-Evaluator mit Registryzugriff: 10/10; SEC-45 teilweise gelöst, 0 offene Findings und keine Regression. Snapshot: `history/2026-11-01_2215.json`.
 - Impeccable-Hook aktiviert; gerenderter Detektor und visuelle Browserabnahme noch offen. BUG-041 bleibt in Bearbeitung; BUG-053 bleibt offen.
 - Keine Browser-E2E, 390/1440-px-, Dark-Theme- oder 200-%-Zoom-Abnahme behauptet.
+
+## Arbeitspaket A – nicht schreibende Restabnahme – 0.50.41 (2026-11-01)
+
+- 48 gezielte Event-UI-Tests in zehn Dateien bestanden; Impeccable-Detektor auf den betroffenen Eventkomponenten ohne Findings.
+- Keine Datenbankmutation: `BGT_TEST_DATABASE_URL` fehlt; PostgreSQL auf localhost antwortet nicht. Browserhost/Session nicht verfügbar.
+- FEAT-011 VoiceOver sowie FEAT-012/013/014 Browser-E2E und gerenderte Viewports bleiben offen. BUG-038 und BUG-041 bleiben in Bearbeitung; BUG-053 bleibt offen.
+- Keine Codeänderung im Rahmen dieser Runde; letzte Reviewwertung bleibt 10/10 mit SEC-45 teilweise gelöst, ohne neue Regressionsevaluierung.
