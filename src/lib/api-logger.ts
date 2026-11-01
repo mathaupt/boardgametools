@@ -15,7 +15,18 @@ interface LogEntry {
   errorMessage?: string | null;
 }
 
-const PUBLIC_PATH_PREFIXES = ["/api/public/", "/api/mobile/v1/public/", "/api/auth/", "/api/health"];
+const PUBLIC_PATH_PREFIXES = ["/api/public/", "/api/mobile/v1/public/", "/api/auth/"];
+const PUBLIC_EXACT_PATHS = ["/api/health", "/api/health/ready"];
+const API_LOG_EXCLUDED_PATHS = ["/api/health", "/api/health/ready"];
+
+function normalizePath(path: string): string {
+  const pathname = path.split("?", 1)[0];
+  return pathname.length > 1 ? pathname.replace(/\/+$/, "") : pathname;
+}
+
+function isApiLogExcludedPath(path: string): boolean {
+  return API_LOG_EXCLUDED_PATHS.includes(normalizePath(path));
+}
 
 const SENSITIVE_PUBLIC_SEGMENTS: [string, number][] = [
   ["/api/public/event/", 4],
@@ -27,7 +38,7 @@ const SENSITIVE_PUBLIC_SEGMENTS: [string, number][] = [
 ];
 
 function isPublicPath(path: string): boolean {
-  return PUBLIC_PATH_PREFIXES.some((prefix) => path.startsWith(prefix));
+  return PUBLIC_EXACT_PATHS.includes(normalizePath(path)) || PUBLIC_PATH_PREFIXES.some((prefix) => path.startsWith(prefix));
 }
 
 function sanitizePath(path: string): string {
@@ -48,6 +59,7 @@ function sanitizePath(path: string): string {
  * Call this at the end of your route handler.
  */
 export async function logApiRequest(entry: LogEntry) {
+  if (isApiLogExcludedPath(entry.path)) return;
   try {
     await prisma.apiLog.create({
       data: {

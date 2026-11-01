@@ -14,6 +14,17 @@ Events, die Eventdetailseite und die eigene Voting-Seite. iOS bleibt separat.
 
 Der Evaluator-Score bewertet Quellmuster, nicht die gesamte UX- oder Security-Abnahme.
 
+## Ergänzung: FEAT-006 Liveness/Readiness – 0.50.42 (2026-11-01)
+
+- Review-Evaluator nach Umsetzung: 10/10, keine Regressionen; Registryzugriff aktiv. History: `history/2026-11-01_2237.json` (lokal ignoriert).
+- 841/841 Unit-Tests bestanden; 39 gezielte Tests für neue Health-, Proxy-, Logger- und Pipelineverträge; TypeScript und Produktionsbuild erfolgreich.
+- ESLint: 0 Fehler, 651 Warnungen aus bestehenden Skill-/Hilfsdateien. Security-Check: 0 Fehler, drei Hinweise (Raw SQL, Debug-Routen, npm audit-Ausgabe).
+- Health-Liveness ist DB-/Session-/Redis-/ApiLog-frei. Readiness verlangt Bearer-Secret, begrenzt Pool, Anfrage und Probe; Pipeline prüft JSON-Verträge.
+- Keine DB-Integration oder E2E-Abnahme gemäß Nutzerwunsch nach ausschließlich nicht schreibenden Prüfungen. Keine Produktionsmonitore/Secrets oder Deploy geändert.
+- Review meldete zunächst statische Pfad-Sets als In-Memory-Zustand. Diese wurden in unveränderliche Arrays umgewandelt; der folgende Lauf liegt wieder bei 10/10.
+
+Der Code ist umgesetzt. Die produktive Monitorumstellung und isolierte Datenbankabnahme sind weiterhin offen; BUG-055/056 bleiben in Bearbeitung.
+
 ## Ergänzung: Implementierungspläne FEAT-009 bis FEAT-011 – 0.50.29
 
 Drei eigenständige Pläne für Klartextnormalisierung und Bestandsbereinigung,

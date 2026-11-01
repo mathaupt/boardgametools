@@ -61,6 +61,7 @@ export const env = {
   get LOG_LEVEL() { return optionalEnv("LOG_LEVEL", "info"); },
   get NEXT_PUBLIC_APP_URL() { return optionalEnvOrUndefined("NEXT_PUBLIC_APP_URL"); },
   get VERCEL_URL() { return optionalEnvOrUndefined("VERCEL_URL"); },
+  get HEALTH_READINESS_TOKEN() { return optionalEnvOrUndefined("HEALTH_READINESS_TOKEN"); },
 
   // ── BGG ──
   get BGG_API_URL() { return optionalEnv("BGG_API_URL", "https://boardgamegeek.com/xmlapi2"); },

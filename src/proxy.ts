@@ -1,8 +1,10 @@
 import { auth } from "@/lib/auth";
+import type { NextMiddleware } from "next/server";
 
 const MUTATION_METHODS = ["POST", "PUT", "DELETE", "PATCH"];
+const SESSION_EXEMPT_HEALTH_PATHS = ["/api/health", "/api/health/ready"];
 
-export const proxy = auth((req) => {
+const authenticatedProxy = auth((req) => {
   const { pathname } = req.nextUrl;
   const isLoggedIn = !!req.auth;
 
@@ -67,9 +69,6 @@ export const proxy = auth((req) => {
     return Response.redirect(new URL("/login", req.nextUrl));
   }
 
-  // Allow public health check
-  if (pathname === "/api/health") return;
-
   // Protect authenticated API routes
   if (
     pathname.startsWith("/api/") &&
@@ -96,6 +95,11 @@ export const proxy = auth((req) => {
     }
   }
 });
+
+export const proxy: NextMiddleware = (request, event) => {
+  if (SESSION_EXEMPT_HEALTH_PATHS.includes(request.nextUrl.pathname)) return;
+  return authenticatedProxy(request, event as never);
+};
 
 export const config = {
   matcher: [

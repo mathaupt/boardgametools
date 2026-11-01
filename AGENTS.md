@@ -457,6 +457,7 @@ export async function GET() {
 SQL_DATABASE_URL="postgres://..."      # PostgreSQL Connection
 NEXTAUTH_URL="http://localhost:3000"
 NEXTAUTH_SECRET="<secret>"
+HEALTH_READINESS_TOKEN="<mindestens-32-zufaellige-Zeichen>" # optional; nur serverseitig für Readiness-Monitore
 
 # Apple Push Notifications (APNs) — optional
 APNS_ENABLED="false"                   # true/false

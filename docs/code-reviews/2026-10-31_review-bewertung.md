@@ -36,6 +36,23 @@ Der Backlog-Detailstatus wurde in 0.50.36 an die bereits erteilte Freigabe und
 abgeschlossene Web-Umsetzung angeglichen. Die Restabnahmen bleiben ausdrücklich
 offen; an der technischen Bewertung ändert diese Dokumentationskorrektur nichts.
 
+## Ergänzung: FEAT-006 Liveness/Readiness – 0.50.42 (2026-11-01)
+
+| Kriterium | Ergebnis | Einschränkung |
+|---|---|---|
+| Review-Evaluator | 10/10, keine Regressionen oder offenen Findings | Registrylauf; lokale History `2026-11-01_2237.json` |
+| Unit-Tests | 841/841 bestanden | DB-Probe gemockt; keine isolierte Testdatenbank |
+| TypeScript / Build | Erfolgreich | — |
+| ESLint | 0 Fehler, 651 Warnungen | Warnungen aus vorhandenen Skill-/Hilfsdateien |
+| Security-Check | 0 Fehler, 3 Hinweise | Bestehende Raw-SQL-/Debug-Routen plus Audit-Ausgabe |
+| Health-Design | Liveness datenbankfrei; Readiness tokengebunden und begrenzt | Produktivmonitore und Token noch nicht konfiguriert |
+| Betriebsabnahme | Offen | Kein Deployment, kein Uptime-Monitor und keine schreibende DB-/E2E-Prüfung |
+
+FEAT-006 ist im Code umgesetzt; der Featureabschluss bleibt bis zum sicheren
+Verbraucherabgleich, Monitorrollout und Staging-DB-Nachweis offen. Der zwischenzeitliche
+Skalierungshinweis zu drei statischen Sets wurde behoben; der Abschlusslauf bewertet
+wieder mit 10/10.
+
 ## Ergänzung: Planungsstand 0.50.29
 
 | Kriterium | Vorher | Nachher |

@@ -593,9 +593,13 @@ klickbare Section-Chips. Akkordeon-Darstellung.
 
 ### Health-Check
 
-**Route:** `/api/health` | **Zugriff:** Oeffentlich
+**Route:** `/api/health` | **Zugriff:** Öffentlich
 
-Gibt zurueck: DB-Status (Ping), Speicherverbrauch, Uptime, Version.
+Liefert ausschließlich den Prozessstatus (`check: liveness`, `status: healthy`), App-Version und Zeitstempel. Führt keine Datenbankprüfung aus.
+
+**Route:** `/api/health/ready` | **Zugriff:** Separater Bearer-Token (`HEALTH_READINESS_TOKEN`)
+
+Prüft die Datenbank begrenzt für Betriebsmonitore. Antworten: 200 bei `healthy`/`degraded`, 401 bei fehlendem oder falschem Token, 429 bei überschrittenem Rate-Limit, 503 bei fehlender Konfiguration oder nicht erreichbarer Datenbank. Der Token muss mindestens 32 zufällige Zeichen lang sein.
 
 ### Landing Page
 

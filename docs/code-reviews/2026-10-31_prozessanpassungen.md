@@ -148,6 +148,15 @@ falsch positiven P2-23-Findings ändert keine API-Verträge.
 - [x] Backlog, Feature-Dokumentation, FAQ, Konzept, OpenAPI, Bugs, Changelog, Pläne und Reviewdokumentation aktualisiert.
 - [ ] Browser-E2E mit isolierten Daten, 390/1440 px, hell/dunkel, 200-%-Zoom und manueller Screenreaderprüfung durchführen; BUG-041 und BUG-053 nicht vorzeitig schließen.
 
+## Arbeitspaket B – FEAT-006 Liveness/Readiness – 0.50.42
+
+- [x] Vor Umsetzung Plan gegen den tatsächlichen Logger-, Proxy-, Health-, OpenAPI- und Deploymentstand geprüft und die fehlende FEAT-005-Logpolicy im Paket berücksichtigt.
+- [x] Test-first umgesetzt; 841 Unit-Tests bestanden, darunter 39 gezielte Health-/Proxy-/Logger-/Providerfälle.
+- [x] TypeScript, Build, OpenAPI-YAML, Pipelineprovider und Security-Check geprüft; Lint ohne Fehler.
+- [x] Review-Evaluator mit Registryzugriff: 10/10, keine Regressionen; Regressionseintrag SEC-45 mit Root-Cause und erfolgreichem Lauf geschlossen.
+- [x] Backlog, Changelog, Features, Konzept, OpenAPI, Deployment, Bugregister und Reviewdokumentation aktualisiert.
+- [ ] Isolierte PostgreSQL-Integration/Last-/Timeout-/Erholungsprüfung, Uptime-Monitor- und Secretkonfiguration, Verbraucherabgleich und kontrollierter Deploy bleiben offen; keine schreibenden Prüfungen oder externen Änderungen vorgenommen.
+
 ## Arbeitspaket A – nicht schreibende Vorprüfung – 0.50.41
 
 - [x] Planstände FEAT-011/012/013/014 gegen aktuellen Quell- und E2E-Teststand abgeglichen.

@@ -18,8 +18,8 @@ Bedarf zu aktualisieren. Ergebnis am jeweiligen Plan dokumentieren:
 | FEAT-002 | Voting-Vorschläge sortieren | Umgesetzt (Web) | [Gemeinsamer Plan](superpowers/plans/2026-10-30-FEAT-001-004-voting.md) | Freigegeben und umgesetzt am 30.10.2026 |
 | FEAT-003 | Kompakte Voting-Liste | Umgesetzt (Web) | [Gemeinsamer Plan](superpowers/plans/2026-10-30-FEAT-001-004-voting.md) | Kompakte Zeilenliste nach sichtbarem Vergleich ausdrücklich gewählt und zur Umsetzung freigegeben am 31.10.2026 |
 | FEAT-004 | Voting-Vorschläge löschen | Web umgesetzt; manuelle VoiceOver-Abnahme offen | [Gemeinsamer Plan](superpowers/plans/2026-10-30-FEAT-001-004-voting.md) | Web freigegeben und umgesetzt; iOS separat planen |
-| FEAT-005 | ApiLog-Schreiblast für `/api/health` begrenzen | Web umgesetzt; Restlast in FEAT-006 offen | [Health-Logpolicy](superpowers/plans/2026-10-31-FEAT-005-health-apilog.md) | Web umgesetzt; FEAT-006 separat freizugeben |
-| FEAT-006 | Health-Deep-Checks cachen oder splitten | Plan erstellt | [Liveness und Readiness](superpowers/plans/2026-10-31-FEAT-006-health-liveness-readiness.md) | Ausstehend |
+| FEAT-005 | ApiLog-Schreiblast für `/api/health` begrenzen | Im FEAT-006-Code für beide Healthpfade umgesetzt; Rollout offen | [Health-Logpolicy](superpowers/plans/2026-10-31-FEAT-005-health-apilog.md) | In FEAT-006 zur Umsetzung freigegeben |
+| FEAT-006 | Health-Deep-Checks cachen oder splitten | Web-Code umgesetzt; Readiness-Rollout und isolierte DB-Abnahme offen | [Liveness und Readiness](superpowers/plans/2026-10-31-FEAT-006-health-liveness-readiness.md) | Codeumfang mit „dann weiter mit B“ am 01.11.2026 gestartet; Monitorumstellung separat |
 | FEAT-007 | Vercel-Firewall-Regel für `/api/health` | Plan erstellt | [Firewall und Monitorbetrieb](superpowers/plans/2026-10-31-FEAT-007-health-firewall.md) | Ausstehend |
 | FEAT-008 | Spend-Management-Obergrenze (Billing-Schutz) | Plan erstellt | [Budget und Betriebsreaktion](superpowers/plans/2026-10-31-FEAT-008-spend-management.md) | Ausstehend; Betrag und Teamwirkung vor Aktivierung festzulegen |
 | FEAT-009 | HTML-Entities in Spieldaten korrekt behandeln | Code umgesetzt; Produktionsdatenbereinigung offen | [Textnormalisierung und Datenbereinigung](superpowers/plans/2026-10-31-FEAT-009-spieldaten-entities.md) | Codeumsetzung am 31.10.2026 freigegeben; Produktionslauf separat freizugeben |
@@ -65,12 +65,16 @@ schreibende Prüfungen vorgenommen.
 
 ### B. Health-Endpunkt absichern: FEAT-006
 
-FEAT-005 hat die persistierten Health-ApiLogs ausgeschlossen. Die übrige
-DB-/Auth-Last und die internen Diagnosedetails sind laut BUG-055/056 noch offen.
-FEAT-006 schlägt eine öffentliche DB-freie Liveness und eine geschützte,
-begrenzte Readiness vor. Vor Umsetzung die geänderte Bedeutung und öffentliche
-Antwort des Liveness-Endpunkts sowie Readiness-Secret und Monitorumstellung
-bestätigen. Danach Tests für Last, Auth, Fehler, Timeout und Erholung durchführen.
+Die vorangehende Backlog-Angabe zu FEAT-005 war falsch; der FEAT-006-Code
+schließt inzwischen beide exakten Healthpfade an der zentralen Loggergrenze aus.
+Die öffentliche Liveness ist DB-, Session- und Redis-frei. Readiness verlangt
+ein separates Token, begrenzt den Prozesszugriff und führt eine einzelne
+zeitbegrenzte Probe aus. Gezielte Unit-Tests decken Verträge, Middleware,
+Logging, Tokenprüfung und Probe-Mocks ab. Nicht ausgeführt wurden echte
+DB-Last-/Timeout-/Erholungstests und die Browser-/Produktionsmonitor-Abnahme.
+Deployment, Secretbereitstellung und Monitorumstellung bleiben offen; der
+geänderte `/api/health`-Vertrag darf erst nach Verbraucherabgleich ausgerollt
+werden.
 
 ### C. Vercel-Betriebsschutz: FEAT-007 und FEAT-008
 
@@ -241,7 +245,7 @@ Stichprobe gewählt wird, legt der Implementierungsplan fest.
 ## FEAT-006 – Health-Deep-Checks cachen oder splitten
 
 **Implementierungsplan:** [FEAT-006](superpowers/plans/2026-10-31-FEAT-006-health-liveness-readiness.md), erstellt am 31.10.2026.
-**Umsetzungsfreigabe:** Ausstehend; Split und neue Bedeutung des öffentlichen Healthpfads zur Freigabe vorgeschlagen.
+**Umsetzungsfreigabe:** Codeumfang am 01.11.2026 mit „dann weiter mit B“ freigegeben; Betrieb/Rollout separat offen.
 **Planentscheidung:** Öffentliche DB-freie Liveness und geschützte DB-Readiness, einschließlich Monitorumstellung. FEAT-005 wiederverwenden.
 **Bugbezug:** BUG-055 und verbleibende DB-/Auth-Nebenpfade aus BUG-056.
 

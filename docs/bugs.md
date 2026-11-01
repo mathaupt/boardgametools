@@ -1681,10 +1681,10 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 ### [BUG-055] Öffentlicher Health-Endpoint liefert interne Diagnosedetails
 
-**Status:** `open`
+**Status:** `in_progress`
 **Schweregrad:** `medium`
 **Entdeckt:** 2026-10-31
-**Test geschrieben:** Nein; sichere Antwortverträge im FEAT-006-Plan vorgesehen.
+**Test geschrieben:** Ja; Unit-Tests prüfen Liveness- und Readinessantworten mit Mocks. Isolierte DB-Integration und Rollout-Abnahme offen.
 
 **Beschreibung:** Der öffentlich freigegebene Health-Handler liefert Tabellenzähler, Migrationsnamen, Speicher-/Umgebungsdiagnosen und im Fehlerfall die rohe message einer DB-Exception.
 
@@ -1692,11 +1692,11 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 **Erwartetes Verhalten:** Öffentliche Liveness enthält nur notwendige grobe Betriebsinformationen. Geschützte Readiness liefert einen begrenzten Prüfstatus, keine rohen Verbindungs-/SQL-Fehler.
 
-**Tatsächliches Verhalten laut Quellprüfung:** HealthResponse enthält userCount/gameCount/sessionCount/lastMigration und memory/environment; der catch-Zweig setzt components.database.message auf error.message.
+**Tatsächliches Verhalten:** `/api/health` liefert nach FEAT-006 nur Livenessfelder. `/api/health/ready` ist tokengebunden und gibt bei DB-Fehlern nur einen generischen Status zurück. Der Rollout ist noch nicht erfolgt.
 
 **Ursache:** Interne Diagnose und öffentliche Erreichbarkeitsprüfung verwenden denselben Vertrag.
 
-**Lösung:** Noch nicht umgesetzt. [FEAT-006-Plan](superpowers/plans/2026-10-31-FEAT-006-health-liveness-readiness.md): begrenzte öffentliche Liveness und separat geschützte Readiness.
+**Lösung:** Code in Version 0.50.42 umgesetzt; Monitorumstellung, Deploy und Staging-Abnahme noch offen. Siehe [FEAT-006-Plan](superpowers/plans/2026-10-31-FEAT-006-health-liveness-readiness.md).
 
 **Prüfnachweis:** src/app/api/health/route.ts und öffentliche Proxyfreigabe am 31.10.2026 geprüft. Keine produktiven Fehler oder Daten abgefragt; keine Behauptung über tatsächlich offengelegte Zugangsdaten.
 
@@ -1706,10 +1706,10 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 ### [BUG-056] Öffentliche Health-Anfragen verursachen skalierende DB-Last
 
-**Status:** `open`
+**Status:** `in_progress`
 **Schweregrad:** `medium`
 **Entdeckt:** 2026-10-31
-**Test geschrieben:** Nein; Logger-/Last-/Readinesstests in FEAT-005/006 vorgesehen.
+**Test geschrieben:** Ja; Mock-Unit-Tests decken Proxy-Bypass, Logausschluss und begrenzte Readiness-Probe ab. Last-/Treiber-/Erholungstests benötigen isoliertes Staging.
 
 **Beschreibung:** Jede erfolgreiche Health-Anfrage erzeugt fünf DB-Leseprüfungen und einen asynchronen ApiLog-Write. Bei vorhandenem Sessioncookie kann zusätzlich die Sessionauflösung im auth-umschlossenen Proxy eine User-Abfrage auslösen.
 
@@ -1717,11 +1717,11 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 **Erwartetes Verhalten:** Öffentliche Lebenszeichenprüfung ohne DB-Last; echte DB-Readiness nur geschützt und begrenzt. Health-Anfragen dürfen keine anfrageproportionale Log-Schreiblast erzeugen.
 
-**Tatsächliches Verhalten laut Quellprüfung:** SELECT 1, drei count-Abfragen und eine Migrationsabfrage je erfolgreichem Handlerlauf; anschließend apiLog.create. Der Health-Proxy-Ausnahmepfad liegt erst innerhalb des auth-Wrappers. Das synchrone Rate-Limit gilt nur pro Prozess/IP und ersetzt keine flottenweite Begrenzung.
+**Tatsächliches Verhalten:** Die neue öffentliche Liveness führt keine DB-, Session-, Redis- oder ApiLog-Operation aus. Readiness verwendet einen einzelnen Poolslot, eine kurze Probe, Tokenprüfung und ein prozesslokales Rate-Limit. Produktionsmonitoren sind noch nicht umgestellt.
 
 **Ursache:** Tiefe Betriebsdiagnose, Sessionmiddleware und persistiertes Requestlogging sind an den öffentlichen Probeaufruf gekoppelt.
 
-**Lösung:** Noch nicht umgesetzt. [FEAT-005](superpowers/plans/2026-10-31-FEAT-005-health-apilog.md) entfernt den Loganteil; [FEAT-006](superpowers/plans/2026-10-31-FEAT-006-health-liveness-readiness.md) trennt die DB-freie Liveness einschließlich Proxy von begrenzter Readiness.
+**Lösung:** Code für Liveness, Proxy und zentrale Logpolicy in Version 0.50.42 umgesetzt. Verbleibende Abnahme: Deployment, Verbraucher-/Monitorumstellung und isolierte DB-Last-/Ausfalltests. Siehe [FEAT-006-Plan](superpowers/plans/2026-10-31-FEAT-006-health-liveness-readiness.md).
 
 **Prüfnachweis:** Health-Handler, src/lib/api-logger.ts, src/proxy.ts, src/lib/auth.ts und Rate-Limiter am 31.10.2026 gelesen. Kein Lasttest gegen Produktion und kein tatsächlicher Produktionsausfall behauptet.
 
@@ -1788,8 +1788,8 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 ## Statistik
 
-- **Offene Bugs:** 7
-- **In Bearbeitung:** 2
+- **Offene Bugs:** 5
+- **In Bearbeitung:** 4
 - **Behoben:** 50
 - **Wontfix:** 0
 - **Gesamt:** 59

@@ -620,7 +620,8 @@ ApiLog
 - `GET /api/admin/monitoring/anomalies` - Anomalie-Erkennung
 
 ### System
-- `GET /api/health` - Health-Check
+- `GET /api/health` - öffentliche, datenbankfreie Prozess-Liveness
+- `GET /api/health/ready` - tokengebundene, begrenzte Datenbank-Readiness für Betriebsmonitore
 - `POST /api/db/init` - Datenbank initialisieren
 - `GET /api/statistics` - Übersicht, meistgespielte Spiele, Spieler-Stats, monatliche Aktivität
 

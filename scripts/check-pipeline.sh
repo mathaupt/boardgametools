@@ -10,6 +10,7 @@
 #   bash scripts/check-pipeline.sh               # all configured checks
 #   bash scripts/check-pipeline.sh --github      # only the named check(s)
 #   bash scripts/check-pipeline.sh --vercel --health
+#   bash scripts/check-pipeline.sh --health-readiness
 #   bash scripts/check-pipeline.sh --list        # list checks + config state
 #   bash scripts/check-pipeline.sh --json        # JSON summary output
 #
@@ -148,6 +149,7 @@ Usage:
   bash scripts/check-pipeline.sh               # all configured checks
   bash scripts/check-pipeline.sh --github      # only the named check(s)
   bash scripts/check-pipeline.sh --vercel --health
+  bash scripts/check-pipeline.sh --health-readiness
   bash scripts/check-pipeline.sh --list        # list checks + config state
   bash scripts/check-pipeline.sh --json        # JSON summary output
 
@@ -161,6 +163,7 @@ Tokens (env vars only, never committed files):
   VERCEL_TOKEN        Vercel API token
   VERCEL_PROJECT_ID   Vercel project ID (or .vercel/project.json)
   VERCEL_TEAM_ID      optional team scope
+  HEALTH_READINESS_TOKEN  separate random bearer secret (minimum 32 characters)
 
 Convenience: a gitignored .env.pipeline-check file is sourced if present
 (location: project root, next to package.json).

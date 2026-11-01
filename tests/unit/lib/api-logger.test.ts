@@ -132,6 +132,28 @@ describe("api-logger", () => {
       expect(auth).not.toHaveBeenCalled();
     });
 
+    it.each(["/api/health", "/api/health/ready?probe=1"])("does not persist health path %s", async (path) => {
+      const handler = vi.fn().mockResolvedValue(NextResponse.json({ status: "healthy" }));
+      const wrapped = withApiLogging(handler);
+
+      const response = await wrapped(new NextRequest("http://localhost:3000" + path), {});
+      await new Promise((resolve) => setImmediate(resolve));
+
+      expect(response.status).toBe(200);
+      expect(prisma.apiLog.create).not.toHaveBeenCalled();
+      expect(auth).not.toHaveBeenCalled();
+    });
+
+    it("keeps the health exclusion exact", async () => {
+      const handler = vi.fn().mockResolvedValue(NextResponse.json({ ok: true }));
+      const wrapped = withApiLogging(handler);
+
+      await wrapped(new NextRequest("http://localhost:3000/api/health-check"), {});
+      await new Promise((resolve) => setImmediate(resolve));
+
+      expect(prisma.apiLog.create).toHaveBeenCalledTimes(1);
+    });
+
     it("redacts public share tokens in the log path", async () => {
       const handler = vi.fn().mockResolvedValue(NextResponse.json({}));
       const wrapped = withApiLogging(handler);

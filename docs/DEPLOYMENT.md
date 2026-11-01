@@ -88,9 +88,10 @@ In Vercel unter **Project Settings → Environment Variables** eintragen (Bereic
 
 1. Merge in `main` oder manuelles **Redeploy** in Vercel.
 2. Build-Log prüfen: `prisma:deploy` muss erfolgreich sein.
-3. Nach Deploy `/api/health` aufrufen: `https://<domain>/api/health` → `{"status":"ok"}`.
-4. `/api/docs` (Swagger UI) prüfen.
-5. Login/Logout, BGG-Suche, Event-Voting und Upload manuell smoke-testen.
+3. `/api/health` ist eine öffentliche, datenbankfreie Liveness-Prüfung und muss JSON mit `check: "liveness"` und `status: "healthy"` liefern.
+4. `/api/health/ready` ist eine separat geschützte Datenbank-Readiness. Für den Betriebsmonitor `HEALTH_READINESS_TOKEN` als serverseitiges Secret setzen (mindestens 32 zufällige Zeichen) und als Bearer-Token konfigurieren. Ohne Secret antwortet die Route mit 503.
+5. `/api/docs` (Swagger UI) prüfen.
+6. Login/Logout, BGG-Suche, Event-Voting und Upload manuell smoke-testen.
 
 ---
 
@@ -207,11 +208,12 @@ BGT_MAINTENANCE_DATABASE_URL="$BGT_TEST_DATABASE_URL" npx tsx scripts/fix-html-e
 
 Zuerst ausschließlich auf einer isolierten Wegwerfdatenbank testen. Das Manifest enthält Ausgangs- und Zielwerte, ist vertraulich und wird mit Dateirechten `0600` gespeichert. Apply vergleicht die Ausgangswerte vor jedem Update; Konflikte werden gemeldet. Ein Produktionslauf erfordert einen separaten freigegebenen Dry-Run und ein frisches Backup. Nach einem externen CLI-Lauf erneuern sich gecachte Sammlungs-, Dashboard-, Session- und Eventdaten spätestens nach 60 Sekunden; das Skript kann Next.js Cache-Tags außerhalb eines Request-Kontexts nicht direkt invalidieren.
 
-`npm run pipeline:check -- --list` zeigt die verfügbaren Provider und ihren Konfigurationsstatus. `npm run pipeline:check` führt konfigurierte Prüfungen aus; `--github`, `--vercel` oder `--health` wählen einzelne Provider. `--json` gibt eine maschinenlesbare Zusammenfassung aus. Provider sind in `scripts/pipeline-checks/` gekapselt.
+`npm run pipeline:check -- --list` zeigt die verfügbaren Provider und ihren Konfigurationsstatus. `npm run pipeline:check` führt konfigurierte Prüfungen aus; `--github`, `--vercel`, `--health` (Liveness) oder `--health-readiness` wählen einzelne Provider. `--json` gibt eine maschinenlesbare Zusammenfassung aus. Provider sind in `scripts/pipeline-checks/` gekapselt.
 
 - GitHub Actions: `GITHUB_TOKEN` mit Leserechten für Actions; optional `GITHUB_REPO` und `CI_BRANCH`. Standardbranch ist `main`, das Repository wird aus `origin` abgeleitet.
 - Vercel: `VERCEL_TOKEN` und `VERCEL_PROJECT_ID` oder eine lokale `.vercel/project.json`; optional `VERCEL_TEAM_ID`.
 - Health: `PROD_URL`, standardmäßig `https://boardgametools.vercel.app`; optional `HEALTH_PATH`, standardmäßig `/api/health`.
+- Readiness: zusätzlich `HEALTH_READINESS_TOKEN` (mindestens 32 zufällige Zeichen), serverseitig als Secret im Deployment und im Monitor hinterlegen. Nicht als URL-Parameter verwenden. Die Monitorumstellung und Veröffentlichung des geänderten Liveness-Vertrags müssen vor einem Produktionsrollout geprüft werden.
 
 Zugangsdaten dürfen ausschließlich aus Umgebungsvariablen oder der lokal ignorierten `.env.pipeline-check` stammen. Keine Tokens versionieren. Unkonfigurierte Provider werden bei einem allgemeinen Lauf übersprungen; ausdrücklich ausgewählte unkonfigurierte Provider führen zu einem Fehler. Exitcodes: 0 erfolgreich, 1 fehlgeschlagene konfigurierte/ausgewählte Prüfung, 2 keine ausgeführte Prüfung oder ungültiger Aufruf. Laufende GitHub-Jobs werden als noch nicht abgeschlossen gemeldet; eine solche Meldung bestätigt keinen abgeschlossenen CI-Erfolg.
 

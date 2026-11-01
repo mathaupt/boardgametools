@@ -12,6 +12,17 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.42",
+    date: "2026-11-01",
+    title: "Health-Prüfungen absichern und aufteilen",
+    description: "Der öffentliche Health-Endpunkt prüft nur noch den laufenden App-Prozess. Eine separate, geschützte Readiness prüft die Datenbank für Betriebsmonitore.",
+    changes: [
+      { type: "improvement", text: "Liveness verursacht keine Datenbank-, Session- oder ApiLog-Schreibzugriffe.", bugRef: "BUG-056" },
+      { type: "feature", text: "Geschützte Datenbank-Readiness mit Rate-Limit, begrenzter Probe und sicheren Fehlerantworten ergänzt.", bugRef: "BUG-055" },
+      { type: "internal", text: "Pipeline-Healthprovider, API-Vertrag und Deploymenthinweise an Liveness und Readiness angepasst; Produktionsmonitore bleiben noch umzustellen." },
+    ],
+  },
+  {
     version: "0.50.41",
     date: "2026-11-01",
     title: "Nicht schreibende Eventprüfungen dokumentieren",

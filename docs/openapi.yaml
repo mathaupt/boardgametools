@@ -294,6 +294,11 @@ components:
       scheme: bearer
       bearerFormat: JWT
       description: API Access Token aus `POST /api/mobile/v1/auth/login` oder `refresh`
+    readinessBearer:
+      type: http
+      scheme: bearer
+      bearerFormat: opaque
+      description: Separates HEALTH_READINESS_TOKEN Secret für den Betriebsmonitor
 
   parameters:
     PageParam:
@@ -2166,21 +2171,64 @@ paths:
   /api/health:
     get:
       tags: [System]
-      summary: Health-Check
+      summary: Öffentliche Prozess-Liveness
+      description: Datenbankfreie Liveness-Prüfung. Sie bestätigt nur, dass der App-Prozess antwortet.
       security: []
       responses:
         '200':
-          description: System-Status
+          description: Prozess antwortet
           content:
             application/json:
               schema:
                 type: object
+                required: [check, status, version, timestamp]
                 properties:
-                  status: { type: string, enum: [healthy, degraded] }
-                  database: { type: string }
-                  memory: { type: object }
-                  uptime: { type: number }
+                  check: { type: string, enum: [liveness] }
+                  status: { type: string, enum: [healthy] }
                   version: { type: string }
+                  timestamp: { type: string, format: date-time }
+
+  /api/health/ready:
+    get:
+      tags: [System]
+      summary: Geschützte Datenbank-Readiness
+      description: Begrenzte PostgreSQL-Prüfung. Erfordert ein mindestens 32 Byte langes HEALTH_READINESS_TOKEN als Bearer-Token.
+      security:
+        - readinessBearer: []
+      responses:
+        '200':
+          description: Datenbank erreichbar (healthy oder degraded)
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [check, status, version, timestamp, database]
+                properties:
+                  check: { type: string, enum: [readiness] }
+                  status: { type: string, enum: [healthy, degraded] }
+                  version: { type: string }
+                  timestamp: { type: string, format: date-time }
+                  database:
+                    type: object
+                    required: [status, responseTimeMs]
+                    properties:
+                      status: { type: string, enum: [healthy, degraded] }
+                      responseTimeMs: { type: integer, minimum: 0 }
+        '401':
+          description: Bearer-Token fehlt oder ist ungültig
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '429':
+          description: Rate-Limit überschritten
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '503':
+          description: Readiness nicht konfiguriert oder Datenbank nicht bereit
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
 
   /api/db/init:
     post:

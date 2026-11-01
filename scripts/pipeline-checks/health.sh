@@ -16,18 +16,20 @@ pc_health_skip_reason() {
 pc_health_run() {
   banner "── Production health (${PROD_URL}${HEALTH_PATH:-/api/health}) ──"
 
-  local code
-  if ! code=$(curl -s -o /dev/null --max-time 15 -w '%{http_code}' \
+  local response code body
+  if ! response=$(curl -sS --max-time 15 -w $'\n%{http_code}' \
       "${PROD_URL}${HEALTH_PATH:-/api/health}"); then
     fail "Health endpoint unreachable (${PROD_URL}${HEALTH_PATH:-/api/health})" "prod-health"
     return 0
   fi
+  code="${response##*$'\n'}"
+  body="${response%$'\n'*}"
   info "HTTP status: ${code}"
 
-  if [[ "$code" == "200" ]]; then
-    ok "Health endpoint returns 200" "prod-health"
+  if [[ "$code" == "200" ]] && jq -e '.check == "liveness" and .status == "healthy" and (.version | type == "string")' >/dev/null 2>&1 <<<"$body"; then
+    ok "Liveness returns a valid healthy JSON contract" "prod-health"
   else
-    fail "Health endpoint returned HTTP ${code} (expected 200)" "prod-health"
+    fail "Liveness response is invalid (HTTP ${code})" "prod-health"
   fi
 }
 
