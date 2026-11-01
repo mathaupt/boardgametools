@@ -19,5 +19,13 @@ Sicherheitscode implementiert.
 - [x] Dashboard-Serverseite, Cacheabstraktion, Einladungsquery und Error Boundary gelesen.
 - [ ] Digest mit zeitgleichem Serverlog korrelieren, Root Cause reproduzieren und Regressionstest ergänzen.
 
-Kein Fix ohne Serverursache behauptet; React blendet die konkrete
-Server-Component-Fehlermeldung in Production aus.
+Vor Erhalt des Digests wurde keine Root Cause angenommen; React blendet die
+konkrete Server-Component-Fehlermeldung in Production aus.
+
+### BUG-061 Korrektur
+
+- [x] Digest mit dem Stacktrace abgeglichen und Cache-String als Root Cause bestätigt.
+- [x] Regressionstest zuerst rot gesehen; anschließend Normalisierung für Cache-String und `Date` ergänzt.
+- [x] Gezielter Test (2/2), TypeScript und Produktionsbuild bestanden.
+- [x] Event- und Sessionzeitpunkte gleichermaßen normalisiert.
+- [ ] Produktionsdeploy nach Commit beobachten; keine Deployaktion in dieser Korrektur ausgelöst.

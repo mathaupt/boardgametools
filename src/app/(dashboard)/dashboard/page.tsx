@@ -4,6 +4,7 @@ import { gameTextForRead } from "@/lib/game-text";
 import { getPendingInvites } from "@/lib/queries/pending-invites";
 import { cachedQuery } from "@/lib/cache";
 import { CacheTags } from "@/lib/cache-tags";
+import { toDashboardISOString } from "@/lib/dashboard-date";
 import { DashboardOverview } from "@/components/dashboard/dashboard-overview";
 import type { Event, Game, GameProposal } from "@/generated/prisma/client";
 
@@ -82,14 +83,14 @@ export default async function DashboardPage() {
     name={session?.user?.name ?? null}
     counts={{ games: gamesCount, sessions: sessionsCount, groups: groupsCount, events: eventsCount }}
     events={upcomingEvents.map((event) => ({
-      id: event.id, title: event.title, eventDate: event.eventDate.toISOString(), location: event.location,
+      id: event.id, title: event.title, eventDate: toDashboardISOString(event.eventDate), location: event.location,
       selectedGameName: event.selectedGame?.name || event.winningProposal?.bggName
         ? gameTextForRead(event.selectedGame?.name || event.winningProposal?.bggName || "")
         : null,
       votingClosed: event.status === "closed",
       proposals: event.proposals.map((proposal) => ({ id: proposal.id, name: gameTextForRead(proposal.game?.name || proposal.bggName || "Spielvorschlag"), minutes: proposal.game?.playTimeMinutes ?? null })),
     }))}
-    recentSessions={recentSessions.map((item) => ({ id: item.id, gameName: gameTextForRead(item.game.name), playedAt: item.playedAt.toISOString() }))}
+    recentSessions={recentSessions.map((item) => ({ id: item.id, gameName: gameTextForRead(item.game.name), playedAt: toDashboardISOString(item.playedAt) }))}
     invites={pendingInvites.map((invite) => ({ id: invite.id, eventId: invite.eventId, status: invite.status, event: { id: invite.event.id, title: invite.event.title, eventDate: invite.event.eventDate.toISOString(), location: invite.event.location, createdBy: invite.event.createdBy } }))}
   />;
 }

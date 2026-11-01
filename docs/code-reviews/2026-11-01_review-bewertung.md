@@ -15,7 +15,16 @@ Planungspaket dokumentiert und kann featureweise separat freigegeben werden.
 
 ## Ergänzung: BUG-061
 
-Der Dashboardfehler ist bei direktem Aufruf und Reload bestätigt, aber der
-fehlgeschlagene Server-Component-Render ist noch nicht bis zur auslösenden
-Serverausnahme korreliert. Der bestehende Evaluatorstand bewertet keine
-Reproduzierbarkeit oder Laufzeitursache.
+Der Dashboardfehler war bei direktem Aufruf und Reload bestätigt. Zum Zeitpunkt
+der ersten Bewertung fehlte noch die Korrelation mit der Serverausnahme; der
+später nachgereichte Digest identifizierte die Ursache.
+
+## Ergänzung: BUG-061-Fix
+
+| Prüfung | Ergebnis |
+|---|---|
+| Digestkorrelation | `219148984` zeigt auf `eventDate.toISOString()` bei Cache-String |
+| Regressionstest | 2/2 bestanden: ISO-String und Prisma-`Date` |
+| TypeScript | `npm run typecheck` erfolgreich |
+| Produktionsbuild | `npm run build` erfolgreich |
+| Datenbank | Keine Produktionsabfrage oder Mutation |

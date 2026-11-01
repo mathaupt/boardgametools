@@ -1807,12 +1807,12 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 ### [BUG-061] Angemeldetes Dashboard bricht beim Server-Rendern ab
 
-**Status:** `open`
+**Status:** `fixed`
 **Schweregrad:** `high`
 **Entdeckt:** 2026-11-01
-**Behoben:**
-**Behoben in Version:**
-**Test geschrieben:** Nein; zuerst Serverursache anhand des React-Digests ermitteln.
+**Behoben:** 2026-11-01
+**Behoben in Version:** 0.50.46
+**Test geschrieben:** Ja – `tests/unit/lib/dashboard-date.test.ts` deckt gecachte ISO-Strings und Prisma-`Date`-Werte ab.
 
 **Beschreibung:** Beim Aufruf des Dashboards in einer angemeldeten Sitzung meldet der Produktionsclient React-Fehler #441. React beschreibt diesen Code als fehlgeschlagenen Server-Component-Render; die konkrete Fehlermeldung wird im Production-Build verborgen.
 
@@ -1820,22 +1820,22 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 **Erwartetes Verhalten:** Das Dashboard wird nach erfolgreicher Anmeldung gerendert oder zeigt einen nachvollziehbaren, vorübergehenden Fehlerzustand.
 
-**Tatsächliches Verhalten:** Der Client erhält bei direktem Aufruf und Neuladen eine generische Server-Render-Ausnahme. Im mitgeteilten Stacktrace fehlt der `digest`-Wert.
+**Tatsächliches Verhalten:** Der Client erhielt bei direktem Aufruf und Neuladen React #441. Der bereitgestellte Server-Digest `219148984` zeigte auf `eventDate.toISOString()` in der Dashboard-Ausgabe; der Wert kam aus dem Next.js-Cache als String.
 
-**Ursache:** Noch unbekannt. Der Dashboard-Serverpfad lädt Zähler, letzte Sessions, kommende Events und offene Einladungen über Prisma-/Cache-Abfragen. Diese Pfade allein belegen keine konkrete Fehlerquelle. Der passende serverseitige Logeintrag muss über den React-Digest korreliert werden.
+**Ursache:** `unstable_cache` serialisiert Prisma-Datumswerte über Requests hinweg; beim Cache-Hit ist `eventDate` ein ISO-String. `src/app/(dashboard)/dashboard/page.tsx` behandelte den gecachten Wert wie ein Prisma-`Date` und rief `.toISOString()` darauf auf. `playedAt` nutzte denselben unsicheren Annahmepfad.
 
-**Lösung:** Offen. Nach Erhalt des `digest` und des zeitgleichen Vercel Function Logs den auslösenden Query-/Daten-/Runtimepfad reproduzieren, einen Regressionstest ergänzen und die Fehlerursache beheben.
+**Lösung:** `toDashboardISOString` normalisiert sowohl gecachte ISO-Strings als auch Prisma-`Date`-Objekte. Event- und Sessionzeitpunkte verwenden den Helper vor der Übergabe an die Clientkomponente.
 
-**Prüfnachweis:** `src/app/(dashboard)/dashboard/page.tsx`, `src/lib/cache.ts`, `src/lib/queries/pending-invites.ts` und `src/app/(dashboard)/error.tsx` am 2026-11-01 gelesen. Keine Produktionslogs oder Datenbank abgefragt; kein Root Cause behauptet.
+**Prüfnachweis:** React-Digest `219148984` korreliert mit dem übermittelten Stacktrace. Regressionstest 2/2 bestanden; `npm run typecheck` und `npm run build` erfolgreich. Keine produktive Datenbank wurde abgefragt.
 
-**Referenz im Changelog:** Version 0.50.45 – Dashboard-Renderfehler erfasst.
+**Referenz im Changelog:** Version 0.50.46 – gecachte Dashboard-Datumswerte normalisieren.
 
 ---
 
 ## Statistik
 
-- **Offene Bugs:** 5
+- **Offene Bugs:** 4
 - **In Bearbeitung:** 4
-- **Behoben:** 52
+- **Behoben:** 53
 - **Wontfix:** 0
 - **Gesamt:** 61

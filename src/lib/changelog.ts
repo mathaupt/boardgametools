@@ -12,6 +12,15 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.46",
+    date: "2026-11-01",
+    title: "Dashboard nach dem Cache-Laden stabilisieren",
+    description: "Gecachte Termine und Sessions werden wieder zuverlässig angezeigt, auch wenn Next.js ihre Datumswerte als ISO-Strings zurückgibt.",
+    changes: [
+      { type: "fix", text: "Der Dashboard-Renderfehler nach direktem Aufruf oder Neuladen ist behoben; Event- und Sessionzeitpunkte werden vor der Anzeige normalisiert.", bugRef: "BUG-061" },
+    ],
+  },
+  {
     version: "0.50.45",
     date: "2026-11-01",
     title: "Dashboard-Renderfehler erfassen",

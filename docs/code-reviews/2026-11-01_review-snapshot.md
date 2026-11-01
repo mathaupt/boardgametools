@@ -17,6 +17,13 @@ iOS-/Security-Implementierung.
 ## Ergänzung: Dashboard-Renderfehler BUG-061
 
 Der Fehler wurde nach direktem Aufruf und Neuladen von `/dashboard` in einer
-angemeldeten Sitzung bestätigt. React #441 bezeichnet einen fehlgeschlagenen
-Server-Component-Render. Der Root Cause ist mangels Digest/Serverlog nicht
-bestimmt; es wurde kein Codefix behauptet.
+angemeldeten Sitzung bestätigt. Die anfängliche Root-Cause-Prüfung wartete auf
+den Digest. Der nachgereichte Digest identifizierte den Cache-String, der den
+anschließenden Fix ausgelöst hat.
+
+## Ergänzung: BUG-061 behoben (0.50.46)
+
+Der Digest `219148984` korrelierte mit `eventDate.toISOString()` auf einem
+gecachten ISO-String. Event- und Sessionzeiten normalisieren jetzt sowohl
+`Date`-Objekte als auch Cache-Strings. Regressionstest 2/2, Typecheck und
+Produktionsbuild bestanden. Keine Produktionsdatenbank verwendet.
