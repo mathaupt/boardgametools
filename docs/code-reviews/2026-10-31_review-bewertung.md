@@ -40,7 +40,7 @@ offen; an der technischen Bewertung ändert diese Dokumentationskorrektur nichts
 
 | Kriterium | Ergebnis | Einschränkung |
 |---|---|---|
-| Review-Evaluator | 10/10, keine Regressionen oder offenen Findings | Registrylauf; lokale History `2026-11-01_2237.json` |
+| Review-Evaluator | 10/10, keine Regressionen oder offenen Findings | Commit-Hook; lokale History `2026-11-01_2239.json` |
 | Unit-Tests | 841/841 bestanden | DB-Probe gemockt; keine isolierte Testdatenbank |
 | TypeScript / Build | Erfolgreich | — |
 | ESLint | 0 Fehler, 651 Warnungen | Warnungen aus vorhandenen Skill-/Hilfsdateien |
