@@ -108,6 +108,13 @@ prüfen und ein Backup nachweisen. Erst danach den separaten Produktionslauf
 freigeben und Ergebnis/Stichproben dokumentieren. Keine Bereinigung aufgrund
 alleiniger Codefreigabe starten.
 
+**Vorprüfung 01.11.2026:** Im aktuellen Prozess ist keine
+`BGT_MAINTENANCE_DATABASE_URL` konfiguriert; daher wurde weder ein Datenbanklauf
+noch ein Manifest erzeugt. `backups/boardgametools_20261101_220819.sql.gz` ist
+gzip-konsistent. Das bestätigt nur die Integrität des Archivs, nicht seine
+Produktionsherkunft oder Wiederherstellbarkeit. Ein Produktionslauf bleibt
+separat freigabepflichtig.
+
 ### E. Getrennte Sicherheits- und Plattformpläne
 
 - BUG-053 ist ein offener Sicherheitsbefund hoher Schwere: Besitznachweis und
@@ -117,6 +124,14 @@ alleiniger Codefreigabe starten.
 - Native iOS-Oberflächen sind laut FEAT-001 bis FEAT-004 sowie FEAT-010 bis
   FEAT-013 separat zu planen und abzunehmen. Die bestehenden Web-Umsetzungen
   und iOS-Vertragstests bedeuten keine iOS-UI-Umsetzung.
+
+**Planstand 01.11.2026:** drei nicht freigegebene Pläne erstellt:
+[BUG-053 Besitznachweis](superpowers/plans/2026-11-01-BUG-053-gastzugang-besitznachweis.md),
+[iOS FEAT-001–004](superpowers/plans/2026-11-01-ios-FEAT-001-004-voting.md)
+und [iOS FEAT-010–013](superpowers/plans/2026-11-01-ios-FEAT-010-013-public-events.md).
+Die iOS-Pläne sperren öffentliche Gastmutationen bis zur serverseitigen
+BUG-053-Lösung; sie ändern nicht die bestätigte Entscheidung gegen einen
+Gastwechsel in FEAT-013.
 
 ### Vorgeschlagene Reihenfolge
 

@@ -12,6 +12,16 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.44",
+    date: "2026-11-01",
+    title: "Offene Betriebs- und Plattformarbeit dokumentieren",
+    description: "Die FEAT-009-Datenbereinigung bleibt bis zu einem geprüften Manifest und Backup ausgesetzt. Getrennte Sicherheits- und iOS-Pläne halten den nächsten Umsetzungsumfang fest.",
+    changes: [
+      { type: "internal", text: "Vorprüfung für FEAT-009 dokumentiert: keine Wartungsdatenbank konfiguriert; vorhandenes Archiv ist gzip-konsistent, aber nicht als wiederherstellbares Produktionsbackup bestätigt." },
+      { type: "internal", text: "Pläne für BUG-053 und native iOS-Oberflächen FEAT-001–004 sowie FEAT-010–013 erstellt; keine Umsetzungsfreigabe erteilt." },
+    ],
+  },
+  {
     version: "0.50.43",
     date: "2026-11-01",
     title: "Vercel-Betriebschecks vorbereiten",

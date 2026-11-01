@@ -2,6 +2,13 @@
 
 **Status:** Code umgesetzt und Unit-Suite, Typprüfung, Build, iOS-Vertrag, Fast-Security-Check und Impeccable-Detektor abgeschlossen. E2E und vollständiger Security-Check sind nicht abgenommen. Produktionsbereinigung bleibt separat freigabepflichtig.
 
+## Produktionslauf-Vorprüfung – 2026-11-01
+
+- Im aktuellen Prozess ist `BGT_MAINTENANCE_DATABASE_URL` nicht konfiguriert.
+- Es wurde kein Datenbankzugriff, Dry-Run, Manifest, Apply oder Rollback ausgeführt.
+- `backups/boardgametools_20261101_220819.sql.gz` besteht die gzip-Integritätsprüfung. Herkunft als frisches Produktionsbackup und Wiederherstellung wurden nicht nachgewiesen.
+- Nächster zulässiger Schritt: Wartungs-URL sicher im Prozess bereitstellen, Dry-Run-Manifest erzeugen und prüfen sowie ein frisches, wiederherstellbares Backup nachweisen. Produktions-Apply bleibt danach ein separater Freigabeschritt.
+
 ## Aktualitätsprüfung vor Umsetzung – 2026-10-31
 
 - **Geprüfter Stand:** Commit `9def76f` (`added new implementation plans`); Arbeitsbaum war sauber.
