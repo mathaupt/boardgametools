@@ -1816,11 +1816,11 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 **Beschreibung:** Beim Aufruf des Dashboards in einer angemeldeten Sitzung meldet der Produktionsclient React-Fehler #441. React beschreibt diesen Code als fehlgeschlagenen Server-Component-Render; die konkrete Fehlermeldung wird im Production-Build verborgen.
 
-**Reproduktion:** Angemeldet `/dashboard` öffnen. Der Browser meldet `Minified React error #441`; genaue Häufigkeit und Auslöser bei Navigation gegenüber Neuladen sind noch nicht bestätigt.
+**Reproduktion:** Angemeldet `/dashboard` direkt aufrufen oder die Route neu laden. In beiden Fällen meldet der Browser `Minified React error #441`.
 
 **Erwartetes Verhalten:** Das Dashboard wird nach erfolgreicher Anmeldung gerendert oder zeigt einen nachvollziehbaren, vorübergehenden Fehlerzustand.
 
-**Tatsächliches Verhalten:** Der Client erhält eine generische Server-Render-Ausnahme. Im mitgeteilten Stacktrace fehlt der `digest`-Wert.
+**Tatsächliches Verhalten:** Der Client erhält bei direktem Aufruf und Neuladen eine generische Server-Render-Ausnahme. Im mitgeteilten Stacktrace fehlt der `digest`-Wert.
 
 **Ursache:** Noch unbekannt. Der Dashboard-Serverpfad lädt Zähler, letzte Sessions, kommende Events und offene Einladungen über Prisma-/Cache-Abfragen. Diese Pfade allein belegen keine konkrete Fehlerquelle. Der passende serverseitige Logeintrag muss über den React-Digest korreliert werden.
 

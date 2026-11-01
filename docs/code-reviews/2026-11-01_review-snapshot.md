@@ -13,3 +13,10 @@ für FEAT-001–004 und FEAT-010–013.
 Diese Bewertung bestätigt den automatisierten Quellmuster-Evaluator, nicht die
 Produktionsdatenbereinigung, Restorefähigkeit eines Backups oder die künftige
 iOS-/Security-Implementierung.
+
+## Ergänzung: Dashboard-Renderfehler BUG-061
+
+Der Fehler wurde nach direktem Aufruf und Neuladen von `/dashboard` in einer
+angemeldeten Sitzung bestätigt. React #441 bezeichnet einen fehlgeschlagenen
+Server-Component-Render. Der Root Cause ist mangels Digest/Serverlog nicht
+bestimmt; es wurde kein Codefix behauptet.

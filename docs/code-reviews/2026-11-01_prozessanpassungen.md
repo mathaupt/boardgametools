@@ -12,3 +12,12 @@ Erfolgsmessung: FEAT-009 wartet weiterhin auf sichere Datenbankkonfiguration,
 Manifestprüfung und Restore-Nachweis. E hat drei verlinkte, nicht freigegebene
 Pläne. Es wurden keine Produktionsdaten geändert und kein iOS- oder
 Sicherheitscode implementiert.
+
+## Ergänzung: BUG-061
+
+- [x] Direkter Dashboardaufruf und Reload als reproduzierbare Nutzerschritte aufgenommen.
+- [x] Dashboard-Serverseite, Cacheabstraktion, Einladungsquery und Error Boundary gelesen.
+- [ ] Digest mit zeitgleichem Serverlog korrelieren, Root Cause reproduzieren und Regressionstest ergänzen.
+
+Kein Fix ohne Serverursache behauptet; React blendet die konkrete
+Server-Component-Fehlermeldung in Production aus.

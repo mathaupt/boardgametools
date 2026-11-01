@@ -12,3 +12,10 @@
 Der D-Arbeitsblock ist an der sicheren Datenbankkonfiguration pausiert. Das
 Ergebnis ist keine abgeschlossene Produktionsbereinigung. E ist als
 Planungspaket dokumentiert und kann featureweise separat freigegeben werden.
+
+## Ergänzung: BUG-061
+
+Der Dashboardfehler ist bei direktem Aufruf und Reload bestätigt, aber der
+fehlgeschlagene Server-Component-Render ist noch nicht bis zur auslösenden
+Serverausnahme korreliert. Der bestehende Evaluatorstand bewertet keine
+Reproduzierbarkeit oder Laufzeitursache.
