@@ -73,6 +73,15 @@ tags:
 
 components:
   schemas:
+    PublicGuest:
+      type: object
+      required: [id, nickname, createdAt, votesCount]
+      properties:
+        id: { type: string }
+        nickname: { type: string }
+        createdAt: { type: string, format: date-time }
+        votesCount: { type: integer, minimum: 0 }
+
     Error:
       type: object
       properties:
@@ -1607,6 +1616,11 @@ paths:
       responses:
         '200':
           description: Öffentliche Event-Details mit EventState und gespeichertem Ergebnis
+          headers:
+            Cache-Control:
+              schema: { type: string, example: 'private, no-store' }
+            Vary:
+              schema: { type: string, example: Cookie }
           content:
             application/json:
               schema:
@@ -1614,6 +1628,15 @@ paths:
                 properties:
                   eventState: { $ref: '#/components/schemas/EventState' }
                   selectedDate: { type: string, format: date-time, nullable: true }
+                  currentUser:
+                    oneOf:
+                      - type: object
+                        required: [id, name]
+                        properties:
+                          id: { type: string }
+                          name: { type: string, nullable: true }
+                      - type: 'null'
+                    description: Minimale Identitätsanzeige der aktuellen Session; keine E-Mail oder Profilfelder.
         '404': { description: Event nicht gefunden oder nicht oeffentlich }
 
   /api/public/event/{token}/proposals/{proposalId}/game:
@@ -1682,7 +1705,11 @@ paths:
               properties:
                 nickname: { type: string, minLength: 1, maxLength: 80 }
       responses:
-        '201': { description: Gast-Teilnehmer erstellt }
+        '201':
+          description: Öffentlicher Teilnehmerdatensatz mit serverseitigem Stimmenzähler
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PublicGuest' }
         '409': { description: Event nimmt keine Änderungen mehr an, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
 
   /api/public/event/{token}/propose:
@@ -1710,7 +1737,8 @@ paths:
   /api/public/event/{token}/propose-bgg:
     post:
       tags: [Public]
-      summary: Spiel aus BGG vorschlagen (auch Gaeste)
+      summary: Spiel aus BGG vorschlagen
+      description: Eine vorhandene Session hat Vorrang vor einer übermittelten Gast-ID. Ein Vorschlag erhält genau eine Autorenrelation.
       security: []
       parameters:
         - name: token
@@ -1723,12 +1751,12 @@ paths:
           application/json:
             schema:
               type: object
-              required: [bggId, bggName]
+              required: [bggId]
               properties:
                 bggId: { type: string }
                 bggName: { type: string, maxLength: 500 }
                 bggImageUrl: { type: string }
-                guestId: { type: string, description: Optional — Gast-ID }
+                guestId: { type: string, description: Optionale Legacy-Gast-ID; wird bei vorhandener Session ignoriert. }
       responses:
         '201': { description: BGG-Vorschlag erstellt }
         '409': { description: Spielvorschläge sind gesperrt, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }

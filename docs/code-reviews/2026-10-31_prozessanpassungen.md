@@ -137,3 +137,15 @@ falsch positiven P2-23-Findings ändert keine API-Verträge.
 - [x] Vollständige Unit-Suite (796), TypeScript, Build, Lint, Security-Check und Impeccable-Detektor erfolgreich; 10/10, SEC-45 teilweise gelöst.
 - [x] OpenAPI, Featureübersicht, FAQ, Konzept, Backlog, Bugtracking, Plan und Changelog aktualisiert.
 - [ ] Browser-E2E gegen isolierte PostgreSQL-Datenbank sowie visuelle 390/1440-px-, Dark-Theme- und 200-%-Zoom-Abnahme nachholen.
+
+## FEAT-012/013 Web-Umsetzung – 0.50.39
+
+- [x] Vor Umsetzung Planstand gegen FEAT-014s tokengebundene BGG-Route und Konfliktbehandlung geprüft; bestehende Zustandsprüfung erhalten.
+- [x] Einheitliche Gastteilnehmerquelle mit serverbestätigtem Votezähler und Actor-basierter Identität umgesetzt.
+- [x] Kompakte Teilnahmeführung, einzelne Teilnehmerliste, Zusammenfassung eigener Spiel-/Terminantworten und verständliche Identitätsanzeige implementiert.
+- [x] BGG-Vorschlagsautor serverseitig eindeutig auf Session oder Eventgast begrenzt; Kontoaktionen greifen nicht auf gespeicherten Gast zurück.
+- [x] 822 Unit-Tests, Typecheck, Lint (0 Fehler), Build, Security-Check, OpenAPI-Parsing und iOS-Vertragstests bestanden.
+- [x] Backlog, Feature-Dokumentation, FAQ, Konzept, OpenAPI, Bugs, Changelog, Pläne und Reviewdokumentation aktualisiert.
+- [ ] Browser-E2E mit isolierten Daten, 390/1440 px, hell/dunkel, 200-%-Zoom und manueller Screenreaderprüfung durchführen; BUG-041 und BUG-053 nicht vorzeitig schließen.
+- [x] Review-Regressionslauf mit Registryzugriff: 10/10, SEC-45 teilweise gelöst, keine Regression; Snapshot `history/2026-11-01_2215.json`.
+- [ ] Browser-E2E mit isolierten Daten, 390/1440 px, hell/dunkel, 200-%-Zoom und manueller Screenreaderprüfung durchführen; BUG-041 und BUG-053 nicht vorzeitig schließen.

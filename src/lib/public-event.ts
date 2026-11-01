@@ -208,12 +208,7 @@ export interface SerializedPublicEvent {
     voteCounts: { registered: number; guests: number };
     userHasVoted: boolean;
   }>;
-  guestParticipants: Array<{
-    id: string;
-    nickname: string;
-    votesCount: number;
-    createdAt: string;
-  }>;
+  guestParticipants: PublicGuest[];
   dateProposals: Array<{
     id: string;
     date: string;
@@ -231,12 +226,21 @@ export interface SerializedPublicEvent {
   selectedDate: string | null;
   eventState: EventState;
   currentUserId: string | null;
+  currentUser: { id: string; name: string | null } | null;
+}
+
+export interface PublicGuest {
+  id: string;
+  nickname: string;
+  createdAt: string;
+  votesCount: number;
 }
 
 export function serializePublicEvent(
   event: PublicEventRaw,
   currentUserId: string | null,
-  now = new Date()
+  now = new Date(),
+  currentUserName: string | null = null
 ): SerializedPublicEvent {
   return {
     id: event.id,
@@ -322,5 +326,6 @@ export function serializePublicEvent(
     })),
     selectedDate: event.selectedDate?.toISOString() ?? null,
     currentUserId,
+    currentUser: currentUserId ? { id: currentUserId, name: currentUserName } : null,
   };
 }

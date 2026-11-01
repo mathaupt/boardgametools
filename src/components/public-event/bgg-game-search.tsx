@@ -20,9 +20,10 @@ interface BggGameSearchProps {
   proposalOpen: boolean;
   onProposalAdded: (proposal: Proposal) => void;
   onStateConflict?: () => void | Promise<void>;
+  onSessionExpired?: () => void;
 }
 
-export function BggGameSearch({ token, activeGuestId, currentUserId, proposalOpen, onProposalAdded, onStateConflict }: BggGameSearchProps) {
+export function BggGameSearch({ token, activeGuestId, currentUserId, proposalOpen, onProposalAdded, onStateConflict, onSessionExpired }: BggGameSearchProps) {
   const { toast } = useToast();
   const [query, setQuery] = useState("");
   const [detail, setDetail] = useState<BGGGameData | null>(null);
@@ -70,6 +71,7 @@ export function BggGameSearch({ token, activeGuestId, currentUserId, proposalOpe
       if (!response.ok) {
         const data = await response.json().catch(() => null) as { error?: string } | null;
         if (response.status === 409) await onStateConflict?.();
+        if (response.status === 401 && currentUserId) onSessionExpired?.();
         const apiError = new Error(data?.error ?? "Bitte versuche es erneut.");
         apiError.name = "BggApiError";
         throw apiError;
@@ -83,7 +85,7 @@ export function BggGameSearch({ token, activeGuestId, currentUserId, proposalOpe
     } finally {
       if (detailId.current === result.bggId) setDetailLoadingId(null);
     }
-  }, [onStateConflict, token]);
+  }, [currentUserId, onSessionExpired, onStateConflict, token]);
 
   const retryDetail = useCallback(() => {
     const id = detailId.current;

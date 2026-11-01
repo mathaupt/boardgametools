@@ -202,6 +202,10 @@ automatischem Build und Unit-Test-Ziel:
   öffnet öffentliche Event-Share-Links sowie zukünftige Spiel-/Event-Deep-Links.
 - `PublicEventView` zeigt ein öffentliches Event, lädt es per Share-Token und
   erlaubt das Mitmachen und Abstimmen als Gast.
+- Die öffentliche Web-Eventseite zeigt eine aktive Konto- oder Gastidentität,
+  einen gemeinsamen Teilnahmebereich und eine gemeinsame Teilnehmendenliste.
+  Bei einer Session hat das Konto Vorrang; bestehende Gaststimmen bleiben
+  getrennt und werden nicht übertragen. Ein Gastwechsel ist nicht vorgesehen.
 - `NetworkMonitor` zeigt den Online-/Offline-Status und triggert keinen Sync,
   wenn keine Verbindung besteht.
 
@@ -525,11 +529,11 @@ ApiLog
 - `POST /api/events/[id]/date-proposals/select` - Termin festlegen
 - `POST /api/events/[id]/date-proposals/reset` - Termine zurücksetzen
 
-### Public API (ohne Auth)
+### Public API (öffentlicher Link, optionale Session)
 - `GET /api/public/event/[token]` - Öffentliches Event abrufen
 - `POST /api/public/event/[token]/join` - Als Gast teilnehmen
 - `POST /api/public/event/[token]/propose` - Spiel vorschlagen (Gast)
-- `POST /api/public/event/[token]/propose-bgg` - BGG-Spiel vorschlagen (Gast)
+- `POST /api/public/event/[token]/propose-bgg` - BGG-Spiel vorschlagen; Konto hat bei Session Vorrang, Gast-ID wird dann ignoriert
 - `POST /api/public/event/[token]/vote` - Abstimmen (Gast)
 - `POST /api/public/event/[token]/date-vote` - Terminabstimmung (Gast)
 - `GET /api/public/group/[token]` - Öffentliche Gruppe abrufen

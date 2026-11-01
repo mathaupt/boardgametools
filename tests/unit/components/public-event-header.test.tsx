@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { PublicEventHeader } from "@/components/public-event/public-event-header";
 import { serializePublicEvent } from "@/lib/public-event";
 
@@ -37,5 +37,15 @@ describe("PublicEventHeader", () => {
     render(<PublicEventHeader event={event({ winningProposal: null })} />);
 
     expect(screen.getByText("Abstimmung geschlossen; kein Spiel festgelegt.")).toBeTruthy();
+  });
+
+  it("keeps long descriptions collapsed until requested", () => {
+    render(<PublicEventHeader event={event({ description: "Eine ausführliche Beschreibung. ".repeat(20) })} />);
+    const description = screen.getByText(/Eine ausführliche Beschreibung/);
+    expect(description).toHaveClass("line-clamp-3");
+    const toggle = screen.getByRole("button", { name: "Beschreibung anzeigen" });
+    expect(toggle).toHaveAttribute("aria-expanded", "false");
+    fireEvent.click(toggle);
+    expect(screen.getByRole("button", { name: "Beschreibung verbergen" })).toHaveAttribute("aria-expanded", "true");
   });
 });

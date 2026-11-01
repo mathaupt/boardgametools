@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { evaluateEventState } from "@/lib/events/event-state";
 import type { SerializedPublicEvent } from "@/lib/public-event";
@@ -11,18 +11,28 @@ export function usePublicEventLifecycle(token: string, event: SerializedPublicEv
   const [eventState, setEventState] = useState(event.eventState);
   const [proposals, setProposals] = useState<Proposal[]>(event.proposals);
   const [dateProposals, setDateProposals] = useState<DateProposal[]>(event.dateProposals);
+  const [guestParticipants, setGuestParticipants] = useState(event.guestParticipants);
+  const [refreshError, setRefreshError] = useState<string | null>(null);
+  const refreshSequence = useRef(0);
 
   const refreshEventState = useCallback(async () => {
     router.refresh();
+    const sequence = ++refreshSequence.current;
+    setRefreshError(null);
     try {
       const response = await fetch(`/api/public/event/${token}`);
-      if (!response.ok) return;
+      if (!response.ok) {
+        if (sequence === refreshSequence.current) setRefreshError("Die Teilnehmendenliste konnte noch nicht aktualisiert werden.");
+        return;
+      }
       const latest = await response.json() as SerializedPublicEvent;
+      if (sequence !== refreshSequence.current) return;
       setEventState(latest.eventState);
       setProposals(latest.proposals);
       setDateProposals(latest.dateProposals);
+      setGuestParticipants(latest.guestParticipants);
     } catch {
-      // The server still enforces the lifecycle if the refresh request fails.
+      if (sequence === refreshSequence.current) setRefreshError("Die Teilnehmendenliste konnte noch nicht aktualisiert werden.");
     }
   }, [router, token]);
 
@@ -30,6 +40,7 @@ export function usePublicEventLifecycle(token: string, event: SerializedPublicEv
     setEventState(event.eventState);
     setProposals(event.proposals);
     setDateProposals(event.dateProposals);
+    setGuestParticipants(event.guestParticipants);
   }, [event]);
 
   useEffect(() => {
@@ -51,5 +62,5 @@ export function usePublicEventLifecycle(token: string, event: SerializedPublicEv
     };
   }, [event]);
 
-  return { eventState, setEventState, proposals, setProposals, dateProposals, setDateProposals, refreshEventState };
+  return { eventState, setEventState, proposals, setProposals, dateProposals, setDateProposals, guestParticipants, setGuestParticipants, refreshError, refreshEventState };
 }

@@ -148,3 +148,12 @@ als separate Restabnahmen offen; es wurden keine Produktdateien geändert.
 - Impeccable-Detektor für Suchformular, Ergebnis- und Detailansicht ohne Findings. Keine produktiven BGG-Anfragen oder Datenbankänderungen.
 - Review-Evaluator: 10/10, SEC-45 teilweise gelöst (22 moderate Dev-Befunde), Snapshot `history/2026-11-01_2149.json`; keine Regression.
 - Browser-E2E gegen isolierte PostgreSQL-Datenbank und gerenderte Viewport-/Theme-Abnahme bleiben ausstehend.
+
+## FEAT-012/013 Web-Implementierung – 0.50.39 (2026-11-01)
+
+- 822/822 Unit-Tests in 108 Dateien; Typecheck, Produktionsbuild, OpenAPI-YAML-Parsing, Security-Check und iOS-Vertragstests bestanden.
+- ESLint: 0 Fehler; 651 Warnungen, überwiegend aus vorhandenen Skill-/Hilfsdateien.
+- Security-Check im Commit-Hook: 0 Fehler, 2 Hinweise (Raw SQL und Debug-Routen); Sandbox-Vorlauf ohne Registry meldete zusätzlich npm-Auditdaten nicht verfügbar. Keine neue Datenbankmigration.
+- Review-Evaluator mit Registryzugriff: 10/10; SEC-45 teilweise gelöst, 0 offene Findings und keine Regression. Snapshot: `history/2026-11-01_2215.json`.
+- Impeccable-Hook aktiviert; gerenderter Detektor und visuelle Browserabnahme noch offen. BUG-041 bleibt in Bearbeitung; BUG-053 bleibt offen.
+- Keine Browser-E2E, 390/1440-px-, Dark-Theme- oder 200-%-Zoom-Abnahme behauptet.

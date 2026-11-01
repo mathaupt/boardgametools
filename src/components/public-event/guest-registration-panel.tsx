@@ -1,73 +1,60 @@
 "use client";
 
 import { useState } from "react";
+import { UserPlus, Loader2 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/components/ui/use-toast";
-import { Users, UserPlus, Loader2, UserCircle } from "lucide-react";
-import { formatDate } from "@/lib/date";
-import { cn } from "@/lib/utils";
-import type { Guest, StoredGuestState } from "./types";
+import type { PublicActor } from "@/lib/events/public-actor";
+import type { PublicGuest } from "@/lib/public-event";
+import { PublicIdentityNotice } from "./public-identity-notice";
 
 interface GuestRegistrationPanelProps {
   token: string;
-  activeGuest: StoredGuestState | null;
-  initialGuestList: Guest[];
-  onGuestJoined: (guest: StoredGuestState) => void;
-  persistGuest: (guest: StoredGuestState, votes: Set<string>) => void;
+  actor: PublicActor;
+  onGuestJoined: (guest: PublicGuest) => void;
   canJoin?: boolean;
   blockedReason?: string | null;
   onStateConflict?: () => void | Promise<void>;
+  sessionExpired?: boolean;
 }
 
 export function GuestRegistrationPanel({
   token,
-  activeGuest,
-  initialGuestList,
+  actor,
   onGuestJoined,
-  persistGuest,
   canJoin = true,
   blockedReason = null,
   onStateConflict,
+  sessionExpired = false,
 }: GuestRegistrationPanelProps) {
   const { toast } = useToast();
   const [nickname, setNickname] = useState("");
   const [joining, setJoining] = useState(false);
-  const [guestList, setGuestList] = useState<Guest[]>(initialGuestList);
 
   const handleGuestJoin = async () => {
-    if (!nickname.trim()) {
-      toast({ title: "Nickname fehlt", description: "Bitte einen Spitznamen eingeben.", variant: "destructive" });
-      return;
-    }
+    if (actor.kind !== "observer" || !canJoin || nickname.trim().length < 2) return;
     setJoining(true);
     try {
-      const response = await fetch(`/api/public/event/${token}/join`, {
+      const response = await fetch(`/api/public/event/${encodeURIComponent(token)}/join`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ nickname: nickname.trim() }),
       });
       if (!response.ok) {
-        const data = await response.json().catch(() => null);
+        const data = await response.json().catch(() => null) as { error?: string } | null;
         if (response.status === 409) await onStateConflict?.();
         if (response.status === 409) throw new Error("Der Planungsstand hat sich geändert. Deine Änderung wurde nicht gespeichert.");
         throw new Error(data?.error ?? "Beitritt fehlgeschlagen");
       }
-      const participant: Guest = await response.json();
-      setGuestList((prev) => {
-        const exists = prev.some((guest) => guest.id === participant.id);
-        if (exists) {
-          return prev.map((guest) => (guest.id === participant.id ? participant : guest));
-        }
-        return [...prev, participant].sort((a, b) => a.createdAt.localeCompare(b.createdAt));
-      });
-      const stored: StoredGuestState = { id: participant.id, nickname: participant.nickname };
-      onGuestJoined(stored);
-      persistGuest(stored, new Set());
+      const participant = await response.json() as PublicGuest;
+      if (!participant.id || !participant.nickname || !participant.createdAt || !Number.isFinite(participant.votesCount)) {
+        throw new Error("Die Teilnahmedaten konnten nicht gelesen werden. Bitte lade die Seite neu.");
+      }
+      onGuestJoined(participant);
       setNickname("");
-      toast({ title: "Willkommen!", description: "Du bist jetzt für das Event registriert." });
+      toast({ title: "Willkommen!", description: "Du nimmst jetzt an der Veranstaltung teil." });
     } catch (error) {
       console.error("Guest join error", error);
       toast({
@@ -81,95 +68,44 @@ export function GuestRegistrationPanel({
   };
 
   return (
-    <section className="grid min-w-0 gap-6 lg:grid-cols-2">
-      <Card className="min-w-0">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-lg" as="h2">
-            <UserPlus className="h-5 w-5" aria-hidden="true" />
-            Als Gast teilnehmen
-          </CardTitle>
-          <CardDescription className="[overflow-wrap:anywhere]">
-            Nickname eingeben, um abstimmen zu können
-          </CardDescription>
+    <section id="event-participation" aria-labelledby="event-participation-title" className="min-w-0 scroll-mt-6">
+      <Card className="border-primary/25 bg-card">
+        <CardHeader className="pb-3">
+          <CardTitle id="event-participation-title" className="text-lg" as="h2">Deine Teilnahme</CardTitle>
+          <CardDescription>Deine aktuelle Identität und der passende Teilnahmeweg.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          {activeGuest ? (
-            <div className="rounded-lg border border-success bg-success/10 p-4 text-sm">
-              <p className="font-semibold text-foreground">Willkommen zurück, {activeGuest.nickname}!</p>
-              <p className="text-foreground">
-                Du kannst jetzt als Gast abstimmen. Deine Stimme wird unter deinem Nickname gezählt.
-              </p>
-            </div>
-          ) : canJoin ? (
-            <>
-              <label htmlFor="guest-nickname" className="text-sm font-medium text-muted-foreground">
-                Spitzname
-              </label>
-              <Input
-                id="guest-nickname"
-                data-testid="guest-nickname-input"
-                placeholder="z.B. W0rkerPlacementPro"
-                value={nickname}
-                onChange={(event) => setNickname(event.target.value)}
-                disabled={joining}
-                className="min-h-11 min-w-0 bg-background"
-              />
+          <PublicIdentityNotice actor={actor} sessionExpired={sessionExpired} />
+          {actor.kind === "observer" && canJoin && (
+            <div className="grid min-w-0 gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
+              <div className="min-w-0 space-y-2">
+                <label htmlFor="guest-nickname" className="text-sm font-medium text-foreground">Als Gast mit Spitznamen teilnehmen</label>
+                <Input
+                  id="guest-nickname"
+                  data-testid="guest-nickname-input"
+                  maxLength={80}
+                  placeholder="Dein Spitzname"
+                  value={nickname}
+                  onChange={(event) => setNickname(event.target.value)}
+                  disabled={joining}
+                  className="min-h-11 min-w-0 bg-background"
+                />
+              </div>
               <Button
                 data-testid="guest-join-button"
                 onClick={handleGuestJoin}
                 disabled={joining || nickname.trim().length < 2}
-                className="h-auto min-h-11 w-full whitespace-normal leading-tight"
+                className="h-auto min-h-11 whitespace-normal leading-tight"
               >
                 {joining ? <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" /> : <UserPlus className="mr-2 h-4 w-4" aria-hidden="true" />}
-                {joining ? "Beitritt läuft…" : "Als Gast registrieren"}
+                {joining ? "Beitritt läuft …" : "Als Gast teilnehmen"}
               </Button>
-            </>
-          ) : (
-            <p className="rounded-lg bg-muted p-4 text-sm text-muted-foreground" role="status">
+            </div>
+          )}
+          {actor.kind === "observer" && !canJoin && !sessionExpired && (
+            <p className="rounded-lg bg-muted p-3 text-sm text-muted-foreground" role="status">
               {blockedReason ?? "Eine Registrierung ist für dieses Event nicht mehr möglich."}
             </p>
-          )}
-        </CardContent>
-      </Card>
-
-      <Card className="min-w-0">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-lg" as="h2">
-            <Users className="h-5 w-5" aria-hidden="true" />
-            Gästeliste ({guestList.length})
-          </CardTitle>
-          <CardDescription>
-            Alle öffentlichen Teilnehmer:innen
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-3 max-h-[320px] overflow-y-auto pr-1">
-          {guestList.length === 0 ? (
-            <p className="text-sm text-muted-foreground">Noch keine Gäste registriert.</p>
-          ) : (
-            guestList.map((guest) => (
-              <div
-                key={guest.id}
-                className={cn(
-                  "flex min-w-0 flex-wrap items-center justify-between gap-2 rounded-lg border border-border/60 bg-background/60 px-3 py-2",
-                  activeGuest?.id === guest.id && "border-success bg-success/10"
-                )}
-              >
-                <div className="flex min-w-0 items-center gap-2">
-                  <div className="rounded-full bg-muted p-2 text-muted-foreground">
-                    <UserCircle className="h-4 w-4" aria-hidden="true" />
-                  </div>
-                  <div className="min-w-0">
-                    <p className="text-sm font-medium">{guest.nickname}</p>
-                    <p className="text-xs text-foreground">
-                      Beigetreten am {formatDate(guest.createdAt)}
-                    </p>
-                  </div>
-                </div>
-                <Badge variant="secondary" className="shrink-0 text-xs">
-                  {guest.votesCount} Votes
-                </Badge>
-              </div>
-            ))
           )}
         </CardContent>
       </Card>

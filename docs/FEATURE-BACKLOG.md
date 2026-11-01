@@ -25,8 +25,8 @@ Bedarf zu aktualisieren. Ergebnis am jeweiligen Plan dokumentieren:
 | FEAT-009 | HTML-Entities in Spieldaten korrekt behandeln | Code umgesetzt; Produktionsdatenbereinigung offen | [Textnormalisierung und Datenbereinigung](superpowers/plans/2026-10-31-FEAT-009-spieldaten-entities.md) | Codeumsetzung am 31.10.2026 freigegeben; Produktionslauf separat freizugeben |
 | FEAT-010 | Event-Status und Ergebnis eindeutig darstellen | Umgesetzt und abgenommen (Web/Mobile-API) | [Zustandsregeln und Ergebnisdarstellung](superpowers/plans/2026-10-31-FEAT-010-eventstatus-ergebnis.md) | Am 31.10.2026 freigegeben und mit isolierter PostgreSQL- und Chromium-Abnahme abgeschlossen; native iOS-Oberfläche bleibt separat |
 | FEAT-011 | Mobile und assistive Bedienung der Terminabstimmung | Implementiert (Web; automatisierte Abnahme abgeschlossen, manuelle VoiceOver-Abnahme offen) | [Zugängliche Terminabstimmung](superpowers/plans/2026-10-31-FEAT-011-terminabstimmung-barrierefrei.md) | Automatisierte Web-Abnahme am 01.11.2026 abgeschlossen; VoiceOver manuell offen, iOS separat |
-| FEAT-012 | Teilnahme vor passive Listen rücken | Plan erstellt | [Teilnahmeweg und Teilnehmerdaten](superpowers/plans/2026-10-31-FEAT-012-oeffentliche-teilnahme.md) | Ausstehend |
-| FEAT-013 | Aktive Identität verständlich machen | Plan erstellt | [Eine aktive Identität](superpowers/plans/2026-10-31-FEAT-013-aktive-identitaet.md) | Ausstehend; Umfang ohne Gastwechsel bestätigt |
+| FEAT-012 | Teilnahme vor passive Listen rücken | Web umgesetzt; Browser-E2E/Viewport-Abnahme offen | [Teilnahmeweg und Teilnehmerdaten](superpowers/plans/2026-10-31-FEAT-012-oeffentliche-teilnahme.md) | Umgesetzt am 01.11.2026; Web zuerst, iOS separat |
+| FEAT-013 | Aktive Identität verständlich machen | Web umgesetzt; Browser-E2E/Viewport-Abnahme offen | [Eine aktive Identität](superpowers/plans/2026-10-31-FEAT-013-aktive-identitaet.md) | Umgesetzt am 01.11.2026; ohne Gastwechsel |
 | FEAT-014 | Suchzustände und Beschriftung der BGG-Suche | Implementiert (Web; Browser-E2E offen) | [Öffentliche BGG-Suche](superpowers/plans/2026-10-31-FEAT-014-bgg-suchzustaende.md) | Am 01.11.2026 freigegeben und umgesetzt; native iOS-Suche nicht Teil dieses öffentlichen Web-Umfangs |
 
 Am 30.10.2026 aufgenommen. Bei der Planung sind Web, iOS sowie angemeldete und
@@ -338,7 +338,7 @@ guest-registration-panel.tsx:90.
 ## FEAT-012 – Teilnahme vor passive Listen rücken
 
 **Implementierungsplan:** [FEAT-012](superpowers/plans/2026-10-31-FEAT-012-oeffentliche-teilnahme.md), erstellt am 31.10.2026.
-**Umsetzungsfreigabe:** Erteilt durch „implementiere FEAT-014“ am 01.11.2026.
+**Umsetzungsfreigabe:** Erteilt durch „implementiere FEAT-012 und FEAT-013“ am 01.11.2026.
 **Plattformumfang:** Öffentliche Web-Eventseite; native iOS-Oberflächen separat.
 **Abhängigkeiten:** Status/Termin aus FEAT-010, Terminbedienung aus FEAT-011 und gemeinsame Identitätsregeln aus FEAT-013 bei Integration zusammenführen.
 
@@ -366,10 +366,12 @@ guest-registration-panel.tsx:123.
   begründete Alternative ersetzt.
 - Eine kompakte Übersicht der eigenen Auswahl am Seitenende ist geprüft.
 
+**Umsetzungsstand 01.11.2026:** Weboberfläche, einheitliche Teilnehmerquelle, gezählter Beitritts-DTO, Sprunglinks, persönliche Auswahl und responsives Desktopraster umgesetzt. 390/1440-Pixel-Viewport-, Theme- und Browser-E2E-Abnahme bleibt offen; BUG-041/042 bleiben bis dahin in Bearbeitung.
+
 ## FEAT-013 – Aktive Identität verständlich machen
 
 **Implementierungsplan:** [FEAT-013](superpowers/plans/2026-10-31-FEAT-013-aktive-identitaet.md), erstellt am 31.10.2026.
-**Umsetzungsfreigabe:** Ausstehend.
+**Umsetzungsfreigabe:** Erteilt durch „implementiere FEAT-012 und FEAT-013“ am 01.11.2026.
 **Bestätigte Produktentscheidung:** Am 31.10.2026 „Klare Identität ohne Gastwechsel“ gewählt. Keine Übertragung oder Zusammenführung von Stimmen und keine neue Gastwechsel-/Wiederaufnahmefunktion.
 **Plattformumfang:** Web zuerst; bestehende API-Verträge erhalten, native Oberflächen separat.
 **Bugbezug:** Doppelte Autorenrelation BUG-054 im Umfang; fehlender Gastbesitznachweis BUG-053 bleibt ein eigenständiger offener Sicherheitsbefund.
@@ -396,6 +398,8 @@ public-event-client.tsx:182,269,291; guest-registration-panel.tsx:78,88.
 - Der bestätigte Umfang ohne Gastwechsel wird eingehalten; bestehende Stimmen
   werden beim Anmelden weder übertragen noch gelöscht.
 - Angemeldete Personen sehen keinen doppelten Beitragsweg.
+
+**Umsetzungsstand 01.11.2026:** Gemeinsamer Actor für Konto, eventgebundenen Gast, Beobachter und Hydration; Sitzungsname datensparsam serialisiert; konto- und gastgebundene Aktionen zeigen je eine Identität. BGG-Autorenrelation wird serverseitig exklusiv zugeordnet (BUG-054 behoben). Kein Gastwechsel oder Besitznachweis ergänzt; BUG-053 bleibt offen. Browser-/Viewport-Abnahme ausstehend.
 
 ## FEAT-014 – Suchzustände und Beschriftung der BGG-Suche
 

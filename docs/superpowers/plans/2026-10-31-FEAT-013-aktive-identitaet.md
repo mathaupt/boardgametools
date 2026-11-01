@@ -1,6 +1,10 @@
 # FEAT-013 – Aktive Identität verständlich machen
 
-**Status:** Implementierungsplan zur Prüfung; keine Umsetzungsfreigabe.
+**Status (2026-11-01):** Web-Implementierung und automatisierte Code-Abnahme abgeschlossen. Browser-E2E, Mehridentitäten- und visuelle Abnahme bei 390/1440 px, Hell/Dunkel und 200 % Zoom stehen noch aus. Umsetzung gemäß ausdrücklicher Freigabe vom 2026-11-01.
+
+**Aktualitätsprüfung vor Umsetzung:** FEAT-012 wird gemeinsam umgesetzt und nutzt diesen Actor als einzige Identitätsquelle; FEAT-014s Zustandskonflikte und tokengebundene BGG-Katalogabfrage bleiben erhalten. Die bestätigte Entscheidung „Klare Identität ohne Gastwechsel“ gilt weiter. BUG-053 bleibt ausdrücklich offen.
+
+**Implementierungsnachweis:** Unit-Suite 822/822, Typecheck, Lint (0 Fehler), Build, Security-Check und OpenAPI-Parsing erfolgreich. iOS-Vertragstest separat dokumentiert. Keine Browser- oder Screenreader-Abnahme behauptet.
 
 **Bestätigte Produktentscheidung:** Am 31.10.2026 ausdrücklich gewählt: „Klare Identität ohne Gastwechsel“. Kein Wechsel zwischen fremden Gastzugängen, keine Umbenennung und keine Übertragung/Zusammenführung bestehender Stimmen.
 

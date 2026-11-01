@@ -32,10 +32,16 @@ export const POST = withApiLogging(async function POST(
         where: { eventId_nickname: { eventId, nickname: nickname! } },
         create: { eventId, nickname: nickname! },
         update: {},
+        include: { _count: { select: { votes: true } } },
       })
     );
 
-    return NextResponse.json(participant, { status: 201 });
+    return NextResponse.json({
+      id: participant.id,
+      nickname: participant.nickname,
+      createdAt: participant.createdAt.toISOString(),
+      votesCount: participant._count.votes,
+    }, { status: 201 });
   } catch (error) {
     return handleApiError(error);
   }

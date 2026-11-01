@@ -194,8 +194,14 @@ describe("serializePublicEvent", () => {
   });
 
   it("passes currentUserId through", () => {
-    const result = serializePublicEvent(makeEvent(), "user-42");
+    const result = serializePublicEvent(makeEvent(), "user-42", new Date("2026-11-01T00:00:00Z"), "Anna");
     expect(result.currentUserId).toBe("user-42");
+    expect(result.currentUser).toEqual({ id: "user-42", name: "Anna" });
+  });
+
+  it("does not expose current-user identity when there is no session", () => {
+    const result = serializePublicEvent(makeEvent(), null);
+    expect(result.currentUser).toBeNull();
   });
 
   it("uses guest as proposedBy when no registered user", () => {

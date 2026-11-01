@@ -12,6 +12,18 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.39",
+    date: "2026-11-01",
+    title: "Öffentliche Eventteilnahme vereinheitlichen",
+    description: "Der Beitritt, die Abstimmung und die Teilnehmerübersicht folgen jetzt derselben aktiven Identität.",
+    changes: [
+      { type: "improvement", text: "Angemeldete Personen sehen nur ihre Kontoaktionen; gespeicherte Gastzugänge werden nicht automatisch verwendet.", bugRef: "BUG-054" },
+      { type: "improvement", text: "Gastbeitritt und Spielauswahl stehen direkt nach Eventdetails und Teilnahmehinweisen bereit; Einladungen und Gäste erscheinen in einer gemeinsamen Liste.", bugRef: "BUG-041" },
+      { type: "improvement", text: "Die eigene Spiel- und Terminauswahl ist zusammengefasst und führt direkt zu den Bearbeitungsstellen.", bugRef: "BUG-042" },
+      { type: "internal", text: "Öffentliche Eventantworten zeigen nur den angemeldeten Anzeigenamen, bleiben privat nicht cachebar und liefern beim Gastbeitritt den serverseitigen Stimmenzähler." },
+    ],
+  },
+  {
     version: "0.50.38",
     date: "2026-11-01",
     title: "Öffentliche BGG-Suche verständlicher machen",

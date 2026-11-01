@@ -28,7 +28,9 @@ export const GET = withApiLogging(async function GET(
     return NextResponse.json({ error: Errors.EVENT_NOT_FOUND }, { status: 404 });
   }
 
-  const serialized = serializePublicEvent(event, session?.user?.id ?? null);
+  const serialized = serializePublicEvent(event, session?.user?.id ?? null, new Date(), session?.user?.name ?? null);
 
-  return NextResponse.json(serialized);
+  return NextResponse.json(serialized, {
+    headers: { "Cache-Control": "private, no-store", Vary: "Cookie" },
+  });
 });

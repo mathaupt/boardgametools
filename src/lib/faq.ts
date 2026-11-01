@@ -126,6 +126,10 @@ export const faqSections: FaqSection[] = [
           "Jeder eingeladene Teilnehmer kann Spiele aus seiner eigenen Sammlung oder per BGG-Suche vorschlagen. Alle Teilnehmer stimmen dann ueber die vorgeschlagenen Spiele ab. Das Spiel mit den meisten Stimmen gewinnt. Du siehst in Echtzeit, wer fuer welches Spiel gestimmt hat. Als Organisator kannst du die Abstimmung schliessen und das Gewinnerspiel festlegen.",
       },
       {
+        question: "Warum sehe ich nur eine Teilnahme- oder Abstimmungsaktion?",
+        answer: "Die öffentliche Eventseite verwendet die Identität deiner aktuellen Sitzung. Wenn du angemeldet bist, werden deine Kontoaktionen angezeigt; ein gespeicherter Gastzugang wird nicht automatisch weiterverwendet. Ohne Anmeldung kannst du als Gast teilnehmen, sofern das Event noch offen ist. Gaststimmen werden nicht auf ein Konto übertragen.",
+      },
+      {
         question: "Warum zeigt die öffentliche BGG-Suche keine Ergebnisse oder einen Fehler?",
         answer: "Ergebnisse erscheinen erst, nachdem du eine Suche mit mindestens zwei Zeichen abgesendet hast. Eine leere Trefferliste bedeutet, dass BoardGameGeek keine passenden Spiele gefunden hat. Bei einem Verbindungsfehler kannst du die letzte Suche erneut starten; das Vorschlagen erfordert weiterhin eine aktive Identität im offenen Event.",
       },

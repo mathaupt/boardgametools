@@ -3,8 +3,8 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 vi.mock("next/server", () => ({
   NextRequest: class {},
   NextResponse: {
-    json: vi.fn((body: unknown, init?: { status?: number }) => ({
-      body, status: init?.status ?? 200,
+    json: vi.fn((body: unknown, init?: { status?: number; headers?: Record<string, string> }) => ({
+      body, status: init?.status ?? 200, headers: new Headers(init?.headers),
     })),
   },
 }));
@@ -15,8 +15,8 @@ vi.mock("@/lib/event-share", () => ({ findPublicEventByToken: vi.fn() }));
 
 vi.mock("@/lib/public-event", () => ({
   buildPublicEventInclude: vi.fn(() => ({ createdBy: true })),
-  serializePublicEvent: vi.fn((event: { id: string; title: string }, userId: string | null) => ({
-    id: event.id, title: event.title, currentUserId: userId,
+  serializePublicEvent: vi.fn((event: { id: string; title: string }, userId: string | null, _now?: Date, userName?: string | null) => ({
+    id: event.id, title: event.title, currentUserId: userId, currentUser: userId ? { id: userId, name: userName ?? null } : null,
   })),
 }));
 
@@ -53,8 +53,8 @@ describe("API /api/public/event/[token]", () => {
     const { status, body } = parseResponse(res);
 
     expect(status).toBe(200);
-    expect(body).toEqual({ id: "event-1", title: "Game Night", currentUserId: null });
-    expect(serializePublicEvent).toHaveBeenCalledWith(event, null);
+    expect(body).toEqual({ id: "event-1", title: "Game Night", currentUserId: null, currentUser: null });
+    expect(serializePublicEvent).toHaveBeenCalledWith(event, null, expect.any(Date), null);
   });
 
   it("returns 404 when event not found", async () => {
@@ -82,12 +82,14 @@ describe("API /api/public/event/[token]", () => {
 
   it("passes authenticated user id", async () => {
     vi.mocked(findPublicEventByToken).mockResolvedValue({ id: "e1", title: "Test" } as never);
-    vi.mocked(auth).mockResolvedValue({ user: { id: "user-42" }, expires: "" } as never);
+    vi.mocked(auth).mockResolvedValue({ user: { id: "user-42", name: "Anna" }, expires: "" } as never);
 
     const req = createMockRequest("GET", "http://localhost:3000/api/public/event/abc123");
     const ctx = createRouteContext({ token: "abc123" });
-    await (GET as Function)(req, ctx);
+    const res = await (GET as Function)(req, ctx);
 
-    expect(serializePublicEvent).toHaveBeenCalledWith(expect.anything(), "user-42");
+    expect(serializePublicEvent).toHaveBeenCalledWith(expect.anything(), "user-42", expect.any(Date), "Anna");
+    expect(res.headers.get("Cache-Control")).toContain("no-store");
+    expect(res.headers.get("Vary")).toContain("Cookie");
   });
 });

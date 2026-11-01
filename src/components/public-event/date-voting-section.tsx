@@ -24,6 +24,8 @@ interface DateVotingSectionProps {
   selectedDate: string | null;
   initialDateProposals: DateProposal[];
   onStateConflict?: () => void | Promise<void>;
+  onSessionExpired?: () => void;
+  onSaved?: () => void | Promise<void>;
 }
 
 export function DateVotingSection({
@@ -37,6 +39,8 @@ export function DateVotingSection({
   selectedDate,
   initialDateProposals,
   onStateConflict,
+  onSessionExpired,
+  onSaved,
 }: DateVotingSectionProps) {
   const [dateProposals, setDateProposals] = useState<DateProposal[]>(initialDateProposals);
   const [busyProposalIds, setBusyProposalIds] = useState<Set<string>>(new Set());
@@ -103,6 +107,7 @@ export function DateVotingSection({
       if (!response.ok) {
         const data = await response.json().catch(() => null);
         if (response.status === 409) await onStateConflict?.();
+        if (response.status === 401 && requestParticipantKey.startsWith("user:")) onSessionExpired?.();
         if (response.status === 409) {
           throw new Error("Der Planungsstand hat sich geändert. Deine Änderung wurde nicht gespeichert.");
         }
@@ -146,6 +151,7 @@ export function DateVotingSection({
           }],
         };
       }));
+      await onSaved?.();
     } catch (error) {
       if (activeParticipantKeyRef.current === requestParticipantKey) {
         const message = error instanceof Error ? error.message : "Bitte versuche es erneut.";
@@ -164,12 +170,12 @@ export function DateVotingSection({
         });
       }
     }
-  }, [activeGuest, activeParticipantKey, canVote, eventId, onStateConflict, summaries, token]);
+  }, [activeGuest, activeParticipantKey, canVote, eventId, onSaved, onSessionExpired, onStateConflict, summaries, token]);
 
   if (dateProposals.length === 0) return null;
 
   return (
-    <section data-testid="date-voting-section" aria-labelledby="public-date-voting-title">
+    <section id="event-dates" data-testid="date-voting-section" aria-labelledby="public-date-voting-title" className="scroll-mt-6">
       <Card className="border-border/60 bg-background/60 max-[320px]:p-2">
         <CardHeader className="max-[320px]:p-2">
           <CardTitle id="public-date-voting-title" className="flex min-w-0 flex-wrap items-center gap-2 text-lg text-foreground" as="h2">

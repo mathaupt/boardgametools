@@ -1,7 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { SerializedPublicEvent } from "@/lib/public-event";
+import { useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
+import type { SerializedPublicEvent } from "@/lib/public-event";
 import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
 import { GuestRegistrationPanel } from "./guest-registration-panel";
@@ -9,31 +9,42 @@ import { DateVotingSection } from "./date-voting-section";
 import { CollectionGameProposer } from "./collection-game-proposer";
 import { BggGameSearch } from "./bgg-game-search";
 import { PublicProposalVoteActions } from "./public-proposal-vote-actions";
-import type { Proposal, StoredGuestState } from "./types";
+import type { Proposal } from "./types";
 import { ProposalCompactRow } from "@/components/event-voting/proposal-compact-row";
 import { ProposalSortControl } from "@/components/event-voting/proposal-sort-control";
 import { sortProposals } from "@/lib/voting/sort-proposals";
 import type { ProposalSort, VotingProposal } from "@/lib/voting/types";
 import { usePublicEventLifecycle } from "./use-public-event-lifecycle";
 import { PublicEventStateBadge } from "./public-event-state-badge";
+import { usePublicActor } from "./use-public-actor";
+import { upsertPublicGuest } from "@/lib/events/public-participants";
+import { PublicEventSectionLinks } from "./public-event-section-links";
+import { ParticipantsSection } from "./participants-section";
+import { PersonalSelectionSummary } from "./personal-selection-summary";
 
 interface PublicEventClientProps {
   token: string;
   event: SerializedPublicEvent;
 }
 
-const STORAGE_PREFIX = "bgt-public-guest:";
-
 export function PublicEventClient({ token, event }: PublicEventClientProps) {
   const { toast } = useToast();
-  const [activeGuest, setActiveGuest] = useState<StoredGuestState | null>(null);
-  const [guestVotes, setGuestVotes] = useState<Set<string>>(new Set());
   const [proposalSort, setProposalSort] = useState<ProposalSort>("votes");
-  const [userVoting, setUserVoting] = useState<string | null>(null);
-  const [guestVoting, setGuestVoting] = useState<string | null>(null);
-  const { eventState, proposals, setProposals, dateProposals, refreshEventState } = usePublicEventLifecycle(token, event);
-
-  const storageKey = `${STORAGE_PREFIX}${token}`;
+  const [voting, setVoting] = useState<string | null>(null);
+  const [sessionExpired, setSessionExpired] = useState(false);
+  const { eventState, proposals, setProposals, dateProposals, guestParticipants, setGuestParticipants, refreshError, refreshEventState } = usePublicEventLifecycle(token, event);
+  const { actor, guestVotes, registerGuest, persistGuestVotes } = usePublicActor({
+    token,
+    user: event.currentUser,
+    guests: guestParticipants,
+    proposalIds: proposals.map((proposal) => proposal.id),
+  });
+  const actorKey = actor.kind === "user" ? `user:${actor.userId}` : actor.kind === "guest" ? `guest:${actor.guestId}` : actor.kind;
+  const actorKeyRef = useRef(actorKey);
+  useLayoutEffect(() => {
+    actorKeyRef.current = actorKey;
+  }, [actorKey]);
+  const visibleActor = sessionExpired ? { kind: "observer" as const } : actor;
   const canVoteGame = eventState.available.voteGame;
   const canProposeGame = eventState.available.proposeGame;
   const canVoteDate = eventState.available.voteDate;
@@ -52,37 +63,19 @@ export function PublicEventClient({ token, event }: PublicEventClientProps) {
     totalVotes: proposal.totalVotes,
   })), [proposals, proposalSort]);
 
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    try {
-      const raw = window.localStorage.getItem(storageKey);
-      if (!raw) return;
-      const parsed: StoredGuestState = JSON.parse(raw);
-      setActiveGuest(parsed);
-      setGuestVotes(new Set(parsed.votes ?? []));
-    } catch {
-      // Non-critical: localStorage may be corrupted or unavailable
-    }
-  }, [storageKey]);
+  const activeGuest = actor.kind === "guest" ? { id: actor.guestId, nickname: actor.nickname } : null;
 
-  const persistGuest = useCallback((guest: StoredGuestState, votes: Set<string>) => {
-    if (typeof window === "undefined") return;
-    const payload: StoredGuestState = {
-      id: guest.id,
-      nickname: guest.nickname,
-      votes: Array.from(votes),
-    };
-    window.localStorage.setItem(storageKey, JSON.stringify(payload));
-  }, [storageKey]);
-
-  const handleGuestJoined = useCallback((guest: StoredGuestState) => {
-    setActiveGuest(guest);
-    setGuestVotes(new Set());
-  }, []);
+  const handleGuestJoined = useCallback((guest: import("@/lib/public-event").PublicGuest) => {
+    setGuestParticipants((current) => upsertPublicGuest(current, guest));
+    registerGuest(guest);
+    void refreshEventState();
+  }, [refreshEventState, registerGuest, setGuestParticipants]);
 
   const handleProposalAdded = useCallback((proposal: Proposal) => {
     setProposals((prev) => [...prev, proposal]);
   }, [setProposals]);
+
+  const handleSessionExpired = useCallback(() => setSessionExpired(true), []);
 
   const updateProposalState = (
     proposalId: string,
@@ -93,96 +86,59 @@ export function PublicEventClient({ token, event }: PublicEventClientProps) {
     );
   };
 
-  const handleUserVote = async (proposalId: string, shouldVote: boolean) => {
-    if (!event.currentUserId || !canVoteGame) return;
-    setUserVoting(proposalId);
+  const handleVote = async (proposalId: string, shouldVote: boolean) => {
+    if ((actor.kind !== "user" && actor.kind !== "guest") || !canVoteGame) return;
+    const requestActorKey = actorKey;
+    const isUser = actor.kind === "user";
+    const guestId = actor.kind === "guest" ? actor.guestId : null;
+    setVoting(proposalId);
     try {
-      const endpoint = `/api/events/${event.id}/votes${shouldVote ? "" : `?proposalId=${proposalId}`}`;
+      const endpoint = isUser
+        ? `/api/events/${event.id}/votes${shouldVote ? "" : `?proposalId=${encodeURIComponent(proposalId)}`}`
+        : `/api/public/event/${encodeURIComponent(token)}/vote${shouldVote ? "" : `?guestId=${encodeURIComponent(guestId!)}&proposalId=${encodeURIComponent(proposalId)}`}`;
       const response = await fetch(endpoint, {
         method: shouldVote ? "POST" : "DELETE",
         headers: shouldVote ? { "Content-Type": "application/json" } : undefined,
-        body: shouldVote ? JSON.stringify({ proposalId }) : undefined,
+        body: shouldVote ? JSON.stringify(isUser ? { proposalId } : { guestId, proposalId }) : undefined,
       });
       if (!response.ok) {
         const data = await response.json().catch(() => null);
-        if (response.status === 409) await refreshEventState();
+        if (response.status === 409 || response.status === 401) await refreshEventState();
+        if (response.status === 401 && isUser) setSessionExpired(true);
         if (response.status === 409) throw new Error("Der Planungsstand hat sich geändert. Deine Änderung wurde nicht gespeichert.");
         throw new Error(data?.error ?? "Vote fehlgeschlagen");
       }
+      if (actorKeyRef.current !== requestActorKey) {
+        await refreshEventState();
+        return;
+      }
       updateProposalState(proposalId, (proposal) => {
-        const registered = proposal.voteCounts.registered + (shouldVote ? 1 : -1);
-        const totalVotes = registered + proposal.voteCounts.guests;
+        const field = isUser ? "registered" : "guests";
+        const count = Math.max(proposal.voteCounts[field] + (shouldVote ? 1 : -1), 0);
+        const voteCounts = { ...proposal.voteCounts, [field]: count };
         return {
           ...proposal,
-          userHasVoted: shouldVote,
-          voteCounts: {
-            ...proposal.voteCounts,
-            registered: Math.max(registered, 0),
-          },
-          totalVotes: Math.max(totalVotes, 0),
+          userHasVoted: isUser ? shouldVote : proposal.userHasVoted,
+          voteCounts,
+          totalVotes: voteCounts.registered + voteCounts.guests,
         };
       });
+      if (!isUser) {
+        const updated = new Set(guestVotes);
+        if (shouldVote) updated.add(proposalId);
+        else updated.delete(proposalId);
+        persistGuestVotes(updated);
+        await refreshEventState();
+      }
     } catch (error) {
-      console.error("User vote error", error);
+      console.error("Public vote error", error);
       toast({
         title: "Vote fehlgeschlagen",
         description: error instanceof Error ? error.message : "Versuche es erneut.",
         variant: "destructive",
       });
     } finally {
-      setUserVoting(null);
-    }
-  };
-
-  const handleGuestVote = async (proposalId: string, shouldVote: boolean) => {
-    if (!activeGuest || !canVoteGame) {
-      toast({ title: "Gastzugang erforderlich", description: "Bitte zuerst als Gast beitreten." });
-      return;
-    }
-    setGuestVoting(proposalId);
-    try {
-      const response = await fetch(`/api/public/event/${token}/vote${shouldVote ? "" : `?guestId=${activeGuest.id}&proposalId=${proposalId}`}`, {
-        method: shouldVote ? "POST" : "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: shouldVote ? JSON.stringify({ guestId: activeGuest.id, proposalId }) : undefined,
-      });
-      if (!response.ok) {
-        const data = await response.json().catch(() => null);
-        if (response.status === 409) await refreshEventState();
-        if (response.status === 409) throw new Error("Der Planungsstand hat sich geändert. Deine Änderung wurde nicht gespeichert.");
-        throw new Error(data?.error ?? "Gast-Vote fehlgeschlagen");
-      }
-      setGuestVotes((prev) => {
-        const updated = new Set(prev);
-        if (shouldVote) {
-          updated.add(proposalId);
-        } else {
-          updated.delete(proposalId);
-        }
-        persistGuest(activeGuest, updated);
-        return updated;
-      });
-      updateProposalState(proposalId, (proposal) => {
-        const guestCount = proposal.voteCounts.guests + (shouldVote ? 1 : -1);
-        const totalVotes = proposal.voteCounts.registered + Math.max(guestCount, 0);
-        return {
-          ...proposal,
-          voteCounts: {
-            ...proposal.voteCounts,
-            guests: Math.max(guestCount, 0),
-          },
-          totalVotes: Math.max(totalVotes, 0),
-        };
-      });
-    } catch (error) {
-      console.error("Guest vote error", error);
-      toast({
-        title: "Gast-Vote fehlgeschlagen",
-        description: error instanceof Error ? error.message : "Bitte versuche es erneut.",
-        variant: "destructive",
-      });
-    } finally {
-      setGuestVoting(null);
+      setVoting(null);
     }
   };
 
@@ -190,19 +146,25 @@ export function PublicEventClient({ token, event }: PublicEventClientProps) {
     <div className="space-y-6">
       <GuestRegistrationPanel
         token={token}
-        activeGuest={activeGuest}
-        initialGuestList={event.guestParticipants}
+        actor={visibleActor}
         onGuestJoined={handleGuestJoined}
-        persistGuest={persistGuest}
-        canJoin={canJoin}
+        canJoin={canJoin && !sessionExpired}
         blockedReason={eventState.blockedReason}
         onStateConflict={refreshEventState}
+        sessionExpired={sessionExpired}
       />
 
-      <section>
+      <PublicEventSectionLinks hasGames hasDates={dateProposals.length > 0} />
+      {refreshError && <p className="rounded-lg border border-warning/40 bg-warning/10 p-3 text-sm text-foreground" role="status">
+        {refreshError} <button type="button" className="ml-2 min-h-11 font-medium text-primary underline underline-offset-4" onClick={() => void refreshEventState()}>Wiederholen</button>
+      </p>}
+
+      <div className="grid min-w-0 gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(16rem,1fr)]">
+      <div className="min-w-0 space-y-6">
+      <section id="event-games" aria-labelledby="event-games-title" className="min-w-0 scroll-mt-6">
         <div className="flex items-center justify-between gap-4">
           <div>
-            <h2 className="text-xl font-semibold text-foreground">Spielvorschläge</h2>
+            <h2 id="event-games-title" className="text-xl font-semibold text-foreground">Spiele wählen</h2>
             <p className="text-sm text-muted-foreground">
               Stimme für deine Favoriten oder bring eigene Vorschläge ein.
             </p>
@@ -220,14 +182,14 @@ export function PublicEventClient({ token, event }: PublicEventClientProps) {
           {proposals.length === 0 ? (
             <Card className="border-dashed border-border/60 bg-background/50">
               <CardContent className="py-10 text-center text-muted-foreground">
-                Noch keine Spielvorschläge vorhanden. {event.currentUserId ? "Du kannst direkt eines hinzufügen." : "Nutze die BGG-Suche unten, um ein Spiel vorzuschlagen."}
+              Noch keine Spielvorschläge vorhanden. {visibleActor.kind === "user" ? "Du kannst direkt eines hinzufügen." : "Nutze die BGG-Suche unten, um ein Spiel vorzuschlagen."}
               </CardContent>
             </Card>
           ) : (
             <ul className="min-w-0 overflow-hidden rounded-xl border border-border bg-card">
             {visibleProposals.map((proposal) => {
               const userHasVoted = proposal.userHasVoted ?? false;
-              const guestHasVoted = guestVotes.has(proposal.id);
+              const hasVoted = visibleActor.kind === "user" ? userHasVoted : visibleActor.kind === "guest" && guestVotes.has(proposal.id);
               return (
                 <ProposalCompactRow
                   key={proposal.id}
@@ -245,15 +207,11 @@ export function PublicEventClient({ token, event }: PublicEventClientProps) {
                 >
                   <PublicProposalVoteActions
                     proposalId={proposal.id}
-                    currentUserId={event.currentUserId}
-                    activeGuest={!!activeGuest}
-                    userHasVoted={userHasVoted}
-                    guestHasVoted={guestHasVoted}
-                    userVoting={userVoting}
-                    guestVoting={guestVoting}
+                    actor={visibleActor}
+                    hasVoted={hasVoted}
+                    busy={voting !== null}
                     canVote={canVoteGame}
-                    onUserVote={() => handleUserVote(proposal.id, !userHasVoted)}
-                    onGuestVote={() => handleGuestVote(proposal.id, !guestHasVoted)}
+                    onToggle={() => handleVote(proposal.id, !hasVoted)}
                   />
                 </ProposalCompactRow>
               );
@@ -267,36 +225,43 @@ export function PublicEventClient({ token, event }: PublicEventClientProps) {
       <DateVotingSection
         eventId={event.id}
         token={token}
-        currentUserId={event.currentUserId}
+        currentUserId={visibleActor.kind === "user" ? visibleActor.userId : null}
         activeGuest={activeGuest}
-        knownGuests={event.guestParticipants}
+        knownGuests={guestParticipants}
         canVote={canVoteDate}
         onStateConflict={refreshEventState}
+        onSessionExpired={handleSessionExpired}
+        onSaved={refreshEventState}
         selectedDate={event.selectedDate}
         initialDateProposals={dateProposals}
       />
 
-      {event.currentUserId && (
+      {visibleActor.kind === "user" && (
         <CollectionGameProposer
           token={token}
-          currentUserId={event.currentUserId}
+          currentUserId={visibleActor.userId}
           proposedGameIds={proposedGameIds}
           onProposalAdded={handleProposalAdded}
           onStateConflict={refreshEventState}
+          onSessionExpired={handleSessionExpired}
         />
       )}
 
-      {/* BGG-Import: available to everyone (guests + logged-in) */}
       {canProposeGame && (
         <BggGameSearch
           token={token}
-          activeGuestId={activeGuest?.id ?? null}
-          currentUserId={event.currentUserId}
+          activeGuestId={visibleActor.kind === "guest" ? visibleActor.guestId : null}
+          currentUserId={visibleActor.kind === "user" ? visibleActor.userId : null}
           proposalOpen={canProposeGame}
           onProposalAdded={handleProposalAdded}
           onStateConflict={refreshEventState}
+          onSessionExpired={handleSessionExpired}
         />
       )}
+      <PersonalSelectionSummary actor={visibleActor} proposals={proposals} dateProposals={dateProposals} guestVotes={guestVotes} />
+      </div>
+      <ParticipantsSection invites={event.invites} guests={guestParticipants} activeGuestId={activeGuest?.id ?? null} />
+      </div>
     </div>
   );
 }

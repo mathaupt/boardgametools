@@ -82,10 +82,15 @@ describe("Public Voting Flow", () => {
 
   describe("POST /join", () => {
     it("creates guest and returns 201", async () => {
-      vi.mocked(prisma.guestParticipant.upsert).mockResolvedValue({ id: GUEST_ID, eventId: EVENT_ID, nickname: "Alice" } as never);
+      vi.mocked(prisma.guestParticipant.upsert).mockResolvedValue({
+        id: GUEST_ID, eventId: EVENT_ID, nickname: "Alice", createdAt: new Date("2026-11-01T10:00:00Z"), _count: { votes: 3 },
+      } as never);
       const req = createMockRequest("POST", "http://localhost:3000/api/public/event/abc/join", { body: { nickname: "Alice" } });
       const res = await (JoinPOST as Function)(req, createRouteContext({ token: "abc" }));
-      expect(parseResponse(res).status).toBe(201);
+      expect(parseResponse(res)).toMatchObject({
+        status: 201,
+        body: { id: GUEST_ID, nickname: "Alice", createdAt: "2026-11-01T10:00:00.000Z", votesCount: 3 },
+      });
     });
 
     it("returns 404 for invalid token", async () => {

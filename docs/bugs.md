@@ -1297,10 +1297,10 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 ### [BUG-041] Vorgesehenes Desktop-Raster der öffentlichen Eventseite ist unwirksam
 
-**Status:** `open`
+**Status:** `in_progress`
 **Schweregrad:** `low`
 **Entdeckt:** 2026-10-30
-**Test geschrieben:** Nein
+**Test geschrieben:** Ja – `tests/unit/components/public-event-client.test.tsx` prüft die Desktop-Rasterklasse; gerenderte Viewport-Abnahme bleibt offen.
 
 **Beschreibung:** Teilnehmer und Teilnahmehinweis bleiben auf Desktop untereinander.
 
@@ -1312,11 +1312,11 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 **Ursache:** lg:grid-cols-[2fr,1fr] in page.tsx erzeugt keine wirksame gültige Zweispaltenaufteilung.
 
-**Lösung:** Noch nicht umgesetzt. [FEAT-012-Plan](superpowers/plans/2026-10-31-FEAT-012-oeffentliche-teilnahme.md): Desktopaufteilung gemeinsam mit der Priorisierung des Gastbeitritts umsetzen.
+**Lösung:** Gültiges `lg:grid-cols-[minmax(0,2fr)_minmax(16rem,1fr)]` in der öffentlichen Eventseite umgesetzt; die Teilnehmerübersicht steht nach den Hauptaktionen im DOM und wird bei Desktopbreite als Seitenbereich angeordnet. Finale Browsermessung bei 1440 px steht aus.
 
 **Prüfnachweis:** anonymous-1440.png und Layoutbeobachtungen aus A. Belege: `.impeccable/critique/evidence/public-event-A/` und `public-event-B/`.
 
-**Test-Status:** Kein Fix und noch kein dauerhafter Regressionstest. Bei Umsetzung ist ein Regressionstest verpflichtend.
+**Test-Status:** Unit-Abdeckung vorhanden; Browser-Viewport-Abnahme offen.
 
 **Referenz im Changelog:** Version 0.50.24 – Prüfung der öffentlichen Eventseite dokumentiert.
 
@@ -1324,10 +1324,12 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 ### [BUG-042] Gästelisten auf öffentlicher Eventseite laufen auseinander
 
-**Status:** `open`
+**Status:** `fixed`
 **Schweregrad:** `low`
 **Entdeckt:** 2026-10-30
-**Test geschrieben:** Nein
+**Behoben:** 2026-11-01
+**Behoben in Version:** 0.50.39
+**Test geschrieben:** Ja – `public-event-client.test.tsx`, `public-event-flow.test.tsx`, `public-participants.test.ts` und `public-voting-flow.test.ts`.
 
 **Beschreibung:** Mehrfach angezeigte Gästeinformationen werden nach einem Beitritt nicht gemeinsam aktualisiert.
 
@@ -1339,13 +1341,13 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 **Ursache:** page.tsx und GuestRegistrationPanel verwalten getrennte Darstellungen desselben Datenbestands.
 
-**Lösung:** Noch nicht umgesetzt. [FEAT-012-Plan](superpowers/plans/2026-10-31-FEAT-012-oeffentliche-teilnahme.md): eine gemeinsame Teilnehmerquelle und nachgeführte Snapshotdaten.
+**Lösung:** Gästeliste aus Registrierungsformular und Serverseite zusammengeführt. `PublicEventClient` hält die einzige aktuelle Gastliste; Beitrittsantworten enthalten den serverseitigen Stimmenzähler und werden anhand der Gast-ID eingefügt/ersetzt. Stimmenänderungen gleichen den Snapshot ab; ältere Snapshotantworten überschreiben keine neueren.
 
 **Prüfnachweis:** Beitrittsablauf und Komponentenprüfung aus A; keine echte Gastregistrierung. Belege: `.impeccable/critique/evidence/public-event-A/` und `public-event-B/`.
 
-**Test-Status:** Kein Fix und noch kein dauerhafter Regressionstest. Bei Umsetzung ist ein Regressionstest verpflichtend.
+**Test-Status:** Regressionstests bestanden; Browser-E2E nach erfolgreichem Beitritt bleibt offen.
 
-**Referenz im Changelog:** Version 0.50.24 – Prüfung der öffentlichen Eventseite dokumentiert.
+**Referenz im Changelog:** Version 0.50.39 – Öffentliche Eventteilnahme vereinheitlichen.
 
 ---
 
@@ -1652,10 +1654,12 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 ### [BUG-054] BGG-Vorschlag kann gleichzeitig Konto und Gast zugeordnet werden
 
-**Status:** `open`
+**Status:** `fixed`
 **Schweregrad:** `medium`
 **Entdeckt:** 2026-10-31
-**Test geschrieben:** Nein; serverseitige Regression im FEAT-013-Plan vorgesehen.
+**Behoben:** 2026-11-01
+**Behoben in Version:** 0.50.39
+**Test geschrieben:** Ja – `tests/unit/api/propose-bgg-validation.test.ts` prüft Sessionvorrang, ignorierte Legacy-Gast-ID und genau eine Autorenrelation.
 
 **Beschreibung:** Bei vorhandener Session und gespeicherter Gast-ID sendet der BGG-Client beide Kontexte. Die Route kann gleichzeitig proposedById und guestId auf denselben neuen Vorschlag schreiben.
 
@@ -1667,11 +1671,11 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 **Ursache:** Getrennte Konto-/Gast-Props ohne gemeinsame Prioritätsregel und ohne ausschließliche serverseitige Zuordnung.
 
-**Lösung:** Noch nicht umgesetzt. [FEAT-013-Plan](superpowers/plans/2026-10-31-FEAT-013-aktive-identitaet.md): ein UI-Actor und genau eine Autorenrelation bei neuen Vorschlägen. Keine automatische Bestands- oder Stimmenmigration.
+**Lösung:** Client reicht bei Konto-Actor keine Gast-ID ein; die Route leitet die einzige Autorenrelation serverseitig aus der Session oder dem eventgebundenen Gast ab. Bei Session wird eine mitgesendete Legacy-Gast-ID ignoriert. Keine Bestands- oder Stimmenmigration.
 
-**Prüfnachweis:** src/components/public-event/bgg-game-search.tsx und src/app/api/public/event/[token]/propose-bgg/route.ts am 31.10.2026 gelesen.
+**Prüfnachweis:** Fünf API-Unit-Tests decken Sessionvorrang, Gastzuordnung, fehlende Identität und BGG-ID-Validierung ab.
 
-**Referenz im Changelog:** Version 0.50.30 – Öffentliche Teilnahme weiter geplant.
+**Referenz im Changelog:** Version 0.50.39 – Öffentliche Eventteilnahme vereinheitlichen.
 
 ---
 
@@ -1784,8 +1788,8 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 ## Statistik
 
-- **Offene Bugs:** 10
-- **In Bearbeitung:** 1
-- **Behoben:** 48
+- **Offene Bugs:** 7
+- **In Bearbeitung:** 2
+- **Behoben:** 50
 - **Wontfix:** 0
 - **Gesamt:** 59

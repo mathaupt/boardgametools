@@ -866,7 +866,7 @@ const isValid = await compare(inputPassword, group.password);
 
 ## Evaluator-Feedback (automatisch generiert)
 
-> Letzter Lauf: 2026-11-01 20:49:32
+> Letzter Lauf: 2026-11-01 21:15:39
 > Gesamt-Score: **10/10**
 
 ### Kategorie-Scores
@@ -907,7 +907,7 @@ const isValid = await compare(inputPassword, group.password);
 - ✅ **P2-19** Duplikat: Prisma-Client-Dateien: Duplikat entfernt
 - ✅ **P2-20** Duplikat: BGG-Logik: Kein dupliziertes XML-Parsing
 - ✅ **P2-21** next/image statt <img>: Keine <img> Tags
-- ✅ **P2-22** Fehlende Unit Tests: 102 Test-Dateien
+- ✅ **P2-22** Fehlende Unit Tests: 109 Test-Dateien
 - ✅ **P2-23** Inkonsistente Error-Responses: Konsistent: 200× {error}; {message} wird nur für Erfolgsmeldungen verwendet
 - ✅ **P2-24** CONCEPT.md aktualisieren: Tech-Stack aktuell
 - ✅ **P2-25** Pendende Invites dupliziert: Shared Query extrahiert
@@ -923,7 +923,7 @@ const isValid = await compare(inputPassword, group.password);
 - ✅ **SEC-46** XSS: dangerouslySetInnerHTML ohne Sanitization: Kein dangerouslySetInnerHTML verwendet
 - ✅ **PERF-47** Schwere Libraries ohne Dynamic Import: 5 dynamic() + 7 await import() Lazy-Loads
 - ✅ **PERF-48** Keine Bundle-Analyse konfiguriert: @next/bundle-analyzer konfiguriert
-- ✅ **PERF-49** Keine API Caching Headers: 23 Caching-Konfigurationen gefunden
+- ✅ **PERF-49** Keine API Caching Headers: 24 Caching-Konfigurationen gefunden
 - ✅ **BP-50** ESLint Warnings/Errors: ESLint clean
 - ✅ **BP-51** Ungenutzte Dependencies in package.json: Alle Dependencies werden verwendet
 - ✅ **BP-52** Fehlende Error Boundaries: 12 Error Boundaries vorhanden

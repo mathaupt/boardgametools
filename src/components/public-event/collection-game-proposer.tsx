@@ -14,6 +14,7 @@ interface CollectionGameProposerProps {
   proposedGameIds: Set<string>;
   onProposalAdded: (proposal: Proposal) => void;
   onStateConflict?: () => void | Promise<void>;
+  onSessionExpired?: () => void;
 }
 
 export function CollectionGameProposer({
@@ -22,6 +23,7 @@ export function CollectionGameProposer({
   proposedGameIds,
   onProposalAdded,
   onStateConflict,
+  onSessionExpired,
 }: CollectionGameProposerProps) {
   const { toast } = useToast();
   const [games, setGames] = useState<GameSummary[]>([]);
@@ -39,6 +41,7 @@ export function CollectionGameProposer({
           headers: { "Content-Type": "application/json" },
         });
         if (!response.ok) {
+          if (response.status === 401) onSessionExpired?.();
           throw new Error("Konnte Sammlung nicht laden");
         }
         const data: GameSummary[] = await response.json();
@@ -51,7 +54,7 @@ export function CollectionGameProposer({
       }
     };
     loadGames();
-  }, [currentUserId]);
+  }, [currentUserId, onSessionExpired]);
 
   const availableGames = useMemo(() => {
     return games.filter((game) => !proposedGameIds.has(game.id));
@@ -75,6 +78,7 @@ export function CollectionGameProposer({
       if (!response.ok) {
         const data = await response.json().catch(() => null);
         if (response.status === 409) await onStateConflict?.();
+        if (response.status === 401) onSessionExpired?.();
         if (response.status === 409) throw new Error("Der Planungsstand hat sich geändert. Deine Änderung wurde nicht gespeichert.");
         throw new Error(data?.error ?? "Vorschlag fehlgeschlagen");
       }

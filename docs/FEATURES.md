@@ -361,6 +361,8 @@ Gaeste koennen:
 - Ueber Spielvorschlaege abstimmen
 - An der Terminabstimmung teilnehmen (Ja/Vielleicht/Nein)
 
+Die Teilnahme wird nach Eventkopf und Termin-/Ortsdaten angezeigt. Eine angemeldete Person sieht nur den Konto-Teilnahmeweg; ein gespeicherter Gastzugang wird dabei nicht automatisch verwendet. Gäste und Einladungen erscheinen gemeinsam in einer Teilnehmerübersicht. „Deine Auswahl“ fasst eigene Spielstimmen und Terminantworten mit Rücksprüngen zu den jeweiligen Aktionen zusammen.
+
 Die BGG-Suche kann ohne Anmeldung verwendet werden, solange das Event neue
 Vorschläge annimmt. Sucheingabe, Ladezustand, Treffer, leere Trefferliste und
 Fehler werden getrennt angezeigt. Ein sichtbares Label benennt das Suchfeld;

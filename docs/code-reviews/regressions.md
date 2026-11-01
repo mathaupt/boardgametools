@@ -47,9 +47,11 @@ Jeder Eintrag enthält Felder für Root-Cause-Analyse und Gegenmaßnahmen (manue
 |---------|-----------|--------|-------|--------|
 | P2-18: any-Types im Code | P2 | resolved | partially_resolved | 1 any-Types verbleibend |
 
-**Root-Cause:** <!-- Manuell ausfüllen: Warum ist das Finding zurückgekehrt? -->
-**Gegenmaßnahme:** <!-- Manuell ausfüllen: Wie wird verhindert, dass es erneut passiert? -->
-**Verantwortlich:** <!-- Manuell ausfüllen -->
+**Root-Cause:** Der Evaluator wurde ohne erreichbare npm-Registry ausgeführt. Er hat den ungültigen Auditlauf fail-closed als `open` gewertet; es gab keine Änderung an Abhängigkeiten.
+**Gegenmaßnahme:** Regressionsevaluator nur mit gültiger Registryantwort als maßgeblich verwenden; Sandbox-Reports nicht als neue Paketbefunde einordnen.
+**Verantwortlich:** BoardGameTools Wartung.
+
+**Auflösung 2026-11-01 22:14:** `npm run review-evaluate:regression` mit Registryzugriff endete mit Exitcode 0, 10/10, SEC-45 teilweise gelöst, 0 offenen Findings und ohne Regressionen. Snapshot: `history/2026-11-01_2214.json`.
 
 ---
 
@@ -71,9 +73,11 @@ Jeder Eintrag enthält Felder für Root-Cause-Analyse und Gegenmaßnahmen (manue
 |---------|-----------|--------|-------|--------|
 | SEC-45: npm audit: Bekannte Vulnerabilities | P2 | partially_resolved | open | 0 critical, 8 high, 30 moderate |
 
-**Root-Cause:** <!-- Manuell ausfüllen: Warum ist das Finding zurückgekehrt? -->
-**Gegenmaßnahme:** <!-- Manuell ausfüllen: Wie wird verhindert, dass es erneut passiert? -->
-**Verantwortlich:** <!-- Manuell ausfüllen -->
+**Root-Cause:** Der Evaluator wurde ohne erreichbare npm-Registry ausgeführt. Er hat den ungültigen Auditlauf fail-closed als `open` gewertet; es gab keine Änderung an Abhängigkeiten.
+**Gegenmaßnahme:** Regressionsevaluator nur mit gültiger Registryantwort als maßgeblich verwenden; Sandbox-Reports nicht als neue Paketbefunde einordnen.
+**Verantwortlich:** BoardGameTools Wartung.
+
+**Auflösung 2026-11-01 22:14:** `npm run review-evaluate:regression` mit Registryzugriff endete mit Exitcode 0, 10/10, SEC-45 teilweise gelöst, 0 offenen Findings und ohne Regressionen. Snapshot: `history/2026-11-01_2214.json`.
 
 ---
 
@@ -84,9 +88,11 @@ Jeder Eintrag enthält Felder für Root-Cause-Analyse und Gegenmaßnahmen (manue
 | P2-18: any-Types im Code | P2 | resolved | open | 71 any-Types gefunden |
 | SCALE-60: DB Connection Pooling nicht konfiguriert | P1 | resolved | open | Keine Connection Pool Konfiguration |
 
-**Root-Cause:** <!-- Manuell ausfüllen: Warum ist das Finding zurückgekehrt? -->
-**Gegenmaßnahme:** <!-- Manuell ausfüllen: Wie wird verhindert, dass es erneut passiert? -->
-**Verantwortlich:** <!-- Manuell ausfüllen -->
+**Root-Cause:** Der Evaluator wurde ohne erreichbare npm-Registry ausgeführt. Er hat den ungültigen Auditlauf fail-closed als `open` gewertet; es gab keine Änderung an Abhängigkeiten.
+**Gegenmaßnahme:** Regressionsevaluator nur mit gültiger Registryantwort als maßgeblich verwenden; Sandbox-Reports nicht als neue Paketbefunde einordnen.
+**Verantwortlich:** BoardGameTools Wartung.
+
+**Auflösung 2026-11-01 22:14:** `npm run review-evaluate:regression` mit Registryzugriff endete mit Exitcode 0, 10/10, SEC-45 teilweise gelöst, 0 offenen Findings und ohne Regressionen. Snapshot: `history/2026-11-01_2214.json`.
 
 ---
 
@@ -205,9 +211,11 @@ Jeder Eintrag enthält Felder für Root-Cause-Analyse und Gegenmaßnahmen (manue
 |---------|-----------|--------|-------|--------|
 | SEC-45: npm audit: Bekannte Vulnerabilities | P2 | partially_resolved | open | npm audit lieferte keine gültigen Prüfdaten |
 
-**Root-Cause:** <!-- Manuell ausfüllen: Warum ist das Finding zurückgekehrt? -->
-**Gegenmaßnahme:** <!-- Manuell ausfüllen: Wie wird verhindert, dass es erneut passiert? -->
-**Verantwortlich:** <!-- Manuell ausfüllen -->
+**Root-Cause:** Der Evaluator wurde ohne erreichbare npm-Registry ausgeführt. Er hat den ungültigen Auditlauf fail-closed als `open` gewertet; es gab keine Änderung an Abhängigkeiten.
+**Gegenmaßnahme:** Regressionsevaluator nur mit gültiger Registryantwort als maßgeblich verwenden; Sandbox-Reports nicht als neue Paketbefunde einordnen.
+**Verantwortlich:** BoardGameTools Wartung.
+
+**Auflösung 2026-11-01 22:14:** `npm run review-evaluate:regression` mit Registryzugriff endete mit Exitcode 0, 10/10, SEC-45 teilweise gelöst, 0 offenen Findings und ohne Regressionen. Snapshot: `history/2026-11-01_2214.json`.
 
 ---
 
@@ -217,9 +225,11 @@ Jeder Eintrag enthält Felder für Root-Cause-Analyse und Gegenmaßnahmen (manue
 |---------|-----------|--------|-------|--------|
 | SEC-45: npm audit: Bekannte Vulnerabilities | P2 | partially_resolved | open | npm audit lieferte keine gültigen Prüfdaten |
 
-**Root-Cause:** <!-- Manuell ausfüllen: Warum ist das Finding zurückgekehrt? -->
-**Gegenmaßnahme:** <!-- Manuell ausfüllen: Wie wird verhindert, dass es erneut passiert? -->
-**Verantwortlich:** <!-- Manuell ausfüllen -->
+**Root-Cause:** Der Evaluator wurde ohne erreichbare npm-Registry ausgeführt. Er hat den ungültigen Auditlauf fail-closed als `open` gewertet; es gab keine Änderung an Abhängigkeiten.
+**Gegenmaßnahme:** Regressionsevaluator nur mit gültiger Registryantwort als maßgeblich verwenden; Sandbox-Reports nicht als neue Paketbefunde einordnen.
+**Verantwortlich:** BoardGameTools Wartung.
+
+**Auflösung 2026-11-01 22:14:** `npm run review-evaluate:regression` mit Registryzugriff endete mit Exitcode 0, 10/10, SEC-45 teilweise gelöst, 0 offenen Findings und ohne Regressionen. Snapshot: `history/2026-11-01_2214.json`.
 
 ---
 
@@ -229,9 +239,11 @@ Jeder Eintrag enthält Felder für Root-Cause-Analyse und Gegenmaßnahmen (manue
 |---------|-----------|--------|-------|--------|
 | SEC-45: npm audit: Bekannte Vulnerabilities | P2 | partially_resolved | open | npm audit lieferte keine gültigen Prüfdaten |
 
-**Root-Cause:** <!-- Manuell ausfüllen: Warum ist das Finding zurückgekehrt? -->
-**Gegenmaßnahme:** <!-- Manuell ausfüllen: Wie wird verhindert, dass es erneut passiert? -->
-**Verantwortlich:** <!-- Manuell ausfüllen -->
+**Root-Cause:** Der Evaluator wurde ohne erreichbare npm-Registry ausgeführt. Er hat den ungültigen Auditlauf fail-closed als `open` gewertet; es gab keine Änderung an Abhängigkeiten.
+**Gegenmaßnahme:** Regressionsevaluator nur mit gültiger Registryantwort als maßgeblich verwenden; Sandbox-Reports nicht als neue Paketbefunde einordnen.
+**Verantwortlich:** BoardGameTools Wartung.
+
+**Auflösung 2026-11-01 22:14:** `npm run review-evaluate:regression` mit Registryzugriff endete mit Exitcode 0, 10/10, SEC-45 teilweise gelöst, 0 offenen Findings und ohne Regressionen. Snapshot: `history/2026-11-01_2214.json`.
 
 ---
 
@@ -241,8 +253,35 @@ Jeder Eintrag enthält Felder für Root-Cause-Analyse und Gegenmaßnahmen (manue
 |---------|-----------|--------|-------|--------|
 | SEC-45: npm audit: Bekannte Vulnerabilities | P2 | partially_resolved | open | npm audit lieferte keine gültigen Prüfdaten |
 
-**Root-Cause:** <!-- Manuell ausfüllen: Warum ist das Finding zurückgekehrt? -->
-**Gegenmaßnahme:** <!-- Manuell ausfüllen: Wie wird verhindert, dass es erneut passiert? -->
-**Verantwortlich:** <!-- Manuell ausfüllen -->
+**Root-Cause:** Der Evaluator wurde ohne erreichbare npm-Registry ausgeführt. Er hat den ungültigen Auditlauf fail-closed als `open` gewertet; es gab keine Änderung an Abhängigkeiten.
+**Gegenmaßnahme:** Regressionsevaluator nur mit gültiger Registryantwort als maßgeblich verwenden; Sandbox-Reports nicht als neue Paketbefunde einordnen.
+**Verantwortlich:** BoardGameTools Wartung.
+
+**Auflösung 2026-11-01 22:14:** `npm run review-evaluate:regression` mit Registryzugriff endete mit Exitcode 0, 10/10, SEC-45 teilweise gelöst, 0 offenen Findings und ohne Regressionen. Snapshot: `history/2026-11-01_2214.json`.
 
 ---
+
+## 2026-11-01 20:59:49
+
+| Finding | Priorität | Vorher | Jetzt | Detail |
+|---------|-----------|--------|-------|--------|
+| SEC-45: npm audit: Bekannte Vulnerabilities | P2 | partially_resolved | open | npm audit lieferte keine gültigen Prüfdaten |
+
+**Root-Cause:** Der Evaluator wurde ohne erreichbare npm-Registry ausgeführt. Er hat den ungültigen Auditlauf fail-closed als `open` gewertet; es gab keine Änderung an Abhängigkeiten.
+**Gegenmaßnahme:** Regressionsevaluator nur mit gültiger Registryantwort als maßgeblich verwenden; Sandbox-Reports nicht als neue Paketbefunde einordnen.
+**Verantwortlich:** BoardGameTools Wartung.
+
+**Auflösung 2026-11-01 22:14:** `npm run review-evaluate:regression` mit Registryzugriff endete mit Exitcode 0, 10/10, SEC-45 teilweise gelöst, 0 offenen Findings und ohne Regressionen. Snapshot: `history/2026-11-01_2214.json`.
+
+---
+
+## 2026-11-01 22:14 – FEAT-012/013 Abschlussprüfung
+
+| Finding | Priorität | Vorher | Jetzt | Detail |
+|---------|-----------|--------|-------|--------|
+| Keine | – | – | keine Regression | Evaluator 10/10, SEC-45 teilweise gelöst, 0 offene Findings |
+
+**Root-Cause:** Keine Regression erkannt.
+**Gegenmaßnahme:** Regressionsevaluator nach Implementierung mit Registryzugriff ausgeführt.
+**Verantwortlich:** BoardGameTools Wartung.
+**Nachweis:** `history/2026-11-01_2214.json`.

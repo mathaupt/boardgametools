@@ -118,6 +118,22 @@ Nach der Evaluator- und Dependency-Korrektur bestanden zusätzlich 706/706
 Unit-Tests, TypeScript, Build und Security-Check. Lint: 0 Fehler, 651
 vorhandene Warnungen in Impeccable-Skriptdateien.
 
+## FEAT-012/013 – 0.50.39 (2026-11-01)
+
+| Kriterium | Ergebnis | Einschränkung |
+|---|---|---|
+| Unit-Tests | 822/822 in 108 Dateien | — |
+| Typecheck / Build / OpenAPI | Erfolgreich | — |
+| Lint | 0 Fehler, 651 Warnungen | Überwiegend bestehende Warnungen aus Skill-/Hilfsdateien |
+| Security-Check | 0 Fehler, 2 Hinweise im Commit-Hook | Raw SQL und Debug-Routen; der Sandbox-Vorlauf meldete zusätzlich fehlende Auditdaten |
+| iOS-Verträge | Alle fünf Vertragssuiten bestanden | Kein iOS-Oberflächen-Redesign enthalten |
+| Review-Evaluator | 10/10; SEC-45 teilweise gelöst, 0 offene Findings | Regressionsevaluator `history/2026-11-01_2215.json`, keine Regression |
+| Browser-/Impeccable-Abnahme | Ausstehend | Keine E2E- oder Viewportbelege erstellt |
+
+FEAT-012 und FEAT-013 sind automatisiert umgesetzt. Die visuelle Abnahme,
+reale Browserabläufe und Screenreaderprüfung bleiben Teil der offenen Abnahme;
+BUG-041 und BUG-053 werden daher nicht geschlossen.
+
 ## Regressionserkennung korrigiert – 0.50.34
 
 | Finding | Ursache der scheinbaren Regression | Korrektur / Nachweis |

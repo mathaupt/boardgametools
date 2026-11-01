@@ -1,9 +1,13 @@
+"use client";
+
+import { useState } from "react";
 import { Calendar, MapPin, Trophy } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import type { SerializedPublicEvent } from "@/lib/public-event";
 import { formatEventDate } from "@/lib/events/event-date";
 
 export function PublicEventHeader({ event }: { event: SerializedPublicEvent }) {
+  const [descriptionExpanded, setDescriptionExpanded] = useState(false);
   const effectiveDate = event.eventState.effectiveDate
     ? new Date(event.eventState.effectiveDate)
     : new Date(event.eventDate);
@@ -18,7 +22,20 @@ export function PublicEventHeader({ event }: { event: SerializedPublicEvent }) {
             {event.title}
           </h1>
           {event.description && (
-            <p className="mt-3 max-w-[70ch] text-base leading-7 text-muted-foreground">{event.description}</p>
+            <>
+              <p id="public-event-description" className={`mt-3 max-w-[70ch] text-base leading-7 text-muted-foreground [overflow-wrap:anywhere] ${descriptionExpanded ? "" : "line-clamp-3"}`}>
+                {event.description}
+              </p>
+              {event.description.length > 220 && <button
+                type="button"
+                className="mt-1 inline-flex min-h-11 items-center font-medium text-primary underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                aria-expanded={descriptionExpanded}
+                aria-controls="public-event-description"
+                onClick={() => setDescriptionExpanded((expanded) => !expanded)}
+              >
+                {descriptionExpanded ? "Beschreibung verbergen" : "Beschreibung anzeigen"}
+              </button>}
+            </>
           )}
         </div>
         <div className="flex shrink-0 flex-wrap gap-2 lg:max-w-sm lg:justify-end">

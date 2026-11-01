@@ -9,6 +9,7 @@ import { checkRateLimit, rateLimitResponse } from "@/lib/rate-limit";
 import { Errors } from "@/lib/error-messages";
 import { ApiError, handleApiError } from "@/lib/require-auth";
 import { withEventMutation } from "@/lib/services/event-mutation.service";
+import { resolveProposalAuthor } from "@/lib/events/public-actor";
 
 type RouteContext = { params: Promise<{ token: string }> };
 
@@ -43,15 +44,21 @@ export const POST = withApiLogging(async function POST(
       throw new ApiError(400, "Die BGG-ID muss aus 1 bis 12 Ziffern bestehen.");
     }
 
-    // Must be either a logged-in user or a registered guest
-    if (!session?.user?.id && !guestId) {
+    const author = resolveProposalAuthor(
+      session?.user?.id ?? null,
+      typeof guestId === "string" ? guestId : null
+    );
+
+    // Must be either a logged-in user or a registered guest. Session takes precedence
+    // over legacy guest IDs so one proposal can never claim both identities.
+    if (!author.proposedById && !author.guestId) {
       throw new ApiError(401, "Bitte als Gast registrieren oder einloggen");
     }
 
     const eventId = await resolveEventIdFromToken(token);
     if (!eventId) throw new ApiError(404, Errors.EVENT_NOT_FOUND);
-    if (guestId) {
-      const guest = await prisma.guestParticipant.findFirst({ where: { id: guestId, eventId }, select: { id: true } });
+    if (author.guestId) {
+      const guest = await prisma.guestParticipant.findFirst({ where: { id: author.guestId, eventId }, select: { id: true } });
       if (!guest) throw new ApiError(404, Errors.GUEST_NOT_FOUND_FOR_EVENT);
     }
 
@@ -63,11 +70,11 @@ export const POST = withApiLogging(async function POST(
     }
 
     const proposal = await withEventMutation(
-      { kind: "public", token, userId: session?.user?.id, guestId: guestId ?? undefined },
+      { kind: "public", token, userId: author.proposedById ?? undefined, guestId: author.guestId ?? undefined },
       "proposeGame",
       async ({ tx, eventId: lockedEventId }) => {
-        if (guestId) {
-          const guest = await tx.guestParticipant.findFirst({ where: { id: guestId, eventId: lockedEventId }, select: { id: true } });
+        if (author.guestId) {
+          const guest = await tx.guestParticipant.findFirst({ where: { id: author.guestId, eventId: lockedEventId }, select: { id: true } });
           if (!guest) throw new ApiError(404, Errors.GUEST_NOT_FOUND_FOR_EVENT);
         }
         const duplicate = await tx.gameProposal.findFirst({
@@ -78,8 +85,8 @@ export const POST = withApiLogging(async function POST(
         return tx.gameProposal.create({
           data: {
             eventId: lockedEventId,
-            proposedById: session?.user?.id ?? null,
-            guestId: guestId ?? null,
+            proposedById: author.proposedById,
+            guestId: author.guestId,
             bggId: String(bggId),
             bggName: bggGame.name,
             bggImageUrl: bggGame.imageUrl,

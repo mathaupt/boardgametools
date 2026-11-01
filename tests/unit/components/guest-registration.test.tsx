@@ -14,13 +14,12 @@ const mockFetch = vi.fn();
 vi.stubGlobal("fetch", mockFetch);
 
 import { GuestRegistrationPanel } from "@/components/public-event/guest-registration-panel";
+import type { PublicActor } from "@/lib/events/public-actor";
 
 const defaultProps = {
   token: "test-token-123",
-  activeGuest: null,
-  initialGuestList: [],
+  actor: { kind: "observer" } as PublicActor,
   onGuestJoined: vi.fn(),
-  persistGuest: vi.fn(),
 };
 
 describe("GuestRegistrationPanel", () => {
@@ -78,7 +77,6 @@ describe("GuestRegistrationPanel", () => {
 
   it("calls API and onGuestJoined on successful registration", async () => {
     const onGuestJoined = vi.fn();
-    const persistGuest = vi.fn();
 
     mockFetch.mockResolvedValue({
       ok: true,
@@ -94,7 +92,6 @@ describe("GuestRegistrationPanel", () => {
       <GuestRegistrationPanel
         {...defaultProps}
         onGuestJoined={onGuestJoined}
-        persistGuest={persistGuest}
       />
     );
 
@@ -115,10 +112,11 @@ describe("GuestRegistrationPanel", () => {
       expect(onGuestJoined).toHaveBeenCalledWith({
         id: "guest-1",
         nickname: "TestGast",
+        createdAt: "2025-01-01T00:00:00Z",
+        votesCount: 0,
       });
     });
 
-    expect(persistGuest).toHaveBeenCalled();
   });
 
   it("shows error toast on API failure", async () => {
@@ -142,33 +140,22 @@ describe("GuestRegistrationPanel", () => {
     });
   });
 
-  it("shows welcome message when activeGuest is set", () => {
+  it("shows the active guest identity instead of a second registration action", () => {
     render(
       <GuestRegistrationPanel
         {...defaultProps}
-        activeGuest={{ id: "guest-1", nickname: "MaxGuest" }}
+        actor={{ kind: "guest", guestId: "guest-1", nickname: "MaxGuest" }}
       />
     );
 
     expect(screen.queryByTestId("guest-nickname-input")).not.toBeInTheDocument();
     expect(screen.queryByTestId("guest-join-button")).not.toBeInTheDocument();
-    expect(screen.getByText("Willkommen zurück, MaxGuest!")).toHaveClass("text-foreground");
-    expect(screen.getByText(/Du kannst jetzt als Gast abstimmen/)).toHaveClass("text-foreground");
+    expect(screen.getByText("Du nimmst als Gast MaxGuest teil.")).toBeInTheDocument();
   });
 
-  it("renders initial guest list", () => {
-    const guests = [
-      { id: "g1", nickname: "Alice", createdAt: "2025-01-01T00:00:00Z", votesCount: 3 },
-      { id: "g2", nickname: "Bob", createdAt: "2025-01-02T00:00:00Z", votesCount: 1 },
-    ];
-
-    render(
-      <GuestRegistrationPanel {...defaultProps} initialGuestList={guests} />
-    );
-
-    expect(screen.getByText("Alice")).toBeInTheDocument();
-    expect(screen.getByText("Bob")).toBeInTheDocument();
-    expect(screen.getByText("3 Votes")).toBeInTheDocument();
-    expect(screen.getByText("1 Votes")).toBeInTheDocument();
+  it("does not show the guest form for an authenticated account", () => {
+    render(<GuestRegistrationPanel {...defaultProps} actor={{ kind: "user", userId: "u1", displayName: "Anna" }} />);
+    expect(screen.queryByTestId("guest-nickname-input")).not.toBeInTheDocument();
+    expect(screen.getByText("Du bist angemeldet als Anna.")).toBeInTheDocument();
   });
 });

@@ -1,6 +1,10 @@
 # FEAT-012 – Teilnahme vor passive Listen rücken
 
-**Status:** Implementierungsplan zur Prüfung; keine Umsetzungsfreigabe.
+**Status (2026-11-01):** Web-Implementierung und automatisierte Code-Abnahme abgeschlossen. Browser-E2E und visuelle Abnahme bei 390/1440 px, Hell/Dunkel und 200 % Zoom stehen noch aus. Umsetzung gemäß ausdrücklicher Freigabe vom 2026-11-01.
+
+**Aktualitätsprüfung vor Umsetzung:** FEAT-013 wurde parallel umgesetzt und stellt den gemeinsamen Actor bereit; FEAT-012 verwendet ihn für die persönliche Zusammenfassung und Beitrittsaktion. FEAT-014 hatte inzwischen die tokengebundene Katalogroute und Konfliktbehandlung ergänzt; diese Zustandsprüfung bleibt erhalten. BUG-041 bleibt bis zur gerenderten Rasterprüfung in Bearbeitung. BUG-053 bleibt offen, da kein sicherer Gastbesitznachweis Teil dieser Features ist.
+
+**Implementierungsnachweis:** Unit-Suite 822/822, Typecheck, Lint (0 Fehler), Build, Security-Check und OpenAPI-Parsing erfolgreich. iOS-Vertragstest separat dokumentiert. Keine Browser-Viewport-Abnahme behauptet.
 
 **Ziel:** Öffentliche Gäste erreichen Beitritt und Spielauswahl unmittelbar nach Termin und Ort; Teilnehmerinformationen erscheinen einmal und bleiben nach erfolgreichen Aktionen konsistent.
 
