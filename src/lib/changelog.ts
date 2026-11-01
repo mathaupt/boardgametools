@@ -12,6 +12,16 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.43",
+    date: "2026-11-01",
+    title: "Vercel-Betriebschecks vorbereiten",
+    description: "Die lesende Vercel-Deployprüfung schützt ihr API-Token vor der Prozesskommandozeile. Firewall- und Ausgabenpläne enthalten den aktuellen Prüfstand und die noch offenen Betreiberentscheidungen.",
+    changes: [
+      { type: "fix", text: "Der Vercel-Pipelinecheck übergibt sein API-Token über Standardeingabe statt als curl-Kommandozeilenargument.", bugRef: "BUG-060" },
+      { type: "internal", text: "FEAT-007/008-Pläne und Betriebsrunbooks mit aktuellem Vercel-Deploymentstatus und offiziellen WAF-/Budgetgrenzen ergänzt." },
+    ],
+  },
+  {
     version: "0.50.42",
     date: "2026-11-01",
     title: "Health-Prüfungen absichern und aufteilen",

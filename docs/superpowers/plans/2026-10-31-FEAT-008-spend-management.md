@@ -1,6 +1,6 @@
 # FEAT-008 – Vercel-Budget, Warnungen und Pausenverhalten
 
-**Status:** Betriebs- und Implementierungsplan zur Prüfung; keine Umsetzungsfreigabe, kein Betrag festgelegt, keine Billingeinstellung geändert und keine Aktivierungsfreigabe.
+**Status:** Lesende Vorprüfung am 01.11.2026 aktualisiert. Kein Billingzugriff auf Tarif, Budget oder Verbrauch; kein Betrag festgelegt. Keine Einstellung geändert.
 
 **Ziel:** Ein vom Betreiber bestätigtes Budget für variable Vercel-Nutzung löst rechtzeitig Warnungen und ein bewusst gewähltes Begrenzungsverhalten aus.
 
@@ -12,16 +12,17 @@
 
 ## 0. Aktualität unmittelbar vor Umsetzung prüfen
 
-- [ ] Tatsächlichen Vercel-Tarif, Teamumfang, Abrechnungsperiode, Verbrauch und bestehenden Budgetzustand lesen.
-- [ ] Seit Planerstellung veröffentlichte Features und neue Dienste/Projekte berücksichtigen; insbesondere geringere Healthlast durch FEAT-005/006 und geänderten Traffic durch FEAT-007.
-- [ ] Aktuelle offizielle Budget-/Pausenregeln erneut prüfen. Alte Tarifangaben und geschätzte Kosten nicht ungeprüft übernehmen.
-- [ ] Datum, Team-/Projektbezug und Ergebnis am Plan dokumentieren. Routineaktualisierungen nachführen; andere Teamprojekte, neuer Geldbetrag oder geändertes Abschaltverhalten benötigen konkrete Betreiberentscheidung.
+- [ ] Tatsächlicher Vercel-Tarif, Teamumfang, Abrechnungsperiode, Verbrauch und bestehender Budgetzustand bleiben mangels Billing-Dashboardzugriff ungeprüft. Der vorhandene Pipeline-Provider gibt ausschließlich den letzten Production-Deploymentstatus zurück.
+- [x] FEAT-006-Code wurde am 01.11.2026 committed, aber der zuletzt gelesene Production-Deploy (`READY`, 21:21:57 Europe/Berlin) liegt vor diesem Commit. Die neue Healthsemantik und Trafficwirkung sind in der Kostenbasis noch nicht als produktiv anzurechnen. FEAT-007-Regel ist nicht eingerichtet.
+- [x] Offizielle Vercel-Funktion am 01.11.2026 erneut geprüft; seit 23.10.2026 gibt es zusätzlich `vercel budgets` und `vercel budgets alerts` für lesende Budget-/Warnungsabfragen. Die CLI ist lokal nicht installiert. Es gibt daher keinen gelesenen Konto-/Tarif-/Verbrauchsbeleg. Quelle: [Spend Management](https://vercel.com/docs/spend-management), [Vercel CLI Spend-Management](https://vercel.com/changelog/vercel-cli-adds-spend-management).
+- [x] Aktuelle Plattformgrenzen notiert: Spend Management ist für Pro und Enterprise Flexible Commitment dokumentiert und erfordert Owner-/Billingrolle. Nutzung wird teamweit oberhalb der Plancredits gezählt; Warnungen liegen standardmäßig bei 50/75/100 Prozent und die Prüfung erfolgt alle paar Minuten. Bei gewählter Pause pausieren alle Production Deployments des Teams; Wiederaufnahme ist projektweise manuell.
+- [x] Vorprüfungsdatum und Live-Deploymentzeitpunkt eingetragen. Team, Betrag, Benachrichtigungsempfänger und Reaktion bleiben konkrete Betreiberentscheidungen.
 
 ## 1. Offizieller Funktionsumfang und Grenzen
 
-Geprüft am 31.10.2026: [Vercel Spend Management](https://vercel.com/docs/spend-management).
+Erneut geprüft am 01.11.2026: [Vercel Spend Management](https://vercel.com/docs/spend-management) und [Vercel CLI Spend-Management](https://vercel.com/changelog/vercel-cli-adds-spend-management).
 
-Die Funktion ist tarifabhängig und benötigt Owner-/Billingrechte. Das Budget
+Die Funktion ist für Pro und Enterprise Flexible Commitment dokumentiert und benötigt Owner-/Billingrechte. Das Budget
 betrifft variable Teamnutzung; es ist kein vollständiges Rechnungsmaximum.
 Benachrichtigungen erfolgen standardmäßig bei 50/75/100 Prozent. Ein Budget
 allein stoppt keine Nutzung; die Pausenoption betrifft alle Produktionsprojekte
@@ -33,7 +34,11 @@ Budgeterhöhung allein erledigt das nicht.
 
 Dies ist daher ein Budget mit Betriebsreaktion und Restkostenrisiko, kein
 garantierter harter Kostendeckel. Die tatsächlichen Einstellungen dieses Kontos
-wurden im Rahmen der Planerstellung nicht gelesen.
+wurden im Rahmen der Vorprüfung nicht gelesen. Seit 23.10.2026 kann die
+Vercel-CLI die aktive Budgetkonfiguration und Warnhistorie anzeigen
+(`vercel budgets`, `vercel budgets alerts`); die CLI ist in dieser
+Arbeitsumgebung nicht installiert. Schreibbefehle (`budgets set`/`remove`)
+werden nicht als Vorprüfung ausgeführt.
 
 ## 2. Vor Aktivierung zu konkretisierender Entscheidungsdatensatz
 
@@ -61,8 +66,8 @@ docs/operations/spend-management.md festhalten und vor einem Write prüfen:
 
 | Datei | Aufgabe |
 |---|---|
-| docs/operations/spend-management.md | Neuer tatsächlicher Budget-/Betriebsentscheid und Runbook |
-| docs/operations/cost-review.md | Neue monatliche Prüfliste mit dokumentiertem Ergebnis |
+| docs/operations/spend-management.md | Vorprüfungsstand, offene Betreiberentscheidungen und späterer Readback |
+| docs/operations/cost-review.md | Monatliche Prüfliste; tatsächliche Werte bleiben bis zum Konto-Readback offen |
 | docs/DEPLOYMENT.md | Betriebsverweis, Auswirkungen auf Web/API/iOS und Zuständigkeit |
 | docs/FEATURE-BACKLOG.md, src/lib/changelog.ts | Konfigurations-/Abnahmestand und bestätigten Umfang festhalten |
 
@@ -73,11 +78,11 @@ vollständigen Zahlungsdaten im Repository speichern.
 
 ### Aufgabe 1 – Kostenbasis und vorhandene Einstellungen lesen
 
-- [ ] Richtiges Team und tatsächliche Rolle verifizieren. Aktuelle Budgets, Benachrichtigungen, Pauseoptionen und betroffene Produktionsprojekte erfassen.
-- [ ] Variablen Verbrauch getrennt von Sitzkosten, Integrationen, Datenbank/Redis und sonstigen externen Diensten betrachten. Die Budgetfunktion deckt nicht automatisch alle Lieferanten ab.
-- [ ] Normalen Verbrauch nach bereits ausgerollten Health-/Firewallmaßnahmen bewerten; keine frühere Hochlast unverändert als Dauerbudget annehmen.
+- [ ] Richtiges Team, Rolle, Budget, Warnungen, Pauseoption und betroffene Produktionsprojekte mangels Billing-Dashboardzugriff nicht verifizieren.
+- [ ] Tatsächlichen variablen Verbrauch, Sitze, Integrationen, DB/Redis und externe Anbieter noch zu trennen. Spend Management deckt nicht automatisch alle Anbieter ab.
+- [ ] Normalen Verbrauch nach den noch nicht ausgerollten FEAT-006-/007-Maßnahmen später neu bewerten. Vorliegende Rohlast/Schätzwerte werden nicht als Dauerbudget übernommen.
 - [ ] Einen konkreten Budgetvorschlag mit belegter Basis, Reserve und Ausfallfolgen erstellen. Betrag und Betriebsreaktion sind die offenen Eingaben für die spätere Freigabe, keine stillen Standardwerte.
-- [ ] Vor Einstellungen alle nötigen Rollen und Verantwortlichkeiten feststellen. Bei fehlendem Zugang den Entscheidungsdatensatz vorbereiten und den tatsächlichen Kontoschritt offen lassen.
+- [x] Bei fehlendem Billingzugang den Entscheidungsdatensatz und Monatsprüfliste in `docs/operations/` vorbereitet; keine Kontoeinstellung geändert.
 
 ### Aufgabe 2 – Warnungen und gewählte Betriebsreaktion konfigurieren
 

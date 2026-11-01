@@ -25,6 +25,17 @@ Der Evaluator-Score bewertet Quellmuster, nicht die gesamte UX- oder Security-Ab
 
 Der Code ist umgesetzt. Die produktive Monitorumstellung und isolierte Datenbankabnahme sind weiterhin offen; BUG-055/056 bleiben in Bearbeitung.
 
+## Ergänzung: Arbeitspaket C und BUG-060 – 0.50.43 (2026-11-01)
+
+- Vollständige Unit-Suite: 842/842 bestanden; der neu hinzugefügte Vercel-Provider-Test war zuerst rot und danach grün. TypeScript und ESLint ohne Fehler.
+- Security-Check ohne Fehler; im Sandboxlauf drei Hinweise, darunter nicht verfügbare npm-Audit-Daten sowie bestehende Raw-SQL-/Debug-Routen.
+- `npm run pipeline:check -- --vercel` nach der Tokenhärtung erfolgreich und lesend ausgeführt. Production-Deployment war `READY` (01.11.2026 21:21:57 Europe/Berlin) und liegt zeitlich vor dem FEAT-006-Codecommit.
+- Neuer BUG-060: Token des Vercel-Pipelineproviders stand vor dem Fix in curl-Argumenten. Provider liest den Header jetzt über stdin; Regressionstest prüft Argumente und Ausgabe.
+- FEAT-007/008-Pläne und drei Betriebsdokumente aktualisiert. WAF-, Tarif-, Uptime- und Billingkontodaten konnten nicht gelesen werden; keine externen Einstellungen geändert.
+- Review-Evaluator nach Vorprüfung: 10/10, keine Regressionen oder offenen Findings; History `history/2026-11-01_2255.json` (lokal ignoriert).
+
+Umfang der Vorprüfung ist abgeschlossen. Firewall-/Budgetentscheid und Konto-Readback bleiben offen.
+
 ## Ergänzung: Implementierungspläne FEAT-009 bis FEAT-011 – 0.50.29
 
 Drei eigenständige Pläne für Klartextnormalisierung und Bestandsbereinigung,

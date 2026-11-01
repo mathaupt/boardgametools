@@ -20,8 +20,8 @@ Bedarf zu aktualisieren. Ergebnis am jeweiligen Plan dokumentieren:
 | FEAT-004 | Voting-Vorschläge löschen | Web umgesetzt; manuelle VoiceOver-Abnahme offen | [Gemeinsamer Plan](superpowers/plans/2026-10-30-FEAT-001-004-voting.md) | Web freigegeben und umgesetzt; iOS separat planen |
 | FEAT-005 | ApiLog-Schreiblast für `/api/health` begrenzen | Im FEAT-006-Code für beide Healthpfade umgesetzt; Rollout offen | [Health-Logpolicy](superpowers/plans/2026-10-31-FEAT-005-health-apilog.md) | In FEAT-006 zur Umsetzung freigegeben |
 | FEAT-006 | Health-Deep-Checks cachen oder splitten | Web-Code umgesetzt; Readiness-Rollout und isolierte DB-Abnahme offen | [Liveness und Readiness](superpowers/plans/2026-10-31-FEAT-006-health-liveness-readiness.md) | Codeumfang mit „dann weiter mit B“ am 01.11.2026 gestartet; Monitorumstellung separat |
-| FEAT-007 | Vercel-Firewall-Regel für `/api/health` | Plan erstellt | [Firewall und Monitorbetrieb](superpowers/plans/2026-10-31-FEAT-007-health-firewall.md) | Ausstehend |
-| FEAT-008 | Spend-Management-Obergrenze (Billing-Schutz) | Plan erstellt | [Budget und Betriebsreaktion](superpowers/plans/2026-10-31-FEAT-008-spend-management.md) | Ausstehend; Betrag und Teamwirkung vor Aktivierung festzulegen |
+| FEAT-007 | Vercel-Firewall-Regel für `/api/health` | Lesende Vorprüfung abgeschlossen; Konto- und Monitorinventar offen | [Firewall und Monitorbetrieb](superpowers/plans/2026-10-31-FEAT-007-health-firewall.md) | Regeländerung ausstehend; 30/min-Wert noch nicht durch Trafficdaten bestätigt |
+| FEAT-008 | Spend-Management-Obergrenze (Billing-Schutz) | Lesende Vorprüfung abgeschlossen; Billingdaten und Betreiberentscheid offen | [Budget und Betriebsreaktion](superpowers/plans/2026-10-31-FEAT-008-spend-management.md) | Betrag, Empfänger und Teamwirkung vor Aktivierung festzulegen |
 | FEAT-009 | HTML-Entities in Spieldaten korrekt behandeln | Code umgesetzt; Produktionsdatenbereinigung offen | [Textnormalisierung und Datenbereinigung](superpowers/plans/2026-10-31-FEAT-009-spieldaten-entities.md) | Codeumsetzung am 31.10.2026 freigegeben; Produktionslauf separat freizugeben |
 | FEAT-010 | Event-Status und Ergebnis eindeutig darstellen | Umgesetzt und abgenommen (Web/Mobile-API) | [Zustandsregeln und Ergebnisdarstellung](superpowers/plans/2026-10-31-FEAT-010-eventstatus-ergebnis.md) | Am 31.10.2026 freigegeben und mit isolierter PostgreSQL- und Chromium-Abnahme abgeschlossen; native iOS-Oberfläche bleibt separat |
 | FEAT-011 | Mobile und assistive Bedienung der Terminabstimmung | Implementiert (Web; automatisierte Abnahme abgeschlossen, manuelle VoiceOver-Abnahme offen) | [Zugängliche Terminabstimmung](superpowers/plans/2026-10-31-FEAT-011-terminabstimmung-barrierefrei.md) | Automatisierte Web-Abnahme am 01.11.2026 abgeschlossen; VoiceOver manuell offen, iOS separat |
@@ -78,12 +78,24 @@ werden.
 
 ### C. Vercel-Betriebsschutz: FEAT-007 und FEAT-008
 
-- FEAT-007: zuerst Tarif, vorhandene Firewallregeln und tatsächliche
-  Uptime-Monitorquellen prüfen; danach Regel zunächst beobachten und die
-  Monitorverträglichkeit über einen vereinbarten Zeitraum belegen.
-- FEAT-008: vor Aktivierung Betrag, Benachrichtigungsempfänger und Wirkung einer
-  Drosselung/Abschaltung festlegen. Das Limit ist kein garantierter harter
-  Rechnungsdeckel.
+- **Vorprüfung 01.11.2026:** FEAT-006-Code ist committed, aber der zuletzt
+  gelesene Vercel-Production-Deploy (`READY`, 21:21:57 Europe/Berlin) stammt
+  von vor dem Codecommit. Die geänderte Healthsemantik ist daher noch nicht
+  als produktiv aktiv belegt. Der sichere Vercel-Pipelinecheck wurde lesend
+  erfolgreich ausgeführt; er liefert nur Deploymentstatus, kein Billing oder
+  Firewallinventar.
+- **FEAT-007:** Projekt-Tarif, bestehende WAF-Regeln und externe
+  Uptime-Monitorquellen sind nicht aus dem Vercel-Konto gelesen. Ein
+  Runbook mit exakt begrenztem, noch nicht aktivem 30/min-Regelvorschlag ist
+  erstellt. Der Wert darf erst nach Monitor-/Trafficmessung bestätigt werden.
+- **FEAT-008:** Tarif, aktuelle Nutzung, Budget, Kontakte und Projektumfang
+  sind nicht gelesen. Vercel CLI `budgets` ist hier nicht installiert; der
+  aktuelle Plan sieht die Lesebefehle und teamweite Wirkung einer optionalen
+  Produktionspause vor. Das Entscheidungs- und Monatsprüfungsblatt ist
+  angelegt. Betrag, Warnempfänger und Pauseverhalten bleiben Betreiberentscheide.
+- Für den aktuellen Kontostand ist Vercel-Accountzugriff erforderlich. Keine
+  Firewall- oder Billingeinstellung wurde geändert. Spend Management ist kein
+  garantierter harter Rechnungsdeckel.
 
 Beide Features sind Betriebsänderungen und benötigen die im jeweiligen Plan
 genannten Freigaben vor Veröffentlichung.

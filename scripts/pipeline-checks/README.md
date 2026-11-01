@@ -44,6 +44,10 @@ Tokens are **only** read from environment variables — never from committed
 files. For convenience, `check-pipeline.sh` sources a local, gitignored
 `.env.pipeline-check` file if present:
 
+The Vercel provider sends its bearer header to curl through stdin (`-H @-`),
+not as a process argument. Keep this property when adding authenticated
+providers; never print tokens in provider output or URLs.
+
 ```bash
 # .env.pipeline-check (gitignored via .env*)
 GITHUB_TOKEN=github_pat_...

@@ -157,6 +157,15 @@ falsch positiven P2-23-Findings ändert keine API-Verträge.
 - [x] Backlog, Changelog, Features, Konzept, OpenAPI, Deployment, Bugregister und Reviewdokumentation aktualisiert.
 - [ ] Isolierte PostgreSQL-Integration/Last-/Timeout-/Erholungsprüfung, Uptime-Monitor- und Secretkonfiguration, Verbraucherabgleich und kontrollierter Deploy bleiben offen; keine schreibenden Prüfungen oder externen Änderungen vorgenommen.
 
+## Arbeitspaket C – FEAT-007/008 lesende Vorprüfung und BUG-060 – 0.50.43
+
+- [x] FEAT-007/008-Pläne vor Ausführung aktualisiert; FEAT-006-Code und zuletzt gelesener Production-Deploy zeitlich verglichen.
+- [x] Offizielle Vercel-WAF-, Spend-Management- und CLI-Dokumentation geprüft; Kosten-/Regionalgrenzen in Runbooks dokumentiert.
+- [x] Pipeline-Tokenexposition testgetrieben korrigiert; Test erst rot gesehen, nach Änderung grün.
+- [x] Unit-Suite 842/842, TypeScript, ESLint, OpenAPI-Parsing und Review-Report 10/10 ohne Regressionen erfolgreich.
+- [x] Vercel-Productionstatus read-only mit gehärtetem Provider abgefragt: READY, jedoch älter als FEAT-006-Codecommit.
+- [ ] Vercel-WAF-Regeln, Tarif, externe Uptime-Monitore, Billingverbrauch und Teamwirkung bleiben mangels Kontoansicht offen. Keine Firewall-, Budget-, Secret- oder Productionseinstellung verändert.
+
 ## Arbeitspaket A – nicht schreibende Vorprüfung – 0.50.41
 
 - [x] Planstände FEAT-011/012/013/014 gegen aktuellen Quell- und E2E-Teststand abgeglichen.

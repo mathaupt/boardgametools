@@ -1786,10 +1786,29 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 ---
 
+### [BUG-060] Vercel-Pipelineprovider setzt API-Token als Prozessargument
+
+**Status:** `fixed`
+**Schweregrad:** `medium`
+**Entdeckt:** 2026-11-01
+**Behoben:** 2026-11-01
+**Behoben in Version:** 0.50.43
+**Test geschrieben:** Ja – `tests/unit/scripts/vercel-provider.test.ts` prüft, dass das Token über stdin an curl gelangt und weder Prozessargumente noch Ausgabe enthält.
+
+**Beschreibung:** Der lesende Vercel-Deploymentcheck übergab `VERCEL_TOKEN` direkt in `curl -H "Authorization: Bearer …"`. Kommandozeilenargumente können anderen Prozessen desselben Hosts zugänglich sein.
+**Reproduktion:** Provider mit Testtoken ausführen und curl-Argumentliste erfassen; der Authorization-Header enthielt den Tokenwert.
+**Erwartetes Verhalten:** Der Provider ruft die Vercel-API read-only auf, ohne das Token in Prozessargumenten, URL oder Ausgabe zu führen.
+**Tatsächliches Verhalten:** Das Token war vor dem Fix Teil der curl-Argumentliste.
+**Ursache:** Der Authorization-Header wurde im Shellskript direkt in die Argumentliste interpoliert.
+**Lösung:** Header wird über curl-stdin (`-H @-`) eingelesen. Ein Regressionstest sichert die Tokenübergabe ab.
+**Referenz im Changelog:** Version 0.50.43 – Vercel-Betriebschecks vorbereiten.
+
+---
+
 ## Statistik
 
-- **Offene Bugs:** 5
+- **Offene Bugs:** 4
 - **In Bearbeitung:** 4
-- **Behoben:** 50
+- **Behoben:** 52
 - **Wontfix:** 0
-- **Gesamt:** 59
+- **Gesamt:** 60

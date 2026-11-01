@@ -38,8 +38,8 @@ pc_vercel_run() {
   fi
 
   local resp
-  if ! resp=$(curl -sf --max-time 15 \
-      -H "Authorization: Bearer ${VERCEL_TOKEN}" "$api"); then
+  if ! resp=$(printf 'Authorization: Bearer %s\n' "$VERCEL_TOKEN" | \
+      curl -sf --max-time 15 -H @- "$api"); then
     fail "Vercel API request failed (network, token, or project/team ID?)" "vercel-deploy"
     return 0
   fi

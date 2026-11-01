@@ -53,6 +53,21 @@ Verbraucherabgleich, Monitorrollout und Staging-DB-Nachweis offen. Der zwischenz
 Skalierungshinweis zu drei statischen Sets wurde behoben; der Abschlusslauf bewertet
 wieder mit 10/10.
 
+## Ergänzung: Arbeitspaket C / BUG-060 – 0.50.43 (2026-11-01)
+
+| Kriterium | Ergebnis | Einschränkung |
+|---|---|---|
+| Unit-Tests | 842/842 bestanden | Keine Datenbank- oder E2E-Schreibprüfung |
+| TypeScript / ESLint | Erfolgreich, 0 Lint-Fehler | 651 vorhandene Warnungen in Skill-/Hilfsdateien |
+| Security-Check | 0 Fehler | 3 Sandboxhinweise; Registry-Auditdaten im lokalen Lauf nicht verfügbar |
+| Review-Evaluator | 10/10, keine Regressionen oder offenen Findings | History `2026-11-01_2255.json` |
+| Vercel-Deploycheck | `READY`, lesend | Gelesener Deploy liegt vor dem FEAT-006-Codecommit |
+| WAF/Billing-Abgleich | Offen | Keine lesende Firewall-/Billingansicht; Tarif, Monitorverkehr, Betrag und Teamwirkung unbekannt |
+
+BUG-060 wurde behoben: Das Deploymenttoken geht über stdin an curl und steht
+nicht mehr in Prozessargumenten. Für FEAT-007/008 liegen Runbooks und aktuelle
+Vercel-Dokumentationsgrenzen vor; Produktionsänderungen wurden nicht vorgenommen.
+
 ## Ergänzung: Planungsstand 0.50.29
 
 | Kriterium | Vorher | Nachher |
