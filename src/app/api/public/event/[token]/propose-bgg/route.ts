@@ -39,6 +39,9 @@ export const POST = withApiLogging(async function POST(
     if (validationError) {
       throw new ApiError(400, validationError);
     }
+    if (!/^\d{1,12}$/.test(String(bggId))) {
+      throw new ApiError(400, "Die BGG-ID muss aus 1 bis 12 Ziffern bestehen.");
+    }
 
     // Must be either a logged-in user or a registered guest
     if (!session?.user?.id && !guestId) {

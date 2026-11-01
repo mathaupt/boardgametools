@@ -2721,6 +2721,90 @@ paths:
         '200': { description: Suchergebnisse }
         '401': { $ref: '#/components/responses/Unauthorized' }
 
+  /api/public/event/{token}/bgg:
+    get:
+      tags: [Public]
+      summary: Öffentliche BGG-Suche und Spieldetails
+      description: Liefert BGG-Katalogdaten für ein gültiges öffentliches Event, solange neue Spielvorschläge möglich sind. Erfordert weder Sitzung noch Gastregistrierung.
+      security: []
+      parameters:
+        - name: token
+          in: path
+          required: true
+          description: Öffentlicher Event-Token
+          schema: { type: string }
+        - name: query
+          in: query
+          required: false
+          description: Suchbegriff mit 2 bis 200 Zeichen; exklusiv mit bggId
+          schema: { type: string, minLength: 2, maxLength: 200 }
+        - name: bggId
+          in: query
+          required: false
+          description: Numerische BoardGameGeek-ID mit 1 bis 12 Ziffern; exklusiv mit query
+          schema: { type: string, pattern: '^[0-9]{1,12}$' }
+      responses:
+        '200':
+          description: Suchtreffer oder Spieldetails
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - type: array
+                    maxItems: 20
+                    items:
+                      type: object
+                      required: [bggId, name, yearPublished, imageUrl]
+                      properties:
+                        bggId: { type: string }
+                        name: { type: string }
+                        yearPublished: { type: integer, nullable: true }
+                        imageUrl: { type: string, nullable: true }
+                  - type: object
+                    required: [bggId, name, description]
+                    properties:
+                      bggId: { type: string }
+                      name: { type: string }
+                      description: { type: string }
+                      yearPublished: { type: integer, nullable: true }
+                      minPlayers: { type: integer }
+                      maxPlayers: { type: integer }
+                      playTimeMinutes: { type: integer, nullable: true }
+                      minPlayTime: { type: integer, nullable: true }
+                      maxPlayTime: { type: integer, nullable: true }
+                      complexity: { type: number, nullable: true }
+                      imageUrl: { type: string, nullable: true }
+                      thumbnailUrl: { type: string, nullable: true }
+                      categories: { type: array, items: { type: string } }
+                      mechanics: { type: array, items: { type: string } }
+                      designers: { type: array, items: { type: string } }
+                      publishers: { type: array, items: { type: string } }
+                      rating: { type: number, nullable: true }
+                      numRatings: { type: integer, nullable: true }
+        '400':
+          description: Ungültige oder widersprüchliche Parameter
+          content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } }
+        '404':
+          description: Öffentliches Event oder BGG-Spiel nicht gefunden
+          content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } }
+        '409':
+          description: Event nimmt keine neuen Vorschläge an
+          content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } }
+        '429':
+          description: Rate-Limit überschritten; Retry-After gibt die Wartezeit an
+          headers:
+            Retry-After: { schema: { type: integer }, description: Wartezeit bis zum nächsten Versuch in Sekunden }
+          content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } }
+        '502':
+          description: Ungültige BGG-Antwort
+          content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } }
+        '503':
+          description: BGG ist nicht verfügbar oder verarbeitet die Anfrage noch
+          content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } }
+        '504':
+          description: Zeitüberschreitung bei BGG
+          content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } }
+
   /api/mobile/v1/bgg/lookup:
     post:
       tags: [Mobile BGG]

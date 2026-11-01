@@ -128,3 +128,12 @@ falsch positiven P2-23-Findings ändert keine API-Verträge.
 - [x] Stressfixture auf zehn Terminvorschläge und 50 Gäste erweitert; alle Antwortziele mindestens 44 × 44 px.
 - [x] Unit-, Typecheck-, Lint-, Build- und Security-Prüfungen erneut abgeschlossen.
 - [ ] Manuelle VoiceOver-Prüfung in Safari bleibt als expliziter Abnahmepunkt offen.
+
+## FEAT-014 Web-Umsetzung – 0.50.38
+
+- [x] Plan vor Umsetzung gegen FEAT-009, FEAT-010 und FEAT-013 abgeglichen; aktive Identität nicht dupliziert.
+- [x] Such- und Detail-API mit token-/eventgebundener Capability, Rate-Limit, festem BGG-Upstream, 10-Sekunden-Limit und 2-MB-Antwortgrenze umgesetzt.
+- [x] Getrennte Suchzustände, sichtbares Feldlabel, Fehlerwiederholung, Fokusverhalten und Vorschlagsmutation getestet.
+- [x] Vollständige Unit-Suite (796), TypeScript, Build, Lint, Security-Check und Impeccable-Detektor erfolgreich; 10/10, SEC-45 teilweise gelöst.
+- [x] OpenAPI, Featureübersicht, FAQ, Konzept, Backlog, Bugtracking, Plan und Changelog aktualisiert.
+- [ ] Browser-E2E gegen isolierte PostgreSQL-Datenbank sowie visuelle 390/1440-px-, Dark-Theme- und 200-%-Zoom-Abnahme nachholen.

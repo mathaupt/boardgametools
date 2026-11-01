@@ -12,6 +12,19 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.38",
+    date: "2026-11-01",
+    title: "Öffentliche BGG-Suche verständlicher machen",
+    description: "Gäste können die BGG-Suche in einem offenen Event nutzen. Leere Trefferlisten, Ladezustand und Fehler werden klar unterschieden.",
+    changes: [
+      { type: "improvement", text: "Das Suchfeld ist dauerhaft beschriftet; die Suche startet erst nach dem Absenden und zeigt Treffer, leere Ergebnisse und Fehler getrennt an.", bugRef: "BUG-040" },
+      { type: "improvement", text: "Das Suchfeld besitzt jetzt ein sichtbares, dauerhaft zugeordnetes Label und einen verständlichen Eingabehinweis.", bugRef: "BUG-043" },
+      { type: "feature", text: "Die BGG-Suche und Spieldetails funktionieren im öffentlichen Eventlink ohne Anmeldung; Vorschläge bleiben an Identität und Eventstatus gebunden.", bugRef: "BUG-052" },
+      { type: "fix", text: "BGG-Vorschläge akzeptieren nur numerische Spiel-IDs, damit die ID keinen zusätzlichen Upstream-Parameter setzen kann.", bugRef: "BUG-059" },
+      { type: "internal", text: "Öffentliche BGG-Abfragen begrenzen Rate, Laufzeit und Antwortgröße und geben Upstreamfehler nicht mehr als leere Trefferlisten aus." },
+    ],
+  },
+  {
     version: "0.50.37",
     date: "2026-11-01",
     title: "Schmale öffentliche Eventansicht stabilisieren",

@@ -27,7 +27,7 @@ Bedarf zu aktualisieren. Ergebnis am jeweiligen Plan dokumentieren:
 | FEAT-011 | Mobile und assistive Bedienung der Terminabstimmung | Implementiert (Web; automatisierte Abnahme abgeschlossen, manuelle VoiceOver-Abnahme offen) | [Zugängliche Terminabstimmung](superpowers/plans/2026-10-31-FEAT-011-terminabstimmung-barrierefrei.md) | Automatisierte Web-Abnahme am 01.11.2026 abgeschlossen; VoiceOver manuell offen, iOS separat |
 | FEAT-012 | Teilnahme vor passive Listen rücken | Plan erstellt | [Teilnahmeweg und Teilnehmerdaten](superpowers/plans/2026-10-31-FEAT-012-oeffentliche-teilnahme.md) | Ausstehend |
 | FEAT-013 | Aktive Identität verständlich machen | Plan erstellt | [Eine aktive Identität](superpowers/plans/2026-10-31-FEAT-013-aktive-identitaet.md) | Ausstehend; Umfang ohne Gastwechsel bestätigt |
-| FEAT-014 | Suchzustände und Beschriftung der BGG-Suche | Plan erstellt | [Öffentliche BGG-Suche](superpowers/plans/2026-10-31-FEAT-014-bgg-suchzustaende.md) | Ausstehend |
+| FEAT-014 | Suchzustände und Beschriftung der BGG-Suche | Implementiert (Web; Browser-E2E offen) | [Öffentliche BGG-Suche](superpowers/plans/2026-10-31-FEAT-014-bgg-suchzustaende.md) | Am 01.11.2026 freigegeben und umgesetzt; native iOS-Suche nicht Teil dieses öffentlichen Web-Umfangs |
 
 Am 30.10.2026 aufgenommen. Bei der Planung sind Web, iOS sowie angemeldete und
 öffentliche Voting-Ansichten auf Relevanz und bereits vorhandene Teilfunktionen
@@ -338,7 +338,7 @@ guest-registration-panel.tsx:90.
 ## FEAT-012 – Teilnahme vor passive Listen rücken
 
 **Implementierungsplan:** [FEAT-012](superpowers/plans/2026-10-31-FEAT-012-oeffentliche-teilnahme.md), erstellt am 31.10.2026.
-**Umsetzungsfreigabe:** Ausstehend.
+**Umsetzungsfreigabe:** Erteilt durch „implementiere FEAT-014“ am 01.11.2026.
 **Plattformumfang:** Öffentliche Web-Eventseite; native iOS-Oberflächen separat.
 **Abhängigkeiten:** Status/Termin aus FEAT-010, Terminbedienung aus FEAT-011 und gemeinsame Identitätsregeln aus FEAT-013 bei Integration zusammenführen.
 
@@ -411,6 +411,15 @@ Ergebnis, leer, Fehler — und ist dauerhaft beschriftet.
 gefunden" vor dem ersten Suchlauf; das Suchfeld hat nur einen Platzhalter ohne
 dauerhaft sichtbares Label. Quelle: Impeccable-Prüfung vom 30.10.2026,
 Priorität 5 (BUG-040, BUG-043); bgg-game-search.tsx:167,335-337.
+
+**Umsetzung:** Öffentliche tokengebundene GET-Route mit begrenztem BGG-Transport,
+strikter XML-Fehlerbehandlung und getrennten Such-/Detailzuständen. Suche ist
+ohne Anmeldung möglich; Vorschläge verwenden weiterhin die vorhandene Event-
+Capability und erfordern eine aktive Identität. Gezielte API-, Service-, Hook-
+und UI-Tests sowie vorhandene BGG-Parser-/Transporttests bestanden. BUG-040/043/052
+und die bei der Eingabeprüfung entdeckte BUG-059 sind behoben. Browser-E2E gegen
+eine isolierte Datenbank bleibt ergänzende Abnahme; keine produktiven BGG-Anfragen
+ausgeführt.
 
 **Abnahmekriterien für die spätere Umsetzung:**
 

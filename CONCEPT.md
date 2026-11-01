@@ -44,6 +44,7 @@ Die Weboberfläche verwendet seit 0.50.20 die bestätigte Gestaltung „Club Pro
 - Spiele per BGG-ID importieren
 - Daten von BGG abrufen (Name, Bild, Spieleranzahl, etc.)
 - BGG-Suche nach Spielnamen
+- Öffentliche Event-BGG-Suche: Katalogsuche ohne Anmeldung im offenen öffentlichen Event; Spielvorschläge bleiben an eine aktive Identität und den Eventstatus gebunden.
 - BGG-Sammlungs-Import: Komplette BGG-Sammlung eines Nutzers importieren
 - BGG-Spiele direkt in Events vorschlagen (auch ohne Sammlung)
 

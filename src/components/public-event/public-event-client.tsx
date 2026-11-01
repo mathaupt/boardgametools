@@ -292,6 +292,7 @@ export function PublicEventClient({ token, event }: PublicEventClientProps) {
           token={token}
           activeGuestId={activeGuest?.id ?? null}
           currentUserId={event.currentUserId}
+          proposalOpen={canProposeGame}
           onProposalAdded={handleProposalAdded}
           onStateConflict={refreshEventState}
         />

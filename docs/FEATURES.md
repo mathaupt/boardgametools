@@ -3,7 +3,7 @@
 Geplante Erweiterungen stehen separat im [nummerierten Feature-Backlog](FEATURE-BACKLOG.md).
 Dort erfasste TODOs sind noch nicht implementiert oder zur Umsetzung freigegeben.
 
-> **Version 0.50.37** | 42 Seiten | 94 API-Endpunkte | 29 Datenbank-Modelle
+> **Version 0.50.38** | 42 Seiten | 95 API-Endpunkte | 29 Datenbank-Modelle
 >
 > Vollstaendige Dokumentation aller Nutzer-sichtbaren Features,
 > organisiert nach Bereichen mit Screenshots-Beschreibungen,
@@ -360,6 +360,11 @@ Gaeste koennen:
 - Spiele vorschlagen (aus vorgegebener Liste oder per BGG-Suche)
 - Ueber Spielvorschlaege abstimmen
 - An der Terminabstimmung teilnehmen (Ja/Vielleicht/Nein)
+
+Die BGG-Suche kann ohne Anmeldung verwendet werden, solange das Event neue
+Vorschläge annimmt. Sucheingabe, Ladezustand, Treffer, leere Trefferliste und
+Fehler werden getrennt angezeigt. Ein sichtbares Label benennt das Suchfeld;
+Vorschlagen erfordert eine aktive Identität.
 
 ### Oeffentliche Gruppe
 
@@ -795,6 +800,7 @@ Zusätzliche Detailabfragen für Event-Vorschläge:
 
 - `GET /api/events/{id}/proposals/{proposalId}/game` — Detaildaten für den Ersteller oder eingeladene Personen
 - `GET /api/public/event/{token}/proposals/{proposalId}/game` — reduzierte Detaildaten für den öffentlichen Link, ohne lokale Sammlungsbeschreibung
+- `GET /api/public/event/{token}/bgg?query=...` oder `?bggId=...` — BGG-Katalogsuche oder Spieldetails für ein gültiges offenes Event, ohne Anmeldung
 
 ### Datenbank-Modelle (27)
 

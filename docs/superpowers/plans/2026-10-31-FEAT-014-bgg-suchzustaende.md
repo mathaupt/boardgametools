@@ -1,6 +1,10 @@
 # FEAT-014 – Suchzustände und Beschriftung der BGG-Suche
 
-**Status:** Implementierungsplan zur Prüfung; keine Umsetzungsfreigabe.
+**Status:** Web-Implementierung und automatisierte Code-Abnahme abgeschlossen; Browser-E2E gegen isolierte Datenbank noch offen. Durch „implementiere FEAT-014“ am 01.11.2026 freigegeben.
+
+**Aktualitätsprüfung (01.11.2026):** FEAT-009 ist umgesetzt und `bgg-xml.ts` liefert bereits den gemeinsamen Parser sowie die Spieltext-Normalisierung. FEAT-010 liefert `evaluateEventState`; FEAT-013 ist umgesetzt und die öffentliche Event-UI hat `currentUserId`/`activeGuest` statt des im älteren Plan skizzierten `PublicActor`-Objekts. Der Plan bleibt fachlich aktuell; die Implementierung nutzt die bestehende Event-State-Capability und übergibt keine doppelte Actor-Abstraktion. Die BGG-Suchkomponente ruft weiterhin die geschützte `/api/bgg`-Route auf und bildet Suchfehler über Toasts statt eindeutiger Zustände ab. Die neu geplante öffentliche GET-Route und die zugänglichen Suchzustände sind weiterhin erforderlich. Keine Änderung an iOS oder bestehenden geschützten BGG-Routen.
+
+**Umsetzungsnachweis (01.11.2026):** Neue tokengebundene GET-Route für BGG-Suche/Details, begrenzter XML-Transport (10 s, 2 MB, höchstens zwei Wiederholungen bei HTTP 202), Event-Capability, Redis-/Fallback-Rate-Limit und `private, no-store`. Die Suchkomponente zeigt ungesucht/lädt/Treffer/leer/Fehler, Label, erneuten Versuch und fokussierbare Details. Vorschlagen bleibt eine eigene Mutation mit Identitäts- und Zustandsschutz; der Server validiert numerische BGG-IDs. 796 Unit-Tests, TypeScript, Build, Security-Check und Impeccable-Detektor bestanden. Review: 10/10, SEC-45 teilweise gelöst, Snapshot `history/2026-11-01_2149.json`. Kein Browser-E2E gegen eine isolierte PostgreSQL-Datenbank in diesem Lauf.
 
 **Ziel:** Die öffentliche BGG-Suche funktioniert für Gäste und Konten und unterscheidet ungesucht, ladend, Treffer, leere Suche und Fehler mit klarer Beschriftung.
 
@@ -61,14 +65,15 @@ import type { Proposal } from "./types";
 
 export interface BggGameSearchProps {
   token: string;
-  actor: PublicActor;
+  activeGuestId: string | null;
+  currentUserId: string | null;
   proposalOpen: boolean;
   onProposalAdded: (proposal: Proposal) => void;
-  onEventChanged: () => void;
+  onStateConflict: () => void | Promise<void>;
 }
 ```
 
-proposalOpen stammt ausschließlich aus der FEAT-010-Auswertung; der Observer darf im offenen Event suchen, aber ohne Identität nicht vorschlagen.
+`proposalOpen` stammt ausschließlich aus der FEAT-010-Auswertung. Die bestehende FEAT-013-Identität wird über `activeGuestId`/`currentUserId` weitergereicht; der Observer darf im offenen Event suchen, aber ohne Identität nicht vorschlagen.
 
 ## 3. Öffentliche API und Fehlersemantik
 
@@ -108,11 +113,11 @@ Bestehende Aufrufer von searchBGGGames/fetchBGGGame nicht ungeprüft auf neue Fe
 
 **Neu:** tests/unit/lib/bgg-catalog.test.ts und tests/unit/api/public-bgg.test.ts.
 
-- [ ] Vorlauf npm run review-evaluate:report; BUG-050/051 als bestehende Prüfblocker berücksichtigen, Ausführungsfehler eines Audits nicht als Erfolg werten.
-- [ ] Tests zuerst schreiben: gültiger öffentlicher Token ohne Session erhält Treffer; fehlender/widerrufener Token → 404; geschlossen → 409; ungültige Query → 400; Rate-Limit → 429.
-- [ ] Servicefälle: gültige leere Suche, Treffer, 202-Wiederholung, 429/5xx upstream, Timeout, beschädigtes XML, HTML statt XML, Größenlimit ohne Header und fehlendes optionales Cover.
-- [ ] npx vitest run tests/unit/lib/bgg-catalog.test.ts tests/unit/api/public-bgg.test.ts ausführen; fehlende Route/Service als roten Ausgangspunkt belegen.
-- [ ] Folgende Servicegrenzen implementieren:
+- [x] Review-Evaluator-Report erfasst; der Vorlauf wurde nach Beginn der Umsetzung nachgeholt und ist daher kein Vorher-Snapshot. BUG-050/051 und Audit-Ausführungsfehler wurden berücksichtigt.
+- [x] Tests zuerst schreiben: gültiger öffentlicher Token ohne Session erhält Treffer; fehlender/widerrufener Token → 404; geschlossen → 409; ungültige Query → 400; Rate-Limit → 429.
+- [x] Servicefälle: gültige leere Suche, Treffer, 202-Wiederholung, 429/5xx upstream, Timeout, beschädigtes XML, HTML statt XML, Größenlimit ohne Header und fehlendes optionales Cover.
+- [x] npx vitest run tests/unit/lib/bgg-catalog.test.ts tests/unit/api/public-bgg.test.ts ausführen; fehlende Route/Service als roten Ausgangspunkt belegen.
+- [x] Folgende Servicegrenzen implementieren:
 
 ```ts
 export interface BggCatalogItem {
@@ -133,33 +138,34 @@ export function searchBggCatalog(query: string, signal?: AbortSignal): Promise<B
 export function getBggCatalogDetail(bggId: string, signal?: AbortSignal): Promise<BGGGameData>;
 ```
 
-- [ ] BGGGameData aus src/lib/bgg-types.ts übernehmen. Transport und Parser getrennt halten; input-/output-Typen zur Laufzeit validieren, fremdes JSON/XML nicht nur casten.
-- [ ] Suchlauf und optionale Thumbnailanreicherung teilen dieselbe Zehn-Sekunden-Deadline; keinen zweiten vollen Timeout nach der Suche starten. Reicht das Restbudget nicht, mit gültigen Treffern ohne Cover antworten.
-- [ ] findPublicEventByToken und FEAT-010-Policy vor dem Katalogservice auswerten. requireAuth nicht auf die neue öffentliche Suchroute übertragen.
-- [ ] API-Fehlerstatus gemäß Abschnitt 3 abbilden und Retry-After bei lokalem 429 erhalten.
-- [ ] Tests grün ausführen. Commit: feat: add token scoped public BGG catalog lookup.
+- [x] BGGGameData aus src/lib/bgg-types.ts übernehmen. Transport und Parser getrennt halten; input-/output-Typen zur Laufzeit validieren, fremdes JSON/XML nicht nur casten.
+- [x] Suchlauf und optionale Thumbnailanreicherung teilen dieselbe Zehn-Sekunden-Deadline; keinen zweiten vollen Timeout nach der Suche starten. Reicht das Restbudget nicht, mit gültigen Treffern ohne Cover antworten.
+- [x] findPublicEventByToken und FEAT-010-Policy vor dem Katalogservice auswerten. requireAuth nicht auf die neue öffentliche Suchroute übertragen.
+- [x] API-Fehlerstatus gemäß Abschnitt 3 abbilden und Retry-After bei lokalem 429 erhalten.
+- [x] Katalog-/Routentests grün ausführen; der abschließende Feature-Commit folgt nach Browser-E2E beziehungsweise der dokumentierten Restabnahme.
 
 ### Aufgabe 2 – Suchzustände und Schutz vor verspäteten Antworten
 
 **Neu:** tests/unit/components/bgg-game-search.test.tsx und tests/unit/components/use-bgg-search.test.tsx.
 
-- [ ] Zuerst den ursprünglichen Fehler als Test schreiben:
+- [x] Zuerst den ursprünglichen Fehler als Test schreiben:
 
 ```tsx
 const fetchMock = vi.fn();
 vi.stubGlobal("fetch", fetchMock);
 const openEventSearchProps = {
   token: "test-public-token",
-  actor: { kind: "observer" } as PublicActor,
+  activeGuestId: null,
+  currentUserId: null,
   proposalOpen: true,
   onProposalAdded: vi.fn(),
-  onEventChanged: vi.fn(),
+  onStateConflict: vi.fn(),
 };
 
 it("zeigt vor dem Absenden keine leere Suche", async () => {
   const user = userEvent.setup();
   render(<BggGameSearch {...openEventSearchProps} />);
-  await user.type(screen.getByRole("textbox", { name: "Spiel auf BoardGameGeek suchen" }), "Az");
+  await user.type(screen.getByRole("searchbox", { name: "Spiel auf BoardGameGeek suchen" }), "Az");
   expect(screen.queryByText(/Keine Spiele/)).not.toBeInTheDocument();
   expect(fetchMock).not.toHaveBeenCalled();
 });
@@ -167,32 +173,32 @@ it("zeigt vor dem Absenden keine leere Suche", async () => {
 
   Die Fixture bleibt lokal im Test; beforeEach setzt die Mockaufrufe zurück. userEvent, render, screen, vi, BggGameSearch und PublicActor aus den oben benannten Test-/Produktmodulen importieren.
 
-- [ ] Weitere Tests: Enter/Submit genau ein Request, loading, Ergebnisse, echte leere Antwort, Fehler/Wiederholen, Änderung des Begriffs zurück auf idle, abgebrochener Request ohne Fehlermeldung und A/B-Antworten in umgekehrter Reihenfolge.
-- [ ] Neue Route mit encodeURIComponent für Query/ID verwenden. Suchfeld nicht während des Requests entfernen oder den Eingabetext überschreiben.
-- [ ] useBggSearch als Hook mit state, search(query), retry() und reset() implementieren. reset/unmount/token-Wechsel brechen laufende Suche und Details ab; alte finally-Blöcke dürfen loading der neueren Anfrage nicht beenden.
-- [ ] Formular mit echtem label/htmlFor, maxLength=200, Feldhinweis über aria-describedby und verständlichen deutschen Meldungen implementieren. Kein zusätzliches onKeyDown neben onSubmit.
-- [ ] Statusmeldung kurz halten; Fehlermeldung beim Suchbereich mit beschrifteter Wiederholungsaktion anzeigen. 429 erst nach angegebenem Intervall erneut senden; keine automatische Endlosschleife.
-- [ ] Tests grün ausführen. Commit: fix: model public BGG search states explicitly.
+- [x] Weitere Tests: Enter/Submit genau ein Request, loading, Ergebnisse, echte leere Antwort, Fehler/Wiederholen, Änderung des Begriffs zurück auf idle, abgebrochener Request ohne Fehlermeldung und A/B-Antworten in umgekehrter Reihenfolge.
+- [x] Neue Route mit encodeURIComponent für Query/ID verwenden. Suchfeld nicht während des Requests entfernen oder den Eingabetext überschreiben.
+- [x] useBggSearch als Hook mit state, search(query), retry() und reset() implementieren. reset/unmount/token-Wechsel brechen laufende Suche und Details ab; alte finally-Blöcke dürfen loading der neueren Anfrage nicht beenden.
+- [x] Formular mit echtem label/htmlFor, maxLength=200, Feldhinweis über aria-describedby und verständlichen deutschen Meldungen implementieren. Kein zusätzliches onKeyDown neben onSubmit.
+- [x] Statusmeldung kurz halten; Fehlermeldung beim Suchbereich mit beschrifteter Wiederholungsaktion anzeigen. 429 erst nach angegebenem Intervall erneut senden; keine automatische Endlosschleife.
+- [x] Hook-/Komponententests grün ausführen; Commit gemäß Projektworkflow.
 
 ### Aufgabe 3 – Details und Vorschlagen verlässlich anbinden
 
-- [ ] Tests für fehlgeschlagene Details, Wiederholung, Schließen/Fokus, Event-/Querywechsel während Detailrequest und Vorschlagsfehler ohne neue Listenzeile ergänzen.
-- [ ] bgg-catalog-detail.tsx und bgg-search-results.tsx extrahieren; Dateien jeweils ungefähr unter 300 Zeilen halten. Vorhandene Spielinformationen und optionalen BGG-Link erhalten.
-- [ ] Vollständige umbrechende Namen, Cover-Platzhalter und dauerhaft erreichbare Aktionen verwenden; alle Haupt-/Iconaktionen mindestens 44 × 44 px.
-- [ ] Vor jeder Vorschlagsaktion Actor und FEAT-010-Capability prüfen. Backend bleibt maßgeblich; bei 409 Daten aktualisieren und die Suchmutation sperren.
-- [ ] Zwei schnelle Vorschlagsklicks dürfen nur einen Request auslösen. Nach erfolgreicher Antwort onProposalAdded einmal mit dem zurückgegebenen Vorschlag aufrufen; aktuelle Sortierung erhalten.
-- [ ] Nur Klartext rendern; vorhandene FEAT-009-Normalisierung übernehmen. BGG-Link ausschließlich aus validierter numerischer ID konstruieren, extern mit rel=noopener noreferrer.
-- [ ] Tests grün ausführen. Commit: feat: harden BGG result details and proposing.
+- [x] Tests für fehlgeschlagene Details, Wiederholung, Schließen/Fokus, Event-/Querywechsel während Detailrequest und Vorschlagsfehler ohne neue Listenzeile ergänzen.
+- [x] bgg-catalog-detail.tsx und bgg-search-results.tsx extrahieren; Dateien jeweils ungefähr unter 300 Zeilen halten. Vorhandene Spielinformationen und optionalen BGG-Link erhalten.
+- [x] Vollständige umbrechende Namen, Cover-Platzhalter und dauerhaft erreichbare Aktionen verwenden; alle Haupt-/Iconaktionen mindestens 44 × 44 px.
+- [x] Vor jeder Vorschlagsaktion Actor und FEAT-010-Capability prüfen. Backend bleibt maßgeblich; bei 409 Daten aktualisieren und die Suchmutation sperren.
+- [x] Zwei schnelle Vorschlagsklicks dürfen nur einen Request auslösen. Nach erfolgreicher Antwort onProposalAdded einmal mit dem zurückgegebenen Vorschlag aufrufen; aktuelle Sortierung erhalten.
+- [x] Nur Klartext rendern; vorhandene FEAT-009-Normalisierung übernehmen. BGG-Link ausschließlich aus validierter numerischer ID konstruieren, extern mit rel=noopener noreferrer.
+- [x] Detail-/Vorschlagstests grün ausführen; Commit gemäß Projektworkflow.
 
 ### Aufgabe 4 – Abnahme und Dokumentation
 
 - [ ] E2E in tests/e2e/public_bgg_search_test.ts: ohne Login echten öffentlichen Eventendpunkt verwenden, kontrollierte BGG-Antwort am Servertransport einspeisen, suchen, Gastbeitritt und Vorschlagen prüfen. Kein Browsermock darf die zu prüfende öffentliche API umgehen.
 - [ ] Fixtures für 0/1/20 Treffer, lange Namen, fehlende Cover, leer/ladend/Fehler/429, Gast/Konto/ohne Identität und während der Suche geschlossenes Event.
 - [ ] 390/1440 px, hell/dunkel und 200 % Zoom; sichtbares Label, Fokus, Ansagen, 44-px-Ziele und fehlendes horizontales Seitenscrollen prüfen.
-- [ ] Impeccable-Kontext/Craft-Floor vor UI-Arbeit anwenden; gerenderte Detektorprüfung plus manuelle Kontrolle der Zustandswechsel.
-- [ ] npm run test, typecheck, lint, build und security-check; bestehende BGG-/Import-Tests wegen geteilter Parser-/Transportmodule ausführen.
-- [ ] docs/openapi.yaml um die öffentliche GET-Route mit Parametern, DTOs, security: [] und Fehlerantworten erweitern. FEATURES, FAQ, CONCEPT, Backlog und Changelog aktualisieren.
-- [ ] BUG-040/043/052 erst nach bestandenen Zustands-, Label- und Gastzugriffstests schließen. Commit und Reviewdokumentation gemäß AGENTS.md; bestehende Hookblocker nicht umgehen.
+- [x] Impeccable-Kontext/Craft-Floor angewendet und statischen Detektor ohne Findings ausgeführt; gerenderte Viewport-/Theme-Prüfung plus manuelle Kontrolle der Zustandswechsel bleibt für Browserabnahme offen.
+- [x] npm run test (796), typecheck, lint (0 Fehler, 651 bestehende Warnungen), build und security-check; bestehende BGG-/Import-Tests wegen geteilter Parser-/Transportmodule ausführen.
+- [x] docs/openapi.yaml um die öffentliche GET-Route mit Parametern, DTOs, security: [] und Fehlerantworten erweitern. FEATURES, FAQ, CONCEPT, Backlog und Changelog aktualisieren.
+- [x] BUG-040/043/052 nach bestandenen Zustands-, Label- und Gastzugriffstests geschlossen; Reviewdokumentation gemäß AGENTS.md aktualisiert.
 
 ## 6. Abnahmegrenze
 

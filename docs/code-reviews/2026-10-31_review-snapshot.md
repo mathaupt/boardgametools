@@ -140,3 +140,11 @@ als separate Restabnahmen offen; es wurden keine Produktdateien geändert.
 - 763/763 Unit-Tests bestanden; Typecheck, Lint (0 Fehler), Build und Security-Check erfolgreich.
 - Gerenderter E2E-Kontrast in beiden Themes mindestens 5,11:1; zehn Vorschläge und 50 Gäste, 44-px-Ziele sowie 195/320/390/640/768/1440 px ohne Dokumentüberlauf geprüft.
 - Fehler-/409- und Fokusverhalten durch Unit-Tests abgedeckt; manuelle Safari-VoiceOver-Abnahme bleibt offen. BUG-039 geschlossen, BUG-038 in Bearbeitung.
+
+## FEAT-014 Web-Implementierung – 0.50.38 (2026-11-01)
+
+- Gesamte Unit-Suite: 796/796 Tests; TypeScript, Produktionsbuild und Security-Check erfolgreich. ESLint: 0 Fehler, 651 Warnungen aus vorhandenen Impeccable-Skript-/Hilfsdateien.
+- 83 gezielte Tests für Katalogtransport, öffentliche Eventroute, Suchzustände, Fokus, Wiederholung und Vorschlagsvalidierung bestanden; bestehende BGG-Parser-/Transporttests einbezogen.
+- Impeccable-Detektor für Suchformular, Ergebnis- und Detailansicht ohne Findings. Keine produktiven BGG-Anfragen oder Datenbankänderungen.
+- Review-Evaluator: 10/10, SEC-45 teilweise gelöst (22 moderate Dev-Befunde), Snapshot `history/2026-11-01_2149.json`; keine Regression.
+- Browser-E2E gegen isolierte PostgreSQL-Datenbank und gerenderte Viewport-/Theme-Abnahme bleiben ausstehend.

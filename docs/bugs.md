@@ -1233,7 +1233,7 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 **Test-Status:** Unit- und Chromium-E2E prüfen Tastaturwahl mit gespeicherter Antwort, zehn Termine, 50 Gäste, 44-px-Ziele und schmale Layouts. Manuelle VoiceOver-Abnahme ausstehend; deshalb bleibt der Befund in Bearbeitung.
 
-**Referenz im Changelog:** Version 0.50.24 – Prüfung der öffentlichen Eventseite dokumentiert.
+**Referenz im Changelog:** Version 0.50.35 – Terminabstimmung barrierefrei bedienen.
 
 ---
 
@@ -1262,16 +1262,18 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 **Test-Status:** Automatisierter E2E-Regressionstest vorhanden; helle und dunkle Ansicht mit aktiver sowie festgelegter Terminansicht geprüft.
 
-**Referenz im Changelog:** Version 0.50.24 – Prüfung der öffentlichen Eventseite dokumentiert.
+**Referenz im Changelog:** Version 0.50.37 – schmale öffentliche Eventansicht stabilisieren.
 
 ---
 
 ### [BUG-040] BGG-Suche meldet erfolglose Suche vor dem Suchstart
 
-**Status:** `open`
+**Status:** `fixed`
 **Schweregrad:** `low`
 **Entdeckt:** 2026-10-30
-**Test geschrieben:** Nein
+**Behoben:** 2026-11-01
+**Behoben in Version:** 0.50.38
+**Test geschrieben:** Ja – `tests/unit/components/bgg-game-search.test.tsx` und `tests/unit/components/use-bgg-search.test.tsx`.
 
 **Beschreibung:** Die öffentliche Spielsuche zeigt vor dem ersten Suchlauf eine Meldung über fehlende Ergebnisse.
 
@@ -1283,13 +1285,13 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 **Ursache:** bgg-game-search.tsx prüft leere Ergebnisse, Suchtextlänge und Ladezustand, aber keinen abgeschlossenen Suchlauf.
 
-**Lösung:** Noch nicht umgesetzt. [FEAT-014-Plan](superpowers/plans/2026-10-31-FEAT-014-bgg-suchzustaende.md): Ungesucht, ladend, Ergebnis, leer und Fehler getrennt modellieren.
+**Lösung:** Der Suchhook unterscheidet ungesucht, ladend, Treffer, leere Suche und Fehler. Ergebnisse werden erst nach dem Absenden angezeigt; veraltete und abgebrochene Requests überschreiben keinen neueren Zustand.
 
 **Prüfnachweis:** search-before-submit.png aus A; beforeSearch-Nachweis aus B. Belege: `.impeccable/critique/evidence/public-event-A/` und `public-event-B/`.
 
-**Test-Status:** Kein Fix und noch kein dauerhafter Regressionstest. Bei Umsetzung ist ein Regressionstest verpflichtend.
+**Test-Status:** Regressionstest bestanden; vor dem Absenden bleibt die Oberfläche neutral, eine gültige leere Antwort zeigt die Leermeldung.
 
-**Referenz im Changelog:** Version 0.50.24 – Prüfung der öffentlichen Eventseite dokumentiert.
+**Referenz im Changelog:** Version 0.50.38 – öffentliche BGG-Suche verständlicher machen.
 
 ---
 
@@ -1349,10 +1351,12 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 ### [BUG-043] Öffentliche BGG-Suche hat keine dauerhafte Feldbeschriftung
 
-**Status:** `open`
+**Status:** `fixed`
 **Schweregrad:** `low`
 **Entdeckt:** 2026-10-30
-**Test geschrieben:** Nein
+**Behoben:** 2026-11-01
+**Behoben in Version:** 0.50.38
+**Test geschrieben:** Ja – `tests/unit/components/bgg-game-search.test.tsx` prüft den zugänglichen Namen und das sichtbare Label.
 
 **Beschreibung:** Das BGG-Suchfeld besitzt nur einen Platzhalter.
 
@@ -1364,13 +1368,13 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 **Ursache:** Dem Input in bgg-game-search.tsx fehlt eine zugeordnete Beschriftung.
 
-**Lösung:** Noch nicht umgesetzt. [FEAT-014-Plan](superpowers/plans/2026-10-31-FEAT-014-bgg-suchzustaende.md): dauerhaftes Label und Prüfung des zugänglichen Namens.
+**Lösung:** Ein sichtbares `<label>` ist dem Suchfeld dauerhaft zugeordnet; der Feldhinweis ist über `aria-describedby` verbunden.
 
 **Prüfnachweis:** DOM-Beschriftungsprüfung aus B und Quellprüfung aus A. Belege: `.impeccable/critique/evidence/public-event-A/` und `public-event-B/`.
 
-**Test-Status:** Kein Fix und noch kein dauerhafter Regressionstest. Bei Umsetzung ist ein Regressionstest verpflichtend.
+**Test-Status:** Unit-Regressionstest vorhanden und bestanden.
 
-**Referenz im Changelog:** Version 0.50.24 – Prüfung der öffentlichen Eventseite dokumentiert.
+**Referenz im Changelog:** Version 0.50.38 – öffentliche BGG-Suche verständlicher machen.
 
 ---
 
@@ -1594,10 +1598,12 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 ### [BUG-052] Öffentliche BGG-Suche verwendet einen anmeldungsgebundenen Endpunkt
 
-**Status:** `open`
+**Status:** `fixed`
 **Schweregrad:** `medium`
 **Entdeckt:** 2026-10-31
-**Test geschrieben:** Nein; Gastzugriffstest im FEAT-014-Plan vorgesehen.
+**Behoben:** 2026-11-01
+**Behoben in Version:** 0.50.38
+**Test geschrieben:** Ja – `tests/unit/api/public-bgg.test.ts` prüft tokengebundenen Zugriff ohne Session, Eventstatus, Parameter und Rate-Limit.
 
 **Beschreibung:** Die öffentliche BGG-Suche verspricht eine Nutzung ohne Konto, ruft aber für Suche und Details /api/bgg auf. Dessen GET-Handler verlangt requireAuth.
 
@@ -1609,11 +1615,13 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 **Ursache:** Öffentliche Clientkomponente und Katalog-API haben unterschiedliche Zugriffsannahmen.
 
-**Lösung:** Noch nicht umgesetzt. [FEAT-014-Plan](superpowers/plans/2026-10-31-FEAT-014-bgg-suchzustaende.md): tokengebundene öffentliche Katalogroute; allgemeine BGG-Route geschützt lassen.
+**Lösung:** Die öffentliche GET-Route `/api/public/event/{token}/bgg` prüft den Event-Share-Token und die FEAT-010-Capability ohne Anmeldung. Die bestehende allgemeine `/api/bgg`-Route bleibt geschützt.
 
-**Prüfnachweis:** src/components/public-event/bgg-game-search.tsx, src/app/api/bgg/route.ts und src/proxy.ts am 31.10.2026 gelesen. Keine produktiven BGG-/Gastrequests durchgeführt.
+**Prüfnachweis:** Unit-Tests decken öffentliche Suche und Details ohne Session sowie fehlenden Token und geschlossenen Eventzustand ab. Keine produktiven BGG-/Gastrequests durchgeführt.
 
-**Referenz im Changelog:** Version 0.50.30 – Öffentliche Teilnahme weiter geplant.
+**Test-Status:** API-Regressionstests bestanden; BGG-Transport ist separat mit kontrollierten XML-Antworten geprüft.
+
+**Referenz im Changelog:** Version 0.50.38 – öffentliche BGG-Suche verständlicher machen.
 
 ---
 
@@ -1755,10 +1763,29 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 ---
 
+### [BUG-059] Öffentlicher BGG-Vorschlag akzeptiert nicht numerische IDs
+
+**Status:** `fixed`
+**Schweregrad:** `medium`
+**Entdeckt:** 2026-11-01
+**Behoben:** 2026-11-01
+**Behoben in Version:** 0.50.38
+**Test geschrieben:** Ja – `tests/unit/api/propose-bgg-validation.test.ts` weist nicht numerische und zu lange IDs vor jedem BGG-Aufruf zurück.
+
+**Beschreibung:** Der öffentliche Vorschlagsendpunkt prüfte die BGG-ID nur als Zeichenkette und setzte sie anschließend direkt in die BGG-URL ein.
+**Reproduktion:** Den Vorschlagsendpunkt mit einer ID wie `13&query=collection` aufrufen.
+**Erwartetes Verhalten:** Nur numerische BGG-IDs von 1 bis 12 Ziffern werden akzeptiert.
+**Tatsächliches Verhalten:** Beliebiger Text bis zur allgemeinen Längenbegrenzung erreichte den BGG-Transport.
+**Ursache:** Es fehlte eine domänenspezifische ID-Validierung vor dem Upstream-Aufruf.
+**Lösung:** Der Server weist ungültige IDs mit HTTP 400 ab, bevor BGG kontaktiert wird.
+**Referenz im Changelog:** Version 0.50.38 – öffentliche BGG-Suche verständlicher machen.
+
+---
+
 ## Statistik
 
-- **Offene Bugs:** 13
+- **Offene Bugs:** 10
 - **In Bearbeitung:** 1
-- **Behoben:** 44
+- **Behoben:** 48
 - **Wontfix:** 0
-- **Gesamt:** 58
+- **Gesamt:** 59

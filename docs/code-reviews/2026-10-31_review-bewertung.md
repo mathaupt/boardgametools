@@ -142,3 +142,7 @@ ist `history/2026-10-31_2357.json`.
 
 Automatisierte Abdeckung vervollständigt: gerenderter Kontrast in hellem und dunklem Theme mindestens 5,11:1, responsive Browsermessungen einschließlich 200-%-Äquivalent und Stressfixture mit zehn Terminen/50 Gästen. Die vollständige Unit-Suite ist mit 763 Tests erfolgreich. Die manuelle VoiceOver-Abnahme bleibt der einzige offene FEAT-011-Punkt; BUG-038 bleibt daher in Bearbeitung, BUG-039 ist behoben.
 
+## FEAT-014 Implementierungsreview – 2026-11-01
+
+Die öffentliche Suche ist tokengebunden und hält allgemeine BGG-Routen geschützt. Suchzustände, Rate-Limit, Laufzeit-/Antwortgrößenbegrenzung und Fehlertrennung sind durch Unit- und Service-Tests abgesichert. Ergebnis: 796/796 Unit-Tests, TypeScript, Build und Security-Check bestanden; Review-Score 10/10. SEC-45 bleibt als bekanntes, teilweise gelöstes Entwicklungsdependency-Finding bestehen. Ein isolierter Browser-E2E-Lauf ist noch nicht durchgeführt. Aktueller Regression-Snapshot: `history/2026-11-01_2149.json`; keine Regressionen.
+

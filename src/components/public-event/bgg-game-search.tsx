@@ -1,345 +1,203 @@
 "use client";
 
-import Image from "next/image";
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { Globe, Loader2, Search } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
-import {
-  Loader2,
-  Plus,
-  Search,
-  X,
-  Globe,
-  ExternalLink,
-  Gamepad2,
-} from "lucide-react";
+import type { BGGGameData } from "@/lib/bgg-types";
+import type { BggCatalogItem } from "@/lib/bgg-catalog";
 import type { Proposal } from "./types";
-
-interface BggSearchResult {
-  bggId: string;
-  name: string;
-  yearPublished?: string;
-  type?: string;
-  imageUrl?: string;
-}
-
-interface BggGameDetail {
-  bggId: string;
-  name: string;
-  imageUrl?: string;
-  minPlayers?: string;
-  maxPlayers?: string;
-  playTimeMinutes?: string;
-  complexity?: string;
-  rating?: string;
-  description?: string;
-}
+import { BggCatalogDetail } from "./bgg-catalog-detail";
+import { BggSearchResults } from "./bgg-search-results";
+import { useBggSearch } from "./use-bgg-search";
 
 interface BggGameSearchProps {
   token: string;
   activeGuestId: string | null;
   currentUserId: string | null;
+  proposalOpen: boolean;
   onProposalAdded: (proposal: Proposal) => void;
   onStateConflict?: () => void | Promise<void>;
 }
 
-export function BggGameSearch({
-  token,
-  activeGuestId,
-  currentUserId,
-  onProposalAdded,
-  onStateConflict,
-}: BggGameSearchProps) {
+export function BggGameSearch({ token, activeGuestId, currentUserId, proposalOpen, onProposalAdded, onStateConflict }: BggGameSearchProps) {
   const { toast } = useToast();
-  const [bggQuery, setBggQuery] = useState("");
-  const [bggResults, setBggResults] = useState<BggSearchResult[]>([]);
-  const [bggLoading, setBggLoading] = useState(false);
-  const [bggDetail, setBggDetail] = useState<BggGameDetail | null>(null);
-  const [bggDetailLoading, setBggDetailLoading] = useState<string | null>(null);
-  const [bggProposing, setBggProposing] = useState(false);
+  const [query, setQuery] = useState("");
+  const [detail, setDetail] = useState<BGGGameData | null>(null);
+  const [detailLoadingId, setDetailLoadingId] = useState<string | null>(null);
+  const [detailError, setDetailError] = useState<string | null>(null);
+  const [proposing, setProposing] = useState(false);
+  const detailRequest = useRef<AbortController | null>(null);
+  const detailId = useRef<string | null>(null);
+  const detailTrigger = useRef<HTMLButtonElement | null>(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  const proposingRef = useRef(false);
+  const { state, search, retry, reset } = useBggSearch(token, onStateConflict);
+  const hasIdentity = Boolean(activeGuestId || currentUserId);
 
-  const handleBggSearch = async () => {
-    const q = bggQuery.trim();
-    if (q.length < 2) {
-      toast({ title: "Suchbegriff zu kurz", description: "Bitte mindestens 2 Zeichen eingeben.", variant: "destructive" });
-      return;
-    }
-    setBggLoading(true);
-    setBggResults([]);
-    setBggDetail(null);
+  useEffect(() => {
+    setDetail(null);
+    setDetailError(null);
+    detailRequest.current?.abort();
+    return () => detailRequest.current?.abort();
+  }, [token]);
+
+  const closeDetail = useCallback(() => {
+    detailRequest.current?.abort();
+    detailRequest.current = null;
+    detailId.current = null;
+    setDetail(null);
+    setDetailError(null);
+    setDetailLoadingId(null);
+    const trigger = detailTrigger.current;
+    if (trigger?.isConnected) trigger.focus();
+    else inputRef.current?.focus();
+  }, []);
+
+  const loadDetail = useCallback(async (result: BggCatalogItem, trigger: HTMLButtonElement) => {
+    detailRequest.current?.abort();
+    const controller = new AbortController();
+    detailRequest.current = controller;
+    detailId.current = result.bggId;
+    detailTrigger.current = trigger;
+    setDetail(null);
+    setDetailError(null);
+    setDetailLoadingId(result.bggId);
     try {
-      const res = await fetch(`/api/bgg?query=${encodeURIComponent(q)}`);
-      if (!res.ok) throw new Error("BGG-Suche fehlgeschlagen");
-      const data: BggSearchResult[] = await res.json();
-      setBggResults(data.slice(0, 20));
+      const response = await fetch(`/api/public/event/${encodeURIComponent(token)}/bgg?bggId=${encodeURIComponent(result.bggId)}`, { signal: controller.signal });
+      if (!response.ok) {
+        const data = await response.json().catch(() => null) as { error?: string } | null;
+        if (response.status === 409) await onStateConflict?.();
+        const apiError = new Error(data?.error ?? "Bitte versuche es erneut.");
+        apiError.name = "BggApiError";
+        throw apiError;
+      }
+      const data = await response.json() as BGGGameData;
+      if (detailId.current === result.bggId) setDetail(data);
     } catch (error) {
-      console.error("BGG search error", error);
-      toast({
-        title: "BGG-Suche fehlgeschlagen",
-        description: "Bitte versuche es erneut.",
-        variant: "destructive",
-      });
+      if (controller.signal.aborted) return;
+      const failure = error as Error;
+      setDetailError(failure.name === "BggApiError" ? failure.message : "BoardGameGeek ist gerade nicht erreichbar. Bitte versuche es erneut.");
     } finally {
-      setBggLoading(false);
+      if (detailId.current === result.bggId) setDetailLoadingId(null);
     }
+  }, [onStateConflict, token]);
+
+  const retryDetail = useCallback(() => {
+    const id = detailId.current;
+    if (!id) return;
+    const result = state.kind === "results" ? state.results.find((item) => item.bggId === id) : null;
+    if (result && detailTrigger.current) void loadDetail(result, detailTrigger.current);
+  }, [loadDetail, state]);
+
+  const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (query.trim().length < 2) return;
+    detailRequest.current?.abort();
+    setDetail(null);
+    setDetailError(null);
+    void search(query);
   };
 
-  const handleBggDetail = async (bggId: string) => {
-    if (bggDetailLoading) return;
-    setBggDetailLoading(bggId);
+  const handlePropose = async () => {
+    if (!detail || !proposalOpen || !hasIdentity || proposingRef.current) return;
+    proposingRef.current = true;
+    setProposing(true);
     try {
-      const res = await fetch(`/api/bgg?bggId=${encodeURIComponent(bggId)}`);
-      if (!res.ok) throw new Error("BGG-Details konnten nicht geladen werden");
-      const data: BggGameDetail = await res.json();
-      setBggDetail(data);
-    } catch (error) {
-      console.error("BGG detail error", error);
-      toast({
-        title: "Details laden fehlgeschlagen",
-        description: error instanceof Error ? error.message : "Bitte versuche es erneut.",
-        variant: "destructive",
-      });
-    } finally {
-      setBggDetailLoading(null);
-    }
-  };
-
-  const handleBggPropose = async (bggId: string) => {
-    if (!activeGuestId && !currentUserId) {
-      toast({
-        title: "Bitte zuerst registrieren",
-        description: "Registriere dich als Gast oder logge dich ein, um Spiele vorzuschlagen.",
-        variant: "destructive",
-      });
-      return;
-    }
-    setBggProposing(true);
-    try {
-      const res = await fetch(`/api/public/event/${token}/propose-bgg`, {
+      const response = await fetch(`/api/public/event/${encodeURIComponent(token)}/propose-bgg`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          bggId,
-          guestId: activeGuestId ?? undefined,
-        }),
+        body: JSON.stringify({ bggId: detail.bggId, guestId: activeGuestId ?? undefined }),
       });
-      if (!res.ok) {
-        const data = await res.json().catch(() => null);
-        if (res.status === 409) await onStateConflict?.();
-        if (res.status === 409) throw new Error("Der Planungsstand hat sich geändert. Deine Änderung wurde nicht gespeichert.");
-        throw new Error(data?.error ?? "Vorschlag fehlgeschlagen");
+      if (!response.ok) {
+        const data = await response.json().catch(() => null) as { error?: string } | null;
+        if (response.status === 409) await onStateConflict?.();
+        if (response.status === 409) throw new Error("Der Planungsstand hat sich geändert. Deine Änderung wurde nicht gespeichert.");
+        throw new Error(data?.error ?? "Vorschlag fehlgeschlagen.");
       }
-      const proposal: Proposal = await res.json();
+      const proposal = await response.json() as Proposal;
       onProposalAdded(proposal);
-      setBggDetail(null);
-      toast({ title: "Spiel vorgeschlagen!", description: `"${proposal.game.name}" wurde zur Abstimmung hinzugefügt.` });
+      toast({ title: "Spiel vorgeschlagen!", description: `„${proposal.game.name}“ wurde zur Abstimmung hinzugefügt.` });
+      closeDetail();
     } catch (error) {
-      console.error("BGG propose error", error);
-      toast({
-        title: "Fehler beim Vorschlag",
-        description: error instanceof Error ? error.message : "Bitte versuche es erneut.",
-        variant: "destructive",
-      });
+      toast({ title: "Fehler beim Vorschlag", description: error instanceof Error ? error.message : "Bitte versuche es erneut.", variant: "destructive" });
     } finally {
-      setBggProposing(false);
+      proposingRef.current = false;
+      setProposing(false);
     }
   };
 
   return (
-    <section>
+    <section aria-labelledby="bgg-search-title">
       <Card className="border-border/60 bg-background/70">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-lg" as="h2">
-            <Globe className="h-5 w-5" aria-hidden="true" />
-            Spiel von BoardGameGeek vorschlagen
+          <CardTitle id="bgg-search-title" className="flex items-center gap-2 text-lg" as="h2">
+            <Globe className="h-5 w-5" aria-hidden="true" />Spiel von BoardGameGeek vorschlagen
           </CardTitle>
-          <CardDescription>
-            Suche auf BoardGameGeek nach einem Spiel und schlage es direkt vor &ndash; ohne Account.
-          </CardDescription>
+          <CardDescription>Suche auf BoardGameGeek nach einem Spiel. Zum Vorschlagen brauchst du eine aktive Identität im Event.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          {!activeGuestId && !currentUserId && (
-            <div className="rounded-lg border border-warning bg-warning/10 p-3 text-sm text-muted-foreground">
-              Bitte registriere dich oben als Gast, um Spiele vorschlagen zu können.
+          {!hasIdentity && <p className="rounded-lg border border-warning bg-warning/10 p-3 text-sm text-foreground">Du kannst Spiele suchen. Zum Vorschlagen tritt dem Event als Gast bei oder melde dich an.</p>}
+          {!proposalOpen && <p className="rounded-lg border border-border bg-muted/40 p-3 text-sm text-foreground">Für dieses Event sind keine neuen Vorschläge möglich.</p>}
+          <form onSubmit={handleSearch} className="flex min-w-0 flex-col gap-2 sm:flex-row">
+            <div className="min-w-0 flex-1 space-y-1">
+              <label htmlFor="public-bgg-query" className="text-sm font-medium text-foreground">Spiel auf BoardGameGeek suchen</label>
+              <Input
+                ref={inputRef}
+                id="public-bgg-query"
+                name="query"
+                type="search"
+                value={query}
+                maxLength={200}
+                onChange={(event) => {
+                  setQuery(event.target.value);
+                  reset();
+                  detailRequest.current?.abort();
+                  setDetail(null);
+                  setDetailError(null);
+                }}
+                aria-describedby="public-bgg-query-hint"
+                className="min-h-11 bg-background"
+                placeholder="z. B. Catan oder Azul"
+              />
+              <p id="public-bgg-query-hint" className="text-sm text-muted-foreground">Mindestens zwei Zeichen; die Suche startet erst nach dem Absenden.</p>
             </div>
-          )}
-
-          <div className="flex flex-col gap-2 sm:flex-row">
-            <Input
-              placeholder="Spielname eingeben (z.B. Catan, Azul, …)"
-              value={bggQuery}
-              onChange={(e) => setBggQuery(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleBggSearch()}
-              className="bg-background"
-              disabled={bggLoading}
-            />
-            <Button
-              onClick={handleBggSearch}
-              disabled={bggLoading || bggQuery.trim().length < 2}
-            >
-              {bggLoading ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
-              ) : (
-                <Search className="mr-2 h-4 w-4" aria-hidden="true" />
-              )}
-              {bggLoading ? "Suche…" : "BGG Suchen"}
+            <Button type="submit" className="min-h-11 self-end" disabled={!proposalOpen || query.trim().length < 2 || (state.kind === "loading" && state.query === query.trim())}>
+              {state.kind === "loading" ? <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" /> : <Search className="mr-2 h-4 w-4" aria-hidden="true" />}
+              Suchen
             </Button>
+          </form>
+
+          <div aria-busy={state.kind === "loading"} aria-live="polite" className="min-w-0 text-sm">
+            {state.kind === "idle" && <p className="text-muted-foreground">Gib mindestens zwei Zeichen ein.</p>}
+            {state.kind === "loading" && <p role="status">Suche nach „{state.query}“ läuft …</p>}
+            {state.kind === "results" && <p role="status">{state.results.length} Ergebnis{state.results.length === 1 ? "" : "se"} für „{state.query}“ gefunden.</p>}
+            {state.kind === "empty" && <p role="status">Keine Spiele für „{state.query}“ gefunden.</p>}
           </div>
-
-          {/* BGG Detail View */}
-          {bggDetail && (
-            <div className="rounded-lg border border-primary/30 bg-primary/5 p-4 space-y-3">
-              <div className="flex gap-4">
-                {bggDetail.imageUrl && (
-                  <Image
-                    src={bggDetail.imageUrl}
-                    alt={bggDetail.name}
-                    width={80}
-                    height={80}
-                    className="rounded-lg object-cover flex-shrink-0"
-                  />
-                )}
-                <div className="flex-1 min-w-0">
-                  <h4 className="font-semibold text-foreground">{bggDetail.name}</h4>
-                  <div className="flex flex-wrap gap-2 mt-1 text-xs text-muted-foreground">
-                    {bggDetail.minPlayers && bggDetail.maxPlayers && (
-                      <span>{bggDetail.minPlayers}-{bggDetail.maxPlayers} Spieler</span>
-                    )}
-                    {bggDetail.playTimeMinutes && <span>• {bggDetail.playTimeMinutes} Min.</span>}
-                    {bggDetail.complexity && (
-                      <span>• Komplexität: {parseFloat(bggDetail.complexity).toFixed(1)}/5</span>
-                    )}
-                    {bggDetail.rating && (
-                      <span>• Rating: {parseFloat(bggDetail.rating).toFixed(1)}/10</span>
-                    )}
-                  </div>
-                  {bggDetail.description && (
-                    <p className="text-xs text-muted-foreground mt-2 line-clamp-2">
-                      {bggDetail.description}
-                    </p>
-                  )}
-                </div>
-              </div>
-              <div className="flex gap-2">
-                <Button
-                  onClick={() => handleBggPropose(bggDetail.bggId)}
-                  disabled={bggProposing || (!activeGuestId && !currentUserId)}
-                  className="flex-1"
-                >
-                  {bggProposing ? (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
-                  ) : (
-                    <Plus className="mr-2 h-4 w-4" aria-hidden="true" />
-                  )}
-                  {bggProposing ? "Wird vorgeschlagen…" : "Vorschlagen"}
-                </Button>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={() => setBggDetail(null)}
-                  title="Schließen"
-                  aria-label="Details schließen"
-                >
-                  <X className="h-4 w-4" aria-hidden="true" />
-                </Button>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  asChild
-                  title="Auf BGG ansehen"
-                  aria-label="Auf BoardGameGeek ansehen"
-                >
-                  <a
-                    href={`https://boardgamegeek.com/boardgame/${bggDetail.bggId}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <ExternalLink className="h-4 w-4" aria-hidden="true" />
-                  </a>
-                </Button>
-              </div>
+          {state.kind === "error" && (
+            <div role="alert" className="flex min-w-0 flex-wrap items-center gap-3 rounded-md border border-destructive/40 p-3 text-sm">
+              <span className="min-w-0 flex-1 [overflow-wrap:anywhere]">Die Suche nach „{state.query}“ ist fehlgeschlagen: {state.message}</span>
+              <Button type="button" variant="outline" className="min-h-11" onClick={retry} disabled={state.retryAfterSeconds > 0}>
+                {state.retryAfterSeconds > 0 ? `Erneut versuchen in ${state.retryAfterSeconds} s` : "Erneut versuchen"}
+              </Button>
             </div>
           )}
-
-          {/* BGG Search Results */}
-          {bggResults.length > 0 && !bggDetail && (
-            <div className="space-y-2 max-h-[400px] overflow-y-auto pr-1">
-              <p className="text-xs text-muted-foreground">
-                {bggResults.length} Ergebnis{bggResults.length !== 1 ? "se" : ""} gefunden
-              </p>
-              {bggResults.map((result) => (
-                <div
-                  key={result.bggId}
-                  className="flex items-center gap-3 rounded-lg border border-border/60 bg-background/80 px-3 py-2"
-                >
-                  <div className="flex-shrink-0">
-                    {result.imageUrl ? (
-                      <Image
-                        src={result.imageUrl}
-                        alt={result.name}
-                        width={40}
-                        height={40}
-                        className="rounded object-cover"
-                      />
-                    ) : (
-                      <div className="flex h-10 w-10 items-center justify-center rounded bg-muted/40">
-                        <Gamepad2 className="h-5 w-5 text-muted-foreground" aria-hidden="true" />
-                      </div>
-                    )}
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="font-medium text-sm text-foreground truncate">
-                      {result.name}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {result.yearPublished ? `(${result.yearPublished})` : ""} BGG #{result.bggId}
-                    </p>
-                  </div>
-                  <div className="flex gap-1.5 flex-shrink-0 ml-2">
-                    <Button
-                      size="icon"
-                      variant="outline"
-                      onClick={() => handleBggDetail(result.bggId)}
-                      disabled={bggDetailLoading === result.bggId}
-                      title="Details anzeigen"
-                      aria-label="Details anzeigen"
-                      className="h-8 w-8 sm:h-8 sm:w-auto sm:px-3"
-                    >
-                      {bggDetailLoading === result.bggId ? (
-                        <Loader2 className="h-4 w-4 animate-spin sm:mr-1 sm:h-3 sm:w-3" aria-hidden="true" />
-                      ) : (
-                        <Search className="h-4 w-4 sm:mr-1 sm:h-3 sm:w-3" aria-hidden="true" />
-                      )}
-                      <span className="hidden sm:inline text-xs">Details</span>
-                    </Button>
-                    <Button
-                      size="icon"
-                      variant="secondary"
-                      onClick={() => handleBggPropose(result.bggId)}
-                      disabled={bggProposing || (!activeGuestId && !currentUserId)}
-                      title="Spiel vorschlagen"
-                      aria-label="Spiel vorschlagen"
-                      className="h-8 w-8 sm:h-8 sm:w-auto sm:px-3"
-                    >
-                      {bggProposing ? (
-                        <Loader2 className="h-4 w-4 animate-spin sm:mr-1 sm:h-3 sm:w-3" aria-hidden="true" />
-                      ) : (
-                        <Plus className="h-4 w-4 sm:mr-1 sm:h-3 sm:w-3" aria-hidden="true" />
-                      )}
-                      <span className="hidden sm:inline text-xs">Vorschlagen</span>
-                    </Button>
-                  </div>
-                </div>
-              ))}
-            </div>
+          {state.kind === "results" && !detail && (
+            <BggSearchResults results={state.results} detailLoadingId={detailLoadingId} onShowDetails={(result, trigger) => void loadDetail(result, trigger)} />
           )}
-
-          {bggResults.length === 0 && !bggLoading && bggQuery.trim().length >= 2 && !bggDetail && (
-            <p className="text-sm text-muted-foreground text-center py-4">
-              Keine Ergebnisse gefunden. Versuche einen anderen Suchbegriff.
-            </p>
+          {(detail || detailLoadingId || detailError) && (
+            <BggCatalogDetail
+              detail={detail}
+              loading={detailLoadingId !== null}
+              error={detailError}
+              canPropose={proposalOpen && hasIdentity}
+              proposing={proposing}
+              onRetry={retryDetail}
+              onPropose={handlePropose}
+              onClose={closeDetail}
+            />
           )}
         </CardContent>
       </Card>
