@@ -17,8 +17,8 @@ Bedarf zu aktualisieren. Ergebnis am jeweiligen Plan dokumentieren:
 | FEAT-001 | Spieldetails aus dem Voting öffnen | Umgesetzt (Web) | [Gemeinsamer Plan](superpowers/plans/2026-10-30-FEAT-001-004-voting.md) | Freigegeben und umgesetzt am 30.10.2026 |
 | FEAT-002 | Voting-Vorschläge sortieren | Umgesetzt (Web) | [Gemeinsamer Plan](superpowers/plans/2026-10-30-FEAT-001-004-voting.md) | Freigegeben und umgesetzt am 30.10.2026 |
 | FEAT-003 | Kompakte Voting-Liste | Umgesetzt (Web) | [Gemeinsamer Plan](superpowers/plans/2026-10-30-FEAT-001-004-voting.md) | Kompakte Zeilenliste nach sichtbarem Vergleich ausdrücklich gewählt und zur Umsetzung freigegeben am 31.10.2026 |
-| FEAT-004 | Voting-Vorschläge löschen | Plan erstellt | [Gemeinsamer Plan](superpowers/plans/2026-10-30-FEAT-001-004-voting.md) | Ausstehend |
-| FEAT-005 | ApiLog-Schreiblast für `/api/health` begrenzen | Plan erstellt | [Health-Logpolicy](superpowers/plans/2026-10-31-FEAT-005-health-apilog.md) | Ausstehend |
+| FEAT-004 | Voting-Vorschläge löschen | Web umgesetzt; manuelle VoiceOver-Abnahme offen | [Gemeinsamer Plan](superpowers/plans/2026-10-30-FEAT-001-004-voting.md) | Web freigegeben und umgesetzt; iOS separat planen |
+| FEAT-005 | ApiLog-Schreiblast für `/api/health` begrenzen | Web umgesetzt; Restlast in FEAT-006 offen | [Health-Logpolicy](superpowers/plans/2026-10-31-FEAT-005-health-apilog.md) | Web umgesetzt; FEAT-006 separat freizugeben |
 | FEAT-006 | Health-Deep-Checks cachen oder splitten | Plan erstellt | [Liveness und Readiness](superpowers/plans/2026-10-31-FEAT-006-health-liveness-readiness.md) | Ausstehend |
 | FEAT-007 | Vercel-Firewall-Regel für `/api/health` | Plan erstellt | [Firewall und Monitorbetrieb](superpowers/plans/2026-10-31-FEAT-007-health-firewall.md) | Ausstehend |
 | FEAT-008 | Spend-Management-Obergrenze (Billing-Schutz) | Plan erstellt | [Budget und Betriebsreaktion](superpowers/plans/2026-10-31-FEAT-008-spend-management.md) | Ausstehend; Betrag und Teamwirkung vor Aktivierung festzulegen |
@@ -33,6 +33,76 @@ Am 30.10.2026 aufgenommen. Bei der Planung sind Web, iOS sowie angemeldete und
 öffentliche Voting-Ansichten auf Relevanz und bereits vorhandene Teilfunktionen
 zu prüfen. Der konkrete Plattformumfang wird im jeweiligen Plan festgelegt und
 zur Umsetzung freigegeben.
+
+## Offene Abarbeitung
+
+Diese Übersicht fasst den Backlogstand vom 01.11.2026 zusammen. „Offen“ bedeutet
+hier entweder eine ausdrücklich ausstehende Abnahme, eine gesonderte
+Produkt-/Betriebsfreigabe oder einen separat zu planenden Sicherheitsumfang.
+Es erteilt keine neue Umsetzungsfreigabe.
+
+### A. Öffentliche Eventseite im Web abnehmen
+
+Umgesetzte Features: FEAT-011 bis FEAT-014. Noch ausstehend:
+
+- FEAT-011: manuelle VoiceOver-/Screenreaderprüfung für Identität, Terminantworten,
+  gespeicherte Auswahl, Fehler und Fokusverhalten; BUG-038 bis dahin offen.
+- FEAT-012/013: Browser-E2E mit isolierten Identitäten und echten Testdaten sowie
+  390/1440 px, hell/dunkel und 200-%-Zoom prüfen. BUG-041 erst nach bestätigtem
+  Desktopraster schließen. BUG-053 bleibt davon getrennt und offen.
+- FEAT-014: öffentlicher Such- und Detailablauf im Browser gegen isolierte
+  Testdaten nachprüfen; Suchfehler, Wiederholung, Fokus und Vorschlag abdecken.
+- Nach der Browserprüfung Bugs, Pläne und Review-Nachweise anhand tatsächlicher
+  Ergebnisse aktualisieren. Die Web-Implementierung ist nicht mit dieser
+  Restabnahme gleichzusetzen.
+
+### B. Health-Endpunkt absichern: FEAT-006
+
+FEAT-005 hat die persistierten Health-ApiLogs ausgeschlossen. Die übrige
+DB-/Auth-Last und die internen Diagnosedetails sind laut BUG-055/056 noch offen.
+FEAT-006 schlägt eine öffentliche DB-freie Liveness und eine geschützte,
+begrenzte Readiness vor. Vor Umsetzung die geänderte Bedeutung und öffentliche
+Antwort des Liveness-Endpunkts sowie Readiness-Secret und Monitorumstellung
+bestätigen. Danach Tests für Last, Auth, Fehler, Timeout und Erholung durchführen.
+
+### C. Vercel-Betriebsschutz: FEAT-007 und FEAT-008
+
+- FEAT-007: zuerst Tarif, vorhandene Firewallregeln und tatsächliche
+  Uptime-Monitorquellen prüfen; danach Regel zunächst beobachten und die
+  Monitorverträglichkeit über einen vereinbarten Zeitraum belegen.
+- FEAT-008: vor Aktivierung Betrag, Benachrichtigungsempfänger und Wirkung einer
+  Drosselung/Abschaltung festlegen. Das Limit ist kein garantierter harter
+  Rechnungsdeckel.
+
+Beide Features sind Betriebsänderungen und benötigen die im jeweiligen Plan
+genannten Freigaben vor Veröffentlichung.
+
+### D. Produktionsdaten für FEAT-009 bereinigen
+
+Der Code ist umgesetzt; offen ist nur der Produktionslauf. Zuerst einen
+lesenden Bericht und ein konkretes, idempotentes Manifest erzeugen, Änderungen
+prüfen und ein Backup nachweisen. Erst danach den separaten Produktionslauf
+freigeben und Ergebnis/Stichproben dokumentieren. Keine Bereinigung aufgrund
+alleiniger Codefreigabe starten.
+
+### E. Getrennte Sicherheits- und Plattformpläne
+
+- BUG-053 ist ein offener Sicherheitsbefund hoher Schwere: Besitznachweis und
+  sichere Wiederaufnahme bestehender Gastzugänge müssen als eigener Umfang
+  geplant und freigegeben werden. FEAT-013 hat absichtlich keinen Gastwechsel,
+  Besitznachweis oder Stimmenmigration eingeführt.
+- Native iOS-Oberflächen sind laut FEAT-001 bis FEAT-004 sowie FEAT-010 bis
+  FEAT-013 separat zu planen und abzunehmen. Die bestehenden Web-Umsetzungen
+  und iOS-Vertragstests bedeuten keine iOS-UI-Umsetzung.
+
+### Vorgeschlagene Reihenfolge
+
+1. Öffentliche Eventseite (A), weil die Implementierung vorhanden ist und die
+   offenen Browser-/Assistive-Abnahmen die Restbugs entscheiden.
+2. FEAT-006 nach Bestätigung der Liveness-/Readiness-Verträge.
+3. FEAT-009 Produktionsbereinigung nach Manifest- und Backupprüfung.
+4. FEAT-007 und FEAT-008 nach Klärung von Monitor- und Budgetparametern.
+5. BUG-053 als eigener Sicherheitsplan; iOS-Oberflächen nach Plattformpriorität.
 
 FEAT-005 bis FEAT-008 am 30.10.2026 aus einer Betrachtung zur Absicherbarkeit
 des Health-Endpoints aufgenommen (Hochlast- und DDoS-Szenario). Die Features
@@ -272,7 +342,7 @@ Importpfade wie BGG-Suche, Sammlungs-Import, EAN-Import). Ein Bereinigungslauf
 ## FEAT-010 – Event-Status und Ergebnis eindeutig darstellen
 
 **Implementierungsplan:** [FEAT-010](superpowers/plans/2026-10-31-FEAT-010-eventstatus-ergebnis.md), erstellt am 31.10.2026.
-**Umsetzungsfreigabe:** Ausstehend; vorgeschlagene Zustands-, Zeit- und Kompatibilitätsregeln sind im Plan zur Bestätigung markiert.
+**Umsetzungsfreigabe:** Erteilt und Web-Implementierung am 31.10.2026 abgenommen; native iOS-Oberfläche separat zu planen.
 **Plattformumfang:** Web zuerst, iOS-Oberflächen separat; serverseitige Zustandsregeln gelten auch für Mobile-APIs.
 **Bugbezug:** BUG-037 sowie neu erfasste eventübergreifende Schreibmöglichkeiten BUG-048.
 
@@ -404,7 +474,7 @@ public-event-client.tsx:182,269,291; guest-registration-panel.tsx:78,88.
 ## FEAT-014 – Suchzustände und Beschriftung der BGG-Suche
 
 **Implementierungsplan:** [FEAT-014](superpowers/plans/2026-10-31-FEAT-014-bgg-suchzustaende.md), erstellt am 31.10.2026.
-**Umsetzungsfreigabe:** Ausstehend.
+**Umsetzungsfreigabe:** Erteilt am 01.11.2026; Web-Implementierung abgeschlossen, ergänzende Browser-E2E-Abnahme offen.
 **Plattformumfang:** Öffentliche Websuche mit tokengebundener API; allgemeine BGG-Routen bleiben geschützt.
 **Bugbezug:** BUG-040/043 und neu erkannter fehlender Gastzugriff BUG-052.
 

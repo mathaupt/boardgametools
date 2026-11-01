@@ -12,6 +12,15 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.40",
+    date: "2026-11-01",
+    title: "Offene Backlog-Arbeiten gebündelt",
+    description: "Der Feature-Backlog fasst Restabnahmen, erforderliche Freigaben und separate Sicherheits- und Plattformarbeiten in einer geplanten Reihenfolge zusammen.",
+    changes: [
+      { type: "internal", text: "Backlogstatus für FEAT-004/005/010/014 mit den dokumentierten Umsetzungen abgeglichen und offene Arbeitspakete ergänzt." },
+    ],
+  },
+  {
     version: "0.50.39",
     date: "2026-11-01",
     title: "Öffentliche Eventteilnahme vereinheitlichen",
