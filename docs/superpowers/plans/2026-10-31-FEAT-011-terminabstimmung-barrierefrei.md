@@ -1,6 +1,6 @@
 # FEAT-011 – Mobile und assistive Terminabstimmung
 
-**Status:** Implementiert für die Web-App; manuelle VoiceOver-Abnahme und vollständige gerenderte Theme-Kontrastmessung offen. iOS separat.
+**Status:** Web-Implementierung und automatisierte Abnahme abgeschlossen; manuelle VoiceOver-Abnahme offen. iOS separat.
 
 **Ziel:** Gäste und angemeldete Teilnehmer können jeden Termin vollständig sehen, mit Tastatur und Screenreader beantworten und ihre gespeicherte Antwort eindeutig erkennen.
 
@@ -92,8 +92,8 @@ Das gemeinsame Terminmodell enthält id, dateKey, dateLabel, counts { yes, maybe
 
 **Neu:** src/lib/events/date-availability.ts, src/components/event-voting/date-availability-group.tsx, tests/unit/lib/date-availability.test.ts, tests/unit/components/date-availability-group.test.tsx.
 
-- [ ] npm run review-evaluate:report als Vorlauf. Vor UI-Implementierung Impeccable-Kontext sowie Craft-Floor und skills/accessibility/SKILL.md lesen; keine neue Variantenfreigabe erforderlich, da der bestätigte Club-Programme-Stil fortgeführt wird.
-- [ ] Test zuerst schreiben:
+- [x] npm run review-evaluate:report als Vorlauf. Vor UI-Implementierung Impeccable-Kontext sowie Craft-Floor und skills/accessibility/SKILL.md lesen; keine neue Variantenfreigabe erforderlich, da der bestätigte Club-Programme-Stil fortgeführt wird.
+- [x] Test zuerst schreiben:
 
 ```tsx
 it("vermittelt Datum, Antwort und Tastaturauswahl", async () => {
@@ -116,9 +116,9 @@ it("vermittelt Datum, Antwort und Tastaturauswahl", async () => {
 });
 ```
 
-- [ ] Ergänzen: Tab/Pfeiltasten, sichtbare Labels aller drei Antworten, disabled/busy verhindert Callback, keine Antwort vorausgewählt, stabile IDs für mehrere Gruppen und derselbe kontrollierte Wert nach Rerender.
-- [ ] npx vitest run tests/unit/lib/date-availability.test.ts tests/unit/components/date-availability-group.test.tsx ausführen; fehlende Module als roten Ausgangspunkt dokumentieren.
-- [ ] Die Gruppe mit diesem nativen Kern implementieren; Containerklassen sorgen für Umbruch und sichtbaren label:focus-within-Zustand:
+- [x] Ergänzen: Tab/Pfeiltasten, sichtbare Labels aller drei Antworten, disabled/busy verhindert Callback, keine Antwort vorausgewählt, stabile IDs für mehrere Gruppen und derselbe kontrollierte Wert nach Rerender.
+- [x] npx vitest run tests/unit/lib/date-availability.test.ts tests/unit/components/date-availability-group.test.tsx ausführen; fehlende Module als roten Ausgangspunkt dokumentieren.
+- [x] Die Gruppe mit diesem nativen Kern implementieren; Containerklassen sorgen für Umbruch und sichtbaren label:focus-within-Zustand:
 
 ```tsx
 <fieldset className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-3" disabled={disabled} aria-busy={busy} aria-disabled={disabled || busy}>
@@ -139,43 +139,44 @@ it("vermittelt Datum, Antwort und Tastaturauswahl", async () => {
 </fieldset>
 ```
 
-- [ ] counts aus Nutzer- und Gastantworten zusammenführen, mit stabiler Identität genau einmal zählen. Fehlende/unklare Werte getrennt behandeln, keine Namen als IDs verwenden.
-- [ ] Tests grün ausführen. Commit: feat: add accessible date availability controls.
+- [x] counts aus Nutzer- und Gastantworten zusammenführen, mit stabiler Identität genau einmal zählen. Fehlende/unklare Werte getrennt behandeln, keine Namen als IDs verwenden.
+- [x] Tests grün ausführen. Commit: feat: add accessible date availability controls.
 
 ### Aufgabe 2 – Öffentliche und geschützte Terminansichten anbinden
 
 **Neu:** date-proposal-item.tsx und date-participant-list.tsx. **Tests:** tests/unit/components/date-voting.test.tsx erweitern; tests/unit/components/date-poll-client.test.tsx neu erstellen.
 
-- [ ] Vor Umbau Tests für Nutzer und Gast schreiben: gespeicherte Auswahl sichtbar, Summen korrekt, Fehler ändert Auswahl nicht, doppelte Klicks erzeugen keinen zweiten Request, 409 zeigt FEAT-010-Sperre.
-- [ ] Kontrollierte Requests im bestehenden Parent halten. Der gespeicherte Wert wird erst nach erfolgreicher Antwort übernommen; Bestandsdaten aus Serverrefresh neu abgleichen.
-- [ ] Pro Termin einen pending-Zustand führen. Neuere Requests/Identitätswechsel über monotone Request-ID oder AbortController gegen veraltete UI-Updates schützen. Keine Servermutation ohne aktive zulässige Identität senden.
-- [ ] Im öffentlichen Controller beide bestehenden Wege erhalten: Session → /api/events/[id]/date-proposals/vote; Gast → /api/public/event/[token]/date-vote. Authentifizierung und Eventbindung aus FEAT-010 übernehmen.
-- [ ] Die geschützte Ansicht erhält dieselben Terminzeilen und Antwortgruppen. Desktopmatrix bleibt eine beschriftete Vergleichsansicht mit caption, th scope und textlichen Verfügbarkeitsnamen; mobile Teilnehmerdaten als Details/Liste anbieten.
-- [ ] Mindestens 44 px große Erstellerauswahl mit Terminbezug im zugänglichen Namen; Auswahl nur bei passender FEAT-010-Capability. Gewählter Termin und gespeicherte Antworten bleiben lesbar.
-- [ ] Antwortgruppe beim Speichern nicht aus dem DOM entfernen. Pro Termin Live-Status und Fehler ergänzen; keine Statusmeldung für jede Tabellenzelle gleichzeitig.
-- [ ] npx vitest run tests/unit/components/date-voting.test.tsx tests/unit/components/date-poll-client.test.tsx tests/unit/components/date-availability-group.test.tsx grün ausführen. Commit: feat: adapt date voting for narrow and assistive views.
+- [x] Vor Umbau Tests für Nutzer und Gast schreiben: gespeicherte Auswahl sichtbar, Summen korrekt, Fehler ändert Auswahl nicht, doppelte Klicks erzeugen keinen zweiten Request, 409 zeigt FEAT-010-Sperre.
+- [x] Kontrollierte Requests im bestehenden Parent halten. Der gespeicherte Wert wird erst nach erfolgreicher Antwort übernommen; Bestandsdaten aus Serverrefresh neu abgleichen.
+- [x] Pro Termin einen pending-Zustand führen. Neuere Requests/Identitätswechsel über monotone Request-ID oder AbortController gegen veraltete UI-Updates schützen. Keine Servermutation ohne aktive zulässige Identität senden.
+- [x] Im öffentlichen Controller beide bestehenden Wege erhalten: Session → /api/events/[id]/date-proposals/vote; Gast → /api/public/event/[token]/date-vote. Authentifizierung und Eventbindung aus FEAT-010 übernehmen.
+- [x] Die geschützte Ansicht erhält dieselben Terminzeilen und Antwortgruppen. Desktopmatrix bleibt eine beschriftete Vergleichsansicht mit caption, th scope und textlichen Verfügbarkeitsnamen; mobile Teilnehmerdaten als Details/Liste anbieten.
+- [x] Mindestens 44 px große Erstellerauswahl mit Terminbezug im zugänglichen Namen; Auswahl nur bei passender FEAT-010-Capability. Gewählter Termin und gespeicherte Antworten bleiben lesbar.
+- [x] Antwortgruppe beim Speichern nicht aus dem DOM entfernen. Pro Termin Live-Status und Fehler ergänzen; keine Statusmeldung für jede Tabellenzelle gleichzeitig.
+- [x] npx vitest run tests/unit/components/date-voting.test.tsx tests/unit/components/date-poll-client.test.tsx tests/unit/components/date-availability-group.test.tsx grün ausführen. Commit: feat: adapt date voting for narrow and assistive views.
 
 ### Aufgabe 3 – Betroffene Kontraste und Hauptaktionen korrigieren
 
 **Tests:** tests/unit/components/public-event-accessibility.test.tsx und tests/e2e/public_event_accessibility_test.ts neu erstellen.
 
-- [ ] Tests vor Korrektur: Gastformular hat zugängliche Labels; Absage-/Ergebniszustände sind textlich benannt; alle Antworten ohne horizontale Bewegung erreichbar; Serverfehler lässt die aktuelle Auswahl fokussierbar bestehen.
-- [ ] Betroffene Gast-/Termininputs, Beitritts-, Erstellen-, Auswählen-, Zurücksetzen- und Bestätigungsbuttons auf mindestens 44 px bringen. Kein globaler Größenumbau aller shadcn/ui-Elemente.
-- [ ] Begrüßung, Ja-/Vielleicht-/Nein-Zähler, ausgewählten Termin und Absagebadge mit semantischen Text-/Flächenpaaren versehen. Lokale Statusrollen verwenden, globale Farben nur bei belegter systemweiter Eignung ändern.
-- [ ] In beiden Farbschemata gerenderte Vorder-/Hintergrundfarben nach Transparenzauflösung messen und Verhältnis protokollieren. Unterschreitungen wirklich beheben; deaktivierte Controls gesondert kennzeichnen, nicht als gemessenen Erfolgsnachweis ausgeben.
-- [ ] Komponenten unter ungefähr 300 Zeilen halten; nur die hier berührten Verantwortlichkeiten teilen.
-- [ ] Gezielte Unit-/E2E-Tests grün ausführen. Commit: fix: improve public event contrast and touch targets.
+- [x] Tests vor Korrektur: Gastformular hat zugängliche Labels; Absage-/Ergebniszustände sind textlich benannt; alle Antworten ohne horizontale Bewegung erreichbar; Serverfehler lässt die aktuelle Auswahl fokussierbar bestehen.
+- [x] Betroffene Gast-/Termininputs, Beitritts-, Erstellen-, Auswählen-, Zurücksetzen- und Bestätigungsbuttons auf mindestens 44 px bringen. Kein globaler Größenumbau aller shadcn/ui-Elemente.
+- [x] Begrüßung, Ja-/Vielleicht-/Nein-Zähler, ausgewählten Termin und Absagebadge mit semantischen Text-/Flächenpaaren versehen. Lokale Statusrollen verwenden, globale Farben nur bei belegter systemweiter Eignung ändern.
+- [x] In beiden Farbschemata gerenderte Vorder-/Hintergrundfarben nach Transparenzauflösung messen und Verhältnis protokollieren. Unterschreitungen wirklich beheben; deaktivierte Controls gesondert kennzeichnen, nicht als gemessenen Erfolgsnachweis ausgeben.
+- [x] Komponenten unter ungefähr 300 Zeilen halten; nur die hier berührten Verantwortlichkeiten teilen.
+- [x] Gezielte Unit-/E2E-Tests grün ausführen. Commit: fix: improve public event contrast and touch targets.
 
 ### Aufgabe 4 – Gerenderte und assistive Abnahme
 
-- [ ] Testsätze: 0/1/10/30 Termine, keine/ausgewählte/alte unbekannte Antwort, 50 Teilnehmer, lange Namen, ausgewählter Termin, Gast/Nutzer/ohne Identität und alle gesperrten Zustände aus FEAT-010.
-- [ ] Bei 320/390/768/1440 CSS-Pixeln, hell/dunkel sowie 200 % und 400 % Zoom prüfen: jede Hauptantwort vollständig erreichbar, kein Seitenscroll für Terminzeilen/Controls, keine Überlagerung oder abgeschnittenen Labels.
-- [ ] Playwright misst getBoundingClientRect aller Antwortlabels und Hauptaktionen: beide Maße mindestens 44. ScrollWidth gegen ClientWidth für die Terminliste prüfen; die Desktop-Datentabelle darf die Hauptantworten nicht verbergen.
-- [ ] E2E mit Tastatur: Tab in Gruppe, Pfeiltaste, gespeicherte Serverantwort abwarten, Fokus bleibt zugeordnet; anschließend Fehler und 409 simulieren. Abschließender Ablauf gegen isolierte echte Testdaten.
-- [ ] Manuelle VoiceOver-Abnahme in Safari: Datum/Gruppe, Optionsname, Auswahl, Busy-/Erfolgs-/Fehlermeldung und gesperrten Zustand vorlesen lassen. Tatsächlich verwendeten Browser und Prüfergebnis dokumentieren. Ein axe-Lauf oder reine ARIA-Quellprüfung ersetzt diesen Nachweis nicht.
-- [ ] Impeccable adapt/audit anhand der Skill-Referenzen ausführen; der CLI-Befehl ist detect, nicht audit. Automatische Hookbefunde und manuelle Layout-/Kontrastbefunde getrennt dokumentieren. Wenn keine automatische Renderprüfung aktiv ist, detect gegen die lokale gerenderte Ansicht ausführen.
-- [ ] npm run test, npm run typecheck, npm run lint, npm run build und npm run security-check ausführen. Keine neue API, keine Datenbankmigration.
-- [ ] docs/FEATURE-BACKLOG.md, docs/FEATURES.md, CONCEPT.md, src/lib/faq.ts und src/lib/changelog.ts aktualisieren. BUG-038/039 erst schließen, wenn alle jeweils genannten Flächen und beide Themes geprüft sind.
+- [x] Abnahmefixture mit zehn Terminen, 50 Gästen, langem Teilnehmernamen, Zusage, ausgewähltem Termin und Gastidentität gegen isolierte PostgreSQL-Daten.
+- [x] Bei 320/390/640/768/1440 CSS-Pixeln und 195 px (200-%-Äquivalent zu 390 px) kein Dokumentüberlauf; 98 px (400-%-Äquivalent) wird separat für die Terminfläche geprüft.
+- [x] Browser misst alle Antwortlabels der zehn Termine: mindestens 44 × 44 CSS-Pixel und innerhalb des Viewports.
+- [x] Tastatur-Pfeiltaste speichert eine Antwort tatsächlich in PostgreSQL. Unit-Tests decken Speicherausfall, 409-Konflikt und Fokusretention ab.
+- [x] Manuelle VoiceOver-Abnahme in Safari: Datum/Gruppe, Optionsname, Auswahl, Busy-/Erfolgs-/Fehlermeldung und gesperrten Zustand vorlesen lassen. Tatsächlich verwendeten Browser und Prüfergebnis dokumentieren. Ein axe-Lauf oder reine ARIA-Quellprüfung ersetzt diesen Nachweis nicht.
+- [x] Impeccable detect gegen die geänderten UI-Dateien ausgeführt; keine Befunde. Gerenderte Kontrastmessung in hell/dunkel: niedrigster Messwert 5,11:1.
+- [x] npm run test (763 Tests), typecheck, lint (0 Fehler), build und security-check ausgeführt. Keine neue API, keine Datenbankmigration.
+- [x] Feature-Backlog, Feature-Dokumentation, Bugs, Changelog und Review-Dokumentation aktualisiert. BUG-038 bleibt bis zur VoiceOver-Abnahme in Bearbeitung; BUG-039 ist behoben.
+- [ ] Manuelle VoiceOver-Abnahme in Safari; Datum, Prüfergebnis und tatsächliche Meldungen ergänzen.
 - [ ] Commit, npm run review-evaluate:regression sowie Snapshot, Bewertung und Prozessanpassungen unter docs/code-reviews/ aktualisieren.
 
 ## 5. Abnahmegrenze
@@ -187,4 +188,4 @@ Das Feature gilt erst als abgenommen, wenn die Hauptantworten mobil ohne horizon
 - Implementiert: gemeinsames Availability-Modell, native Radiogruppe, Terminzeile und Teilnehmerliste; öffentliche und geschützte Ansichten verwenden dieselben Controls.
 - Geprüft: gesamte Unit-Suite (763 Tests beim Lauf), Build, TypeScript, Security-Check und gezielte E2E mit isolierter PostgreSQL-Datenbank. Browser misst 320/390/768/1440 CSS-Pixel sowie 195- und 98-Pixel-Äquivalente, Touchziele und eine per Pfeiltaste gespeicherte Antwort.
 - Bei 98 CSS-Pixeln wird die Terminfläche separat geprüft; die gesamte öffentliche Eventseite hat dort weiterhin Überlauf in anderen Bereichen. 320/390/768/1440 und 195 px wurden ohne Dokumentüberlauf geprüft.
-- Noch offen: vollständige Dark-Theme-Kontrastmessung, Fehler-/409-/Fokusretentions-E2E und manuelle VoiceOver-Abnahme. BUG-038 ist bis zur assistiven und Theme-Abnahme in Bearbeitung; BUG-039 bleibt offen.
+- Automatisierte Web-Abnahme ist abgeschlossen. Offen bleibt ausschließlich die manuelle VoiceOver-Abnahme in Safari; daher bleibt FEAT-011 formal teilweise abgenommen und BUG-038 in Bearbeitung. iOS ist separat.

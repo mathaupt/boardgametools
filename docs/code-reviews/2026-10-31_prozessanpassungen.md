@@ -115,3 +115,16 @@ falsch positiven P2-23-Findings ändert keine API-Verträge.
 - [ ] Dark-Theme-Kontrast vollständig messen; BUG-039 offen lassen, bis die Messwerte belegt sind.
 - [ ] VoiceOver, Fehler-/409- und Fokusretentionsverhalten manuell/E2E abnehmen; BUG-038 bis dahin in Bearbeitung.
 - [ ] Öffentliche Gesamtseite bei 400-%-Zoom weiter reflowen; derzeit wird nur die Terminfläche bei 98 CSS-px ohne Überlauf geprüft.
+
+## FEAT-011-Backlogstatus abgeglichen – 0.50.36
+
+- [x] Veraltete Angabe „Umsetzungsfreigabe: Ausstehend“ im Detail durch erteilte Freigabe und abgeschlossene Web-Umsetzung ersetzt.
+- [x] VoiceOver, vollständige Theme-Kontrastmessung und native iOS-Umsetzung als getrennte offene Abnahmen belassen.
+- [x] Changelog und Feature-Dokumentationsversion aktualisiert; bestehende Review-Ergebnisse nicht als neue technische Prüfung ausgegeben.
+
+## FEAT-011 ergänzende Abnahme – 0.50.37
+
+- [x] Gerenderte Theme-Kontraste und responsive Gesamtseite automatisiert geprüft; niedrigster Textkontrast 5,11:1.
+- [x] Stressfixture auf zehn Terminvorschläge und 50 Gäste erweitert; alle Antwortziele mindestens 44 × 44 px.
+- [x] Unit-, Typecheck-, Lint-, Build- und Security-Prüfungen erneut abgeschlossen.
+- [ ] Manuelle VoiceOver-Prüfung in Safari bleibt als expliziter Abnahmepunkt offen.

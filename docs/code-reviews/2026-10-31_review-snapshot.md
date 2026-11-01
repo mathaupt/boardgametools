@@ -127,3 +127,16 @@ kein neuer Score oder erneuter Commit gegen eine verschobene Baseline.
 - Impeccable-Hook ist aktiviert. Statischer Detektor: keine primären Findings; ein Advisory zur 11-px-Schriftgröße in der unveränderten `proposal-compact-row.tsx`.
 - Commit-Hook: ESLint (0 Findings), zugehörige Tests, Security-Check (0 Fehler, 2 Hinweise) und Regressionsevaluator erfolgreich. Gesamtwertung 10/10, keine offenen Evaluator-Findings; letzter History-Lauf `history/2026-11-01_1215.json`.
 - BUG-038 bleibt bis Theme-/Screenreader-Abnahme in Bearbeitung; BUG-039 bleibt zur vollständigen Kontrastmessung offen. Keine API-, Datenbank- oder iOS-Änderung.
+
+## FEAT-011-Statusabgleich – 0.50.36 (2026-11-01)
+
+Die Detailzeile im Feature-Backlog wurde an den bereits dokumentierten
+Umsetzungsstand angeglichen: Freigabe erteilt und Web-Implementierung
+abgeschlossen. VoiceOver, vollständige Theme-Kontrastmessung und iOS bleiben
+als separate Restabnahmen offen; es wurden keine Produktdateien geändert.
+
+## FEAT-011 ergänzende automatisierte Abnahme – 0.50.37 (2026-11-01)
+
+- 763/763 Unit-Tests bestanden; Typecheck, Lint (0 Fehler), Build und Security-Check erfolgreich.
+- Gerenderter E2E-Kontrast in beiden Themes mindestens 5,11:1; zehn Vorschläge und 50 Gäste, 44-px-Ziele sowie 195/320/390/640/768/1440 px ohne Dokumentüberlauf geprüft.
+- Fehler-/409- und Fokusverhalten durch Unit-Tests abgedeckt; manuelle Safari-VoiceOver-Abnahme bleibt offen. BUG-039 geschlossen, BUG-038 in Bearbeitung.

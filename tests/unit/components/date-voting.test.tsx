@@ -83,6 +83,7 @@ describe("DateVotingSection", () => {
 
     expect(group).toHaveAttribute("aria-busy", "true");
     expect(within(group).getByRole("radio", { name: "Nein" })).toBeInTheDocument();
+    expect(radio).toHaveFocus();
     expect(screen.getByText("Antwort wird gespeichert …")).toBeInTheDocument();
     resolveFetch({ ok: true });
     await waitFor(() => expect(within(group).getByRole("radio", { name: "Nein" })).toBeChecked());
@@ -93,10 +94,12 @@ describe("DateVotingSection", () => {
     mockFetch.mockResolvedValue({ ok: false, status: 500, json: async () => ({ error: "Serverfehler" }) });
     render(<DateVotingSection {...defaultProps} />);
 
-    await user.click(within(screen.getByRole("group", { name: "Freitag, 6. November 2026" })).getByRole("radio", { name: "Nein" }));
+    const noAnswer = within(screen.getByRole("group", { name: "Freitag, 6. November 2026" })).getByRole("radio", { name: "Nein" });
+    await user.click(noAnswer);
 
     expect(await screen.findByRole("alert")).toHaveTextContent(/Serverfehler.*erneut/i);
     const group = screen.getByRole("group", { name: "Freitag, 6. November 2026" });
+    expect(noAnswer).toHaveFocus();
     expect(within(group).getByRole("radio", { name: "Ja" })).toBeChecked();
     expect(within(group).getByRole("radio", { name: "Nein" })).not.toBeChecked();
   });
@@ -107,10 +110,12 @@ describe("DateVotingSection", () => {
     mockFetch.mockResolvedValue({ ok: false, status: 409, json: async () => ({ error: "Conflict" }) });
     render(<DateVotingSection {...defaultProps} onStateConflict={onStateConflict} />);
 
-    await user.click(within(screen.getByRole("group", { name: "Freitag, 6. November 2026" })).getByRole("radio", { name: "Nein" }));
+    const noAnswer = within(screen.getByRole("group", { name: "Freitag, 6. November 2026" })).getByRole("radio", { name: "Nein" });
+    await user.click(noAnswer);
 
     expect(await screen.findByRole("alert")).toHaveTextContent("Der Planungsstand hat sich geändert");
     expect(onStateConflict).toHaveBeenCalledOnce();
+    expect(noAnswer).toHaveFocus();
     expect(within(screen.getByRole("group", { name: "Freitag, 6. November 2026" })).getByRole("radio", { name: "Ja" })).toBeChecked();
   });
 

@@ -32,6 +32,10 @@ Die Web-Implementierung ist funktionsfähig und regressionstestgesichert. Die of
 Abnahmepunkte begrenzen den Abschluss von BUG-038/039; sie wurden nicht als
 erledigt gewertet. Native iOS-Terminabstimmung bleibt separat.
 
+Der Backlog-Detailstatus wurde in 0.50.36 an die bereits erteilte Freigabe und
+abgeschlossene Web-Umsetzung angeglichen. Die Restabnahmen bleiben ausdrücklich
+offen; an der technischen Bewertung ändert diese Dokumentationskorrektur nichts.
+
 ## Ergänzung: Planungsstand 0.50.29
 
 | Kriterium | Vorher | Nachher |
@@ -134,3 +138,7 @@ ungünstige Textzeile; beide Punkte wurden korrigiert und erneut gerendert.
 Der finale Commit-Hook bestätigt 10/10 und keine Regressionen. Der Security-Check
 ist bestanden; er meldet 0 Fehler und 2 bestehende Warnungen. Der Regression-Snapshot
 ist `history/2026-10-31_2357.json`.
+# FEAT-011 ergänzende Abnahme – 2026-11-01
+
+Automatisierte Abdeckung vervollständigt: gerenderter Kontrast in hellem und dunklem Theme mindestens 5,11:1, responsive Browsermessungen einschließlich 200-%-Äquivalent und Stressfixture mit zehn Terminen/50 Gästen. Die vollständige Unit-Suite ist mit 763 Tests erfolgreich. Die manuelle VoiceOver-Abnahme bleibt der einzige offene FEAT-011-Punkt; BUG-038 bleibt daher in Bearbeitung, BUG-039 ist behoben.
+

@@ -12,6 +12,26 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.37",
+    date: "2026-11-01",
+    title: "Schmale öffentliche Eventansicht stabilisieren",
+    description: "Die öffentliche Eventseite bleibt bei 200-%-Zoom und langen Teilnehmernamen innerhalb des Bildschirms; Statusfarben wurden in beiden Themes geprüft.",
+    changes: [
+      { type: "fix", text: "Teilnehmerkarten umbrechen jetzt lange Namen und Einladungsstatus statt die Seite horizontal zu verbreitern.", bugRef: "BUG-038" },
+      { type: "fix", text: "Status- und Termintexte erreichen in der gerenderten hellen und dunklen Ansicht mindestens 4,5:1 Kontrast.", bugRef: "BUG-039" },
+      { type: "internal", text: "Automatisierte FEAT-011-Abnahme mit zehn Terminen, 50 Gästen, Tastaturbedienung, Touchzielen und Theme-Kontrast abgeschlossen; manuelle VoiceOver-Abnahme bleibt offen." },
+    ],
+  },
+  {
+    version: "0.50.36",
+    date: "2026-11-01",
+    title: "FEAT-011-Status im Backlog vereinheitlicht",
+    description: "Der Detailstatus der zugänglichen Terminabstimmung stimmt jetzt mit der abgeschlossenen Web-Umsetzung und den dokumentierten Restabnahmen überein.",
+    changes: [
+      { type: "internal", text: "Die erteilte Umsetzungsfreigabe und abgeschlossene Web-Implementierung sind im FEAT-011-Detail sichtbar; VoiceOver, vollständige Theme-Kontrastmessung und iOS bleiben separat offen." },
+    ],
+  },
+  {
     version: "0.50.35",
     date: "2026-11-01",
     title: "Terminabstimmung barrierefrei bedienen",

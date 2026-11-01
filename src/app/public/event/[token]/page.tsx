@@ -33,8 +33,8 @@ export default async function PublicEventPage({
       <div className="mx-auto w-full max-w-5xl px-4 max-[320px]:px-2 sm:px-6 lg:px-8">
         <PublicEventHeader event={serialized} />
 
-        <div className="mt-8 grid gap-6 lg:grid-cols-[2fr,1fr]">
-          <Card className="border-border bg-card text-foreground">
+        <div className="mt-8 grid min-w-0 gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(16rem,1fr)]">
+          <Card className="min-w-0 border-border bg-card text-foreground">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-lg text-foreground" as="h2">
                 <Users className="h-5 w-5" aria-hidden="true" />
@@ -48,13 +48,13 @@ export default async function PublicEventPage({
                 serialized.invites.map((invite, i) => (
                   <div
                     key={i}
-                    className="flex items-center justify-between rounded-lg border border-border/60 bg-muted/20 px-3 py-2"
+                    className="flex min-w-0 flex-wrap items-center justify-between gap-2 rounded-lg border border-border/60 bg-muted/20 px-3 py-2"
                   >
-                    <div className="flex items-center gap-2">
-                      <div className="flex h-7 w-7 items-center justify-center rounded-full bg-muted text-xs text-muted-foreground">
+                    <div className="flex min-w-0 items-center gap-2">
+                      <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-muted text-xs text-muted-foreground">
                         <UserCircle className="h-4 w-4" aria-hidden="true" />
                       </div>
-                      <span className="text-sm font-medium text-foreground">{invite.name}</span>
+                      <span className="min-w-0 [overflow-wrap:anywhere] text-sm font-medium text-foreground">{invite.name}</span>
                     </div>
                     <Badge
                       variant={
@@ -64,7 +64,7 @@ export default async function PublicEventPage({
                           ? "destructive"
                           : "secondary"
                       }
-                      className="flex items-center gap-1 text-xs"
+                      className="flex shrink-0 items-center gap-1 text-xs"
                     >
                       {invite.status === "accepted" ? (
                         <><Check className="h-3 w-3" aria-hidden="true" /> Dabei</>
@@ -103,7 +103,7 @@ export default async function PublicEventPage({
             </CardContent>
           </Card>
 
-          <Card className="border-border bg-card text-foreground">
+          <Card className="min-w-0 border-border bg-card text-foreground">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-lg text-foreground" as="h2">
                 <Share2 className="h-5 w-5" aria-hidden="true" />

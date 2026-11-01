@@ -1223,15 +1223,15 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 **Erwartetes Verhalten:** Alle Antworten leicht auffindbar, mindestens 44 Pixel große Projekt-Touch-Flächen und programmatisch vermittelte Auswahl.
 
-**Tatsächliches Verhalten:** Die Tabelle überschreitet ihre Inhaltsfläche um etwa 81–88 Pixel; Nein ist zunächst verborgen. Antwortbuttons: 32 × 32 Pixel. aria-pressed beziehungsweise eine gleichwertige Auswahlsemantik fehlt.
+**Tatsächliches Verhalten:** Vor dem Fix verbreiterte eine Teilnehmerzeile mit langem Namen und Status-Badge die öffentliche Eventseite bei schmalen Ansichten.
 
-**Ursache:** Feste Tabellenanordnung, h-8/w-8 und ausschließlich CSS-Klassen für die Auswahl in date-voting-section.tsx.
+**Ursache:** Feste Tabellenanordnung und fehlende Min-Width-/Umbruchregeln in einer Einladungskarte; zusätzlich kleine Iconbuttons und rein visuelle Auswahl in der früheren Terminabstimmung.
 
-**Lösung:** Öffentliche und geschützte Terminzeilen verwenden beschriftete native Radiogruppen. Die öffentliche Terminliste wurde für schmale Ansichten umgebrochen; 320/390/768/1440 px sowie 200-/400-%-Äquivalente prüfen den Antwortbereich. Die vollständige Dark-Theme-Prüfung und manuelle Screenreader-Abnahme stehen noch aus.
+**Lösung:** Öffentliche und geschützte Terminzeilen verwenden beschriftete native Radiogruppen. Teilnehmerkarten und Einladungstexte umbrechen; die gesamte Seite wurde bei 195 px (200-%-Äquivalent zu 390 px), 320, 390, 640, 768 und 1440 px ohne horizontalen Überlauf geprüft. Die Terminfläche selbst bleibt auch bei 98 px sichtbar. Manuelle VoiceOver-Abnahme steht noch aus.
 
 **Prüfnachweis:** date-mobile.png und observations.json aus A; Browsermessungen aus B. Weitere Hauptbuttons und Eingaben messen nur 36 Pixel Höhe und sind im selben Planungsschritt zu berücksichtigen. Belege: `.impeccable/critique/evidence/public-event-A/` und `public-event-B/`.
 
-**Test-Status:** Unit- und E2E-Regressionstests vorhanden; Befund bleibt bis zur vollständigen Themen- und assistiven Abnahme in Bearbeitung.
+**Test-Status:** Unit- und Chromium-E2E prüfen Tastaturwahl mit gespeicherter Antwort, zehn Termine, 50 Gäste, 44-px-Ziele und schmale Layouts. Manuelle VoiceOver-Abnahme ausstehend; deshalb bleibt der Befund in Bearbeitung.
 
 **Referenz im Changelog:** Version 0.50.24 – Prüfung der öffentlichen Eventseite dokumentiert.
 
@@ -1239,10 +1239,12 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 ### [BUG-039] Statusbeschriftungen der öffentlichen Eventseite haben zu wenig Kontrast
 
-**Status:** `open`
+**Status:** `fixed`
 **Schweregrad:** `medium`
 **Entdeckt:** 2026-10-30
-**Test geschrieben:** Nein
+**Behoben:** 2026-11-01
+**Behoben in Version:** 0.50.37
+**Test geschrieben:** Ja – `tests/e2e/helpers/public-event-contrast.mjs` misst gerenderte Vorder-/Hintergrundfarben in Chromium in hellem und dunklem Theme.
 
 **Beschreibung:** Mehrere kleine Status- und Ergebnisbeschriftungen unterschreiten 4,5:1.
 
@@ -1250,15 +1252,15 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 **Erwartetes Verhalten:** Mindestens 4,5:1 für betroffene kleine Texte in beiden Farbschemata.
 
-**Tatsächliches Verhalten:** Gemessen: Begrüßung 3,8:1, Zusagezahlen 2,3:1, gewählter Termin 3,9:1; dunkel Abgesagt 3,3:1 und Zusagezahlen 3,2:1.
+**Tatsächliches Verhalten:** Vor dem Fix: Begrüßung 3,8:1, Zusagezahlen 2,3:1, gewählter Termin 3,9:1; dunkel Abgesagt 3,3:1 und Zusagezahlen 3,2:1. Nach dem Fix erreichten die geprüften Texte mindestens 5,11:1.
 
 **Ursache:** Statusfarben als kleine Schrift auf transparenten beziehungsweise farbigen Hintergründen ohne ausreichenden Kontrast.
 
-**Lösung:** Noch nicht umgesetzt. Text-/Flächenpaare überarbeiten und tatsächliche Farben einschließlich Transparenz messen.
+**Lösung:** Betroffene Texte verwenden kontrastreiche semantische Vordergrundfarben. Der E2E-Helfer misst die tatsächlich gerenderten und zusammengesetzten Farben in beiden Themes; der niedrigste protokollierte Messwert beträgt 5,11:1.
 
 **Prüfnachweis:** Gerenderte detect.js-Prüfung und Browser-Kontrastmessungen aus Assessment B; keine Bewertung anhand deaktivierter Controls. Belege: `.impeccable/critique/evidence/public-event-A/` und `public-event-B/`.
 
-**Test-Status:** Kein Fix und noch kein dauerhafter Regressionstest. Bei Umsetzung ist ein Regressionstest verpflichtend.
+**Test-Status:** Automatisierter E2E-Regressionstest vorhanden; helle und dunkle Ansicht mit aktiver sowie festgelegter Terminansicht geprüft.
 
 **Referenz im Changelog:** Version 0.50.24 – Prüfung der öffentlichen Eventseite dokumentiert.
 
@@ -1755,8 +1757,8 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 ## Statistik
 
-- **Offene Bugs:** 14
+- **Offene Bugs:** 13
 - **In Bearbeitung:** 1
-- **Behoben:** 43
+- **Behoben:** 44
 - **Wontfix:** 0
 - **Gesamt:** 58
