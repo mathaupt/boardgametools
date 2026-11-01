@@ -52,6 +52,11 @@ review-evaluation.json
 !docs/DEPLOYMENT.md
 !docs/superpowers/
 !docs/superpowers/**
+!docs/code-reviews/
+docs/code-reviews/*
+!docs/code-reviews/2026-11-01_review-snapshot.md
+!docs/code-reviews/2026-11-01_review-bewertung.md
+!docs/code-reviews/2026-11-01_prozessanpassungen.md
 
 # database backups & dumps
 *.bak
