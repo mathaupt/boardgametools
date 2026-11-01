@@ -22,6 +22,7 @@ export const changelog: ChangelogEntry[] = [
       { type: "improvement", text: "Terminantworten und betroffene Eventaktionen haben größere Bedienflächen und gezielte Verbesserungen für schmale Ansichten." },
       { type: "improvement", text: "Gastbegrüßung, Zähler und ausgewählter Termin nutzen besser lesbare Vordergrundfarben; die vollständige Theme-Kontrastmessung steht noch aus." },
       { type: "internal", text: "Webtests decken Tastaturbedienung, gespeicherte Antworten und schmale Ansichten ab; manuelle VoiceOver- und vollständige Dark-Theme-Prüfung bleiben offen." },
+      { type: "internal", text: "Der Commit-Hook hat Tests, ESLint, Security-Check und Regressionsevaluierung erfolgreich abgeschlossen; Review-Gesamtwertung 10/10." },
     ],
   },
   {

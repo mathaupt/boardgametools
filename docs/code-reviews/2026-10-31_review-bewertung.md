@@ -22,8 +22,8 @@ iOS-Oberflächen wurden nicht geändert.
 | Unit-Tests | 763/763 bestanden | — |
 | TypeScript / Build | Erfolgreich | — |
 | Lint | 0 Fehler | 651 vorhandene Warnungen aus versionierten Skill-/Hilfsdateien |
-| Security-Check | 0 Fehler | 3 Hinweise: Raw SQL, Debug-Routen, npm Audit |
-| Review-Evaluator | 9,9/10, keine Regression | letzter History-Lauf `2026-11-01_1210.json` |
+| Security-Check | 0 Fehler | Vorlauf 3 Hinweise (inkl. npm Audit); Commit-Hook 2 Hinweise (Raw SQL, Debug-Routen) |
+| Review-Evaluator | 10/10, keine Regressionen/offenen Findings | Commit-Hook, History `2026-11-01_1215.json` |
 | Browser-E2E | 1/1 bestanden | 400-%-Äquivalent prüft Terminfläche isoliert; restliche öffentliche Seite läuft bei 98 CSS-px über |
 | Impeccable | Keine primären Findings | Ein Advisory betrifft die unveränderte 11-px-Schriftgröße in `proposal-compact-row.tsx` |
 | Assistive / Theme-Abnahme | Teilweise offen | VoiceOver, Fokusretention nach Request, Fehler-/409-Fälle und vollständige Dark-Theme-Kontrastmessung ausstehend |

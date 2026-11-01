@@ -125,5 +125,5 @@ kein neuer Score oder erneuter Commit gegen eine verschobene Baseline.
 - Isolierte PostgreSQL-/Chromium-E2E: 1/1. Antwortlabels und Dokumentbreite bei 320/390/768/1440 CSS-Pixeln sowie 195-Pixel-Äquivalent geprüft; bei 98 CSS-Pixeln wurde die Terminfläche separat geprüft, weil andere Teile der Eventseite überlaufen.
 - Tastatur: native Radiogruppe speichert Wechsel per Pfeiltaste; Fehler-/409-/Fokusretentions-E2E sowie manuelle VoiceOver-Abnahme offen.
 - Impeccable-Hook ist aktiviert. Statischer Detektor: keine primären Findings; ein Advisory zur 11-px-Schriftgröße in der unveränderten `proposal-compact-row.tsx`.
-- Security-Check: 0 Fehler, 3 vorhandene Hinweise (Raw-SQL, Debug-Routen und npm-Audit). Regressionsevaluator: Exitcode 0, Score 9,9/10, keine Regression; letzter History-Lauf `history/2026-11-01_1210.json`.
+- Commit-Hook: ESLint (0 Findings), zugehörige Tests, Security-Check (0 Fehler, 2 Hinweise) und Regressionsevaluator erfolgreich. Gesamtwertung 10/10, keine offenen Evaluator-Findings; letzter History-Lauf `history/2026-11-01_1215.json`.
 - BUG-038 bleibt bis Theme-/Screenreader-Abnahme in Bearbeitung; BUG-039 bleibt zur vollständigen Kontrastmessung offen. Keine API-, Datenbank- oder iOS-Änderung.
