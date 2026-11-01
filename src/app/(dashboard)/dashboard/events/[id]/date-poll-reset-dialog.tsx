@@ -12,33 +12,32 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Loader2, RefreshCcw } from "lucide-react";
-import { formatLongDate } from "@/lib/date";
+import { formatEventDate } from "@/lib/events/event-date";
 
 export function PollClosedBanner({
   finalDate,
-  isCreator,
-  isPast,
+  canReset,
   resetting,
   onResetClick,
 }: {
   finalDate: string;
-  isCreator: boolean;
-  isPast: boolean;
+  canReset: boolean;
   resetting: boolean;
   onResetClick: () => void;
 }) {
   return (
     <div className="space-y-4">
-      <div className="rounded-lg border border-success/50 bg-success/10 p-4 text-sm text-success">
+      <div className="rounded-lg border border-success/50 bg-success/10 p-4 text-sm text-foreground" role="status" aria-live="polite">
         Die Terminabstimmung ist abgeschlossen. Der ausgewählte Termin ist{" "}
         <span className="font-semibold">
-          {formatLongDate(finalDate)}
+          {formatEventDate(finalDate, "date")}
         </span>
         .
       </div>
-      {isCreator && !isPast && (
+      {canReset && (
         <Button
           variant="outline"
+          className="min-h-11"
           onClick={onResetClick}
           disabled={resetting}
           data-testid="date-poll-reset"
@@ -77,8 +76,8 @@ export function ResetPollDialog({
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={resetting}>Abbrechen</AlertDialogCancel>
-          <AlertDialogAction onClick={onReset} disabled={resetting}>
+          <AlertDialogCancel className="min-h-11" disabled={resetting}>Abbrechen</AlertDialogCancel>
+          <AlertDialogAction className="min-h-11" onClick={onReset} disabled={resetting}>
             {resetting ? (
               <Loader2 className="h-4 w-4 mr-2 animate-spin" aria-hidden="true" />
             ) : (

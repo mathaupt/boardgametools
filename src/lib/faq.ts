@@ -144,7 +144,7 @@ export const faqSections: FaqSection[] = [
       {
         question: "Wie funktioniert die Terminabstimmung?",
         answer:
-          'In der Event-Detailseite kannst du mehrere Terminvorschlaege hinzufuegen. Teilnehmer (und Gaeste) stimmen mit "Ja", "Vielleicht" oder "Nein" fuer jeden Termin ab \u2013 aehnlich wie bei Doodle. Du siehst eine Uebersichtsmatrix aller Antworten und kannst am Ende den besten Termin festlegen. Die Terminabstimmung kann bei Bedarf zurueckgesetzt werden.',
+          'In der Event-Detailseite kannst du mehrere Terminvorschläge hinzufügen. Teilnehmer und Gäste wählen für jeden Termin „Ja“, „Vielleicht“ oder „Nein“. Die Auswahl funktioniert auch mit der Tastatur; Pfeiltasten wechseln zwischen den Antworten. Auf kleinen Bildschirmen findest du die Teilnehmerantworten in einer aufklappbaren Liste. Du kannst am Ende den besten Termin festlegen und die Abstimmung bei Bedarf zurücksetzen.',
       },
       {
         question: "Kann ich Leute ohne Account einladen?",

@@ -35,6 +35,7 @@ export function DateCreateForm({
           <Input
             id="startDate"
             type="date"
+            className="min-h-11"
             value={startDate}
             onChange={(e) => onStartDateChange(e.target.value)}
           />
@@ -44,6 +45,7 @@ export function DateCreateForm({
           <Input
             id="endDate"
             type="date"
+            className="min-h-11"
             value={endDate}
             onChange={(e) => onEndDateChange(e.target.value)}
           />
@@ -56,7 +58,7 @@ export function DateCreateForm({
           {WEEKDAY_LABELS.map((day) => (
             <label
               key={day.value}
-              className="flex items-center gap-1.5 cursor-pointer"
+              className="flex min-h-11 min-w-11 cursor-pointer items-center gap-2 rounded-md px-2 hover:bg-muted focus-within:ring-2 focus-within:ring-ring"
             >
               <Checkbox
                 checked={selectedWeekdays.includes(day.value)}
@@ -74,6 +76,8 @@ export function DateCreateForm({
       </div>
 
       <Button
+        type="button"
+        className="min-h-11"
         onClick={onSubmit}
         disabled={loading || !startDate || !endDate}
       >

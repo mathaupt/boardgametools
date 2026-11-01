@@ -12,6 +12,19 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.35",
+    date: "2026-11-01",
+    title: "Terminabstimmung barrierefrei bedienen",
+    description: "Termine lassen sich auch auf schmalen Bildschirmen und mit Tastatur verständlich beantworten.",
+    changes: [
+      { type: "improvement", text: "Ja, Vielleicht und Nein sind als beschriftete Radiogruppe erreichbar; gespeicherte Antworten, Status und Fehler werden verständlich angezeigt." },
+      { type: "improvement", text: "Teilnehmerantworten erscheinen in einer aufklappbaren Liste; die Vergleichsmatrix bleibt eine lesbare Zusatzansicht." },
+      { type: "improvement", text: "Terminantworten und betroffene Eventaktionen haben größere Bedienflächen und gezielte Verbesserungen für schmale Ansichten." },
+      { type: "improvement", text: "Gastbegrüßung, Zähler und ausgewählter Termin nutzen besser lesbare Vordergrundfarben; die vollständige Theme-Kontrastmessung steht noch aus." },
+      { type: "internal", text: "Webtests decken Tastaturbedienung, gespeicherte Antworten und schmale Ansichten ab; manuelle VoiceOver- und vollständige Dark-Theme-Prüfung bleiben offen." },
+    ],
+  },
+  {
     version: "0.50.34",
     date: "2026-10-31",
     title: "Eventstatus und Abstimmungsende abgesichert",

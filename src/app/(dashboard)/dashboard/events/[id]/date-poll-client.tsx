@@ -1,377 +1,176 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useMemo } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Calendar, Trash2 } from "lucide-react";
-import { formatLongDate } from "@/lib/date";
+import { getDateOnlyKey } from "@/lib/events/event-date";
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { DateProposal } from "./date-poll-types";
+  collectDateParticipants,
+  summarizeDateAvailability,
+  type KnownDateParticipant,
+} from "@/lib/events/date-availability";
+import { DateProposalItem } from "@/components/event-voting/date-proposal-item";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import type { DateProposal } from "./date-poll-types";
 import { DateCreateForm } from "./date-poll-create-form";
 import { DateVotingMatrix } from "./date-poll-voting-matrix";
 import { PollClosedBanner, ResetPollDialog } from "./date-poll-reset-dialog";
+import { useDatePollController } from "./use-date-poll-controller";
 
-export default function DatePollClient({
-  eventId,
-  userId,
-  isCreator,
-  isPast,
-  initialProposals,
-  selectedDate,
-}: {
+export interface DatePollClientProps {
   eventId: string;
   userId: string | null;
   isCreator: boolean;
-  isPast: boolean;
+  canVoteDate: boolean;
+  canManageDates: boolean;
+  canSelectDate: boolean;
+  canResetDates: boolean;
+  blockedReason: string | null;
+  knownParticipants?: KnownDateParticipant[];
   initialProposals: DateProposal[];
   selectedDate: string | null;
-}) {
-  const router = useRouter();
-  const [proposals, setProposals] = useState<DateProposal[]>(initialProposals);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [showCreateForm, setShowCreateForm] = useState(false);
-  const [pollClosed, setPollClosed] = useState(Boolean(selectedDate));
-  const [finalDate, setFinalDate] = useState<string | null>(selectedDate);
-  const [resetting, setResetting] = useState(false);
-  const [showResetDialog, setShowResetDialog] = useState(false);
-  const [showDeleteAllDialog, setShowDeleteAllDialog] = useState(false);
+}
 
-  // Create form state
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
-  const [selectedWeekdays, setSelectedWeekdays] = useState<number[]>([]);
-
-  // Voting state
-  const [votingLoading, setVotingLoading] = useState<string | null>(null);
-  const [selectingDate, setSelectingDate] = useState<string | null>(null);
-
-  useEffect(() => {
-    setProposals(initialProposals);
-  }, [initialProposals]);
-
-  useEffect(() => {
-    setPollClosed(Boolean(selectedDate));
-    setFinalDate(selectedDate);
-  }, [selectedDate]);
-
-  const refreshProposals = useCallback(async () => {
-    try {
-      const res = await fetch(`/api/events/${eventId}/date-proposals`);
-      if (res.ok) {
-        const data = await res.json();
-        setProposals(data);
-      }
-    } catch {
-      // ignore
-    }
-  }, [eventId]);
-
-  const reportStateConflict = useCallback(() => {
-    setError("Der Planungsstand hat sich geändert. Deine Änderung wurde nicht gespeichert.");
-    router.refresh();
-  }, [router]);
-
-  const handleCreateProposals = async () => {
-    if (pollClosed) return;
-    if (!startDate || !endDate) {
-      setError("Bitte Start- und Enddatum angeben");
-      return;
-    }
-
-    setLoading(true);
-    setError(null);
-
-    try {
-      const body: Record<string, unknown> = {
-        startDate,
-        endDate,
-      };
-      if (selectedWeekdays.length > 0) {
-        body.weekdays = selectedWeekdays;
-      }
-
-      const res = await fetch(`/api/events/${eventId}/date-proposals`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
-
-      if (!res.ok) {
-        const data = await res.json();
-        if (res.status === 409) {
-          reportStateConflict();
-          return;
-        }
-        setError(data.error || "Fehler beim Erstellen");
-        return;
-      }
-
-      const data = await res.json();
-      setProposals(data);
-      setShowCreateForm(false);
-      setStartDate("");
-      setEndDate("");
-      setSelectedWeekdays([]);
-    } catch {
-      setError("Netzwerkfehler");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleDeleteAllProposals = async () => {
-    if (pollClosed) return;
-    setShowDeleteAllDialog(false);
-
-    setLoading(true);
-    try {
-      const res = await fetch(`/api/events/${eventId}/date-proposals`, {
-        method: "DELETE",
-      });
-      if (res.ok) {
-        setProposals([]);
-      } else if (res.status === 409) {
-        reportStateConflict();
-      }
-    } catch {
-      setError("Fehler beim Löschen");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleVote = async (dateProposalId: string, availability: string) => {
-    if (pollClosed) return;
-    if (!userId) return;
-    setVotingLoading(dateProposalId);
-
-    try {
-      const res = await fetch(`/api/events/${eventId}/date-proposals/vote`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ dateProposalId, availability }),
-      });
-
-      if (res.ok) {
-        await refreshProposals();
-      } else if (res.status === 409) {
-        reportStateConflict();
-      }
-    } catch {
-      // ignore
-    } finally {
-      setVotingLoading(null);
-    }
-  };
-
-  const handleSelectDate = async (dateProposalId: string) => {
-    if (!isCreator) return;
-    if (pollClosed) return;
-    setSelectingDate(dateProposalId);
-
-    try {
-      const res = await fetch(`/api/events/${eventId}/date-proposals/select`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ dateProposalId }),
-      });
-
-      if (res.ok) {
-        const data = await res.json().catch(() => null);
-        if (data?.selectedDate) {
-          setFinalDate(data.selectedDate);
-          setPollClosed(true);
-        }
-        router.refresh();
-      } else if (res.status === 409) {
-        reportStateConflict();
-      }
-    } catch {
-      setError("Fehler bei der Terminauswahl");
-    } finally {
-      setSelectingDate(null);
-    }
-  };
-
-  const handleResetPoll = async () => {
-    if (!isCreator) return;
-    setResetting(true);
-    setError(null);
-    try {
-      const res = await fetch(`/api/events/${eventId}/date-proposals/reset`, {
-        method: "POST",
-      });
-      if (!res.ok) {
-        const data = await res.json().catch(() => null);
-        if (res.status === 409) reportStateConflict();
-        if (res.status === 409) return;
-        setError(data?.error ?? "Fehler beim Zurücksetzen");
-        return;
-      }
-      setPollClosed(false);
-      setFinalDate(null);
-      setProposals([]);
-      setShowCreateForm(false);
-      await refreshProposals();
-      router.refresh();
-    } catch {
-      setError("Fehler beim Zurücksetzen");
-    } finally {
-      setResetting(false);
-      setShowResetDialog(false);
-    }
-  };
-
-  const toggleWeekday = (day: number) => {
-    setSelectedWeekdays((prev) =>
-      prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day]
-    );
-  };
-
-  const getUserVote = (proposal: DateProposal): string | null => {
-    if (!userId) return null;
-    const vote = proposal.votes.find((v) => v.user.id === userId);
-    return vote?.availability ?? null;
-  };
-
-  // Collect all unique participants for the matrix header
-  const allUsers = new Map<string, string>();
-  const allGuests = new Map<string, string>();
-  proposals.forEach((p) => {
-    p.votes.forEach((v) => allUsers.set(v.user.id, v.user.name));
-    p.guestVotes.forEach((v) => allGuests.set(v.guest.id, v.guest.nickname));
-  });
+export default function DatePollClient(props: DatePollClientProps) {
+  const poll = useDatePollController(props);
+  const participants = useMemo(
+    () => collectDateParticipants(poll.proposals, props.knownParticipants),
+    [poll.proposals, props.knownParticipants],
+  );
+  const selectedKey = poll.finalDate ? getDateOnlyKey(poll.finalDate) : null;
+  const pollUnavailable = !props.canVoteDate && !props.canManageDates && !props.canSelectDate && !props.canResetDates;
+  const canVote = props.canVoteDate && !poll.pollClosed;
 
   return (
     <Card>
       <CardHeader>
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <CardTitle as="h2" className="flex items-center gap-2">
               <Calendar className="h-5 w-5" aria-hidden="true" />
               Terminabstimmung
             </CardTitle>
             <CardDescription>
-              {proposals.length === 0
+              {poll.proposals.length === 0
                 ? "Noch keine Terminvorschläge erstellt"
-                : `${proposals.length} Terminvorschläge`}
-              {finalDate && (
-                <span className="ml-2 text-success font-medium">
-                  — Termin gewählt: {formatLongDate(finalDate)}
-                </span>
-              )}
+                : `${poll.proposals.length} Terminvorschläge`}
             </CardDescription>
           </div>
-          {isCreator && !isPast && !pollClosed && (
-            <div className="flex gap-2">
-              {proposals.length > 0 && (
+          {props.isCreator && props.canManageDates && !poll.pollClosed && (
+            <div className="flex flex-wrap gap-2">
+              {poll.proposals.length > 0 && (
                 <Button
+                  type="button"
                   variant="destructive"
-                  size="sm"
-                  onClick={() => setShowDeleteAllDialog(true)}
-                  disabled={loading}
+                  className="min-h-11"
+                  onClick={() => poll.setShowDeleteAllDialog(true)}
+                  disabled={poll.loading}
                 >
-                  <Trash2 className="h-4 w-4 mr-1" aria-hidden="true" />
+                  <Trash2 className="h-4 w-4" aria-hidden="true" />
                   Alle löschen
                 </Button>
               )}
               <Button
-                size="sm"
-                onClick={() => setShowCreateForm(!showCreateForm)}
-                disabled={loading}
+                type="button"
+                className="min-h-11"
+                onClick={() => poll.setShowCreateForm((show) => !show)}
+                disabled={poll.loading}
               >
-                <Calendar className="h-4 w-4 mr-1" aria-hidden="true" />
-                {showCreateForm ? "Abbrechen" : "Termine erstellen"}
+                <Calendar className="h-4 w-4" aria-hidden="true" />
+                {poll.showCreateForm ? "Abbrechen" : "Termine erstellen"}
               </Button>
             </div>
           )}
         </div>
       </CardHeader>
 
-      <CardContent className="space-y-6">
-        {error && (
-          <div className="p-3 bg-destructive/10 text-destructive rounded-md text-sm border border-destructive/50">
-            {error}
-          </div>
+      <CardContent className="space-y-5">
+        {poll.error && <p className="rounded-md border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive" role="alert">{poll.error}</p>}
+        {pollUnavailable && props.blockedReason && poll.proposals.length === 0 && (
+          <p className="text-sm text-muted-foreground" role="status">{props.blockedReason}</p>
         )}
 
-        {pollClosed && finalDate && (
+        {poll.pollClosed && poll.finalDate && (
           <PollClosedBanner
-            finalDate={finalDate}
-            isCreator={isCreator}
-            isPast={isPast}
-            resetting={resetting}
-            onResetClick={() => setShowResetDialog(true)}
+            finalDate={poll.finalDate}
+            canReset={props.isCreator && props.canResetDates}
+            resetting={poll.resetting}
+            onResetClick={() => poll.setShowResetDialog(true)}
           />
         )}
 
-        {!pollClosed && (
-          <>
-            {/* Create Form */}
-            {showCreateForm && (
-              <DateCreateForm
-                startDate={startDate}
-                endDate={endDate}
-                selectedWeekdays={selectedWeekdays}
-                loading={loading}
-                onStartDateChange={setStartDate}
-                onEndDateChange={setEndDate}
-                onToggleWeekday={toggleWeekday}
-                onSubmit={handleCreateProposals}
-              />
-            )}
-
-            {/* Voting Matrix */}
-            {proposals.length > 0 && (
-              <DateVotingMatrix
-                proposals={proposals}
-                allUsers={allUsers}
-                allGuests={allGuests}
-                userId={userId}
-                isPast={isPast}
-                selectedDate={selectedDate}
-                votingLoading={votingLoading}
-                selectingDate={selectingDate}
-                isCreator={isCreator}
-                onVote={handleVote}
-                onSelectDate={handleSelectDate}
-                getUserVote={getUserVote}
-              />
-            )}
-
-            {proposals.length === 0 && !showCreateForm && (
-              <div className="text-center py-8">
-                <div className="text-4xl mb-4">📅</div>
-                <h3 className="font-semibold mb-2">Keine Terminvorschläge</h3>
-                <p className="text-muted-foreground mb-4">
-                  {isCreator
-                    ? "Erstelle Terminvorschläge, damit die Teilnehmer abstimmen können."
-                    : "Der Organisator hat noch keine Terminvorschläge erstellt."}
-                </p>
-              </div>
-            )}
-          </>
+        {props.isCreator && props.canManageDates && !poll.pollClosed && poll.showCreateForm && (
+          <DateCreateForm
+            startDate={poll.startDate}
+            endDate={poll.endDate}
+            selectedWeekdays={poll.selectedWeekdays}
+            loading={poll.loading}
+            onStartDateChange={poll.setStartDate}
+            onEndDateChange={poll.setEndDate}
+            onToggleWeekday={poll.toggleWeekday}
+            onSubmit={poll.createProposals}
+          />
         )}
 
+        {poll.proposals.length > 0 ? (
+          <>
+            <ul className="min-w-0 divide-y divide-border/70">
+              {poll.proposals.map((proposal) => {
+              const summary = summarizeDateAvailability(
+                proposal,
+                participants,
+                props.userId ? `user:${props.userId}` : null,
+              );
+              return (
+                <DateProposalItem
+                  key={proposal.id}
+                  proposal={proposal}
+                  summary={summary}
+                  canVote={canVote}
+                  canSelect={props.isCreator && props.canSelectDate && !poll.pollClosed}
+                  busy={poll.busyProposalIds.has(proposal.id)}
+                  selecting={poll.selectingDateId === proposal.id}
+                  selected={selectedKey !== null && getDateOnlyKey(proposal.date) === selectedKey}
+                  activeParticipant={props.userId !== null}
+                  unavailableReason={!canVote ? props.blockedReason ?? "Für diesen Termin ist keine Antwort mehr möglich." : null}
+                  error={poll.voteErrors[proposal.id] || null}
+                  onVote={(answer) => poll.vote(proposal.id, answer)}
+                  onSelect={() => poll.selectDate(proposal.id)}
+                />
+              );
+              })}
+            </ul>
+            {participants.length > 0 && (
+              <details className="hidden min-w-0 lg:block">
+                <summary className="flex min-h-11 cursor-pointer items-center rounded-md px-2 font-medium text-foreground underline-offset-4 hover:bg-muted hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                  Teilnehmer im Vergleich
+                </summary>
+                <div className="mt-3">
+                  <DateVotingMatrix proposals={poll.proposals} selectedDate={poll.finalDate} knownParticipants={props.knownParticipants} />
+                </div>
+              </details>
+            )}
+          </>
+        ) : !poll.showCreateForm && !poll.pollClosed ? (
+          <div className="py-6">
+            <h3 className="font-semibold text-foreground">Keine Terminvorschläge</h3>
+            <p className="mt-1 text-sm text-muted-foreground">
+              {props.isCreator && props.canManageDates
+                ? "Erstelle Terminvorschläge, damit die Teilnehmer abstimmen können."
+                : "Der Organisator hat noch keine Terminvorschläge erstellt."}
+            </p>
+          </div>
+        ) : null}
+
         <ResetPollDialog
-          open={showResetDialog}
-          onOpenChange={setShowResetDialog}
-          resetting={resetting}
-          onReset={handleResetPoll}
+          open={poll.showResetDialog}
+          onOpenChange={poll.setShowResetDialog}
+          resetting={poll.resetting}
+          onReset={poll.resetPoll}
         />
 
-        <AlertDialog open={showDeleteAllDialog} onOpenChange={setShowDeleteAllDialog}>
+        <AlertDialog open={poll.showDeleteAllDialog} onOpenChange={poll.setShowDeleteAllDialog}>
           <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle>Alle Terminvorschläge löschen</AlertDialogTitle>
@@ -380,8 +179,8 @@ export default function DatePollClient({
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel>Abbrechen</AlertDialogCancel>
-              <AlertDialogAction onClick={handleDeleteAllProposals}>Löschen</AlertDialogAction>
+              <AlertDialogCancel className="min-h-11">Abbrechen</AlertDialogCancel>
+              <AlertDialogAction className="min-h-11" onClick={poll.deleteAllProposals}>Löschen</AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>

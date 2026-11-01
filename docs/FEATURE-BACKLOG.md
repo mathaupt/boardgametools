@@ -24,7 +24,7 @@ Bedarf zu aktualisieren. Ergebnis am jeweiligen Plan dokumentieren:
 | FEAT-008 | Spend-Management-Obergrenze (Billing-Schutz) | Plan erstellt | [Budget und Betriebsreaktion](superpowers/plans/2026-10-31-FEAT-008-spend-management.md) | Ausstehend; Betrag und Teamwirkung vor Aktivierung festzulegen |
 | FEAT-009 | HTML-Entities in Spieldaten korrekt behandeln | Code umgesetzt; Produktionsdatenbereinigung offen | [Textnormalisierung und Datenbereinigung](superpowers/plans/2026-10-31-FEAT-009-spieldaten-entities.md) | Codeumsetzung am 31.10.2026 freigegeben; Produktionslauf separat freizugeben |
 | FEAT-010 | Event-Status und Ergebnis eindeutig darstellen | Umgesetzt und abgenommen (Web/Mobile-API) | [Zustandsregeln und Ergebnisdarstellung](superpowers/plans/2026-10-31-FEAT-010-eventstatus-ergebnis.md) | Am 31.10.2026 freigegeben und mit isolierter PostgreSQL- und Chromium-Abnahme abgeschlossen; native iOS-Oberfläche bleibt separat |
-| FEAT-011 | Mobile und assistive Bedienung der Terminabstimmung | Plan erstellt | [Zugängliche Terminabstimmung](superpowers/plans/2026-10-31-FEAT-011-terminabstimmung-barrierefrei.md) | Ausstehend |
+| FEAT-011 | Mobile und assistive Bedienung der Terminabstimmung | Implementiert (Web) | [Zugängliche Terminabstimmung](superpowers/plans/2026-10-31-FEAT-011-terminabstimmung-barrierefrei.md) | iOS separat planen |
 | FEAT-012 | Teilnahme vor passive Listen rücken | Plan erstellt | [Teilnahmeweg und Teilnehmerdaten](superpowers/plans/2026-10-31-FEAT-012-oeffentliche-teilnahme.md) | Ausstehend |
 | FEAT-013 | Aktive Identität verständlich machen | Plan erstellt | [Eine aktive Identität](superpowers/plans/2026-10-31-FEAT-013-aktive-identitaet.md) | Ausstehend; Umfang ohne Gastwechsel bestätigt |
 | FEAT-014 | Suchzustände und Beschriftung der BGG-Suche | Plan erstellt | [Öffentliche BGG-Suche](superpowers/plans/2026-10-31-FEAT-014-bgg-suchzustaende.md) | Ausstehend |
@@ -120,7 +120,8 @@ Events, Eventdetails und die eigene Voting-Seite.
 
 **Implementierungsplan:** [FEAT-001 bis FEAT-004](superpowers/plans/2026-10-30-FEAT-001-004-voting.md).
 **Plattformumfang:** Web zuerst, iOS separat; am 30.10.2026 bestätigt.
-**Umsetzungsfreigabe:** Ausstehend.
+**Status:** Implementiert und geprüft für die Web-App; VoiceOver manuell noch nicht geprüft.
+**Umsetzungsfreigabe:** Erteilt durch „implementiere FEAT-011“.
 
 **Ziel:** Nicht mehr gewünschte Einträge aus einer Abstimmung entfernen können.
 
@@ -307,9 +308,7 @@ public-event-client.tsx:41,293; date-voting-section.tsx:146.
 **Plattformumfang:** Öffentliche und geschützte Web-Terminabstimmung; native iOS-Oberflächen separat.
 **Abhängigkeit:** Gemeinsame Zustandsregeln und Serverabsicherung aus FEAT-010.
 
-**Ziel:** Die Terminabstimmung ist auf kleinen Bildschirmen vollständig
-sichtbar, mit ausreichend großen Bedienzielen, klarer Auswahlsemantik und
-geprüften Kontrasten — hell wie dunkel.
+**Ergebnis:** Öffentliche und geschützte Terminabstimmungen verwenden gemeinsame, beschriftete Radiogruppen. Antworten bleiben während des Speicherns im DOM; gespeicherte Auswahl, Fehler und gesperrte Zustände werden textlich vermittelt. Teilnehmerdetails sind aufklappbar, die Desktopmatrix ist eine beschriftete Leseansicht. Tastatur- und schmale Viewport-Abläufe sind getestet. Bei 98 CSS-Pixeln ist nur die Terminfläche (nicht die gesamte Eventseite) geprüft. VoiceOver und vollständige manuelle Theme-Kontrastmessung bleiben als Abnahme offen.
 
 **Anforderung:** Die interne Termintabelle erfordert bei 390 Pixeln 81–88
 Pixel Seitenscrollen; „Nein" ist zunächst verborgen. Antwortbuttons messen

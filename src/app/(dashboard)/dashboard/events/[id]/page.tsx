@@ -192,7 +192,18 @@ export default async function EventDetailPage({
         eventId={event.id}
         userId={userId || null}
         isCreator={isCreator}
-        isPast={isTerminal}
+        canVoteDate={eventState.available.voteDate}
+        canManageDates={eventState.available.manageDates}
+        canSelectDate={eventState.available.selectDate}
+        canResetDates={eventState.available.resetDates}
+        blockedReason={eventState.blockedReason}
+        knownParticipants={[
+          { id: event.createdBy.id, displayName: event.createdBy.name ?? "Organisator", kind: "user" },
+          ...event.invites
+            .filter((invite) => invite.status === "accepted" && invite.user !== null)
+            .map((invite) => ({ id: invite.user?.id ?? invite.id, displayName: invite.user?.name ?? "Teilnehmer", kind: "user" as const })),
+          ...event.guestParticipants.map((guest) => ({ id: guest.id, displayName: guest.nickname, kind: "guest" as const })),
+        ]}
         initialProposals={event.dateProposals.map((p) => ({
           ...p,
           date: p.date.toISOString(),

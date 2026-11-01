@@ -30,7 +30,7 @@ export default async function PublicEventPage({
   const serialized = serializePublicEvent(event, session?.user?.id ?? null);
   return (
     <div className="min-h-screen bg-background bg-gradient-to-b from-background via-muted to-background py-12 text-foreground">
-      <div className="mx-auto w-full max-w-5xl px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto w-full max-w-5xl px-4 max-[320px]:px-2 sm:px-6 lg:px-8">
         <PublicEventHeader event={serialized} />
 
         <div className="mt-8 grid gap-6 lg:grid-cols-[2fr,1fr]">
@@ -85,15 +85,15 @@ export default async function PublicEventPage({
                   {serialized.guestParticipants.map((guest) => (
                     <div
                       key={guest.id}
-                      className="flex items-center justify-between rounded-lg border border-border/60 bg-muted/20 px-3 py-2"
+                      className="flex min-w-0 flex-wrap items-center justify-between gap-2 rounded-lg border border-border/60 bg-muted/20 px-3 py-2"
                     >
                       <div className="flex items-center gap-2">
                         <div className="flex h-7 w-7 items-center justify-center rounded-full bg-muted text-xs text-muted-foreground">
                           <UserCircle className="h-4 w-4" aria-hidden="true" />
                         </div>
-                        <span className="text-sm font-medium text-foreground">{guest.nickname}</span>
+                        <span className="min-w-0 break-words text-sm font-medium text-foreground">{guest.nickname}</span>
                       </div>
-                      <Badge variant="secondary" className="text-xs">
+                      <Badge variant="secondary" className="shrink-0 text-xs">
                         {guest.votesCount} Votes
                       </Badge>
                     </div>

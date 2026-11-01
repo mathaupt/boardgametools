@@ -3,7 +3,7 @@
 Geplante Erweiterungen stehen separat im [nummerierten Feature-Backlog](FEATURE-BACKLOG.md).
 Dort erfasste TODOs sind noch nicht implementiert oder zur Umsetzung freigegeben.
 
-> **Version 0.50.34** | 42 Seiten | 94 API-Endpunkte | 29 Datenbank-Modelle
+> **Version 0.50.35** | 42 Seiten | 94 API-Endpunkte | 29 Datenbank-Modelle
 >
 > Vollstaendige Dokumentation aller Nutzer-sichtbaren Features,
 > organisiert nach Bereichen mit Screenshots-Beschreibungen,
@@ -326,6 +326,8 @@ Uebersicht der Gaeste (per oeffentlichem Link beigetreten) mit Stimmenanzahl.
 ---
 
 ## 7. Terminabstimmung
+
+Öffentliche und geschützte Eventansichten verwenden beschriftete Radiogruppen für „Ja“, „Vielleicht“ und „Nein“. Die Antwort lässt sich per Tastatur wählen; während des Speicherns bleibt das Bedienelement bestehen. Gespeicherte Antworten, Ladezustand und Fehler werden als Text vermittelt. Auf schmalen Ansichten sind Teilnehmerantworten in einer aufklappbaren Liste erreichbar; am Desktop ergänzt eine beschriftete Vergleichsmatrix die Terminzeilen. Bedienflächen für Antworten und betroffene Hauptaktionen sind mindestens 44 Pixel groß. Native iOS-Terminabstimmung ist separat zu planen.
 
 Integriert in die Event-Detailseite. Doodle-aehnliche Terminplanung.
 

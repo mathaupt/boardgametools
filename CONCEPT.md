@@ -69,10 +69,12 @@ Die Weboberfläche verwendet seit 0.50.20 die bestätigte Gestaltung „Club Pro
 
 ### 8. Terminabstimmung (Date Polling)
 - **Doodle-ähnliche Terminplanung**: Mehrere Datumsvorschläge pro Event
-- **Verfügbarkeits-Abstimmung**: Ja / Vielleicht / Nein pro Termin
+- **Verfügbarkeits-Abstimmung**: Beschriftete native Radiogruppen für Ja / Vielleicht / Nein; Tastaturbedienung und gespeicherte Antwort sind erkennbar
+- **Mobile Übersicht**: Teilnehmerantworten erscheinen in einer aufklappbaren Liste; eine beschriftete Vergleichsmatrix ergänzt die Desktopansicht
 - **Gäste-Unterstützung**: Auch Gäste können über Termine abstimmen
 - **Termin festlegen**: Organizer wählt den finalen Termin
 - **Termin zurücksetzen**: Terminvorschläge können zurückgesetzt werden
+- **Datum ohne Uhrzeit**: Terminvorschläge werden als lokale Kalendertage formatiert und mit dem gespeicherten Datumsschlüssel verglichen
 
 ### 9. Spielereihen (Game Series)
 - **Reihe erstellen**: Name, Beschreibung, Cover-Bild (z.B. "EXIT - Das Spiel", "Adventure Games")

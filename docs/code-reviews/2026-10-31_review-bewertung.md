@@ -15,6 +15,23 @@ Der Impeccable-Detektor meldete in den geprüften mobilen und Desktop-Renderings
 keine Befunde. Diese Prüfung gilt für die geänderten Web-Votingansichten; native
 iOS-Oberflächen wurden nicht geändert.
 
+## Ergänzung: FEAT-011 – 0.50.35 (2026-11-01)
+
+| Kriterium | Ergebnis | Einschränkung |
+|---|---|---|
+| Unit-Tests | 763/763 bestanden | — |
+| TypeScript / Build | Erfolgreich | — |
+| Lint | 0 Fehler | 651 vorhandene Warnungen aus versionierten Skill-/Hilfsdateien |
+| Security-Check | 0 Fehler | 3 Hinweise: Raw SQL, Debug-Routen, npm Audit |
+| Review-Evaluator | 9,9/10, keine Regression | letzter History-Lauf `2026-11-01_1210.json` |
+| Browser-E2E | 1/1 bestanden | 400-%-Äquivalent prüft Terminfläche isoliert; restliche öffentliche Seite läuft bei 98 CSS-px über |
+| Impeccable | Keine primären Findings | Ein Advisory betrifft die unveränderte 11-px-Schriftgröße in `proposal-compact-row.tsx` |
+| Assistive / Theme-Abnahme | Teilweise offen | VoiceOver, Fokusretention nach Request, Fehler-/409-Fälle und vollständige Dark-Theme-Kontrastmessung ausstehend |
+
+Die Web-Implementierung ist funktionsfähig und regressionstestgesichert. Die offenen
+Abnahmepunkte begrenzen den Abschluss von BUG-038/039; sie wurden nicht als
+erledigt gewertet. Native iOS-Terminabstimmung bleibt separat.
+
 ## Ergänzung: Planungsstand 0.50.29
 
 | Kriterium | Vorher | Nachher |

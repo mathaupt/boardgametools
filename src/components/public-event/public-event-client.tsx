@@ -269,6 +269,7 @@ export function PublicEventClient({ token, event }: PublicEventClientProps) {
         token={token}
         currentUserId={event.currentUserId}
         activeGuest={activeGuest}
+        knownGuests={event.guestParticipants}
         canVote={canVoteDate}
         onStateConflict={refreshEventState}
         selectedDate={event.selectedDate}

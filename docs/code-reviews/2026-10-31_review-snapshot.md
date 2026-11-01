@@ -118,3 +118,12 @@ kein neuer Score oder erneuter Commit gegen eine verschobene Baseline.
 - Viewports 390 × 844, 1440 × 1000, hell/dunkel und 200-%-Zoom-Äquivalent geprüft; kein Überlauf.
 - Impeccable-Detektor bei 390 × 844 ohne Findings. ESLint: 0 Fehler, 651 vorhandene Warnungen.
 - Commit-Hook: Security-Check bestanden (0 Fehler; 2 Warnungen); Regressionsevaluator 10/10, keine Regression. History: `history/2026-10-31_2357.json`.
+
+## FEAT-011 Web-Umsetzung – 0.50.35 (2026-11-01)
+
+- Gesamte Unit-Suite: 763/763 Tests; TypeScript, Produktionsbuild und Security-Check erfolgreich. ESLint: 0 Fehler, 651 Warnungen aus vorhandenen Impeccable-Skript-/Hilfsdateien.
+- Isolierte PostgreSQL-/Chromium-E2E: 1/1. Antwortlabels und Dokumentbreite bei 320/390/768/1440 CSS-Pixeln sowie 195-Pixel-Äquivalent geprüft; bei 98 CSS-Pixeln wurde die Terminfläche separat geprüft, weil andere Teile der Eventseite überlaufen.
+- Tastatur: native Radiogruppe speichert Wechsel per Pfeiltaste; Fehler-/409-/Fokusretentions-E2E sowie manuelle VoiceOver-Abnahme offen.
+- Impeccable-Hook ist aktiviert. Statischer Detektor: keine primären Findings; ein Advisory zur 11-px-Schriftgröße in der unveränderten `proposal-compact-row.tsx`.
+- Security-Check: 0 Fehler, 3 vorhandene Hinweise (Raw-SQL, Debug-Routen und npm-Audit). Regressionsevaluator: Exitcode 0, Score 9,9/10, keine Regression; letzter History-Lauf `history/2026-11-01_1210.json`.
+- BUG-038 bleibt bis Theme-/Screenreader-Abnahme in Bearbeitung; BUG-039 bleibt zur vollständigen Kontrastmessung offen. Keine API-, Datenbank- oder iOS-Änderung.

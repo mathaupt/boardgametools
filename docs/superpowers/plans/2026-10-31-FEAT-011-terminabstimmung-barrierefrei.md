@@ -1,6 +1,6 @@
 # FEAT-011 – Mobile und assistive Terminabstimmung
 
-**Status:** Implementierungsplan zur Prüfung; keine Umsetzungsfreigabe.
+**Status:** Implementiert für die Web-App; manuelle VoiceOver-Abnahme und vollständige gerenderte Theme-Kontrastmessung offen. iOS separat.
 
 **Ziel:** Gäste und angemeldete Teilnehmer können jeden Termin vollständig sehen, mit Tastatur und Screenreader beantworten und ihre gespeicherte Antwort eindeutig erkennen.
 
@@ -8,7 +8,7 @@
 
 **Technik:** React/TypeScript, bestehende shadcn/ui-Bausteine, semantische Club-Programme-Farben, Vitest/Testing Library, CodeceptJS/Playwright und macOS VoiceOver.
 
-**Abarbeitung:** Nach ausdrücklicher Freigabe testgetrieben in den folgenden Schritten; keine automatische Delegation. Web zuerst; native SwiftUI-Terminabstimmung separat planen.
+**Abarbeitung:** Testgetrieben umgesetzt nach ausdrücklicher Freigabe „implementiere FEAT-011“. Web zuerst; native SwiftUI-Terminabstimmung separat planen.
 
 ## 1. Bestand und Umfang
 
@@ -181,3 +181,10 @@ it("vermittelt Datum, Antwort und Tastaturauswahl", async () => {
 ## 5. Abnahmegrenze
 
 Das Feature gilt erst als abgenommen, wenn die Hauptantworten mobil ohne horizontales Scrollen bedienbar sind, eine echte gespeicherte Auswahl semantisch erkennbar ist und Kontrast-/Touchmessungen sowie Tastatur- und VoiceOver-Prüfung vorliegen. Ein fehlender manueller Screenreadertest bleibt offen dokumentiert. Native iOS-Terminoberflächen sind nicht Bestandteil dieses Webplans.
+
+### Umsetzungsnachweis – 2026-11-01
+
+- Implementiert: gemeinsames Availability-Modell, native Radiogruppe, Terminzeile und Teilnehmerliste; öffentliche und geschützte Ansichten verwenden dieselben Controls.
+- Geprüft: gesamte Unit-Suite (763 Tests beim Lauf), Build, TypeScript, Security-Check und gezielte E2E mit isolierter PostgreSQL-Datenbank. Browser misst 320/390/768/1440 CSS-Pixel sowie 195- und 98-Pixel-Äquivalente, Touchziele und eine per Pfeiltaste gespeicherte Antwort.
+- Bei 98 CSS-Pixeln wird die Terminfläche separat geprüft; die gesamte öffentliche Eventseite hat dort weiterhin Überlauf in anderen Bereichen. 320/390/768/1440 und 195 px wurden ohne Dokumentüberlauf geprüft.
+- Noch offen: vollständige Dark-Theme-Kontrastmessung, Fehler-/409-/Fokusretentions-E2E und manuelle VoiceOver-Abnahme. BUG-038 ist bis zur assistiven und Theme-Abnahme in Bearbeitung; BUG-039 bleibt offen.

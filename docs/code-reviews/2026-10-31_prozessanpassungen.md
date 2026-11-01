@@ -104,3 +104,14 @@ falsch positiven P2-23-Findings ändert keine API-Verträge.
 - [x] Impeccable-Detektor erneut ausgeführt; initiale Kontrast-, Innenabstands- und Copy-Hinweise behoben, finale Prüfung ohne Findings.
 - [x] Vollständige Unit-Suite (740), TypeScript, Produktionsbuild und Lint (0 Fehler) erfolgreich.
 - [x] Security-Check im Commit-Hook bestanden (0 Fehler, 2 Warnungen); Regressionsevaluator 10/10 ohne Regression, Snapshot `history/2026-10-31_2357.json`.
+
+## FEAT-011 Web-Umsetzung – 0.50.35
+
+- [x] Vorherigen FEAT-010-Zustandsvertrag geprüft und als Capability-/Date-only-Basis übernommen; keine parallele Client-Sperrlogik eingeführt.
+- [x] Tests testgetrieben ergänzt: 763 Unit-Tests im Gesamtlauf, TypeScript und Build erfolgreich.
+- [x] Isolierte PostgreSQL-/Chromium-E2E für Tastaturantwort, gespeicherten Wert und Antwort-Zielgeometrie durchgeführt.
+- [x] Security-Check bestanden (0 Fehler, 3 bestehende Hinweise); Review-Evaluator Exitcode 0, keine Regression, letzter Snapshot `history/2026-11-01_1210.json`.
+- [x] Impeccable-Hookstatus geprüft und statischen Detektor ausgeführt; kein primäres Finding, ein nicht zu FEAT-011 gehörendes Größen-Advisory dokumentiert.
+- [ ] Dark-Theme-Kontrast vollständig messen; BUG-039 offen lassen, bis die Messwerte belegt sind.
+- [ ] VoiceOver, Fehler-/409- und Fokusretentionsverhalten manuell/E2E abnehmen; BUG-038 bis dahin in Bearbeitung.
+- [ ] Öffentliche Gesamtseite bei 400-%-Zoom weiter reflowen; derzeit wird nur die Terminfläche bei 98 CSS-px ohne Überlauf geprüft.

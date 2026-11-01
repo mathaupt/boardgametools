@@ -88,15 +88,15 @@ export function GuestRegistrationPanel({
             <UserPlus className="h-5 w-5" aria-hidden="true" />
             Als Gast teilnehmen
           </CardTitle>
-          <CardDescription>
+          <CardDescription className="[overflow-wrap:anywhere]">
             Nickname eingeben, um abstimmen zu können
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {activeGuest ? (
             <div className="rounded-lg border border-success bg-success/10 p-4 text-sm">
-              <p className="font-semibold text-success">Willkommen zurück, {activeGuest.nickname}!</p>
-              <p className="text-muted-foreground">
+              <p className="font-semibold text-foreground">Willkommen zurück, {activeGuest.nickname}!</p>
+              <p className="text-foreground">
                 Du kannst jetzt als Gast abstimmen. Deine Stimme wird unter deinem Nickname gezählt.
               </p>
             </div>
@@ -112,13 +112,13 @@ export function GuestRegistrationPanel({
                 value={nickname}
                 onChange={(event) => setNickname(event.target.value)}
                 disabled={joining}
-                className="min-w-0 bg-background/80"
+                className="min-h-11 min-w-0 bg-background"
               />
               <Button
                 data-testid="guest-join-button"
                 onClick={handleGuestJoin}
                 disabled={joining || nickname.trim().length < 2}
-                className="h-auto min-h-9 w-full whitespace-normal leading-tight"
+                className="h-auto min-h-11 w-full whitespace-normal leading-tight"
               >
                 {joining ? <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" /> : <UserPlus className="mr-2 h-4 w-4" aria-hidden="true" />}
                 {joining ? "Beitritt läuft…" : "Als Gast registrieren"}
@@ -150,22 +150,22 @@ export function GuestRegistrationPanel({
               <div
                 key={guest.id}
                 className={cn(
-                  "flex items-center justify-between rounded-lg border border-border/60 bg-background/60 px-3 py-2",
+                  "flex min-w-0 flex-wrap items-center justify-between gap-2 rounded-lg border border-border/60 bg-background/60 px-3 py-2",
                   activeGuest?.id === guest.id && "border-success bg-success/10"
                 )}
               >
-                <div className="flex items-center gap-2">
+                <div className="flex min-w-0 items-center gap-2">
                   <div className="rounded-full bg-muted p-2 text-muted-foreground">
                     <UserCircle className="h-4 w-4" aria-hidden="true" />
                   </div>
-                  <div>
+                  <div className="min-w-0">
                     <p className="text-sm font-medium">{guest.nickname}</p>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-xs text-foreground">
                       Beigetreten am {formatDate(guest.createdAt)}
                     </p>
                   </div>
                 </div>
-                <Badge variant="secondary" className="text-xs">
+                <Badge variant="secondary" className="shrink-0 text-xs">
                   {guest.votesCount} Votes
                 </Badge>
               </div>

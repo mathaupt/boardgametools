@@ -42,6 +42,8 @@ describe("GuestRegistrationPanel", () => {
     expect(nicknameInput.closest("section")).toHaveClass("min-w-0");
     expect(nicknameInput).toHaveClass("min-w-0");
     expect(screen.getByTestId("guest-join-button")).toHaveClass("whitespace-normal");
+    expect(nicknameInput).toHaveClass("min-h-11");
+    expect(screen.getByTestId("guest-join-button")).toHaveClass("min-h-11");
   });
 
   it("disables join button when nickname is too short", () => {
@@ -150,6 +152,8 @@ describe("GuestRegistrationPanel", () => {
 
     expect(screen.queryByTestId("guest-nickname-input")).not.toBeInTheDocument();
     expect(screen.queryByTestId("guest-join-button")).not.toBeInTheDocument();
+    expect(screen.getByText("Willkommen zurück, MaxGuest!")).toHaveClass("text-foreground");
+    expect(screen.getByText(/Du kannst jetzt als Gast abstimmen/)).toHaveClass("text-foreground");
   });
 
   it("renders initial guest list", () => {

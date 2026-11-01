@@ -1212,10 +1212,10 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 ### [BUG-038] Mobile Terminantworten sind teilweise verborgen und zu klein
 
-**Status:** `open`
+**Status:** `in_progress`
 **Schweregrad:** `medium`
 **Entdeckt:** 2026-10-30
-**Test geschrieben:** Nein
+**Test geschrieben:** Ja – `tests/unit/components/date-availability-group.test.tsx` und Chromium-E2E in `tests/e2e/public_events_test.ts` prüfen Radiogruppen, Tastaturwahl, gespeicherten Wert und erreichbare 44-px-Ziele.
 
 **Beschreibung:** Die mobile Terminwahl versteckt Antwortmöglichkeiten; der ausgewählte Zustand wird assistiver Technik nicht ausdrücklich vermittelt.
 
@@ -1227,11 +1227,11 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 **Ursache:** Feste Tabellenanordnung, h-8/w-8 und ausschließlich CSS-Klassen für die Auswahl in date-voting-section.tsx.
 
-**Lösung:** Noch nicht umgesetzt. Mobile Terminzeilen mit zugänglichen Auswahlgruppen planen und prüfen.
+**Lösung:** Öffentliche und geschützte Terminzeilen verwenden beschriftete native Radiogruppen. Die öffentliche Terminliste wurde für schmale Ansichten umgebrochen; 320/390/768/1440 px sowie 200-/400-%-Äquivalente prüfen den Antwortbereich. Die vollständige Dark-Theme-Prüfung und manuelle Screenreader-Abnahme stehen noch aus.
 
 **Prüfnachweis:** date-mobile.png und observations.json aus A; Browsermessungen aus B. Weitere Hauptbuttons und Eingaben messen nur 36 Pixel Höhe und sind im selben Planungsschritt zu berücksichtigen. Belege: `.impeccable/critique/evidence/public-event-A/` und `public-event-B/`.
 
-**Test-Status:** Kein Fix und noch kein dauerhafter Regressionstest. Bei Umsetzung ist ein Regressionstest verpflichtend.
+**Test-Status:** Unit- und E2E-Regressionstests vorhanden; Befund bleibt bis zur vollständigen Themen- und assistiven Abnahme in Bearbeitung.
 
 **Referenz im Changelog:** Version 0.50.24 – Prüfung der öffentlichen Eventseite dokumentiert.
 
@@ -1755,8 +1755,8 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 ## Statistik
 
-- **Offene Bugs:** 15
-- **In Bearbeitung:** 0
+- **Offene Bugs:** 14
+- **In Bearbeitung:** 1
 - **Behoben:** 43
 - **Wontfix:** 0
 - **Gesamt:** 58

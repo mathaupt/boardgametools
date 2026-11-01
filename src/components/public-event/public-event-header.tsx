@@ -14,7 +14,7 @@ export function PublicEventHeader({ event }: { event: SerializedPublicEvent }) {
     <header className="rounded-2xl border border-border bg-card p-6 shadow-lg sm:p-8">
       <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
         <div className="min-w-0 max-w-3xl">
-          <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+          <h1 className="[overflow-wrap:anywhere] text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
             {event.title}
           </h1>
           {event.description && (
