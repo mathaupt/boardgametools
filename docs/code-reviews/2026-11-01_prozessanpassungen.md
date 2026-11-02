@@ -29,3 +29,11 @@ konkrete Server-Component-Fehlermeldung in Production aus.
 - [x] Gezielter Test (2/2), TypeScript und Produktionsbuild bestanden.
 - [x] Event- und Sessionzeitpunkte gleichermaßen normalisiert.
 - [ ] Produktionsdeploy nach Commit beobachten; keine Deployaktion in dieser Korrektur ausgelöst.
+
+### FEAT-015 Aufnahme
+
+- [x] Feature fortlaufend nummeriert und als nicht freigegebene Anforderung im Backlog erfasst.
+- [x] Impeccable-Designreview und unabhängigen Detektorscan durchgeführt; 0 statische Treffer.
+- [x] Kompakte Zeilen als responsive Empfehlung dokumentiert; Kachelvariante nur bei ausreichender Kartenbreite.
+- [x] Browser-Viewportprüfung als nicht verfügbar dokumentiert; keine schreibenden Browser-/DB-Prüfungen ausgeführt.
+- [ ] Implementierungsplan mit Stimmenaggregation einschließlich Gäste, Bild-Fallback, Gleichständen, Zuständen und gezielten Tests erstellen.

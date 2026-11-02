@@ -27,3 +27,13 @@ Der Digest `219148984` korrelierte mit `eventDate.toISOString()` auf einem
 gecachten ISO-String. Event- und Sessionzeiten normalisieren jetzt sowohl
 `Date`-Objekte als auch Cache-Strings. Regressionstest 2/2, Typecheck und
 Produktionsbuild bestanden. Keine Produktionsdatenbank verwendet.
+
+## Ergänzung: FEAT-015 aufgenommen
+
+Die Anforderung „Top-3-Spiele im Event-Kurzüberblick“ wurde als Backlog-Feature
+aufgenommen; es liegt keine Umsetzungsfreigabe vor. Impeccable-Designreview
+empfiehlt kompakte Zeilen mit kleinen Vorschaubildern als responsive
+Standarddarstellung. Der CLI-Detektor meldet 0 statische Treffer. Eine
+Browseransicht war wegen des nicht verfügbaren Browserhosts nicht prüfbar.
+Dashboardabfrage, Konto- und Gaststimmen sowie fehlende Bild-/Votingzustände
+sind für den späteren Plan offen.

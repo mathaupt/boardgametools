@@ -298,3 +298,17 @@ Jeder Eintrag enthält Felder für Root-Cause-Analyse und Gegenmaßnahmen (manue
 **Auflösung 2026-11-01 22:39:** Der Commit-Hook führte `npm run review-evaluate:regression` mit Registryzugriff aus: Exitcode 0, keine Regressionen, 10/10. SEC-45 ist teilweise gelöst; Snapshot `history/2026-11-01_2239.json`.
 
 ---
+
+## 2026-11-02 08:02:14
+
+| Finding | Priorität | Vorher | Jetzt | Detail |
+|---------|-----------|--------|-------|--------|
+| SEC-45: npm audit: Bekannte Vulnerabilities | P2 | partially_resolved | open | npm audit lieferte keine gültigen Prüfdaten |
+
+**Root-Cause:** Der erste Evaluatorlauf hatte keinen Zugriff auf `registry.npmjs.org`; npm audit antwortete mit `ENOTFOUND`, wodurch SEC-45 vorsorglich als offen gewertet wurde. Es gab keine Änderung an Abhängigkeiten.
+**Gegenmaßnahme:** Audit- und Evaluatorlauf nach bestätigtem Registryzugriff wiederholen; fehlende Auditdaten nicht als Paketänderung behandeln.
+**Verantwortlich:** BoardGameTools-Wartung.
+
+**Auflösung 2026-11-02:** `npm audit --omit=dev` mit Registryzugriff meldete 0 Vulnerabilities. Der erneut ausgeführte `npm run review-evaluate:regression` endete mit Exitcode 0, 10/10, ohne offene Findings und ohne Regression. Abschlusslauf nach FEAT-015-Datenminimierung: `history/2026-11-02_0913.json`.
+
+---

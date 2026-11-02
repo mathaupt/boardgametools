@@ -28,3 +28,12 @@ später nachgereichte Digest identifizierte die Ursache.
 | TypeScript | `npm run typecheck` erfolgreich |
 | Produktionsbuild | `npm run build` erfolgreich |
 | Datenbank | Keine Produktionsabfrage oder Mutation |
+
+## Ergänzung: FEAT-015
+
+| Prüffeld | Ergebnis | Einschränkung |
+|---|---|---|
+| Backlog | FEAT-015 aufgenommen; keine Implementierungsfreigabe | Plan steht aus |
+| Impeccable-Detektor | 0 statische Treffer | Kein Nachweis gerenderter Barrierefreiheit |
+| Visuelle Empfehlung | Ranglistenzeilen mit kleinen Bildern; Kacheln nur bei ausreichender Breite | Browserhost nicht verfügbar, 390 px/200-%-Zoom im Plan zu prüfen |
+| Daten | Vote- und Bilddaten fehlen in der Dashboard-Kurzübersicht | Konto- und Gaststimmen sowie Abfragekosten müssen geplant werden |

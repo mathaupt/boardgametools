@@ -48,7 +48,7 @@ export const faqSections: FaqSection[] = [
       {
         question: "Was sehe ich auf dem Dashboard?",
         answer:
-          "Das Dashboard zeigt dir eine Uebersicht deiner Aktivitaeten: Schnellzugriffe (Spiel hinzufuegen, BGG-Import, Session erstellen, Gruppe erstellen, Event planen), offene Einladungen, Statistik-Kacheln (Anzahl Spiele, Sessions, Gruppen, Events), deine naechsten Events und die letzten gespielten Sessions.",
+          "Das Dashboard zeigt dir eine Übersicht deiner Aktivitäten: Schnellzugriffe, offene Einladungen, Zahlen zu Spielen, Sessions, Gruppen und Events, kommende Spieleabende und zuletzt gespielte Partien. Bei einem kommenden Abend ohne festgelegtes Spiel siehst du außerdem bis zu drei meistgewählte Vorschläge mit Bild und Stimmenzahl.",
       },
       {
         question: "In welcher Sprache ist die App?",

@@ -57,6 +57,12 @@ docs/code-reviews/*
 !docs/code-reviews/2026-11-01_review-snapshot.md
 !docs/code-reviews/2026-11-01_review-bewertung.md
 !docs/code-reviews/2026-11-01_prozessanpassungen.md
+!docs/code-reviews/2026-11-02_review-snapshot.md
+!docs/code-reviews/2026-11-02_review-bewertung.md
+!docs/code-reviews/2026-11-02_prozessanpassungen.md
+!docs/code-reviews/history/
+docs/code-reviews/history/*
+!docs/code-reviews/history/2026-11-02_0913.json
 
 # database backups & dumps
 *.bak

@@ -1,7 +1,16 @@
 import Link from "next/link";
-import { ArrowRight, MapPin } from "lucide-react";
+import Image from "next/image";
+import { ArrowRight, Dice6, MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formatDate, formatShortMonth, formatTime } from "@/lib/date";
+
+interface DashboardProposalPreview {
+  id: string;
+  name: string;
+  minutes: number | null;
+  imageUrl: string | null;
+  totalVotes: number;
+}
 
 export interface EveningPreview {
   id: string;
@@ -10,7 +19,7 @@ export interface EveningPreview {
   location: string | null;
   selectedGameName: string | null;
   votingClosed: boolean;
-  proposals: { id: string; name: string; minutes: number | null }[];
+  proposals: DashboardProposalPreview[];
 }
 
 export function EventDate({ date, compact = false }: { date: string; compact?: boolean }) {
@@ -37,7 +46,17 @@ export function EventPreview({ event, featured = false }: { event: EveningPrevie
       <span className="club-state">{state}</span>{selected && <p className="mt-3 font-semibold">{selected}</p>}
     </div></div>
     {!selected && event.proposals.length > 0 && <div className="club-event-proposals"><h4 className="font-semibold">Was kommt auf den Tisch?</h4>
-      <ul>{event.proposals.map((proposal) => <li key={proposal.id}><span className="font-medium">{proposal.name}</span>{proposal.minutes != null && <span className="text-sm text-muted-foreground">{proposal.minutes} Min.</span>}</li>)}</ul>
+      <p className="club-proposal-caption">Top 3 nach Stimmen</p>
+      <ol aria-label="Top 3 nach Stimmen">{event.proposals.map((proposal, index) => <li key={proposal.id}>
+        <span className="club-proposal-rank" aria-hidden="true">{index + 1}</span>
+        <div className="club-proposal-thumbnail" aria-hidden="true">
+          {proposal.imageUrl ? <Image src={proposal.imageUrl} alt="" fill sizes="44px" className="object-cover" /> : <Dice6 className="size-5 text-muted-foreground" />}
+        </div>
+        <div className="club-proposal-copy">
+          <span className="font-medium">{proposal.name}</span>
+          <p className="text-sm text-muted-foreground">{proposal.totalVotes} {proposal.totalVotes === 1 ? "Stimme" : "Stimmen"}{proposal.minutes != null ? ` · ${proposal.minutes} Min.` : ""}</p>
+        </div>
+      </li>)}</ol>
     </div>}
     <div className="club-event-footer"><span className="text-sm text-muted-foreground">{formatDate(event.eventDate)}</span><Link className="club-text-link" href={`/dashboard/events/${event.id}`}>Spieleabend ansehen <ArrowRight className="size-4" aria-hidden="true" /></Link></div>
   </article>;

@@ -3,7 +3,7 @@
 Geplante Erweiterungen stehen separat im [nummerierten Feature-Backlog](FEATURE-BACKLOG.md).
 Dort erfasste TODOs sind noch nicht implementiert oder zur Umsetzung freigegeben.
 
-> **Version 0.50.38** | 42 Seiten | 95 API-Endpunkte | 29 Datenbank-Modelle
+> **Version 0.50.48** | 42 Seiten | 95 API-Endpunkte | 29 Datenbank-Modelle
 >
 > Vollstaendige Dokumentation aller Nutzer-sichtbaren Features,
 > organisiert nach Bereichen mit Screenshots-Beschreibungen,
@@ -40,7 +40,7 @@ Das Dashboard ist die zentrale Startseite nach dem Login.
 
 ### Kommende Spieleabende und Einladungen
 
-Der nächste Spieleabend wird mit einem großen Datumsblock, Uhrzeit, Ort und dem tatsächlichen Stand der Spielauswahl dargestellt. Weitere Termine folgen als kompakte Liste. Offene Einladungen stehen auf dem Desktop daneben und mobil direkt nach den Terminen. Zusagen und Absagen bleiben direkt erreichbar.
+Der nächste Spieleabend wird mit einem großen Datumsblock, Uhrzeit, Ort und dem tatsächlichen Stand der Spielauswahl dargestellt. Solange noch kein Spiel festgelegt ist, zeigt „Was kommt auf den Tisch?“ bis zu drei Vorschläge mit den meisten Konto- und Gaststimmen. Rang, Spielname, Stimmenzahl und ein kleines Cover oder Würfel-Fallback bilden eine kompakte Zeilenliste. Bei geschlossenem Voting bleibt diese Übersicht sichtbar, solange noch kein Spiel feststeht. Weitere Termine folgen als kompakte Liste. Offene Einladungen stehen auf dem Desktop daneben und mobil direkt nach den Terminen. Zusagen und Absagen bleiben direkt erreichbar.
 
 ### Spielhistorie und Schnellzugriffe
 

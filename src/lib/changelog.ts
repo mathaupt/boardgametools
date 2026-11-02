@@ -12,6 +12,24 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.48",
+    date: "2026-11-02",
+    title: "Meistgewählte Spiele im Dashboard zeigen",
+    description: "Die Übersicht des nächsten Spieleabends macht die drei beliebtesten Vorschläge samt Stimmenzahl und Cover schnell erkennbar.",
+    changes: [
+      { type: "feature", text: "Im hervorgehobenen Spieleabend erscheinen bis zu drei Vorschläge, sortiert nach Konto- und Gaststimmen, mit kleinem Bild oder Würfel-Fallback." },
+    ],
+  },
+  {
+    version: "0.50.47",
+    date: "2026-11-01",
+    title: "Beliebte Spiele im Event-Kurzüberblick vormerken",
+    description: "Eine neue Anforderung für die kompakte Übersicht der meistgewählten Spiele wurde im Feature-Backlog festgehalten.",
+    changes: [
+      { type: "internal", text: "FEAT-015 aufgenommen: Top drei Vorschläge nach Gesamtstimmen mit kleinen Bildern; responsive Darstellung und Umsetzungsplan sind noch offen." },
+    ],
+  },
+  {
     version: "0.50.46",
     date: "2026-11-01",
     title: "Dashboard nach dem Cache-Laden stabilisieren",

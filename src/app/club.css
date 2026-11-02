@@ -39,7 +39,12 @@
 .club-event-meta { display:flex; flex-wrap:wrap; gap:.4rem 1rem; font-size:.95rem; color:var(--muted-foreground); }
 .club-state { display:inline-flex; align-items:center; gap:.4rem; padding:.3rem .6rem; margin-top:.9rem; border-radius:.35rem; background:var(--secondary); color:var(--secondary-foreground); font-size:.85rem; font-weight:600; }
 .club-event-proposals { padding:1.2rem 1.5rem; border-top:1px solid var(--border); }
-.club-event-proposals li { display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:.5rem; padding-top:.8rem; }
+.club-proposal-caption { margin-top:.25rem; color:var(--muted-foreground); font-size:.875rem; }
+.club-event-proposals ol { display:flex; flex-direction:column; margin-top:.3rem; }
+.club-event-proposals li { display:flex; align-items:center; gap:.75rem; min-width:0; padding:.7rem 0; border-top:1px solid var(--border); }
+.club-proposal-rank { display:grid; place-items:center; flex-shrink:0; width:1.75rem; height:1.75rem; border-radius:50%; background:var(--secondary); color:var(--secondary-foreground); font-size:.875rem; font-weight:700; font-variant-numeric:tabular-nums; }
+.club-proposal-thumbnail { position:relative; display:grid; place-items:center; overflow:hidden; flex-shrink:0; width:2.75rem; height:3.5rem; border-radius:.35rem; background:var(--secondary); }
+.club-proposal-copy { min-width:0; overflow-wrap:anywhere; }
 .club-event-footer { display:flex; align-items:center; justify-content:space-between; gap:.75rem; flex-wrap:wrap; padding:.65rem 1.5rem; background:var(--secondary); }
 .club-event-row { display:flex; align-items:center; gap:1.1rem; padding:1.25rem 0; border-bottom:1px solid var(--border); }
 .club-event-row h3 { font-size:1.15rem; font-weight:600; overflow-wrap:anywhere; }

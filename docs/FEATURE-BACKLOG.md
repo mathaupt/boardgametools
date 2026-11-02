@@ -28,6 +28,7 @@ Bedarf zu aktualisieren. Ergebnis am jeweiligen Plan dokumentieren:
 | FEAT-012 | Teilnahme vor passive Listen rücken | Web umgesetzt; Browser-E2E/Viewport-Abnahme offen | [Teilnahmeweg und Teilnehmerdaten](superpowers/plans/2026-10-31-FEAT-012-oeffentliche-teilnahme.md) | Umgesetzt am 01.11.2026; Web zuerst, iOS separat |
 | FEAT-013 | Aktive Identität verständlich machen | Web umgesetzt; Browser-E2E/Viewport-Abnahme offen | [Eine aktive Identität](superpowers/plans/2026-10-31-FEAT-013-aktive-identitaet.md) | Umgesetzt am 01.11.2026; ohne Gastwechsel |
 | FEAT-014 | Suchzustände und Beschriftung der BGG-Suche | Implementiert (Web; Browser-E2E offen) | [Öffentliche BGG-Suche](superpowers/plans/2026-10-31-FEAT-014-bgg-suchzustaende.md) | Am 01.11.2026 freigegeben und umgesetzt; native iOS-Suche nicht Teil dieses öffentlichen Web-Umfangs |
+| FEAT-015 | Top-3-Spiele im Event-Kurzüberblick | Umgesetzt (Web; Browser-Viewportabnahme offen) | [Dashboard Top drei](superpowers/plans/2026-11-02-FEAT-015-dashboard-top-three.md) | Web-Umsetzung am 02.11.2026 freigegeben und umgesetzt; iOS separat |
 
 Am 30.10.2026 aufgenommen. Bei der Planung sind Web, iOS sowie angemeldete und
 öffentliche Voting-Ansichten auf Relevanz und bereits vorhandene Teilfunktionen
@@ -541,6 +542,60 @@ ausgeführt.
   Platzhalter.
 - Fehlerzustände sind verständlich formuliert und können wiederholt werden.
 - Regressionstests sichern die Zustandswechsel ab.
+
+## FEAT-015 – Top-3-Spiele im Event-Kurzüberblick
+
+**Status:** Web-Dashboard umgesetzt; manuelle Browser-Viewportabnahme offen.
+**Plattformumfang:** Dashboard der Web-App; native iOS-Oberfläche bleibt
+separat zu planen.
+**Umsetzungsplan:** [Dashboard Top drei](superpowers/plans/2026-11-02-FEAT-015-dashboard-top-three.md).
+**Umsetzungsfreigabe:** Am 02.11.2026 durch „dann implementiere FEAT-015“ erteilt.
+**Gestaltungsprüfung:** Impeccable empfiehlt kompakte Ranglistenzeilen mit
+kleinem Vorschaubild, Spieltitel und Gesamtstimmenzahl als sichere
+Standarddarstellung. Die Umsetzung verwendet diese Zeilen auf allen Breiten;
+eine Dreier-Kachelanordnung würde auf schmalen Karten Bild, Titel und Stimmen
+zu stark einengen. Der vorherige gerenderte Browservergleich war mangels
+verfügbarem Browserhost nicht möglich; eine manuelle Prüfung bei 390 px und
+200-%-Zoom bleibt offen.
+
+**Ziel:** Im Bereich „Was kommt auf den Tisch?“ erkennen Teilnehmende auf einen
+Blick die drei beliebtesten Spielvorschläge des nächsten Spieleabends.
+
+**Anforderung:** In der Kurzübersicht sollen höchstens die drei Vorschläge mit
+den meisten Stimmen stehen und jeweils ein kleines Spielbild erhalten. Die
+responsive Zeilenliste ist die Impeccable-Empfehlung und wurde für alle
+Kartenbreiten gewählt. Stimmen müssen der bestehenden Voting-Semantik folgen,
+einschließlich Konto- und Gaststimmen. Als Bildquelle sind das gespeicherte
+Spielbild und bei BGG-Vorschlägen das vorhandene BGG-Bild zu berücksichtigen.
+
+**Umsetzung:** Konto- und Gaststimmen werden summiert. Bei Gleichstand kommt
+der ältere Vorschlag zuerst, danach entscheidet die Vorschlags-ID stabil.
+Vorschläge aus der Sammlung verwenden das gespeicherte Cover, BGG-Vorschläge
+das BGG-Bild. Ohne Bild zeigt die Zeile ein Würfelsymbol. Ein festgelegtes
+Spiel blendet den Vorschlagsblock wie bisher aus; geschlossenes Voting ohne
+festgelegtes Spiel zeigt weiterhin die Top drei. Für die Rangfolge lädt die
+Abfrage Stimmenzahlen aller Vorschläge des hervorgehobenen Events; Namen, Dauer
+und Bilder liest sie anschließend nur für die Top drei.
+
+**Abnahmekriterien:**
+
+- Bei offener Spielauswahl erscheinen höchstens die drei Vorschläge mit der
+  höchsten Gesamtstimmenzahl, einschließlich Gaststimmen, in stabiler Ordnung.
+- Jeder Eintrag zeigt ein kleines Bild oder einen passenden zugänglichen
+  Ersatz, Rang, Spielname und Stimmenzahl.
+- Die Zeilenliste ist für schmale Ansichten ausgelegt; der manuelle Nachweis bei
+  390 px und 200-%-Zoom sowie besonders langen Titeln bleibt offen.
+- Null bis zwei Vorschläge, Gleichstände, fehlende Bilder, geschlossene
+  Abstimmung und bereits festgelegtes Spiel haben definierte Zustände.
+- Für alle Vorschläge werden nur Stimmen-/Rangdaten geladen; Namen, Dauer und
+  Bilder werden nur für die angezeigten Top drei abgerufen.
+- Gezielte Tests für Stimmenaggregation, stabile Reihenfolge, Stimmenplural,
+  Bild-Fallback, lange Titel und bereits festgelegtes Spiel bestanden.
+
+**Prüfstand 02.11.2026:** Gezielte Unit-Tests bestanden (7/7), der
+Impeccable-Detektor meldet keine statischen Findings, TypeScript- und
+Lintprüfung bestanden. Browser-Viewportabnahme wurde nicht ausgeführt, da der
+Browserhost nicht verfügbar war.
 
 ## Nachverfolgung
 
