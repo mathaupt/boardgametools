@@ -638,10 +638,12 @@ liegt bei 81,69 % Statements, 75,65 % Branches, 83,16 %
 Functions und 83,67 % Lines; die dortige aktuelle Schwelle beträgt 50 % für
 Statements/Functions/Lines und 45 % für Branches. Das langfristige Ziel ist
 mindestens 80 % in allen vier Metriken für die explizit erfassten,
-ausführbaren Produktionsmodule. Global ist derzeit keine Coverage-Schwelle
+ausführbaren Produktionsmodule. Global sind aktuell 22 % je Metrik
 konfiguriert; das bestehende `src/lib`-Gate beträgt 50 % für
-Statements/Functions/Lines und 45 % für Branches. Geplante Zwischenstufen:
-zuerst ein Baseline-Gate unterhalb des gemessenen Ist-Stands, dann mindestens 55 %,
+Statements/Functions/Lines und 45 % für Branches. Der frühere Planhinweis auf
+ein fehlendes globales Gate war falsch und wurde beim Quellenabgleich
+korrigiert. Geplante Zwischenstufen: zuerst das bestehende Gate auf
+46/44/48/48 % (Statements/Branches/Functions/Lines) anheben, dann mindestens 55 %,
 65 %, 72 % und schließlich 80 % je Metrik. Der Nenner darf nicht durch
 unbegründetes Ausschließen ungetesteter Laufzeitdateien verkleinert werden;
 Framework-/Generierungsdateien, reine Daten und UI-Primitiven dürfen nur mit
@@ -653,7 +655,7 @@ im [FEAT-018-Plan](superpowers/plans/2026-11-02-FEAT-018-coverage-80.md).
 | TypeScript Errors | 0 | `tsc --noEmit` |
 | ESLint Errors + Warnings | 0 | `eslint src/ --max-warnings 0` |
 | Unit Tests | 100% bestanden | `npm test` |
-| Coverage (global, aktuell) | Keine Schwelle; Ist-Stand im Coverage-Bericht; Ziel 80% | `npm run test:coverage` |
+| Coverage (global, aktuell) | >= 22% je Statements/Branches/Functions/Lines; Ziel 80% | `npm run test:coverage` |
 | Coverage (`src/lib`, aktuell) | >= 50% Statements/Functions/Lines und >= 45% Branches; Ziel ebenfalls 80% | `npm run test:coverage` |
 | npm audit (prod) | 0 high/critical | `npm audit --omit=dev` |
 | API-Route-Testabdeckung | >= 1 Test/Methode | Manuell pruefen |

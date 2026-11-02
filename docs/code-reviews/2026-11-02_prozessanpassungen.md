@@ -32,3 +32,11 @@ bestanden. Die fehlende gerenderte Browserabnahme bleibt ausdrücklich offen.
 - [x] TDD als Pflicht für Laufzeitänderungen in `AGENTS.md` und Testing-Skill festgeschrieben.
 - [x] Vercel React Best Practices und Next.js Best Practices als lokale Agenten-Skills aufgenommen.
 - [ ] Keine Umsetzung des Coverage-Ausbaus freigegeben; Coverage-Schwellen unverändert.
+
+### Implementierungspläne FEAT-016–018
+
+- [x] Zwei neue Web-Pläne mit Aufgaben, konkreten Dateien, fachlichen Tests, Fehlerzuständen, Accessibility-, Security- und Impeccable-Abnahme erstellt.
+- [x] iOS-Bestand geprüft; native Suche und Sessioncover als getrennten späteren Umfang ausgewiesen.
+- [x] FEAT-018 mit tatsächlichem globalem 22-%-Gate abgeglichen; fehlerhafte Vorannahme und exakter Konfigurations-Spiegeltest entfernt.
+- [x] Schrittweise Coveragepakete, aktuelle Messung vor jeder Umsetzung und CI-Artefakte eingeplant.
+- [ ] Empfohlene UI-Varianten und Implementierungsumfang freigeben; keine Produktumsetzung erfolgt.

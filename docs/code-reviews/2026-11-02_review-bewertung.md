@@ -28,3 +28,12 @@ FEAT-018 hat als Coverage-Baseline 46,84 % Statements, 44,59 % Branches,
 ist geplant; Schwellen wurden nicht geändert. Die TDD-Regel und zwei
 Stack-Skills wurden im Projekt aufgenommen. Der Report weist außerdem 91
 erfasste Produktionsdateien ohne Zeilenabdeckung aus.
+
+## Planungsprüfung FEAT-016–018
+
+Die neuen UI-Pläne trennen lokale Suche/ID-Auswahl von Bilddarstellung und
+definieren die erforderlichen Test- und Abnahmeschritte. FEAT-018 verwendet
+jetzt die tatsächliche globale 22-%-Schranke als Ausgangspunkt und vermeidet
+einen Unit-Test, der nur Konfigurationszahlen spiegeln würde. Quellenumfang,
+historische Messwerte und Messlücken außerhalb des Coverage-Inventars sind
+ausgewiesen. Umsetzungsfreigaben und neue Laufzeit-Abnahmen sind weiterhin offen.

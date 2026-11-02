@@ -140,6 +140,7 @@ export default defineConfig({
     globals: true,
     setupFiles: ["./tests/setup.ts"],
     include: ["tests/unit/**/*.test.ts", "tests/unit/**/*.test.tsx"],
+    testTimeout: 15_000,
     coverage: {
       provider: "v8",
       reporter: ["text", "text-summary", "json-summary", "html"],
@@ -150,6 +151,7 @@ export default defineConfig({
         "src/app/**/*form*.tsx",
         "src/app/**/*dialog*.tsx",
         "src/app/**/*modal*.tsx",
+        "src/app/api/**/*.ts",
       ],
       exclude: [
         "node_modules/",
@@ -160,6 +162,10 @@ export default defineConfig({
         "**/*.d.ts",
       ],
       thresholds: {
+        statements: 22,
+        branches: 22,
+        functions: 22,
+        lines: 22,
         "src/lib/**": {
           statements: 50,
           branches: 45,
@@ -185,7 +191,7 @@ export default defineConfig({
 | `globals`            | `true`                                      | `describe`, `it`, `expect` ohne Import    |
 | `setupFiles`         | `./tests/setup.ts`                          | `@testing-library/jest-dom` Matcher       |
 | `coverage.provider`  | `v8`                                        | Schnelle native Coverage-Erfassung        |
-| `coverage.thresholds`| global ohne Schwelle; `src/lib/**`: 50% Statements/Functions/Lines, 45% Branches | FEAT-018 ergänzt globale Baseline und erhöht sie gestuft |
+| `coverage.thresholds`| global 22% je Metrik; `src/lib/**`: 50% Statements/Functions/Lines, 45% Branches | FEAT-018 hebt vorhandene Schwellen gestuft an |
 | `alias @`            | `./src`                                     | Gleiche Pfadaufloesung wie in Next.js     |
 
 **Abhaengigkeiten:** `vitest` ^4.1.12, `@vitejs/plugin-react` ^6.0.2, `@vitest/coverage-v8` ^4.1.12, `jsdom` ^29.1.1, `@testing-library/react` ^16.3.2, `@testing-library/jest-dom` ^7.0.0, `@testing-library/user-event` ^14.6.3, `jest-axe` ^11.0.0.

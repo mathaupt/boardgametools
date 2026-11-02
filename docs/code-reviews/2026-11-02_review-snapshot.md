@@ -24,8 +24,8 @@ Umsetzungsfreigabe erteilt.
 
 Die aktuelle Liste wiederholt ein Würfelzeichen statt spielbezogener Bilder.
 Die unabhängige Designprüfung bewertete sie mit 21/40; der Impeccable-Detektor
-meldete 0 statische Findings. Browserprüfung war wegen des nicht verfügbaren
-Browser-Host nicht verfügbar. Cover in Sessionkarten wurden als FEAT-017
+meldete 0 statische Findings. Eine Browserprüfung war wegen des nicht verfügbaren
+Browserhosts nicht möglich. Cover in Sessionkarten wurden als FEAT-017
 aufgenommen; Plan und Umsetzungsfreigabe stehen aus.
 
 ## Ergänzung: FEAT-018 Coverage-Ausgangsstand
@@ -36,3 +36,11 @@ aufgenommen; Plan und Umsetzungsfreigabe stehen aus.
 80-%-Ziel sind dokumentiert. 91 erfasste Produktionsdateien liegen bei 0 %
 Lines; diese werden im Plan nach Risiko priorisiert. Es wurde keine Schwelle
 geändert.
+
+## Planungsabgleich FEAT-016 bis FEAT-018 – 0.50.51
+
+- FEAT-016: Web-Picker mit lokaler Suche, gültiger ID-Bindung, Fokus-/Tastaturvertrag und gezielten Form-/Filtertests geplant.
+- FEAT-017: kleine dekorative Cover neben Titel/Datum mit Quellenprüfung und Ladefehler-Fallback empfohlen; Variantenwahl vor Umsetzung bestätigen. Lesende Browserabnahme und iOS separat.
+- FEAT-018: Quellenabgleich korrigiert die frühere falsche Aussage, es gebe kein globales Gate. `vitest.config.ts` setzt tatsächlich 22 % je globaler Metrik und 50/45/50/50 % für `src/lib`.
+- Die 849 Tests und Coveragewerte oben sind historische Messwerte; in diesem Planungsschritt wurde kein neuer Coverage-Lauf behauptet.
+- Pläne und Dokumentation geändert; keine Produktfunktion oder Coverage-Konfiguration umgesetzt. Freigaben stehen aus.

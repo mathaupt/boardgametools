@@ -12,6 +12,16 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.51",
+    date: "2026-11-02",
+    title: "Session-Erweiterungen und Testausbau planen",
+    description: "Die nächsten Session-Verbesserungen und der schrittweise Ausbau der Testabdeckung haben konkrete Implementierungspläne erhalten.",
+    changes: [
+      { type: "internal", text: "FEAT-016 und FEAT-017 geplant: durchsuchbare Spielauswahl bei der Session-Anlage sowie kleine Spielcover in der Sessions-Liste, mit TDD-, Barrierefreiheits-, Impeccable- und Sicherheitsabnahme." },
+      { type: "internal", text: "FEAT-018-Plan präzisiert: Das bestehende globale Coverage-Gate von 22 % wird nach frischem Messlauf schrittweise bis 80 % angehoben; die bisherige Dokumentationsaussage über ein fehlendes Gate wurde korrigiert." },
+    ],
+  },
+  {
     version: "0.50.50",
     date: "2026-11-02",
     title: "Qualitätssicherung und Session-Übersicht erweitern",

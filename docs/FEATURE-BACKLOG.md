@@ -29,8 +29,8 @@ Bedarf zu aktualisieren. Ergebnis am jeweiligen Plan dokumentieren:
 | FEAT-013 | Aktive Identität verständlich machen | Web umgesetzt; Browser-E2E/Viewport-Abnahme offen | [Eine aktive Identität](superpowers/plans/2026-10-31-FEAT-013-aktive-identitaet.md) | Umgesetzt am 01.11.2026; ohne Gastwechsel |
 | FEAT-014 | Suchzustände und Beschriftung der BGG-Suche | Implementiert (Web; Browser-E2E offen) | [Öffentliche BGG-Suche](superpowers/plans/2026-10-31-FEAT-014-bgg-suchzustaende.md) | Am 01.11.2026 freigegeben und umgesetzt; native iOS-Suche nicht Teil dieses öffentlichen Web-Umfangs |
 | FEAT-015 | Top-3-Spiele im Event-Kurzüberblick | Umgesetzt (Web; Browser-Viewportabnahme offen) | [Dashboard Top drei](superpowers/plans/2026-11-02-FEAT-015-dashboard-top-three.md) | Web-Umsetzung am 02.11.2026 freigegeben und umgesetzt; iOS separat |
-| FEAT-016 | Spielauswahl bei Session-Anlage per Eingabe filtern | Anforderung aufgenommen; Plan und Umsetzung offen | Noch nicht erstellt | Keine |
-| FEAT-017 | Spielcover in der Sessions-Übersicht anzeigen | Anforderung aufgenommen; Impeccable-Prüfung erfolgt; Plan und Umsetzung offen | Noch nicht erstellt | Keine |
+| FEAT-016 | Spielauswahl bei Session-Anlage per Eingabe filtern | Plan erstellt; Umsetzung offen | [Durchsuchbare Spielauswahl](superpowers/plans/2026-11-02-FEAT-016-session-spielsuche.md) | Keine |
+| FEAT-017 | Spielcover in der Sessions-Übersicht anzeigen | Plan erstellt; Covervariante empfohlen, noch nicht bestätigt; Umsetzung offen | [Cover in Sessionkarten](superpowers/plans/2026-11-02-FEAT-017-session-cover.md) | Keine |
 | FEAT-018 | Testabdeckung schrittweise auf 80 % erhöhen | Plan erstellt; Governance und Skills ergänzt; Testausbau offen | [Coverage-Ziel 80 %](superpowers/plans/2026-11-02-FEAT-018-coverage-80.md) | Keine |
 
 Am 30.10.2026 aufgenommen. Bei der Planung sind Web, iOS sowie angemeldete und
@@ -141,8 +141,8 @@ Gastwechsel in FEAT-013.
 ### F. Session-Spielauswahl beschleunigen: FEAT-016
 
 Das Spiel-Dropdown in der Session-Anlage soll eine Texteingabe zum Filtern der
-eigenen Sammlung erhalten. Ein Implementierungsplan und eine Umsetzungsfreigabe
-stehen noch aus. Der Umfang betrifft die Spielauswahl; das Spieler-Dropdown,
+eigenen Sammlung erhalten. Der Implementierungsplan ist erstellt; eine
+Umsetzungsfreigabe steht aus. Der Umfang betrifft die Spielauswahl; das Spieler-Dropdown,
 die Session-API und Berechtigungen bleiben davon getrennt. Das Feature ist noch
 nicht in die vorgeschlagene Reihenfolge A bis E eingeteilt.
 
@@ -153,43 +153,8 @@ Spielrunden schneller visuell unterscheidbar sind. Die Impeccable-Kritik ergab
 21/40 Punkte; stärkster Bezug ist die derzeitige Wiederholung desselben
 Würfelzeichens anstelle eines spielbezogenen Erkennungsmerkmals. Der Detektor
 meldet 0 statische Findings. Eine Live-Browserprüfung war nicht möglich, weil
-der Browserhost nicht verfügbar war. Der Plan soll außerdem eine ruhige
-Coverdarstellung, fehlende Bilder, lange Titel und mobile Zeilen-/Kartenbreiten
-festlegen. Umsetzung und Plattformumfang sind offen.
-
-## FEAT-017 – Spielcover in der Sessions-Übersicht anzeigen
-
-**Status:** Anforderung aufgenommen; Implementierungsplan und Umsetzung offen.
-**Plattformumfang:** Web-Sessions-Liste `/dashboard/sessions`; iOS bei der
-Planung separat auf bereits vorhandene Bilddarstellung prüfen.
-**Umsetzungsfreigabe:** Keine erteilt.
-**Gestaltungsprüfung:** Impeccable-Kritik mit 21/40 Punkten. Der Detektor fand
-0 statische Probleme. Live-Browserprüfung war
-wegen des nicht verfügbaren Browserhosts nicht möglich.
-**Bestand:** Die Sessions-Liste zeigt pro Eintrag ein identisches Würfelzeichen
-statt eines Spielbilds. Die Detailansicht zeigt bereits ein Cover, wenn für das
-Spiel ein `imageUrl` vorhanden ist.
-
-**Ziel:** Spiele in der Historie anhand ihres Covers schneller wiedererkennen,
-ohne Datum, Titel, Ergebnisse und Aktionen aus dem Blick zu verlieren.
-
-**Abnahmekriterien für die spätere Umsetzung:**
-
-- Jeder Sessions-Listeneintrag zeigt ein kleines Bild des zugehörigen Spiels,
-  sofern ein Cover vorhanden ist.
-- Fehlende oder ungültige Bild-URLs erzeugen einen ruhigen, verständlichen
-  Fallback, keinen leeren Bildrahmen oder defekte Bildanzeige.
-- Das Cover ergänzt den Spielnamen; der alternative Text vermeidet doppelte
-  Ansagen, wenn derselbe Name direkt daneben steht.
-- Responsive Breiten, lange Spielnamen, mehrere Sessions desselben Spiels,
-  200-%-Zoom und Dark Mode sind im Plan für die Gestaltung zu berücksichtigen.
-- Bilddimensionen und Ladeverhalten vermeiden unnötige Layoutverschiebung und
-  übermäßigen Bilddownload in der Liste.
-- Datenabfrage lädt nur die für Listenkarte und aktuelles Verhalten benötigten
-  Spieldaten; API, Datenmodell und Berechtigungen ändern sich nur bei separat
-  begründeter Notwendigkeit.
-- Gezielte Tests decken Bild, Fallback und Textzugänglichkeit ab. Impeccable-,
-  Accessibility-, responsive Browser- und Securityprüfung werden eingeplant.
+der Browserhost nicht verfügbar war. Der Plan legt eine ruhige Coverdarstellung, fehlende Bilder, lange Titel
+und mobile Zeilen-/Kartenbreiten als Prüfgegenstände fest. Der Plan liegt für die Web-Liste vor; iOS wird separat geplant.
 
 ### H. Testqualität und 80-%-Coverage: FEAT-018
 
@@ -198,7 +163,7 @@ Statements, 44,59 % Branches, 48,65 % Functions und 48,08 % Lines; 91 erfasste
 Produktionsdateien liegen bei 0 % Lines. Langfristiges
 Ziel sind mindestens 80 % in allen vier Metriken für den nachvollziehbar
 festgelegten Anwendungscode. Der stufenweise Plan ist erstellt. Die
-Coverage-Schranken bleiben zunächst unverändert; schrittweise Erhöhung und
+Coverage-Schranken (global bereits 22 % je Metrik) bleiben zunächst unverändert; schrittweise Erhöhung und
 Tests für bisher unbedeckte Bereiche stehen aus. TDD wurde als verbindliche
 Agentenregel ergänzt. Zwei Stack-Skills wurden lokal aufgenommen.
 
@@ -667,9 +632,9 @@ Browserhost nicht verfügbar war.
 
 ## FEAT-016 – Spielauswahl bei Session-Anlage per Eingabe filtern
 
-**Status:** Anforderung aufgenommen; Implementierungsplan und Umsetzung offen.
-**Plattformumfang:** Webformular `/dashboard/sessions/new`; native iOS-Sessionanlage
-bei der Planung separat prüfen.
+**Status:** Plan erstellt; Umsetzung offen.
+**Umsetzungsplan:** [Durchsuchbare Spielauswahl](superpowers/plans/2026-11-02-FEAT-016-session-spielsuche.md).
+**Plattformumfang:** Webformular `/dashboard/sessions/new`; native iOS-Sessionanlage ist geprüft und bleibt separat zu planen.
 **Umsetzungsfreigabe:** Keine erteilt.
 **Bestand:** Das Pflichtfeld „Spiel“ in `session-form-client.tsx` ist ein
 Dropdown mit allen Spielen aus der eigenen Sammlung, sortiert nach Namen. Das
@@ -684,13 +649,13 @@ verbindliche Optionsliste verwenden. Zusätzlich soll eine Texteingabe die
 angezeigten Optionen nach Spielnamen filtern, während das Dropdown für die
 Auswahl erhalten bleibt. Freitext allein darf kein gültiger Spielwert sein;
 gespeichert wird weiterhin ausschließlich die ID eines ausgewählten Spiels.
-Der genaue Bedienablauf (Eingabe im geöffneten Menü oder dauerhaft sichtbares
-Suchfeld) und die responsive Darstellung sind im Implementierungsplan
-festzulegen.
+Der Plan empfiehlt einen Popover-Picker mit Suchfeld und Listbox, lokalem
+Namensfilter und verbindlicher ID-Auswahl. Der Vorschlag sowie die
+responsive Abnahme sind vor der Umsetzung zu bestätigen.
 
 **Abnahmekriterien für die spätere Umsetzung:**
 
-- Tippen eines Namensfilters die verfügbaren eigenen Spiele unmittelbar und
+- Die Eingabe eines Namens filtert die verfügbaren eigenen Spiele unmittelbar und
   lässt passende Optionen auswählbar.
 - Session kann nur mit einer ausgewählten Spiel-ID gespeichert werden; ein
   nicht passender Freitext ist kein gültiger Wert.
@@ -704,6 +669,65 @@ festzulegen.
   außerhalb des Umfangs unverändert.
 - Gezielte Tests prüfen Filterung, Auswahlbindung und barrierefreie Zustände;
   Impeccable- und Securityprüfung sind im Plan enthalten.
+
+## FEAT-017 – Spielcover in der Sessions-Übersicht anzeigen
+
+**Status:** Plan erstellt; Umsetzung offen; kleine Cover neben Titel und Datum sind eine noch zu bestätigende Planungsempfehlung.
+**Umsetzungsplan:** [Cover in Sessionkarten](superpowers/plans/2026-11-02-FEAT-017-session-cover.md).
+**Plattformumfang:** Web-Sessions-Liste `/dashboard/sessions`; iOS bei der
+Planung separat auf bereits vorhandene Bilddarstellung prüfen.
+**Umsetzungsfreigabe:** Keine erteilt.
+**Gestaltungsprüfung:** Impeccable-Kritik mit 21/40 Punkten. Der Detektor fand
+0 statische Probleme. Live-Browserprüfung war
+wegen des nicht verfügbaren Browserhosts nicht möglich.
+**Bestand:** Die Sessions-Liste zeigt pro Eintrag ein identisches Würfelzeichen
+statt eines Spielbilds. Die Detailansicht zeigt bereits ein Cover, wenn für das
+Spiel ein `imageUrl` vorhanden ist.
+
+**Ziel:** Spiele in der Historie anhand ihres Covers schneller wiedererkennen,
+ohne Datum, Titel, Ergebnisse und Aktionen aus dem Blick zu verlieren.
+
+**Abnahmekriterien für die spätere Umsetzung:**
+
+- Jeder Sessions-Listeneintrag zeigt ein kleines Bild des zugehörigen Spiels,
+  sofern ein Cover vorhanden ist.
+- Fehlende oder ungültige Bild-URLs erzeugen einen ruhigen, verständlichen
+  Fallback, keinen leeren Bildrahmen oder defekte Bildanzeige.
+- Das Cover ergänzt den Spielnamen; der alternative Text vermeidet doppelte
+  Ansagen, wenn derselbe Name direkt daneben steht.
+- Responsive Breiten, lange Spielnamen, mehrere Sessions desselben Spiels,
+  200-%-Zoom und Dark Mode sind im Plan für die Gestaltung zu berücksichtigen.
+- Bilddimensionen und Ladeverhalten vermeiden unnötige Layoutverschiebung und
+  übermäßigen Bilddownload in der Liste.
+- Datenabfrage lädt nur die für Listenkarte und aktuelles Verhalten benötigten
+  Spieldaten; API, Datenmodell und Berechtigungen ändern sich nur bei separat
+  begründeter Notwendigkeit.
+- Gezielte Tests decken Bild, Fallback und Textzugänglichkeit ab. Impeccable-,
+  Accessibility-, responsive Browser- und Securityprüfung werden eingeplant.
+
+## FEAT-018 – Testabdeckung schrittweise auf 80 % erhöhen
+
+**Status:** Plan überarbeitet; Umsetzung offen.
+**Umsetzungsplan:** [Coverage-Ziel 80 %](superpowers/plans/2026-11-02-FEAT-018-coverage-80.md).
+**Plattformumfang:** Vitest-erfasster Web-/Backend-Runtimecode; Browser-E2E und iOS-Verträge als separate Nachweise.
+**Umsetzungsfreigabe:** Keine erteilt.
+
+**Aktualitätsprüfung 02.11.2026:** Global sind bereits 22 % je Metrik
+konfiguriert; `src/lib` verlangt 50 % Statements/Functions/Lines und 45 %
+Branches. Die frühere Aussage über ein fehlendes globales Gate wurde korrigiert.
+Die historischen Messwerte sind vor Umsetzung, insbesondere nach FEAT-016/017,
+zu erneuern.
+
+**Plan:** Vorhandene Gates zunächst auf 46/44/48/48 % global erhöhen, sofern der
+frische Bericht dies trägt. Danach Testpakete nach Risiko bearbeiten und alle
+vier Metriken stufenweise auf 55, 65, 72 und 80 % anheben. Quelleninventar,
+Messlücken, Charakterisierungstests und TDD für Fehlerkorrekturen sind im Plan
+festgelegt. Neue eigene Session-Komponenten werden automatisch mitgemessen.
+Kein Entfernen schlecht getesteter Runtime-Dateien aus dem Nenner.
+
+**Abnahme:** 80 % aller vier globalen und Bibliotheksmetriken auf demselben
+Commit, grüne Tests und CI-Gates, nachvollziehbarer Messumfang und aktuelle
+Review-Dokumentation. Die Planung ändert keine Schwelle.
 
 ## Nachverfolgung
 
