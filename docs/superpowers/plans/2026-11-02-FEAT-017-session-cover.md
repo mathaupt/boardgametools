@@ -151,10 +151,10 @@ Die Freigabe bestätigt Web-Sessions-Liste, kleine Cover und den dokumentierten 
 
 Umsetzung für das Web gestartet und umgesetzt. Gezielte Unit-Tests 20/20
 bestanden (inklusive `jest-axe`), `npm run typecheck`, gezieltes ESLint und
-`npm run build` bestanden. `npm run security-check` hatte 0 Fehler und 3 Warnungen (Audit,
-Raw-SQL, Debug-Routen); `npm audit --omit=dev` meldete nach Registryzugriff
-0 Vulnerabilities. Der Regressionsevaluator endete mit Exitcode 0 und ohne
-Regressionen. Der Detektor meldete 0 Regex-Findings, konnte aber mangels
+`npm run build` bestanden. Der Commit-Hook-Securitycheck hatte 0 Fehler und
+2 bestehende Warnungen zu Raw-SQL und Debug-Routen; `npm audit` meldete
+0 Vulnerabilities. Der Regressionsevaluator endete mit 10/10, ohne offene
+Findings und ohne Regressionen. Der Detektor meldete 0 Regex-Findings, konnte aber mangels
 Browserhost keine gerenderte Layout-/Kontrastprüfung ausführen. Upload-URLs
 unbekannter Blob-Hosts fallen auf das Würfelsymbol zurück; eine exakte
 Hostfreigabe ist nicht Teil dieser Umsetzung.

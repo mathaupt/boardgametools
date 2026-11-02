@@ -49,7 +49,8 @@ geändert.
 
 - Gezielte Tests: 20/20 bestanden, einschließlich Quell-URL-Allowlist, fehlender/defekter Cover, Wechsel auf neue URL, Sessionliste/Login-Guard und `jest-axe`.
 - `npm run typecheck`, gezieltes ESLint und `npm run build`: bestanden.
-- Security-Check: 0 Fehler, 3 Warnungen. `npm audit --omit=dev` nach Registryzugriff: 0 Vulnerabilities; Warnung aus Sandbox-Audit ist in `regressions.md` aufgelöst. Raw-SQL- und Debug-Routen-Hinweise bestehen unabhängig fort.
-- Review-Evaluator: 9,9/10; keine Regression. SEC-45 bleibt als bestehendes, teilweise gelöstes Finding offen. Snapshot: `history/2026-11-02_1031.json`.
+- Security-Check im Commit-Hook: 0 Fehler, 2 bestehende Warnungen. `npm audit` meldete 0 Vulnerabilities; Raw-SQL- und Debug-Routen-Hinweise bestehen unabhängig fort.
+- Review-Evaluator nach Commit: 10/10; Sicherheit 9,9/10, keine offenen Findings und keine Regression. Snapshot: `history/2026-11-02_1035.json`.
+- Security-Check im Commit-Hook: 0 Fehler, 2 bestehende Warnungen zu Raw-SQL und Debug-Routen; `npm audit` meldete 0 Vulnerabilities.
 - Impeccable-Detektor: 0 Regex-Findings. Browserhost nicht verfügbar; responsive/Zoom-/Dark-Mode- und Bildressourcenprüfung bleibt offen.
 - Sessionliste prüft Auth vor Query und selektiert nur ID, Name und Bild-URL. Keine API-, Schema- oder Datenbankänderung. BUG-062 für ungültiges HTML wurde mit Regressionstest behoben.

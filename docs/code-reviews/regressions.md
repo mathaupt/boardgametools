@@ -325,4 +325,6 @@ Jeder Eintrag enthält Felder für Root-Cause-Analyse und Gegenmaßnahmen (manue
 
 **Auflösung 2026-11-02:** `npm audit --omit=dev` meldete mit Registryzugriff 0 Vulnerabilities. `npm run review-evaluate:regression` endete anschließend mit Exitcode 0, 9,9/10 und ohne Regression. Snapshot: `history/2026-11-02_1031.json`.
 
+**Abschlussprüfung nach Commit 9196645:** Commit-Hook-Audit mit Registryzugriff meldete 0 Vulnerabilities; `npm run review-evaluate:regression` endete mit Exitcode 0, 10/10, 0 offenen Findings und ohne Regression. Snapshot: `history/2026-11-02_1035.json`.
+
 ---

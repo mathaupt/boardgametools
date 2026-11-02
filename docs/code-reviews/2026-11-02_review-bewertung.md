@@ -44,8 +44,8 @@ ausgewiesen. Umsetzungsfreigaben und neue Laufzeit-Abnahmen sind weiterhin offen
 |---|---|---|
 | Unit-Tests | 20/20 bestanden | Gezielte Cover-, Quellen-, Serverlisten-, Auth- und Accessibilityfälle |
 | TypeScript / ESLint / Build | Bestanden | Gezielte ESLint-Dateiliste; Produktionsbuild erfolgreich |
-| Security | 0 Fehler; Produktionsaudit 0 Vulnerabilities | 3 Hinweise: Registry-Audit im Sandboxlauf, Raw-SQL und Debug-Routen; Registrybefund separat geprüft und dokumentiert |
-| Review-Evaluator | 9,9/10; keine Regression | SEC-45 besteht als teilweise gelöstes Finding; Snapshot `history/2026-11-02_1031.json` |
+| Security | 0 Fehler; `npm audit` 0 Vulnerabilities | 2 bestehende Hinweise zu Raw-SQL und Debug-Routen |
+| Review-Evaluator | 10/10; Sicherheit 9,9/10; keine Regression und keine offenen Findings | Snapshot nach Commit: `history/2026-11-02_1035.json` |
 | Impeccable | 0 Regex-Findings | Keine gerenderte Seite; CLI hat Layout-/Kontrastregeln nicht ausgeführt |
 | Browser / Viewport | Offen | Browserhost nicht verfügbar; keine Aussage zu 390/1440 px, Dark Mode, 200-%-Zoom oder `srcset` |
 | Daten / Berechtigungen | Auth-Guard vor Cache und DB; Eigentums- und Soft-Deletefilter erhalten | Keine API-, Schema- oder Produktionsdatenbankänderung |
