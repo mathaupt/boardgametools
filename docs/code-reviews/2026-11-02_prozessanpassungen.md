@@ -40,3 +40,18 @@ bestanden. Die fehlende gerenderte Browserabnahme bleibt ausdrücklich offen.
 - [x] FEAT-018 mit tatsächlichem globalem 22-%-Gate abgeglichen; fehlerhafte Vorannahme und exakter Konfigurations-Spiegeltest entfernt.
 - [x] Schrittweise Coveragepakete, aktuelle Messung vor jeder Umsetzung und CI-Artefakte eingeplant.
 - [ ] Empfohlene UI-Varianten und Implementierungsumfang freigeben; keine Produktumsetzung erfolgt.
+
+### FEAT-017 Umsetzung
+
+- [x] Plan vor Implementierung gegen `4c9e70d`, Query, Bildquellen, Cache und Auth-Verhalten abgeglichen; Auth-Lücke und `game: true` korrigiert.
+- [x] Coverquellen auf lokale Uploadpfade und die konfigurierte HTTPS-BGG-Domain begrenzt; unbekannte Blob-Hosts zeigen Fallback.
+- [x] Regressionstests vor UI-/Query-Änderung erstellt; RED für fehlende Cover und fehlenden Auth-Guard beobachtet.
+- [x] 20/20 gezielte Tests, TypeScript, ESLint, Produktionsbuild und Security-Check ohne Fehler abgeschlossen; Produktionsaudit nach Registryzugriff mit 0 Vulnerabilities.
+- [x] Impeccable-Detektor ohne Regex-Findings; gerenderte Browserabnahme wegen nicht verfügbarem Browserhost offen dokumentiert.
+- [x] Backlog, Feature-Doku, FAQ, Changelog, Bug-Tracking, Implementierungsplan und Review-Dokumente aktualisiert.
+- [x] SEC-45-Auditregression nach `ENOTFOUND` mit `npm audit --omit=dev` (0 Vulnerabilities) und erfolgreichem Regressionsevaluator aufgelöst.
+- [ ] 390/1440-px-, Dark-Mode-, 200-%-Zoom-, `srcset`- und manuelle VoiceOver-Prüfung nach Verfügbarkeit des Browserhosts abschließen.
+
+Erfolgsmessung: Cover und semantischer Fallback sind in der Web-Sessions-Liste
+integriert. 20/20 gezielte Tests sind erfolgreich. iOS und unbekannte
+Vercel-Blob-Hosts sind separat offen; es wurde keine Datenbank oder API geändert.

@@ -226,6 +226,11 @@ export const faqSections: FaqSection[] = [
           "Eine Spielsession ist eine einzelne Partie eines Spiels. Du erfasst, wann gespielt wurde, welches Spiel es war, wer mitgespielt hat, wie lange gespielt wurde und optional wer gewonnen hat und welche Punkte erreicht wurden.",
       },
       {
+        question: "Was zeigt die Sessions-Übersicht?",
+        answer:
+          "Die Übersicht zeigt deine letzten 20 Partien mit Spielcover, Spielname, Datum, Dauer, Mitspielern und Ergebnissen. Wenn für ein Spiel kein unterstütztes Cover verfügbar ist, erscheint ein Würfelsymbol.",
+      },
+      {
         question: "Wie erstelle ich eine Session?",
         answer:
           'Gehe zu "Sessions" \u2192 "Neue Session". Waehle ein Spiel aus deiner Sammlung, fuege die Mitspieler hinzu (aus allen registrierten Nutzern), trage optional Punkte, Platzierungen und den Gewinner ein. Das Datum wird automatisch auf heute gesetzt, kann aber geaendert werden.',

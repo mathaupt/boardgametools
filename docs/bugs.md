@@ -1832,10 +1832,29 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 ---
 
+### [BUG-062] Ungültige verschachtelte Elemente in Session-Metadaten
+
+**Status:** `fixed`
+**Schweregrad:** `low`
+**Entdeckt:** 2026-11-02
+**Behoben:** 2026-11-02
+**Behoben in Version:** 0.50.52
+**Test geschrieben:** Ja – `tests/unit/components/sessions-page.test.tsx` rendert die Sessionkarte.
+
+**Beschreibung:** Die Sessions-Übersicht platzierte Blockelemente innerhalb von `CardDescription`, die als `<p>` gerendert wird. Das erzeugte ungültiges HTML und eine React-Hydration-Warnung.
+**Reproduktion:** Eine Sessionkarte unter `/dashboard/sessions` rendern; React meldet, dass ein `<div>` kein Nachfahre eines `<p>` sein darf.
+**Erwartetes Verhalten:** Metadaten werden mit gültigen HTML-Elementen gerendert und verursachen keine Hydration-Warnung.
+**Tatsächliches Verhalten:** Die als Absatz gerenderte Beschreibung enthielt mehrere `<div>`-Elemente.
+**Ursache:** `CardDescription` wurde für eine horizontale Gruppe von Blockelementen verwendet.
+**Lösung:** Metadaten werden in einem `<div>` gruppiert; die einzelnen Metadaten-Elemente sind `span`-Elemente. Der Regressionstest rendert die Liste mit Spiel- und Fallback-Cover.
+**Referenz im Changelog:** Version 0.50.52 – Sessioncover in der Übersicht.
+
+---
+
 ## Statistik
 
 - **Offene Bugs:** 4
 - **In Bearbeitung:** 4
-- **Behoben:** 53
+- **Behoben:** 54
 - **Wontfix:** 0
-- **Gesamt:** 61
+- **Gesamt:** 62

@@ -44,3 +44,12 @@ geändert.
 - FEAT-018: Quellenabgleich korrigiert die frühere falsche Aussage, es gebe kein globales Gate. `vitest.config.ts` setzt tatsächlich 22 % je globaler Metrik und 50/45/50/50 % für `src/lib`.
 - Die 849 Tests und Coveragewerte oben sind historische Messwerte; in diesem Planungsschritt wurde kein neuer Coverage-Lauf behauptet.
 - Pläne und Dokumentation geändert; keine Produktfunktion oder Coverage-Konfiguration umgesetzt. Freigaben stehen aus.
+
+## FEAT-017 – Spielcover in der Sessions-Übersicht (0.50.52)
+
+- Gezielte Tests: 20/20 bestanden, einschließlich Quell-URL-Allowlist, fehlender/defekter Cover, Wechsel auf neue URL, Sessionliste/Login-Guard und `jest-axe`.
+- `npm run typecheck`, gezieltes ESLint und `npm run build`: bestanden.
+- Security-Check: 0 Fehler, 3 Warnungen. `npm audit --omit=dev` nach Registryzugriff: 0 Vulnerabilities; Warnung aus Sandbox-Audit ist in `regressions.md` aufgelöst. Raw-SQL- und Debug-Routen-Hinweise bestehen unabhängig fort.
+- Review-Evaluator: 9,9/10; keine Regression. SEC-45 bleibt als bestehendes, teilweise gelöstes Finding offen. Snapshot: `history/2026-11-02_1031.json`.
+- Impeccable-Detektor: 0 Regex-Findings. Browserhost nicht verfügbar; responsive/Zoom-/Dark-Mode- und Bildressourcenprüfung bleibt offen.
+- Sessionliste prüft Auth vor Query und selektiert nur ID, Name und Bild-URL. Keine API-, Schema- oder Datenbankänderung. BUG-062 für ungültiges HTML wurde mit Regressionstest behoben.

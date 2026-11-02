@@ -37,3 +37,16 @@ jetzt die tatsächliche globale 22-%-Schranke als Ausgangspunkt und vermeidet
 einen Unit-Test, der nur Konfigurationszahlen spiegeln würde. Quellenumfang,
 historische Messwerte und Messlücken außerhalb des Coverage-Inventars sind
 ausgewiesen. Umsetzungsfreigaben und neue Laufzeit-Abnahmen sind weiterhin offen.
+
+## FEAT-017 – Ergebnis der Umsetzung
+
+| Prüffeld | Ergebnis | Einschränkung |
+|---|---|---|
+| Unit-Tests | 20/20 bestanden | Gezielte Cover-, Quellen-, Serverlisten-, Auth- und Accessibilityfälle |
+| TypeScript / ESLint / Build | Bestanden | Gezielte ESLint-Dateiliste; Produktionsbuild erfolgreich |
+| Security | 0 Fehler; Produktionsaudit 0 Vulnerabilities | 3 Hinweise: Registry-Audit im Sandboxlauf, Raw-SQL und Debug-Routen; Registrybefund separat geprüft und dokumentiert |
+| Review-Evaluator | 9,9/10; keine Regression | SEC-45 besteht als teilweise gelöstes Finding; Snapshot `history/2026-11-02_1031.json` |
+| Impeccable | 0 Regex-Findings | Keine gerenderte Seite; CLI hat Layout-/Kontrastregeln nicht ausgeführt |
+| Browser / Viewport | Offen | Browserhost nicht verfügbar; keine Aussage zu 390/1440 px, Dark Mode, 200-%-Zoom oder `srcset` |
+| Daten / Berechtigungen | Auth-Guard vor Cache und DB; Eigentums- und Soft-Deletefilter erhalten | Keine API-, Schema- oder Produktionsdatenbankänderung |
+| Bug-Fix | BUG-062 geschlossen und getestet | Ungültige `<div>`-Verschachtelung der Metadaten beseitigt |

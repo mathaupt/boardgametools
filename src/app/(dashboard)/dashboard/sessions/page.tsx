@@ -2,31 +2,35 @@ import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
 import { cachedQuery } from "@/lib/cache";
 import { CacheTags } from "@/lib/cache-tags";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Plus, Calendar, Users, Clock, Trophy } from "lucide-react";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { formatDate } from "@/lib/date";
 import { gameTextForRead } from "@/lib/game-text";
+import { SessionCover } from "@/components/sessions/session-cover";
 
 export default async function SessionsPage() {
   const session = await auth();
   const userId = session?.user?.id;
+  if (!userId) redirect("/login");
 
   const sessions = await cachedQuery(
-    () => prisma.gameSession.findMany({
-      where: { createdById: userId, deletedAt: null },
-      include: {
-        game: true,
-        players: {
-          include: { user: { select: { id: true, name: true, email: true } } }
-        }
-      },
-      orderBy: { playedAt: "desc" },
-      take: 20
-    }),
-    ["user-sessions-list", userId!],
-    { revalidate: 60, tags: [CacheTags.userSessions(userId!)] }
+    () =>
+      prisma.gameSession.findMany({
+        where: { createdById: userId, deletedAt: null },
+        include: {
+          game: { select: { id: true, name: true, imageUrl: true } },
+          players: {
+            include: { user: { select: { id: true, name: true, email: true } } },
+          },
+        },
+        orderBy: { playedAt: "desc" },
+        take: 20,
+      }),
+    ["user-sessions-list", userId],
+    { revalidate: 60, tags: [CacheTags.userSessions(userId)] },
   );
 
   return (
@@ -67,29 +71,29 @@ export default async function SessionsPage() {
             <Card key={session.id} className="hover:shadow-md transition-shadow">
               <CardHeader>
                 <div className="flex flex-col sm:flex-row items-start sm:justify-between gap-2">
-                  <div>
-                    <CardTitle as="h2" className="flex items-center gap-2">
-                      <div className="w-8 h-8 bg-primary/10 rounded flex items-center justify-center" aria-hidden="true">
-                        🎲
+                  <div className="flex min-w-0 items-start gap-3">
+                    <SessionCover imageUrl={session.game.imageUrl} />
+                    <div className="min-w-0 flex-1">
+                      <CardTitle as="h2" className="break-words">
+                        {gameTextForRead(session.game.name)}
+                      </CardTitle>
+                      <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
+                        <span className="flex items-center gap-1">
+                          <Calendar className="h-4 w-4" aria-hidden="true" />
+                          {formatDate(session.playedAt)}
+                        </span>
+                        {session.durationMinutes && (
+                          <span className="flex items-center gap-1">
+                            <Clock className="h-4 w-4" aria-hidden="true" />
+                            {session.durationMinutes} Min.
+                          </span>
+                        )}
+                        <span className="flex items-center gap-1">
+                          <Users className="h-4 w-4" aria-hidden="true" />
+                          {session.players.length} Spieler
+                        </span>
                       </div>
-                      {gameTextForRead(session.game.name)}
-                    </CardTitle>
-                    <CardDescription className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2">
-                      <div className="flex items-center gap-1">
-                        <Calendar className="h-4 w-4" aria-hidden="true" />
-                        {formatDate(session.playedAt)}
-                      </div>
-                      {session.durationMinutes && (
-                        <div className="flex items-center gap-1">
-                          <Clock className="h-4 w-4" aria-hidden="true" />
-                          {session.durationMinutes} Min.
-                        </div>
-                      )}
-                      <div className="flex items-center gap-1">
-                        <Users className="h-4 w-4" aria-hidden="true" />
-                        {session.players.length} Spieler
-                      </div>
-                    </CardDescription>
+                    </div>
                   </div>
                   <div className="flex gap-2">
                     <Button asChild variant="outline" size="sm">

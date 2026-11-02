@@ -12,6 +12,17 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.52",
+    date: "2026-11-02",
+    title: "Spielcover in der Sessions-Übersicht anzeigen",
+    description: "Partien lassen sich in der Sessions-Liste anhand des Spielcovers schneller wiedererkennen.",
+    changes: [
+      { type: "feature", text: "Die letzten Sessions zeigen ein kleines Spielcover neben Name und Datum; bei fehlenden oder nicht unterstützten Bildern erscheint ein Würfelsymbol." },
+      { type: "fix", text: "Die Session-Metadaten verwenden gültiges HTML und vermeiden eine React-Hydration-Warnung.", bugRef: "BUG-062" },
+      { type: "internal", text: "Die Sessions-Liste prüft die Anmeldung vor der Datenabfrage und lädt nur die benötigten Spielfelder." },
+    ],
+  },
+  {
     version: "0.50.51",
     date: "2026-11-02",
     title: "Session-Erweiterungen und Testausbau planen",

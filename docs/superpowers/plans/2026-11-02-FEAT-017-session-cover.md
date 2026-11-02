@@ -1,6 +1,6 @@
 # FEAT-017 – Spielcover in der Sessions-Übersicht
 
-> **Für ausführende Agenten:** Aufgaben einzeln abarbeiten; jede Änderung am Laufzeitverhalten erhält zuerst einen gezielten fehlgeschlagenen Test. Plan erstellt, Umsetzung noch nicht freigegeben.
+> **Für ausführende Agenten:** Aufgaben einzeln abarbeiten; jede Änderung am Laufzeitverhalten erhält zuerst einen gezielten fehlgeschlagenen Test. Umsetzung am 02.11.2026 freigegeben und begonnen.
 
 **Ziel:** In `/dashboard/sessions` das gespielte Spiel anhand eines kleinen Covers erkennen, während Name, Datum und Ergebnisse gut lesbar bleiben.
 
@@ -20,9 +20,32 @@ Am 02.11.2026 gegen `80d770d`, `src/app/(dashboard)/dashboard/sessions/page.tsx`
 
 Vor Umsetzung aktuelle Query, Bild-Policy, Cache-Datentypen und FEAT-016/018-Tests erneut prüfen; Commit, Abweichungen und Ergebnis hier festhalten.
 
+### Aktualitätsprüfung vor Implementierung (02.11.2026)
+
+Geprüft auf HEAD `4c9e70d` nach den Planänderungen für FEAT-016/018. FEAT-016
+ist weiterhin Planung; FEAT-018 hat keine Laufzeitänderungen. Die Sessions-Seite
+verwendet weiterhin `include: { game: true }`, begrenzt auf 20 eigene, nicht
+gelöschte Sessions und hängt Cache-Schlüssel/-Tag an `userId`. Anders als im
+Plan gefordert fehlt auf dieser Seite noch die explizite Auth-Prüfung vor dem
+Cache-/Datenbankzugriff. Die Session-Anlage verwendet bereits `redirect("/login")`;
+das wird für die Liste übernommen. Die Spielabfrage wird auf `id`, `name` und
+`imageUrl` beschränkt. Detail-/Edit-Aktionen und Ergebnisdaten bleiben erhalten.
+
+`next.config.ts` erlaubt Next Image nur für HTTPS von
+`cf.geekdo-images.com` und `/uploads/` ist die lokale Storage-URL. Der produktive
+Blob-Provider liefert URLs mit dynamischem Host, der aktuell nicht in
+`remotePatterns`/CSP steht. Um keine breite Freigabe einzuführen, bleiben solche
+URLs bei einem dekorativen Fallback, bis eine eigene Host-Policy geplant ist.
+Die empfohlene 56-px-Miniatur neben Titel und Datum wird umgesetzt; mobile
+Darstellung darf auf 48 px schrumpfen. Der vorhandene Würfelplatzhalter wird
+durch ein neutrales Lucide-Symbol ersetzt. Es gibt noch keine Tests für die
+Sessions-Listenseite oder Coverquellen; diese werden vor Produktionscode
+hinzugefügt. Der Plan bleibt aktuell, Auth-Guard und sichere Prisma-Auswahl
+werden als explizite Umsetzungspunkte ergänzt.
+
 ## Gestaltungsannahme für die Planfreigabe
 
-Empfohlen sind kleine, links stehende Cover neben Titel und Datum. Dies ist noch keine vom Nutzer bestätigte Variantenwahl. Der Plan kann als Grundlage mit dieser Annahme geprüft werden.
+Kleine, links stehende Cover neben Titel und Datum wurden als Planungsempfehlung angekündigt und mit dem Start der Implementierung am 02.11.2026 übernommen.
 
 | Variante | Bewertung |
 |---|---|
@@ -64,7 +87,7 @@ Der Cover-Baustein erhält `imageUrl: string | null`. Keine Session-/Nutzerdaten
 
 ### 1. Bildquellen testgetrieben begrenzen
 
-- [ ] Zuerst `tests/unit/lib/session-cover-source.test.ts` mit erlaubten Upload-/BGG-Pfaden und abgelehnten Fremdhosts, Protokoll-relativen URLs, `javascript:`, `data:`, leeren Werten und ungültigen URLs schreiben.
+- [x] Zuerst `tests/unit/lib/session-cover-source.test.ts` mit erlaubten Upload-/BGG-Pfaden und abgelehnten Fremdhosts, Protokoll-relativen URLs, `javascript:`, `data:`, leeren Werten und ungültigen URLs schreiben.
 
 ```ts
 import { expect, it } from "vitest";
@@ -80,23 +103,23 @@ it("akzeptiert die bestehenden Quellen und verwirft fremde Hosts", () => {
 });
 ```
 
-- [ ] Nach Anlage des Tests bei Bedarf `getSessionCoverSource(value: string | null): string | null` zunächst mit einer leeren Rückgabe bereitstellen. `npx vitest run tests/unit/lib/session-cover-source.test.ts` ausführen; die Erwartung für eine gültige Quelle muss fachlich fehlschlagen. Syntax-/Importfehler zählen nicht als dieser Nachweis.
-- [ ] Den reinen Prüfer implementieren. Remote-URL über `URL` parsen, Protokoll/Host/Port/Credentials prüfen; lokale Pfade auf `/uploads/` begrenzen. Dann alle Fälle grün ausführen.
+- [x] Nach Anlage des Tests den reinen Prüfer zunächst mit leerer Rückgabe bereitstellen und fachliche Fehlfälle beobachten; Syntax-/Importfehler waren nicht der Nachweis.
+- [x] Den reinen Prüfer implementieren. Remote-URL über `URL` parsen, Protokoll/Host/Port/Credentials prüfen; lokale Pfade auf `/uploads/` begrenzen. Alle 13 Quellprüfungen bestanden.
 
 ### 2. Cover und Fallback absichern
 
-- [ ] In `tests/unit/components/session-cover.test.tsx` zuerst belegen: gültige Quelle erzeugt ein dekoratives Next Image mit reservierter Größe; null/ungültige Quelle erzeugt den gleich großen Fallback; ein Ladefehler entfernt das defekte Bild; neue URL nach Fehler wird erneut angezeigt.
-- [ ] `next/image` im Test durch eine kleine, props-erhaltende Testdarstellung ersetzen. `fireEvent.error` für den Fehlerpfad nutzen; nicht die tatsächliche CDN-Erreichbarkeit testen.
-- [ ] `npx vitest run tests/unit/components/session-cover.test.tsx` für RED ausführen. Anschließend den Client-Baustein implementieren: `failedSource` statt globalem dauerhaften Fehlerflag, `onError`, `alt=""`, `sizes="56px"`, feste Bildfläche und `object-contain`.
-- [ ] Test grün ausführen und `jest-axe` prüfen; die Karte darf keinen doppelten Spieldatensatz für Screenreader ankündigen.
+- [x] In `tests/unit/components/session-cover.test.tsx` zuerst Bild, feste Maße, dekorativen Fallback, Ladefehler und neue URL belegen.
+- [x] `next/image` im Test durch eine Testdarstellung ersetzen. `fireEvent.error` prüft den Fehlerpfad; CDN-Erreichbarkeit wird nicht getestet.
+- [x] `npx vitest run tests/unit/components/session-cover.test.tsx` für RED ausführen. Anschließend den Client-Baustein implementieren: `failedSource` statt globalem dauerhaften Fehlerflag, `onError`, `alt=""`, `sizes="56px"`, feste Bildfläche und `object-contain`.
+- [x] Tests grün; `jest-axe` ohne Findings. Das dekorative Cover bleibt für Screenreader verborgen.
 
 ### 3. Serverliste integrieren und abgrenzen
 
-- [ ] `tests/unit/components/sessions-page.test.tsx` mit gemockten `auth`, `cachedQuery` und Prisma ergänzen. Die echte async Seite aufrufen und das erhaltene React-Element rendern.
-- [ ] Fixtures: zwei Sessions desselben Spiels, Session ohne Cover, sehr langer Name, keine Sessions und nicht angemeldeter Zugriff. Bestehende Metadaten, Ergebnisse sowie Details-/Bearbeiten-Links bleiben nachweisbar.
-- [ ] RED belegen: die Karte muss neben dem Namen ihr eigenes Cover/Fallback zeigen. Nicht angemeldeter Zugriff darf keine ungefilterte Sessionabfrage auslösen.
-- [ ] `SessionCover` importieren, Würfelplatzhalter ersetzen und das Headerlayout mit `min-width: 0`, Umbruch und festen Bildmaßen anpassen. Authentifizierte Nutzer-ID vor der Cache-/DB-Abfrage sicherstellen. Bestehenden Eigentums-/Löschfilter und Cache-Tag beibehalten; `game` mit `select: { id: true, name: true, imageUrl: true }` laden.
-- [ ] Die drei Testsuiten grün ausführen:
+- [x] `tests/unit/components/sessions-page.test.tsx` mit gemockter `auth`, `cachedQuery` und Prisma ergänzt. Die echte async Seite wird aufgerufen und das React-Element gerendert.
+- [x] Fixtures prüfen Cover/Fallback, mehrere Sessions desselben Spiels, leere Liste und fehlende Anmeldung. Bestehende Details-/Bearbeiten-Links bleiben nachweisbar.
+- [x] RED für Coverdarstellung und fehlenden Login-Guard belegt.
+- [x] `SessionCover` integriert, Würfelplatzhalter ersetzt und Header mit `min-width: 0`, Umbruch und festen Bildmaßen angepasst. Login-Guard vor Cache-/DB-Abfrage ergänzt. Eigentums-/Löschfilter und Cache-Tag beibehalten; `game` auf ID, Name und Bild-URL beschränkt.
+- [x] Alle drei Testsuiten grün ausgeführt:
 
 ```sh
 npx vitest run tests/unit/lib/session-cover-source.test.ts tests/unit/components/session-cover.test.tsx tests/unit/components/sessions-page.test.tsx
@@ -104,21 +127,34 @@ npx vitest run tests/unit/lib/session-cover-source.test.ts tests/unit/components
 
 ### 4. Impeccable und Bildperformance abnehmen
 
-- [ ] Unmittelbar vor UI-Änderungen `craft-floor.md` und die lokalen Next-Image-/Server-Client-Guides lesen. Club Programme, Modus Operate, bestehende Farbrollen und Schrift beibehalten.
-- [ ] Detektor auf Serverseite und Cover-Komponente ausführen; gerenderte Prüfung bei 390/1440 px, hell/dunkel, 200 % Zoom und langen Titeln dokumentieren.
+- [x] Vor UI-Änderungen `craft-floor.md`, Club Programme, lokale Next-Image-Dokumentation und React/Next-Server-Client-Vorgaben gelesen. Bestehende Farbrollen, Schrift und ruhige Gestaltung beibehalten.
+- [x] Statische Impeccable-Prüfung für Listenseite und Cover ausgeführt: 0 Regex-Findings. Die CLI meldet, dass Layout-/Kontrastregeln ohne gerenderte Seite nicht geprüft wurden.
 - [ ] 20 Sessions mit wiederholten, fehlenden und fehlerhaften Bildern prüfen: keine Layoutsprünge beim Laden, keine horizontale Überbreite, lesbare Metadaten, ausreichend große unveränderte Aktionsziele.
 - [ ] Im Browser Bildressourcen prüfen: passend kleine `srcset`-Varianten, lazy loading und kein Preload aller Covers. Mocks können diese Prüfung nicht ersetzen.
-- [ ] VoiceOver/Tastatur: Fokusreihenfolge unverändert, Spielname einmal verständlich, Bild-Fallback erzeugt keine redundante Ansage. Keine schreibenden Browserabläufe nötig.
-- [ ] Browserhost vor Abnahme erneut prüfen. Wenn nicht verfügbar, offene gerenderte Abnahme explizit im Status erhalten.
+- [x] Automatisiert geprüft: Cover und Fallback sind dekorativ verborgen; `jest-axe` findet keine Probleme. Manuelle VoiceOver-Abnahme bleibt offen.
+- [x] Browserhost erneut geprüft; er ist nicht verfügbar. Gerenderte Browserabnahme ist im Backlog als offen markiert.
 
 ### 5. Dokumentation und Abschluss
 
-- [ ] `docs/FEATURES.md`, FAQ, `CONCEPT.md`, Feature-Backlog, Changelog und Review-Dokumente mit tatsächlicher Unterstützung/Fallbacks aktualisieren. Kein API-/Schemawechsel ist vorgesehen.
-- [ ] Betroffene Unit-Tests, `npm run typecheck`, gezieltes ESLint, `npm run security-check` und `npm run review-evaluate:regression` ausführen. Coverage-Nachweis nach FEAT-016/017 für FEAT-018 erneuern.
-- [ ] Commit mit Hook-Ergebnissen erstellen. Variantenfreigabe und manuelle Browserabnahme mit Datum im Plan festhalten; ungelöste Quellen-/Browsergrenzen im Backlog sichtbar lassen.
+- [x] `docs/FEATURES.md`, FAQ, Feature-Backlog, Bugliste und Changelog aktualisiert. `CONCEPT.md` entfällt: bestehender Sessionbereich ohne neue Domäne. Kein API-/Schemawechsel.
+- [x] Review-Dokumente aktualisiert; den betroffenen Coverage-Nachweis für FEAT-018 mit dem nächsten Coveragepaket erneuern.
+- [x] Betroffene Unit-Tests (20/20), `npm run typecheck`, gezieltes ESLint, `npm run security-check`, Produktionsaudit und `npm run review-evaluate:regression` ausgeführt.
+- [ ] Commit mit Hook-Ergebnissen erstellen. Responsive Browserabnahme und unbekannte Blob-Hosts als Grenzen im Backlog sichtbar halten.
 
 ## Freigabekriterien
 
 Die Freigabe bestätigt Web-Sessions-Liste, kleine Cover und den dokumentierten Quellen-/Fallbackvertrag. Sie schließt weder iOS noch die übrigen Kritikpunkte ein. Größenangaben sind Startwerte für den gerenderten Vergleich; die Lesbarkeit entscheidet über die endgültige Ausführung.
 
-**Selbstprüfung 02.11.2026:** Abnahmekriterien des Backlogs auf Quellenprüfung, Bild-/Fehlerkomponente, Serverintegration und gerenderte Prüfung abgebildet. Clientgrenze bleibt auf dem Bildbaustein; gesicherte Query und geringe Bildgröße sind konkret vorgesehen. Die Variantenempfehlung ist als unbestätigte Annahme ausgewiesen.
+**Selbstprüfung 02.11.2026:** Quellenprüfung, Bild-/Fehlerkomponente, Serverintegration und gerenderte Prüfung abgebildet. Clientgrenze bleibt auf dem Bildbaustein; gesicherte Query und geringe Bildgröße sind umgesetzt. Die kleine Covervariante wurde bei Implementierungsstart übernommen.
+
+## Umsetzungsstand (02.11.2026)
+
+Umsetzung für das Web gestartet und umgesetzt. Gezielte Unit-Tests 20/20
+bestanden (inklusive `jest-axe`), `npm run typecheck`, gezieltes ESLint und
+`npm run build` bestanden. `npm run security-check` hatte 0 Fehler und 3 Warnungen (Audit,
+Raw-SQL, Debug-Routen); `npm audit --omit=dev` meldete nach Registryzugriff
+0 Vulnerabilities. Der Regressionsevaluator endete mit Exitcode 0 und ohne
+Regressionen. Der Detektor meldete 0 Regex-Findings, konnte aber mangels
+Browserhost keine gerenderte Layout-/Kontrastprüfung ausführen. Upload-URLs
+unbekannter Blob-Hosts fallen auf das Würfelsymbol zurück; eine exakte
+Hostfreigabe ist nicht Teil dieser Umsetzung.

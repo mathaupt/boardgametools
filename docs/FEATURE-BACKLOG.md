@@ -30,7 +30,7 @@ Bedarf zu aktualisieren. Ergebnis am jeweiligen Plan dokumentieren:
 | FEAT-014 | Suchzustände und Beschriftung der BGG-Suche | Implementiert (Web; Browser-E2E offen) | [Öffentliche BGG-Suche](superpowers/plans/2026-10-31-FEAT-014-bgg-suchzustaende.md) | Am 01.11.2026 freigegeben und umgesetzt; native iOS-Suche nicht Teil dieses öffentlichen Web-Umfangs |
 | FEAT-015 | Top-3-Spiele im Event-Kurzüberblick | Umgesetzt (Web; Browser-Viewportabnahme offen) | [Dashboard Top drei](superpowers/plans/2026-11-02-FEAT-015-dashboard-top-three.md) | Web-Umsetzung am 02.11.2026 freigegeben und umgesetzt; iOS separat |
 | FEAT-016 | Spielauswahl bei Session-Anlage per Eingabe filtern | Plan erstellt; Umsetzung offen | [Durchsuchbare Spielauswahl](superpowers/plans/2026-11-02-FEAT-016-session-spielsuche.md) | Keine |
-| FEAT-017 | Spielcover in der Sessions-Übersicht anzeigen | Plan erstellt; Covervariante empfohlen, noch nicht bestätigt; Umsetzung offen | [Cover in Sessionkarten](superpowers/plans/2026-11-02-FEAT-017-session-cover.md) | Keine |
+| FEAT-017 | Spielcover in der Sessions-Übersicht anzeigen | Web umgesetzt; Browser-/Viewportabnahme offen | [Cover in Sessionkarten](superpowers/plans/2026-11-02-FEAT-017-session-cover.md) | Web-Umsetzung am 02.11.2026 freigegeben und umgesetzt; iOS separat |
 | FEAT-018 | Testabdeckung schrittweise auf 80 % erhöhen | Plan erstellt; Governance und Skills ergänzt; Testausbau offen | [Coverage-Ziel 80 %](superpowers/plans/2026-11-02-FEAT-018-coverage-80.md) | Keine |
 
 Am 30.10.2026 aufgenommen. Bei der Planung sind Web, iOS sowie angemeldete und
@@ -148,8 +148,10 @@ nicht in die vorgeschlagene Reihenfolge A bis E eingeteilt.
 
 ### G. Spiele in der Session-Übersicht erkennen: FEAT-017
 
-Die Sessions-Liste soll pro Session das zugehörige Spielcover zeigen, damit
-Spielrunden schneller visuell unterscheidbar sind. Die Impeccable-Kritik ergab
+Die Sessions-Liste zeigt pro Session das zugehörige Spielcover, damit
+Spielrunden schneller visuell unterscheidbar sind. Die kleine Covervariante,
+URL-Prüfung und Fehler-Fallback sind im Web implementiert und gezielt getestet.
+Die Impeccable-Kritik ergab
 21/40 Punkte; stärkster Bezug ist die derzeitige Wiederholung desselben
 Würfelzeichens anstelle eines spielbezogenen Erkennungsmerkmals. Der Detektor
 meldet 0 statische Findings. Eine Live-Browserprüfung war nicht möglich, weil
@@ -203,7 +205,7 @@ FEAT-004 decken die darin genannten Spiel-Listenfunktionen bereits ab.
 **Umsetzung:** Spielname und Aktion „Spieldetails“ öffnen auf allen drei Web-Votingansichten
 denselben zugänglichen Dialog. Native iOS-Oberfläche separat planen.
 
-**Abnahmekriterien für die spätere Umsetzung:**
+**Umsetzungsnachweis und offene Abnahme:**
 
 - [x] Spieldetails sind direkt aus öffentlichen und geschützten Voting-Vorschlägen erreichbar.
 - [x] Schließen per Aktion oder Escape erhält Liste und gibt den Fokus an den Auslöser zurück.
@@ -672,17 +674,22 @@ responsive Abnahme sind vor der Umsetzung zu bestätigen.
 
 ## FEAT-017 – Spielcover in der Sessions-Übersicht anzeigen
 
-**Status:** Plan erstellt; Umsetzung offen; kleine Cover neben Titel und Datum sind eine noch zu bestätigende Planungsempfehlung.
+**Status:** Web umgesetzt; responsive Browser-/Viewportabnahme offen. Kleine Cover neben Titel und Datum umgesetzt; nicht unterstützte Bildquellen zeigen den dokumentierten Fallback.
 **Umsetzungsplan:** [Cover in Sessionkarten](superpowers/plans/2026-11-02-FEAT-017-session-cover.md).
 **Plattformumfang:** Web-Sessions-Liste `/dashboard/sessions`; iOS bei der
 Planung separat auf bereits vorhandene Bilddarstellung prüfen.
-**Umsetzungsfreigabe:** Keine erteilt.
+**Umsetzungsfreigabe:** Web-Umsetzung am 02.11.2026 durch „starte implementierung für FEAT-017“ erteilt; iOS separat.
 **Gestaltungsprüfung:** Impeccable-Kritik mit 21/40 Punkten. Der Detektor fand
 0 statische Probleme. Live-Browserprüfung war
 wegen des nicht verfügbaren Browserhosts nicht möglich.
-**Bestand:** Die Sessions-Liste zeigt pro Eintrag ein identisches Würfelzeichen
+**Bestand:** Die Sessions-Liste zeigte pro Eintrag ein identisches Würfelzeichen
 statt eines Spielbilds. Die Detailansicht zeigt bereits ein Cover, wenn für das
 Spiel ein `imageUrl` vorhanden ist.
+
+**Umsetzung 02.11.2026:** Kleine, dekorative Cover neben Spielname und Datum;
+defekte oder nicht unterstützte Bildquellen zeigen ein Würfelsymbol. Die Liste
+prüft den Login vor dem Datenzugriff und lädt nur die benötigten Spielfelder.
+Die responsive Browserabnahme bleibt offen.
 
 **Ziel:** Spiele in der Historie anhand ihres Covers schneller wiedererkennen,
 ohne Datum, Titel, Ergebnisse und Aktionen aus dem Blick zu verlieren.
@@ -695,15 +702,18 @@ ohne Datum, Titel, Ergebnisse und Aktionen aus dem Blick zu verlieren.
   Fallback, keinen leeren Bildrahmen oder defekte Bildanzeige.
 - Das Cover ergänzt den Spielnamen; der alternative Text vermeidet doppelte
   Ansagen, wenn derselbe Name direkt daneben steht.
-- Responsive Breiten, lange Spielnamen, mehrere Sessions desselben Spiels,
-  200-%-Zoom und Dark Mode sind im Plan für die Gestaltung zu berücksichtigen.
+- Unit-Tests prüfen Coverquellen, Fallback bei fehlendem/defektem Bild,
+  wiederholte Sessions, Login-Guard, Links und leere Liste; `jest-axe` ist grün.
+- Responsive Breiten, lange Spielnamen, 200-%-Zoom und Dark Mode sind wegen des
+  nicht verfügbaren Browserhosts noch nicht gerendert abgenommen.
 - Bilddimensionen und Ladeverhalten vermeiden unnötige Layoutverschiebung und
   übermäßigen Bilddownload in der Liste.
 - Datenabfrage lädt nur die für Listenkarte und aktuelles Verhalten benötigten
   Spieldaten; API, Datenmodell und Berechtigungen ändern sich nur bei separat
   begründeter Notwendigkeit.
-- Gezielte Tests decken Bild, Fallback und Textzugänglichkeit ab. Impeccable-,
-  Accessibility-, responsive Browser- und Securityprüfung werden eingeplant.
+- Statische Impeccable-Prüfung meldet 0 Regex-Findings; Security-Check und
+  Produktionsaudit (0 Vulnerabilities) sind ausgeführt. Die Browserprüfung von
+  Bildressourcen, `srcset`, Ladeverhalten und VoiceOver bleibt offen.
 
 ## FEAT-018 – Testabdeckung schrittweise auf 80 % erhöhen
 

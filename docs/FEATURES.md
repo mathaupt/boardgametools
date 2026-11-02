@@ -157,7 +157,7 @@ mit einem Klick importiert werden.
 **Route:** `/dashboard/sessions` | **Zugriff:** Angemeldet
 
 Liste der letzten 20 Sessions als Karten. Jede Karte zeigt:
-- Spielname, Datum, Dauer, Spieleranzahl
+- Kleines Spielcover oder Würfelsymbol als Fallback, Spielname, Datum, Dauer und Spieleranzahl
 - Spieler-Ergebnisse: Platzierung (#1, #2...), Punkte, Gewinner (Pokal-Icon)
 - Notizen (falls vorhanden)
 
