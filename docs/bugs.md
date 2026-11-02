@@ -1870,10 +1870,30 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 ---
 
+### [BUG-064] Öffentliche Spielvorschläge uneinheitlich und bei großer Schrift abgeschnitten
+
+**Status:** `fixed`
+**Schweregrad:** `medium`
+**Entdeckt:** 2026-11-02
+**Behoben:** 2026-11-02
+**Behoben in Version:** 0.50.60
+**Test geschrieben:** Ja – `tests/unit/components/public-event-proposal-surfaces.test.tsx`; erwartetes RED für fehlende Beschriftung und doppelten Suchhinweis, anschließend grün. Native Browserprüfung ergänzt Layout-/Kontrastnachweise.
+
+**Beschreibung:** Die vorherige FEAT-020-Korrektur änderte nur die Trefferflächen. Äußere BGG-/Sammlungspanels blieben halbtransparent, die Sammlungssuche unbeschriftet und unterschiedlich hoch; „Reset“ hatte ein Suchsymbol. Der deaktivierte BGG-Button wurde durch halbe Deckkraft unnötig blass. Bei 200 % Schrift konnte die Vorschlagaktion innerhalb der scrollbaren Liste seitlich überlaufen.
+**Reproduktion:** Öffentliche Eventseite mit Konto und Sammlung öffnen; Sammlung und BGG-Suche vergleichen. Bei schmaler Ansicht die Schrift auf 200 % erhöhen. Der Screenshot und die lokale Komponenten-Vorschau mit Anwendungs-CSS reproduzieren die Darstellung.
+**Erwartetes Verhalten:** Klar abgesetzte, einheitliche Suchbereiche, beschriftete Felder, lesbare Zustände und vollständig erreichbare Aktionen auch bei großer Schrift.
+**Tatsächliches Verhalten:** Schwache Flächenabgrenzung, unterschiedliche Kontrollhöhen und bei großer Schrift horizontaler Überlauf innerhalb der Sammlungsliste.
+**Ursache:** Getrennte Darstellungsregeln für beide Suchbereiche, `bg-background/70` auf Außenflächen, globale `disabled:opacity-50` und nicht umbrechende Aktionsbeschriftungen.
+**Lösung:** Gemeinsames Panel-/Listenlayout, deckende semantische Flächen, beschriftete 44-px-Suchkontrollen und ausgeschriebene Vorschlagaktionen; explizit lesbarer deaktivierter Suchzustand. Aktionsbeschriftungen sind in der verfügbaren Breite umbrechbar.
+**Prüfnachweis:** 13/13 gezielte Tests einschließlich Axe; native Browserprüfung über lokalen Vite-Server mit realen Komponenten/synthetischen Daten bei 390/1024 px, Hell/Dunkel und 200 % Schrift. Nach Korrektur keine horizontalen Listenüberläufe; minimale gemessene Textkontraste 5,59:1 hell und 5,33:1 dunkel.
+**Referenz im Changelog:** Version 0.50.60 – Spielvorschläge klarer und einheitlicher bedienen.
+
+---
+
 ## Statistik
 
 - **Offene Bugs:** 4
 - **In Bearbeitung:** 4
-- **Behoben:** 55
+- **Behoben:** 56
 - **Wontfix:** 0
-- **Gesamt:** 63
+- **Gesamt:** 64

@@ -1,12 +1,12 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
-import { Loader2, Plus, Search } from "lucide-react";
+import { Loader2, Plus, RotateCcw } from "lucide-react";
 import type { GameSummary, Proposal } from "./types";
+import { ProposalSearchPanel, ProposalResultList, ProposalResultRow } from "./proposal-search-panel";
 
 interface CollectionGameProposerProps {
   token: string;
@@ -98,79 +98,72 @@ export function CollectionGameProposer({
   };
 
   return (
-    <section>
-      <Card className="border-border/60 bg-background/70">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-lg" as="h2">
-            <Plus className="h-5 w-5" aria-hidden="true" />
-            Spiel aus Sammlung vorschlagen
-          </CardTitle>
-          <CardDescription>
-            Wähle ein Spiel aus deiner Sammlung aus, um es der Abstimmung hinzuzufügen.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex flex-col gap-2 sm:flex-row">
-            <Input
-              placeholder="Spiel suchen…"
-              value={gameSearch}
-              onChange={(event) => setGameSearch(event.target.value)}
-              className="bg-background"
-            />
-            <Button
-              variant="outline"
-              onClick={() => setGameSearch("")}
-              title="Suche zurücksetzen"
-              aria-label="Suche zurücksetzen"
-            >
-              <Search className="mr-2 h-4 w-4" aria-hidden="true" />
-              Reset
-            </Button>
+    <ProposalSearchPanel id="collection-propose-title" title="Spiel aus Sammlung vorschlagen" icon={Plus}
+      description="Wähle ein Spiel aus deiner Sammlung aus, um es der Abstimmung hinzuzufügen.">
+      <div className="space-y-2">
+        <label htmlFor="public-collection-query" className="text-sm font-medium text-foreground">Spiel in deiner Sammlung suchen</label>
+        <div className="flex flex-col gap-2 sm:flex-row">
+          <Input
+            id="public-collection-query"
+            type="search"
+            placeholder="Spiel suchen…"
+            value={gameSearch}
+            onChange={(event) => setGameSearch(event.target.value)}
+            className="min-h-11 min-w-0 border-muted-foreground bg-background shadow-none"
+            aria-describedby="public-collection-query-hint"
+          />
+          <Button
+            variant="outline"
+            onClick={() => setGameSearch("")}
+            title="Suche zurücksetzen"
+            aria-label="Suche zurücksetzen"
+            className="min-h-11 max-w-full whitespace-normal border-muted-foreground bg-card text-foreground shadow-none dark:border-muted-foreground dark:bg-card"
+          >
+            <RotateCcw className="h-4 w-4" aria-hidden="true" />
+            <span className="min-w-0 [overflow-wrap:anywhere]">Zurücksetzen</span>
+          </Button>
+        </div>
+        <p id="public-collection-query-hint" className="text-sm text-muted-foreground">Die Liste wird beim Tippen gefiltert.</p>
+      </div>
+      {gamesError && <p className="text-sm text-destructive">{gamesError}</p>}
+      <div aria-busy={gamesLoading}>
+        {gamesLoading ? (
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+            Sammlung wird geladen…
           </div>
-          {gamesError && <p className="text-sm text-destructive">{gamesError}</p>}
-          <div className="space-y-3 max-h-[320px] overflow-y-auto pr-1">
-            {gamesLoading ? (
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
-                Sammlung wird geladen…
-              </div>
-            ) : filteredGames.length === 0 ? (
-              <p className="text-sm text-muted-foreground">
-                {availableGames.length === 0
-                  ? "Alle Spiele deiner Sammlung sind bereits im Voting."
-                  : "Keine Spiele gefunden."}
-              </p>
-            ) : (
-              filteredGames.map((game) => (
-                <div
-                  key={game.id}
-                  className="flex items-center justify-between rounded-lg border border-border bg-card text-card-foreground px-3 py-2"
-                >
-                  <div>
-                    <p className="font-medium text-sm text-foreground">{game.name}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {game.minPlayers ?? "?"}-{game.maxPlayers ?? "?"} Spieler
-                    </p>
-                  </div>
-                  <Button
-                    size="icon"
-                    variant="secondary"
-                    disabled={gamesLoading}
-                    onClick={() => handleProposeGame(game.id)}
-                    data-testid={`propose-${game.id}`}
-                    title="Spiel vorschlagen"
-                    aria-label="Spiel vorschlagen"
-                    className="h-8 w-8 sm:h-8 sm:w-auto sm:px-3"
-                  >
-                    <Plus className="h-4 w-4 sm:mr-1 sm:h-3 sm:w-3" aria-hidden="true" />
-                    <span className="hidden sm:inline text-xs">Vorschlagen</span>
-                  </Button>
+        ) : filteredGames.length === 0 ? (
+          <p className="text-sm text-muted-foreground">
+            {availableGames.length === 0
+              ? "Alle Spiele deiner Sammlung sind bereits im Voting."
+              : "Keine Spiele gefunden."}
+          </p>
+        ) : (
+          <ProposalResultList label="Spiele aus deiner Sammlung">
+            {filteredGames.map((game) => (
+              <ProposalResultRow key={game.id}>
+                <div className="min-w-0 flex-1 basis-32 [overflow-wrap:anywhere]">
+                  <p className="font-medium text-sm text-foreground">{game.name}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {game.minPlayers ?? "?"}-{game.maxPlayers ?? "?"} Spieler
+                  </p>
                 </div>
-              ))
-            )}
-          </div>
-        </CardContent>
-      </Card>
-    </section>
+                <Button
+                  disabled={gamesLoading}
+                  onClick={() => handleProposeGame(game.id)}
+                  data-testid={`propose-${game.id}`}
+                  title="Spiel vorschlagen"
+                  aria-label={`${game.name} vorschlagen`}
+                  className="min-h-11 max-w-full shrink-0 whitespace-normal"
+                >
+                  <Plus className="h-4 w-4" aria-hidden="true" />
+                  <span className="min-w-0 [overflow-wrap:anywhere]">Vorschlagen</span>
+                </Button>
+              </ProposalResultRow>
+            ))}
+          </ProposalResultList>
+        )}
+      </div>
+    </ProposalSearchPanel>
   );
 }

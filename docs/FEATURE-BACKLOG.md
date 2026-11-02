@@ -33,7 +33,7 @@ Bedarf zu aktualisieren. Ergebnis am jeweiligen Plan dokumentieren:
 | FEAT-017 | Spielcover in der Sessions-Übersicht anzeigen | Web umgesetzt; Browser-/Viewportabnahme offen | [Cover in Sessionkarten](superpowers/plans/2026-11-02-FEAT-017-session-cover.md) | Web-Umsetzung am 02.11.2026 freigegeben und umgesetzt; iOS separat |
 | FEAT-018 | Testabdeckung schrittweise auf 80 % erhöhen | In Umsetzung; Gate 50/50/60/55 erreicht; weitere UI-/API-Pakete offen | [Coverage-Ziel 80 %](superpowers/plans/2026-11-02-FEAT-018-coverage-80.md) | Durch „implementiere FEAT-018“ am 02.11.2026 freigegeben |
 | FEAT-019 | Spracheingabe für Suche und Session-Anlage | Konzept dokumentiert; Plan und Umsetzung offen | [Spracheingabe-Konzept](superpowers/specs/2026-11-02-spracheingabe-design.md) | Keine |
-| FEAT-020 | Lesbare Trefferflächen für öffentliche Spielvorschläge | Web umgesetzt; gerenderte Theme-/Viewportabnahme offen | [Kontrast der Spielvorschläge](superpowers/plans/2026-11-02-FEAT-020-public-event-proposal-contrast.md) | Web am 02.11.2026 freigegeben und umgesetzt; iOS nicht betroffen |
+| FEAT-020 | Lesbare Trefferflächen für öffentliche Spielvorschläge | Web nachgebessert; lokal gerendert geprüft (Hell/Dunkel, 390/1024 px, 200 % Schrift) | [Kontrast der Spielvorschläge](superpowers/plans/2026-11-02-FEAT-020-public-event-proposal-contrast.md) | Web am 02.11.2026 freigegeben und umgesetzt; iOS nicht betroffen |
 
 Am 30.10.2026 aufgenommen. Bei der Planung sind Web, iOS sowie angemeldete und
 öffentliche Voting-Ansichten auf Relevanz und bereits vorhandene Teilfunktionen
@@ -811,7 +811,7 @@ ihre IDs und Abnahmekriterien.
 
 ## FEAT-020 – Kontrast öffentlicher Spielvorschläge
 
-**Status:** Web umgesetzt; gerenderte Theme-/Viewportabnahme offen.
+**Status:** Web nachgebessert (BUG-064); Komponenten lokal gerendert mit synthetischen Daten geprüft.
 **Design-Spec:** [Lesbare Spielvorschläge auf der öffentlichen Eventseite](superpowers/specs/2026-11-02-public-event-proposal-contrast-design.md).
 **Implementierungsplan:** [Kontrast der Spielvorschläge](superpowers/plans/2026-11-02-FEAT-020-public-event-proposal-contrast.md).
 **Plattformumfang:** Öffentliche Web-Eventseite; iOS ist nicht betroffen.
@@ -825,4 +825,15 @@ semantische Kartenfarben und eine sichtbare Border. Suche, Inhalt, Bilder und
 Aktionen bleiben unverändert. Zwei Regressionstests und vier angrenzende
 Public-Event-Tests bestehen. TypeScript, ESLint und Build bestanden. Die
 statische Impeccable-Prüfung meldet 0 Regex-Findings; vollständige gerenderte
-Theme-/Viewportprüfung blieb mangels Browserhost offen.
+Theme-/Viewportprüfung blieb zunächst mangels Browserhost offen.
+
+**Nachbesserung 02.11.2026 (0.50.60, BUG-064):** Der Nutzerscreenshot und die
+lokale Vorschau reproduzierten schwache äußere Flächen sowie uneinheitliche
+Suchkontrollen. Ein gemeinsames Panel und gemeinsame Listenzeilen vereinheitlichen
+Sammlung und BGG. Beschriftete Suchfelder, 44-px-Aktionen, deutsche Reset-Beschriftung
+und ein lesbarer deaktivierter Suchbutton sind umgesetzt. Der lokale Vite-Server
+rendert reale Komponenten und Anwendungs-CSS mit synthetischen Daten; keine
+Produktionsdatenbank wird verwendet. Safari-Prüfung: 390/1024 px, Hell/Dunkel und
+200 % Schrift; gemessener minimaler Textkontrast 5,59:1 hell und 5,33:1 dunkel.
+Der bei 200 % entdeckte seitliche Listenüberlauf ist korrigiert. Die Anforderung
+zur lokalen gerenderten Prüfung ist damit für diese Komponenten erfüllt.

@@ -1,5 +1,15 @@
 # Review-Snapshot – FEAT-015 Dashboard-Top-drei (0.50.48)
 
+## BUG-064 / FEAT-020 – Einheitliche Vorschlagssuche (0.50.60)
+
+- Gemeinsame deckende Panels und abgesetzte Listenflächen für Sammlung und BGG; sichtbare Suchlabels und eindeutige deutsche Aktionen.
+- RED: fehlende Sammlungsbeschriftung und doppelter BGG-Hinweis; anschließend 13/13 gezielte Public-Event-Tests grün, einschließlich Axe.
+- Lokaler Vite-Server mit realen Komponenten/Styles und ausschließlich synthetischen Daten: Chrome-Vorheransicht und Safari-Nachprüfung über native CUA.
+- Gerendert: 390/1024 px, Hell/Dunkel, 200 % Schrift, lange Titel, Suchtreffer, Leer- und Fehlerzustand. Sammlungsliste lief bei 200 % zunächst seitlich über; nach Korrektur keine horizontalen Überläufe in beiden Listen.
+- Minimale gemessene Textkontraste: 5,59:1 hell, 5,33:1 dunkel; Kontrollen mindestens 44 px hoch bei normaler Schrift.
+- Build mit Typprüfung und gezieltes ESLint bestanden; Impeccable-Detektor 0 Findings. Regressionsevaluator 10/10, Sicherheit 9,9/10, keine offenen/neuen Findings oder Regressionen (`history/2026-11-02_1305.json`).
+- API-/Auth-/Datenbankverträge unverändert; keine Produktionsdaten oder schreibenden Datenbank-E2E verwendet. Lokale UI-Prüfung ist kein vollständiger Backend-E2E-Nachweis.
+
 ## FEAT-018 – Coveragepaket 1 (0.50.57)
 
 - Globales und `src/lib`-Coverage-Gate auf 50/50/60/55 % angehoben.

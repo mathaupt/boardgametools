@@ -373,8 +373,12 @@ Vorschläge annimmt. Sucheingabe, Ladezustand, Treffer, leere Trefferliste und
 Fehler werden getrennt angezeigt. Ein sichtbares Label benennt das Suchfeld;
 Vorschlagen erfordert eine aktive Identität.
 
-Treffer aus der BGG-Suche und der eigenen Sammlung sind mit einer deckenden,
-semantischen Kartenfläche und einer feinen Umrandung vom Suchbereich abgesetzt.
+Sammlung und BGG-Suche verwenden dieselbe deckende Kartenfläche, beschriftete
+Suchfelder und mindestens 44 px hohe Aktionen. Beide Trefferlisten stehen auf
+einer gemeinsamen abgesetzten Fläche mit Trennlinien. Die Sammlung wird beim
+Tippen gefiltert; „Zurücksetzen“ zeigt wieder alle verfügbaren Spiele.
+„Vorschlagen“ bleibt auch mobil ausgeschrieben; deaktivierte Suchaktionen
+bleiben lesbar und Aktionsbeschriftungen umbrechen bei großer Schrift.
 
 ### Oeffentliche Gruppe
 

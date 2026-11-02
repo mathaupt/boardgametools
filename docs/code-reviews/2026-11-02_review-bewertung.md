@@ -1,5 +1,15 @@
 # Bewertung – FEAT-015 Dashboard-Top-drei
 
+## BUG-064 / FEAT-020 – Gerendert nachgebesserte Vorschlagssuche
+
+| Prüffeld | Ergebnis | Grenze |
+|---|---|---|
+| Lesbarkeit / Einheitlichkeit | Gemeinsame Panel-/Listenkomponenten; klare Suchkontrollen und lesbarer deaktivierter Suchbutton | Semantische Tokens bleiben Grundlage |
+| Gerenderte Prüfung | Safari lokal: 390/1024 px, Hell/Dunkel, 200 % Schrift; 5,59:1 / 5,33:1 Textkontrastminimum | Reale Komponenten, synthetische Daten; kein Backend-E2E |
+| TDD / Regression | 2 erwartete RED-Fälle; nach Umsetzung 13/13 Tests einschließlich Axe grün | Layout zusätzlich im Browser gemessen |
+| Build / Lint | Produktionsbuild einschließlich Typprüfung und gezieltes ESLint bestanden | Parallel laufende Coverage-Änderungen separat |
+| Evaluator | 10/10 gesamt, Sicherheit 9,9/10; 0 offene/neue Findings, keine Regression | Snapshot `history/2026-11-02_1305.json` |
+
 ## FEAT-018 – Coveragepaket 1 (vor Commit)
 
 | Prüffeld | Ergebnis | Einschränkung |

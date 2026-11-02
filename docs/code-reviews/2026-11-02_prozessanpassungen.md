@@ -1,5 +1,14 @@
 # Prozessanpassungen – FEAT-015
 
+## BUG-064 / FEAT-020 – Lokale UI-Abnahme abschließen
+
+- [x] Fehlenden DOM-Browserhost durch lokalen Server und native Browsersteuerung ergänzt.
+- [x] Screenshot in Chrome reproduziert; Nachbesserung in Safari mit realen Komponenten und synthetischen Daten geprüft.
+- [x] Gemeinsame Darstellung für beide Vorschlagsquellen eingeführt; verschachtelte Ergebniskarten durch geteilte Listen ersetzt.
+- [x] Zugängliche Such-/Reset-/Listenverträge vor dem Fix rot, anschließend grün; Kontrast und 200-%-Layout gerendert gemessen.
+- [x] Bei 200 % gefundenen Listenüberlauf korrigiert und ohne horizontale Überläufe nachgemessen.
+- [x] TypeScript/Build, gezieltes ESLint und Impeccable-Detektor bestanden. Regressionsevaluator ohne Regression, 10/10 (`history/2026-11-02_1305.json`).
+
 ## FEAT-018 Coveragepaket 1
 
 - [x] Frische Baseline gegen `c497641` aufgenommen und Coverage-Inventar unverändert gelassen.

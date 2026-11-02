@@ -45,3 +45,9 @@ Theme-Tokens auch im Dark Mode funktionieren.
   und Dunkel-Theme. Farbkontrast bleibt über semantische Tokens erhalten;
   Browserabnahme wird dokumentiert, sofern der Browserhost verfügbar ist.
 - Keine API-, Datenbank- oder Berechtigungsänderung.
+
+## Nachbesserung am 02.11.2026 (0.50.60)
+
+Der spätere Nutzerscreenshot zeigt, dass die ausschließlich auf Trefferzeilen begrenzte Lösung die Suchbereiche insgesamt unzureichend vereinheitlicht. Der Folgeauftrag erweitert den Umfang auf die gesamten beiden Vorschlagsbereiche. Die äußeren Panels verwenden deckendes `card`; die gemeinsame Ergebnisliste nutzt `background`, feine Trennlinien und lesbare Metadaten. Einzelne Ergebniszeilen haben keine eigenen verschachtelten Karten mehr. Beide Suchfelder sind sichtbar beschriftet und mindestens 44 px hoch. Sammlungssuche filtert direkt und bietet „Zurücksetzen“; die BGG-Suche bleibt ein explizites Formular mit einem einzelnen Mindestlängenhinweis. Der deaktivierte BGG-Button besitzt eine eigene gut lesbare Flächen-/Textkombination ohne reduzierte Gesamtdeckkraft. Bei großer Schrift dürfen Aktionsbeschriftungen umbrechen. Diese Festlegung ersetzt die frühere Begrenzung auf Ergebniszeilen.
+
+Die lokale Vorschau rendert reale Komponenten und globale Styles ohne Produktionsdaten. Browserprüfungen erfolgen über native CUA, wenn der DOM-Browserhost nicht verfügbar ist; ein fehlender DOM-Browserhost verhindert den lokalen Server und die native Browserprüfung nicht.

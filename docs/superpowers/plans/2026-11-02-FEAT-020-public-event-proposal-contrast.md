@@ -110,3 +110,19 @@ Browserhost offen.
 Designrichtung durch „ja“ am 02.11.2026 bestätigt. Design-Spec am selben Tag
 geprüft. **Web-Umsetzung am 02.11.2026 durch „implementiere FEAT-020“
 freigegeben.** iOS ist nicht betroffen.
+
+## Nachbesserung: einheitliche Suchbereiche und gerenderte Prüfung (BUG-064)
+
+**Freigabe:** Am 02.11.2026 durch den Auftrag, die screenshotbasierten Kontrast-/Konsistenzprobleme mit Impeccable zu prüfen und zu optimieren; lokale Serverprüfung anschließend ausdrücklich angefordert.
+
+**Aktualitätsprüfung:** Gegen `9259113` und den aktuellen Arbeitsbaum geprüft. Die erste Umsetzung änderte ausschließlich Trefferzeilen. Die äußeren Panels hatten weiterhin `bg-background/70`, die Sammlungssuche kein Label und die beiden Suchfelder unterschiedliche Höhen. Die neue lokale Vorschau reproduziert den Screenshot. Parallel laufende FEAT-018-/021-/022-Änderungen bleiben außerhalb dieses Fixes.
+
+**Aktualisierter Umfang:** Dieser Abschnitt ersetzt die frühere Festlegung „nur Ergebniszeilen“/„keine neue Komponente“. `proposal-search-panel.tsx` hält Panel, Ergebnisliste und Zeile gemeinsam. Außenflächen verwenden `card`, Listen eine deckende `background`-Fläche mit Trennlinien. Eingaben und Outline-Aktionen erhalten deutlich erkennbare Ränder; deaktiviertes Suchen bleibt bei voller Deckkraft lesbar. Sammlungssuche erhält Label, Hint und deutsche Reset-Aktion; Vorschlagbuttons bleiben mobil ausgeschrieben. Endpunkte und Zugriffsrechte ändern sich nicht.
+
+- [x] **RED:** `npx vitest run tests/unit/components/public-event-proposal-surfaces.test.tsx`: fehlende Sammlungssuch-Beschriftung und doppelter BGG-Hinweis verursachten zwei erwartete Fehlschläge.
+- [x] **GREEN:** gemeinsame Darstellung und zugängliche Bedienelemente implementiert; Flächentests durch sinnvolle Such-/Reset-/Listen-/Axe-Verträge ersetzt.
+- [x] **REFACTOR:** gemeinsame Panel-/Listenkomponenten extrahiert; semantische Farbrollen und tatsächliche Such-/Vorschlagsabläufe beibehalten.
+- [x] **Gerendert:** lokaler Vite-Server mit echten Komponenten und Anwendungs-CSS, synthetische Daten und abgefangene Netzwerkzugriffe. Vorher: Chrome; nachher: Safari über native CUA, da Browserhost weiterhin nicht verfügbar. Hell/Dunkel bei 390/1024 px sowie 200 % Schrift geprüft. 200-%-Listenüberlauf entdeckt, korrigiert und erneut ohne Überlauf gemessen.
+- [x] **Messwerte:** niedrigster geprüfter Textkontrast 5,59:1 hell / 5,33:1 dunkel (einschließlich deaktiviertem Suchen); Steuerelemente mindestens 44 px hoch bei normaler Schrift. Dokumentation unterscheidet diese Komponentenprüfung von einem vollständigen Backend-E2E.
+- [x] **Tests:** gezielte Public-Event-Suiten 13/13, einschließlich `jest-axe`, bestanden. Keine schreibenden Datenbank-E2E-Abläufe.
+- [x] **Abschluss:** Typecheck im Produktionsbuild, gezieltes ESLint und Build bestanden. Regressionsevaluator: 10/10, Sicherheit 9,9/10, keine offenen/neuen Findings oder Regressionen; Snapshot `history/2026-11-02_1305.json`. Backlog, BUG-064 und Review-Dokumentation aktualisiert. Security- und Commit-Hook-Nachweis folgt beim Commit.

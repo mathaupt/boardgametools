@@ -12,6 +12,16 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.60",
+    date: "2026-11-02",
+    title: "Spielvorschläge klarer und einheitlicher bedienen",
+    description: "Sammlung und BoardGameGeek erhalten klar getrennte Suchflächen, gut lesbare Aktionen und ein gemeinsames Listenlayout.",
+    changes: [
+      { type: "fix", text: "Öffentliche Vorschlagsbereiche heben sich deckend vom Hintergrund ab. Suchfelder, deaktivierte Aktionen und Trefferlisten bleiben in Hell und Dunkel gut lesbar; Aktionsbeschriftungen umbrechen bei großer Schrift.", bugRef: "BUG-064" },
+      { type: "improvement", text: "Die Sammlungssuche ist sichtbar beschriftet. „Zurücksetzen“ ersetzt „Reset“, und „Vorschlagen“ bleibt auch auf schmalen Bildschirmen ausgeschrieben." },
+    ],
+  },
+  {
     version: "0.50.57",
     date: "2026-11-02",
     title: "Testabdeckung gezielt ausbauen",
