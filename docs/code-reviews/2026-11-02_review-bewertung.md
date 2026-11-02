@@ -8,9 +8,9 @@
 | `src/lib` | 88,23/81,79/89,16/90,95 % | Alle vier Bibliotheksmetriken über 80 % |
 | Neue Tests | 62 seit Baseline; Auth, Provider-Fallbacks, Games-/Session-/Event-/Gruppen-/Barcodeverhalten | Externe Grenzen gezielt gemockt |
 | Threshold-Verhalten | Gate 50/50/60/55 % besteht; 100-%-Statements-Override scheiterte erwartungsgemäß bei 49,52 % | Override-Nachweis stammt vom vorherigen Coveragepaket |
-| Security / Evaluator | Audit 0 Vulnerabilities; Evaluator 10/10, Sicherheit 9,9/10, 0 offene/neue Findings, keine Regression | Snapshot `history/2026-11-02_1234.json`; 3 Security-Check-Warnungen, darunter Registryfehler im Sandboxlauf und 2 vorhandene Codehinweise |
+| Security / Evaluator | Audit 0 Vulnerabilities; Evaluator 10/10, Sicherheit 9,9/10, 0 offene/neue Findings, keine Regression | Snapshot `history/2026-11-02_1235.json`; 3 Security-Check-Warnungen, darunter Registryfehler im Sandboxlauf und 2 vorhandene Codehinweise |
 | TypeScript / ESLint | Typecheck, gezieltes ESLint und betroffene Regressionstests bestanden | Kein vollständiger Build, keine UI-Änderung |
-| Commit-Hook | Noch ausstehend | Nach Commit verifizieren |
+| Commit `6c7f7f9` / Hook | Commit erstellt; lint-staged, Security-Check und Regressionsevaluator bestanden | 2 bestehende Security-Hinweise zu Raw SQL und Debug-Routen
 
 ## Public Event – Kontrast der Spielvorschläge
 

@@ -7,3 +7,5 @@
 - [ ] Gate nach jeder Stufe ratcheten: 55 %, 65 %, 72 %, 80 %.
 - [ ] Coveragejob für Pull Request und Main-Push vereinheitlichen und Artefakt archivieren.
 - [ ] Finale Qualitätsprüfung und Review-Dokumentation nach Commit abschließen.
+
+- [x] Commit `6c7f7f9`: lint-staged-ESLint/Tests, Security-Check und Regressionsevaluator bestanden.

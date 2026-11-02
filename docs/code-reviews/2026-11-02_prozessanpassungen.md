@@ -111,4 +111,4 @@ eine gültige ID aus den aktuellen Optionen. Die bestehende Serverautorisierung
 bleibt aktiv. Responsive und manuelle Screenreaderabnahmen sind offen.
 
 
-- [x] Evaluator erneut mit Registryzugriff ausgeführt: 10/10, Sicherheit 9,9/10, 0 offene/neue Findings, keine Regression; Snapshot `history/2026-11-02_1234.json`.
+- [x] Evaluator erneut mit Registryzugriff ausgeführt: 10/10, Sicherheit 9,9/10, 0 offene/neue Findings, keine Regression; Snapshot `history/2026-11-02_1235.json`.
