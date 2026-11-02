@@ -8,7 +8,8 @@
 - [x] Gezielte Rangfolgetests: 4/4 bestanden.
 - [x] BUG-063, Root Cause/Regressionslog und Changelog 0.50.55 ergänzt.
 - [x] TypeScript, gezieltes ESLint und Produktionsbuild bestanden.
-- [ ] Security- und Regressionsevaluator über Commit-Hook abschließen.
+- [x] Commit `dcf269b`: Security-Check ohne Fehler; Regressionsevaluator 10/10, Sicherheit 9,9/10, 0 offen/neu, keine Regression.
+- [x] Ergebnis im Review-Snapshot `history/2026-11-02_1119.json` dokumentiert.
 
 - [x] FEAT-015-Plan unmittelbar vor Umsetzung gegen `ad316d0`, vorhandene Änderungen, Votingsemantik und Dashboardquery geprüft und aktualisiert.
 - [x] Stimmenzahl aus Konto- und Gaststimmen berechnet; Gleichstand deterministisch nach älterem Vorschlag und ID aufgelöst.

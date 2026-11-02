@@ -5,7 +5,8 @@
 - Regressionstest reproduzierte Digest `113253834`: `createdAt.getTime is not a function` bei gecachtem ISO-String.
 - Ranglogik normalisiert jetzt Prisma-`Date`- und Cache-Stringwerte vor dem Tie-Breaker.
 - Regressionstests für Rangfolge und Dashboard-Datumsnormalisierung: 6/6 bestanden.
-- TypeScript, gezieltes ESLint und Produktionsbuild bestanden; vollständiger Regressionsevaluator folgt im Commit-Hook.
+- TypeScript, gezieltes ESLint, Produktionsbuild, Security-Check und Commit-Hook bestanden.
+- Review-Evaluator: 10/10, Sicherheit 9,9/10, 0 offene/neue Findings, keine Regression; Snapshot `history/2026-11-02_1119.json`.
 
 FEAT-015 ergänzt die hervorgehobene Eventkarte um eine Rangliste der drei meistgewählten Vorschläge. Konto- und Gaststimmen fließen ein. Für das autorisierte nächste Event liest die Abfrage nur Rangdaten aller Vorschläge und lädt vollständige Spiel-/Bilddetails nur für die angezeigten Top drei.
 

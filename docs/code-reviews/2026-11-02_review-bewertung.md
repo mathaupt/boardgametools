@@ -7,6 +7,7 @@
 | Regressionstest | 6/6 Dashboard-Datums-/Rangfolgetests bestanden; neuer Test reproduzierte den TypeError vor dem Fix | Gezielte Tests, kein E2E |
 | Laufzeitverhalten | `Date` und ISO-String werden vor dem Tie-Breaker in Zeitstempel normalisiert | Keine Datenbank- oder API-Änderung |
 | TypeScript / ESLint / Build | Bestanden | ESLint gezielt für geänderte Quelldateien |
+| Security / Review | Security-Check ohne Fehler; 10/10, 0 offene/neue Findings und keine Regression | 2 bestehende Hinweise zu Raw SQL und Debug-Routen; Snapshot `history/2026-11-02_1119.json` |
 
 | Prüffeld | Ergebnis | Einschränkung |
 |---|---|---|
