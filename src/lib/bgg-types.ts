@@ -39,3 +39,14 @@ export interface BGGSearchResult {
   name: string;
   yearPublished: number | null;
 }
+
+/** BGG-supplied edition metadata; distinct from the parent game's title/description. */
+export interface BGGGameVersion {
+  versionId: string;
+  name: string;
+  languages: string[];
+  yearPublished: number | null;
+  publishers: string[];
+  imageUrl: string | null;
+  thumbnailUrl: string | null;
+}

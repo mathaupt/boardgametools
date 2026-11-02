@@ -128,11 +128,15 @@ Drei Import-Methoden:
 Importierte Daten: Name, Bild, Spieleranzahl, Spieldauer, Komplexitaet,
 Kategorien, Mechaniken, BGG-Rating, BGG-Rang.
 
-**Geplant, noch nicht umgesetzt:** FEAT-021 sieht die optionale Auswahl einer
-deutschsprachigen BGG-Ausgabe einschließlich ihres BGG-Covers vor. Die aktuelle
-Importfunktion übersetzt Titel und Beschreibung nicht. FEAT-022 plant zusätzlich
-die offizielle BGG-Quellenkennzeichnung auf Loginseite und Website-Footer; die
-Umsetzung beider Features ist separat freizugeben.
+**FEAT-021 umgesetzt:** Beide Einzelimporte (`/dashboard/games/import` und
+`/dashboard/bgg`, einschließlich Barcode-Detailauswahl) bieten die bei BGG explizit
+als German markierten Ausgaben mit Sprache, Jahr, Verlag und Cover an.
+Die Auswahl bestimmt ausschließlich das Cover; Titel und Beschreibung werden
+nicht übersetzt. Ohne passende Ausgabe, bei fehlendem Cover oder Ladefehler
+bleibt der Standardimport möglich. Der Server prüft die Ausgabe erneut zum
+gewählten Hauptspiel; beliebige Client-Bildadressen werden nicht übernommen.
+Sammlungs- und Schnellimporte verwenden weiterhin das BGG-Hauptcover.
+FEAT-022 folgt mit der offiziellen Quellenkennzeichnung im Website-Footer.
 
 ### BGG-Suche
 

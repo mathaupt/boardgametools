@@ -1,28 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Search, Plus, Star, Users, Clock, ExternalLink, Trophy } from "lucide-react";
+import { Search } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
-
-interface BGGGame {
-  bggId: string;
-  name: string;
-  description?: string;
-  yearPublished?: string;
-  minPlayers?: string;
-  maxPlayers?: string;
-  playTimeMinutes?: string;
-  complexity?: string;
-  imageUrl?: string;
-  thumbnailUrl?: string;
-  rating?: string;
-  rank?: string;
-}
+import { BggVersionPicker } from "@/components/bgg/bgg-version-picker";
+import type { BGGGameVersion } from "@/lib/bgg-types";
+import { BggGameDetailCard, type BGGGame } from "./bgg-game-detail-card";
 
 interface BGGSearchResult {
   bggId: string;
@@ -36,6 +22,7 @@ export default function BGGImportPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<BGGSearchResult[]>([]);
   const [selectedGame, setSelectedGame] = useState<BGGGame | null>(null);
+  const [selectedVersion, setSelectedVersion] = useState<BGGGameVersion | null>(null);
   const [_loading, setLoading] = useState(false);
   const [searching, setSearching] = useState(false);
   const [importing, setImporting] = useState(false);
@@ -63,6 +50,7 @@ export default function BGGImportPage() {
   };
 
   const handleSelectGame = async (bggId: string) => {
+    setSelectedVersion(null);
     setLoading(true);
     try {
       const response = await fetch(`/api/bgg?bggId=${bggId}`);
@@ -86,32 +74,24 @@ export default function BGGImportPage() {
 
     setImporting(true);
     try {
-      const response = await fetch('/api/games', {
+      const response = await fetch('/api/games/import-bgg', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          name: selectedGame.name,
-          description: selectedGame.description,
-          minPlayers: parseInt(selectedGame.minPlayers || "2"),
-          maxPlayers: parseInt(selectedGame.maxPlayers || "4"),
-          playTimeMinutes: selectedGame.playTimeMinutes ? parseInt(selectedGame.playTimeMinutes) : null,
-          complexity: selectedGame.complexity ? Math.round(parseFloat(selectedGame.complexity)) : null,
-          bggId: selectedGame.bggId,
-          imageUrl: selectedGame.imageUrl
-        }),
+        body: JSON.stringify({ bggId: selectedGame.bggId, versionId: selectedVersion?.versionId }),
       });
 
       if (!response.ok) {
         throw new Error('Import failed');
       }
 
-      const importedGame = await response.json();
+      const { game: importedGame } = await response.json();
       toast({ title: "Spiel importiert", description: `Spiel "${importedGame.name}" erfolgreich importiert!` });
       
       // Reset form
       setSelectedGame(null);
+      setSelectedVersion(null);
       setSearchResults([]);
       setSearchQuery("");
       
@@ -121,13 +101,6 @@ export default function BGGImportPage() {
     } finally {
       setImporting(false);
     }
-  };
-
-  const getComplexityStars = (complexity?: string) => {
-    if (!complexity) return "☆☆☆☆☆";
-    const value = parseFloat(complexity);
-    const stars = Math.round(value);
-    return "★".repeat(stars) + "☆".repeat(5 - stars);
   };
 
   return (
@@ -193,119 +166,9 @@ export default function BGGImportPage() {
         </Card>
       )}
 
-      {/* Selected Game Details */}
-      {selectedGame && (
-        <Card>
-          <CardHeader>
-            <div className="flex items-start justify-between">
-              <div>
-                <CardTitle as="h2" className="flex items-center gap-2">
-                  {selectedGame.name}
-                  <Badge variant="outline">
-                    BGG ID: {selectedGame.bggId}
-                  </Badge>
-                </CardTitle>
-                {selectedGame.yearPublished && (
-                  <CardDescription>Erschienen {selectedGame.yearPublished}</CardDescription>
-                )}
-              </div>
-              <Button
-                onClick={handleImport}
-                disabled={importing}
-                className="flex items-center gap-2"
-              >
-                <Plus className="h-4 w-4" aria-hidden="true" />
-                {importing ? 'Wird importiert…' : 'Importieren'}
-              </Button>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Game Image */}
-              <div>
-                {selectedGame.imageUrl ? (
-                  <Image
-                    src={selectedGame.imageUrl}
-                    alt={selectedGame.name}
-                    width={400}
-                    height={400}
-                    sizes="(max-width: 768px) 100vw, 400px"
-                    className="w-full rounded-lg"
-                  />
-                ) : (
-                  <div className="w-full h-64 bg-muted rounded-lg flex items-center justify-center">
-                    <div className="text-muted-foreground text-6xl">🎲</div>
-                  </div>
-                )}
-                
-                {selectedGame.thumbnailUrl && (
-                  <div className="mt-2 text-center">
-                    <a
-                      href={`https://boardgamegeek.com/boardgame/${selectedGame.bggId}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-primary hover:text-primary/80 text-sm flex items-center justify-center gap-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm"
-                    >
-                      <ExternalLink className="h-3 w-3" aria-hidden="true" />
-                      Auf BoardGameGeek ansehen
-                    </a>
-                  </div>
-                )}
-              </div>
-
-              {/* Game Details */}
-              <div className="space-y-4">
-                <div>
-                  <h3 className="font-semibold mb-2">Spiel-Details</h3>
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <Users className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
-                      <span>{selectedGame.minPlayers}-{selectedGame.maxPlayers} Spieler</span>
-                    </div>
-                    
-                    {selectedGame.playTimeMinutes && (
-                      <div className="flex items-center gap-2">
-                        <Clock className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
-                        <span>{selectedGame.playTimeMinutes} Minuten</span>
-                      </div>
-                    )}
-                    
-                    {selectedGame.complexity && (
-                      <div className="flex items-center gap-2">
-                        <Star className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
-                        <span>Komplexität: {getComplexityStars(selectedGame.complexity)}</span>
-                      </div>
-                    )}
-                    
-                    {selectedGame.rating && (
-                      <div className="flex items-center gap-2">
-                        <Star className="h-4 w-4 fill-warning text-warning" aria-hidden="true" />
-                        <span>Bewertung: {parseFloat(selectedGame.rating).toFixed(2)}/10</span>
-                      </div>
-                    )}
-                    
-                    {selectedGame.rank && (
-                      <div className="flex items-center gap-2">
-                        <Trophy className="h-4 w-4 text-primary" aria-hidden="true" />
-                        <span>Rang: #{selectedGame.rank}</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {selectedGame.description && (
-                  <div>
-                    <h3 className="font-semibold mb-2">Beschreibung</h3>
-                    <p className="text-sm text-muted-foreground line-clamp-6">
-                      {selectedGame.description}
-                    </p>
-                  </div>
-                )}
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
+      {selectedGame && <BggGameDetailCard selectedGame={{ ...selectedGame, imageUrl: selectedVersion?.imageUrl ?? selectedVersion?.thumbnailUrl ?? selectedGame.imageUrl }} importing={importing} onImport={handleImport}>
+        <BggVersionPicker key={selectedGame.bggId} bggId={selectedGame.bggId} value={selectedVersion?.versionId ?? null} onChange={setSelectedVersion} disabled={importing} />
+      </BggGameDetailCard>}
     </div>
   );
 }

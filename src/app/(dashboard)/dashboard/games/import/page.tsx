@@ -11,27 +11,9 @@ import { BarcodeScanner } from "@/components/barcode-scanner";
 import { CollectionImportDialog } from "./collection-import-dialog";
 import { GamePreviewCard } from "./game-preview-card";
 
-interface BGGSearchResult {
-  bggId: string;
-  name: string;
-  yearPublished: number | null;
-}
-
-interface BGGGameData {
-  bggId: string;
-  name: string;
-  description: string;
-  yearPublished: number | null;
-  minPlayers: number;
-  maxPlayers: number;
-  playTimeMinutes: number | null;
-  complexity: number | null;
-  imageUrl: string | null;
-  categories: string[];
-  mechanics: string[];
-  designers: string[];
-  rating: number | null;
-}
+import type { BGGGameData, BGGSearchResult, BGGGameVersion } from "@/lib/bgg-types";
+import { BggVersionPicker } from "@/components/bgg/bgg-version-picker";
+import { ImportSearchResults } from "./import-search-results";
 
 export default function ImportBGGPage() {
   const router = useRouter();
@@ -39,6 +21,7 @@ export default function ImportBGGPage() {
   const [bggIdInput, setBggIdInput] = useState("");
   const [searchResults, setSearchResults] = useState<BGGSearchResult[]>([]);
   const [selectedGame, setSelectedGame] = useState<BGGGameData | null>(null);
+  const [selectedVersion, setSelectedVersion] = useState<BGGGameVersion | null>(null);
   const [isSearching, setIsSearching] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
@@ -92,6 +75,7 @@ export default function ImportBGGPage() {
     setIsSearching(true);
     setError(null);
     setSelectedGame(null);
+    setSelectedVersion(null);
 
     try {
       const response = await fetch(`/api/bgg/search?q=${encodeURIComponent(searchQuery)}`);
@@ -109,6 +93,7 @@ export default function ImportBGGPage() {
   }
 
   async function loadGameDetails(bggId: string) {
+    setSelectedVersion(null);
     setIsLoading(true);
     setError(null);
 
@@ -151,7 +136,7 @@ export default function ImportBGGPage() {
           "Content-Type": "application/json",
           "Origin": window.location.origin 
         },
-        body: JSON.stringify({ bggId: selectedGame.bggId, ean: barcodeEan || undefined }),
+        body: JSON.stringify({ bggId: selectedGame.bggId, versionId: selectedVersion?.versionId, ean: barcodeEan || undefined }),
       });
 
       if (response.ok) {
@@ -197,13 +182,13 @@ export default function ImportBGGPage() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div className="flex items-center gap-4">
+        <div className="flex min-w-0 items-center gap-4">
           <Button asChild variant="ghost" size="icon" aria-label="Zurück zur Spieleübersicht">
             <Link href="/dashboard/games">
               <ArrowLeft className="h-4 w-4" aria-hidden="true" />
             </Link>
           </Button>
-          <div>
+          <div className="min-w-0 [overflow-wrap:anywhere]">
             <h1 className="text-2xl sm:text-3xl font-bold">Von BGG importieren</h1>
             <p className="text-muted-foreground">Importiere Spiele direkt von BoardGameGeek</p>
           </div>
@@ -224,7 +209,7 @@ export default function ImportBGGPage() {
       </div>
 
       <div className="grid md:grid-cols-2 gap-6">
-        <div className="space-y-6">
+        <div className="min-w-0 space-y-6">
           {!isLoadingExistingGames && existingGamesError && (
             <div className="p-3 text-sm text-destructive bg-destructive/10 rounded-md">
               {existingGamesError}
@@ -237,7 +222,7 @@ export default function ImportBGGPage() {
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSearch} className="flex gap-2">
-                <Input
+                <Input className="min-w-0"
                   placeholder="z.B. Catan, Wingspan…"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
@@ -259,7 +244,7 @@ export default function ImportBGGPage() {
             </CardHeader>
             <CardContent>
               <form onSubmit={handleDirectLoad} className="flex gap-2">
-                <Input
+                <Input className="min-w-0"
                   placeholder="z.B. 13 (für Catan)"
                   value={bggIdInput}
                   onChange={(e) => setBggIdInput(e.target.value)}
@@ -272,41 +257,19 @@ export default function ImportBGGPage() {
             </CardContent>
           </Card>
 
-          {searchResults.length > 0 && (
-            <Card>
-              <CardHeader>
-                <CardTitle as="h2">Suchergebnisse</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-2 max-h-80 overflow-y-auto">
-                  {searchResults.map((result) => (
-                    <li key={result.bggId}>
-                      <Button
-                        variant="ghost"
-                        onClick={() => loadGameDetails(result.bggId)}
-                        className="w-full justify-start h-auto p-2 text-left"
-                      >
-                        <span className="font-medium">{result.name}</span>
-                        {result.yearPublished && (
-                          <span className="text-muted-foreground ml-2">({result.yearPublished})</span>
-                        )}
-                      </Button>
-                    </li>
-                  ))}
-                </ul>
-              </CardContent>
-            </Card>
-          )}
+          <ImportSearchResults results={searchResults} onSelect={loadGameDetails} />
         </div>
 
         <GamePreviewCard
-          selectedGame={selectedGame}
+          selectedGame={selectedGame ? { ...selectedGame, imageUrl: selectedVersion?.imageUrl ?? selectedVersion?.thumbnailUrl ?? selectedGame.imageUrl } : null}
           isLoading={isLoading}
           isImporting={isImporting}
           error={error}
           isAlreadyOwned={!isLoadingExistingGames && !!selectedGame && existingBggIds.has(selectedGame.bggId)}
           onImport={handleImport}
-        />
+        >
+          {selectedGame && !isLoading && <BggVersionPicker key={selectedGame.bggId} bggId={selectedGame.bggId} value={selectedVersion?.versionId ?? null} onChange={setSelectedVersion} disabled={isImporting} />}
+        </GamePreviewCard>
       </div>
 
       {/* Barcode Scanner Dialog */}

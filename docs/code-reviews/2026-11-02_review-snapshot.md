@@ -130,3 +130,7 @@ geändert.
   nicht ausgeführt.
 - Keine API-, Datenbankschema-, Migrations- oder Produktionsdatenänderung;
   serverseitige Session-Besitzprüfung bleibt erhalten.
+
+## FEAT-021 – 0.50.63
+
+Deutsche BGG-Ausgabenwahl in beiden Einzelimporten mit erneuter serverseitiger Prüfung umgesetzt. 1.029/1.029 Tests und Coverage-Gates, TypeScript, gezieltes ESLint sowie Produktionsbuild bestanden. Regressionsevaluator erfolgreich (Snapshot `history/2026-11-02_1426.json`); vorhandene Findings nicht erneut geöffnet. BUG-065 bei lokaler Safari-Prüfung mit großer Schrift entdeckt und behoben. Keine zusätzlichen Datenfreigaben oder Schemaänderungen.

@@ -5,21 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2, Users, Clock, Star, ExternalLink, Search } from "lucide-react";
 
-interface BGGGameData {
-  bggId: string;
-  name: string;
-  description: string;
-  yearPublished: number | null;
-  minPlayers: number;
-  maxPlayers: number;
-  playTimeMinutes: number | null;
-  complexity: number | null;
-  imageUrl: string | null;
-  categories: string[];
-  mechanics: string[];
-  designers: string[];
-  rating: number | null;
-}
+import type { ReactNode } from "react";
+import type { BGGGameData } from "@/lib/bgg-types";
 
 interface GamePreviewCardProps {
   selectedGame: BGGGameData | null;
@@ -28,6 +15,7 @@ interface GamePreviewCardProps {
   error: string | null;
   isAlreadyOwned: boolean;
   onImport: () => void;
+  children?: ReactNode;
 }
 
 export function GamePreviewCard({
@@ -37,9 +25,10 @@ export function GamePreviewCard({
   error,
   isAlreadyOwned,
   onImport,
+  children,
 }: GamePreviewCardProps) {
   return (
-    <div>
+    <div className="min-w-0">
       {error && (
         <div className="p-3 text-sm text-destructive bg-destructive/10 rounded-md mb-4">
           {error}
@@ -110,6 +99,7 @@ export function GamePreviewCard({
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
+            {children}
             {selectedGame.description && (
               <p className="text-sm text-muted-foreground line-clamp-4">
                 {selectedGame.description}
@@ -146,7 +136,7 @@ export function GamePreviewCard({
             )}
 
             <div className="flex gap-2 pt-4">
-              <Button onClick={onImport} disabled={isImporting} className="flex-1">
+              <Button onClick={onImport} disabled={isImporting} className="min-h-11 h-auto min-w-0 flex-1 whitespace-normal py-2">
                 {isImporting ? (
                   <><Loader2 className="h-4 w-4 mr-2 animate-spin" aria-hidden="true" />Importieren…</>
                 ) : (

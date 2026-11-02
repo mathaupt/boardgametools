@@ -486,7 +486,8 @@ ApiLog
 - `PUT /api/games/[id]` - Spiel aktualisieren
 - `DELETE /api/games/[id]` - Spiel löschen
 - `POST /api/games/bulk-delete` - Mehrere Spiele löschen
-- `POST /api/games/import-bgg` - Spiel aus BGG importieren
+- `POST /api/games/import-bgg` - Spiel aus BGG importieren; optional `versionId` für das Cover einer serverseitig verifizierten deutschen Ausgabe (FEAT-021).
+- `GET /api/bgg/{id}/versions` - Authentifizierte, begrenzte Abfrage deutschsprachiger BGG-Ausgaben. Titel und Beschreibung bleiben beim Import die Daten des Hauptspiels; kein Schemawechsel nötig.
 
 ### BGG Integration
 - `GET /api/bgg` - BGG-API Proxy

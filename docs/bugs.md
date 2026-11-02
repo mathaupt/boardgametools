@@ -1890,10 +1890,30 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 ---
 
+### [BUG-065] BGG-Importvorschau läuft bei großer Schrift seitlich über
+
+**Status:** `fixed`
+**Schweregrad:** `medium`
+**Entdeckt:** 2026-11-02
+**Behoben:** 2026-11-02
+**Behoben in Version:** 0.50.63
+**Test geschrieben:** Ja – `tests/unit/components/bgg-import-editions.test.tsx`, zusätzlich gerenderte Safari-Prüfung.
+
+**Beschreibung:** Bei 390 px und 200 % Schrift drückte der nicht umbrechende Importbutton die gesamte Vorschau über den Bildschirmrand. Große Vorschaubilder ließen den Ausgabennamen zu wenig Platz.
+**Reproduktion:** Spiel im Einzelimport laden, mobile Breite und 200 % Schrift einstellen.
+**Erwartetes Verhalten:** Vollständig lesbare Auswahl und erreichbare Importaktion ohne seitliches Scrollen.
+**Tatsächliches Verhalten:** Gemessene Dokumentbreite 599 px bei 390 px Viewport.
+**Ursache:** Automatische Mindestbreiten im Grid, nicht umbrechende Aktionsbeschriftung und nebeneinander platzierte, mit der Schrift vergrößerte Cover.
+**Lösung:** Schrumpfbare Grid-Inhalte, umbrechende Importaktion, begrenzte Covergröße und mehrzeilige mobile Ausgabenkarte.
+**Prüfnachweis:** Gezielt fehlschlagender Umbruchvertrag vor Fix, danach 2/2 Integrationstests grün. Safari meldet danach keine überlaufenden Auswahl-/Aktionsflächen bei 390 px und 200 % Schrift.
+**Referenz im Changelog:** Version 0.50.63 – BUG-065.
+
+---
+
 ## Statistik
 
 - **Offene Bugs:** 4
 - **In Bearbeitung:** 4
-- **Behoben:** 56
+- **Behoben:** 57
 - **Wontfix:** 0
-- **Gesamt:** 64
+- **Gesamt:** 65

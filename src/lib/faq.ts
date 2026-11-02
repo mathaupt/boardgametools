@@ -19,6 +19,10 @@ export const faqSections: FaqSection[] = [
     description: "So startest du mit BoardGameTools.",
     items: [
       {
+        question: "Kann ich beim BGG-Import ein deutsches Cover auswählen?",
+        answer: "Ja. Lade ein Spiel im BGG-Einzelimport und wähle unter Ausgabe wählen eine von BGG als deutschsprachig gekennzeichnete Ausgabe. Angezeigt werden Sprache, Jahr, Verlag und das verfügbare Cover. Ohne passende Ausgabe oder bei Ladefehlern kannst du die Standardausgabe importieren. Fehlt das Cover einer Ausgabe, wird das Hauptcover verwendet. Titel und Beschreibung werden nicht übersetzt. Sammlungs- und Schnellimporte verwenden das Hauptcover.",
+      },
+      {
         question: "Wo finde ich die Webnavigation auf dem Smartphone?",
         answer: "Öffne das Menü oben neben BoardGameTools. Dort findest du Spiele, Sessions, Reihen, Events, Gruppen und Statistiken sowie Hilfe, Profil und Abmelden. Nach der Auswahl eines Bereichs schließt sich das Menü. Auf dem Computer stehen die Bereiche links in der blauen Navigation.",
       },

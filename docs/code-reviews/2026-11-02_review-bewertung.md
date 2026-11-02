@@ -125,3 +125,7 @@ ausgewiesen. Umsetzungsfreigaben und neue Laufzeit-Abnahmen sind weiterhin offen
 | Impeccable | 0 Regex-Findings | Kein gerenderter Browserlauf; Kontrast/Layout damit nicht geprüft |
 | Browser / Viewport / VoiceOver | Offen | Browserhost nicht erreichbar; keine Aussage zu 390/1440 px, Hell/Dunkel oder 200-%-Zoom |
 | Daten / Berechtigungen | Ausschließlich Auswahl-ID; API prüft weiter Besitz und Löschstatus | Keine API-, Schema- oder Datenbankänderung |
+
+## FEAT-021 – 0.50.63
+
+Deutsche BGG-Ausgabenwahl in beiden Einzelimporten mit erneuter serverseitiger Prüfung umgesetzt. 1.029/1.029 Tests und Coverage-Gates, TypeScript, gezieltes ESLint sowie Produktionsbuild bestanden. Regressionsevaluator erfolgreich (Snapshot `history/2026-11-02_1426.json`); vorhandene Findings nicht erneut geöffnet. BUG-065 bei lokaler Safari-Prüfung mit großer Schrift entdeckt und behoben. Keine zusätzlichen Datenfreigaben oder Schemaänderungen.

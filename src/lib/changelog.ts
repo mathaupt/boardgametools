@@ -12,6 +12,17 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.63",
+    date: "2026-11-02",
+    title: "Deutsche BGG-Ausgabe beim Import wählen",
+    description: "Beim Einzelimport kannst du eine bei BGG hinterlegte deutsche Ausgabe mit ihrem Cover auswählen.",
+    changes: [
+      { type: "feature", text: "FEAT-021: Beide BGG-Einzelimporte zeigen deutsche Ausgaben mit Sprache, Jahr, Verlag und Cover; die Standardausgabe bleibt verfügbar." },
+      { type: "improvement", text: "Die gewählte Ausgabe wird beim Speichern serverseitig geprüft. Spieltitel und Beschreibung stammen weiterhin unverändert vom BGG-Haupteintrag." },
+      { type: "fix", text: "BUG-065: Die Importvorschau bleibt auch auf kleinen Bildschirmen bei großer Schrift bedienbar.", bugRef: "BUG-065" },
+    ],
+  },
+  {
     version: "0.50.62",
     date: "2026-11-02",
     title: "BGG-Ausbau und Testabdeckung dokumentieren",

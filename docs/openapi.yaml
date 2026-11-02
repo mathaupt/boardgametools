@@ -406,7 +406,15 @@ paths:
                 maxPlayers: { type: integer, minimum: 1, maximum: 99, default: 4 }
                 playTimeMinutes: { type: integer, minimum: 0, maximum: 9999 }
                 complexity: { type: integer, minimum: 1, maximum: 5 }
-                bggId: { type: string }
+                bggId:
+                  oneOf:
+                    - { type: string, pattern: '^[1-9][0-9]{0,11}$' }
+                    - { type: integer, minimum: 1, maximum: 999999999999 }
+                versionId:
+                  description: Optionale deutsche Ausgabe des Hauptspiels; der Server prüft die Zuordnung und übernimmt nur ihr Cover.
+                  oneOf:
+                    - { type: string, pattern: '^[1-9][0-9]{0,11}$' }
+                    - { type: integer, minimum: 1, maximum: 999999999999 }
                 ean: { type: string }
                 imageUrl: { type: string }
                 tagNames: { type: array, items: { type: string } }
@@ -498,6 +506,13 @@ paths:
         '409': { description: Spiel existiert bereits }
         '404': { description: Spiel auf BGG nicht gefunden }
 
+        '400': { description: Ungültige Eingabe oder unpassende deutsche Ausgabe, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+        '401': { description: Anmeldung erforderlich, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+        '429': { description: Zu viele Importe, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+        '502': { description: Ungültige BGG-Antwort, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+        '503': { description: BGG vorübergehend nicht verfügbar, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+        '504': { description: BGG-Zeitüberschreitung, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+
   # ===== BGG =====
   /api/bgg:
     get:
@@ -527,6 +542,41 @@ paths:
       responses:
         '200': { description: BGG-Spieldetails }
         '404': { description: Spiel nicht gefunden }
+
+  /api/bgg/{id}/versions:
+    get:
+      tags: [BGG]
+      summary: Deutschsprachige BGG-Ausgaben eines Spiels abrufen
+      description: Nur explizit als German markierte Ausgaben; 20 Abfragen pro Minute und Konto. Antwort ist privat und wird nicht gespeichert.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, pattern: '^[1-9][0-9]{0,11}$' }
+      responses:
+        '200':
+          description: Deutsche Ausgaben; leere Liste, falls keine vorhanden sind
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  required: [versionId, name, languages, yearPublished, publishers, imageUrl, thumbnailUrl]
+                  properties:
+                    versionId: { type: string }
+                    name: { type: string }
+                    languages: { type: array, items: { type: string } }
+                    yearPublished: { type: integer, nullable: true }
+                    publishers: { type: array, items: { type: string } }
+                    imageUrl: { type: string, nullable: true, format: uri }
+                    thumbnailUrl: { type: string, nullable: true, format: uri }
+        '400': { description: Ungültige BGG-ID, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+        '401': { description: Anmeldung erforderlich, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+        '429': { description: Zu viele Abfragen, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+        '502': { description: Ungültige BGG-Antwort, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+        '503': { description: BGG vorübergehend nicht verfügbar, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+        '504': { description: BGG-Zeitüberschreitung, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
 
   /api/bgg/search:
     get:

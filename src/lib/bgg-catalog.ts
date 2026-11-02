@@ -24,7 +24,7 @@ export class BggCatalogError extends Error {
   }
 }
 
-function validateItemsXml(xml: string): void {
+export function validateItemsXml(xml: string): void {
   const trimmed = xml.trim();
   if (!/^<\?xml\b[^>]*\?>\s*/i.test(trimmed) && !/^<items\b/i.test(trimmed)) {
     throw new BggCatalogError(502, "BoardGameGeek hat eine unverständliche Antwort geliefert.");
