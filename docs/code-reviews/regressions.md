@@ -328,3 +328,14 @@ Jeder Eintrag enthält Felder für Root-Cause-Analyse und Gegenmaßnahmen (manue
 **Abschlussprüfung nach Commit 9196645:** Commit-Hook-Audit mit Registryzugriff meldete 0 Vulnerabilities; `npm run review-evaluate:regression` endete mit Exitcode 0, 10/10, 0 offenen Findings und ohne Regression. Snapshot: `history/2026-11-02_1035.json`.
 
 ---
+
+## 2026-11-02 – Dashboard-Datumsserialisierung (BUG-063)
+
+| Finding | Priorität | Vorher | Jetzt | Detail |
+|---------|-----------|--------|-------|--------|
+| Dashboard-Vorschlagsrangfolge wirft bei Cache-Hit `createdAt.getTime` | P1 | offen | behoben | Digest `113253834`; gecachtes Datum war ein ISO-String |
+
+**Root-Cause:** Der frühere Dashboard-Fix normalisierte Event- und Sessiondaten, doch die später hinzugefügte FEAT-015-Ranglogik verglich `createdAt` weiterhin als `Date`. `unstable_cache` serialisiert Prisma-Datumswerte und gibt sie als Strings zurück. So blieb dieselbe Cache-Annahme in einem neu hinzugefügten Dashboardpfad bestehen.
+**Gegenmaßnahme:** Ranglogik akzeptiert `Date | string` und normalisiert vor dem Gleichstandsvergleich; Regressionstest bildet gecachte ISO-Zeitstempel nach.
+**Verantwortlich:** BoardGameTools-Wartung.
+**Prüfnachweis:** `tests/unit/lib/dashboard-event-proposals.test.ts`; der Regressionstest scheiterte vor dem Fix mit dem gemeldeten `TypeError` und lief danach grün.

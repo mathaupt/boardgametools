@@ -1,5 +1,13 @@
 # Bewertung – FEAT-015 Dashboard-Top-drei
 
+## BUG-063 – Dashboard-Cache-Datum
+
+| Prüffeld | Ergebnis | Einschränkung |
+|---|---|---|
+| Regressionstest | 6/6 Dashboard-Datums-/Rangfolgetests bestanden; neuer Test reproduzierte den TypeError vor dem Fix | Gezielte Tests, kein E2E |
+| Laufzeitverhalten | `Date` und ISO-String werden vor dem Tie-Breaker in Zeitstempel normalisiert | Keine Datenbank- oder API-Änderung |
+| TypeScript / ESLint / Build | Bestanden | ESLint gezielt für geänderte Quelldateien |
+
 | Prüffeld | Ergebnis | Einschränkung |
 |---|---|---|
 | Unit-Tests | 7/7 bestanden | Gezielte Rangfolge-, UI- und Fallbackfälle, keine vollständige Suite |

@@ -1,5 +1,15 @@
 # Prozessanpassungen – FEAT-015
 
+## BUG-063 Dashboard-Datumsregression
+
+- [x] Gemeldeten Produktionsdigest `113253834` der Rangfolge in `dashboard-event-proposals.ts` zugeordnet.
+- [x] Test zuerst ergänzt und RED mit identischem `createdAt.getTime is not a function` beobachtet.
+- [x] Minimalfix: `Date | string` normalisieren, bevor gleich bewertete Vorschläge zeitlich sortiert werden.
+- [x] Gezielte Rangfolgetests: 4/4 bestanden.
+- [x] BUG-063, Root Cause/Regressionslog und Changelog 0.50.55 ergänzt.
+- [x] TypeScript, gezieltes ESLint und Produktionsbuild bestanden.
+- [ ] Security- und Regressionsevaluator über Commit-Hook abschließen.
+
 - [x] FEAT-015-Plan unmittelbar vor Umsetzung gegen `ad316d0`, vorhandene Änderungen, Votingsemantik und Dashboardquery geprüft und aktualisiert.
 - [x] Stimmenzahl aus Konto- und Gaststimmen berechnet; Gleichstand deterministisch nach älterem Vorschlag und ID aufgelöst.
 - [x] Dashboardabfrage auf das nächste Event ohne festgelegtes Spiel und minimale Vorschlagsfelder beschränkt.

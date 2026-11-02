@@ -1851,10 +1851,29 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 ---
 
+### [BUG-063] Dashboard-Rangfolge bricht bei gecachten Vorschlagsdaten ab
+
+**Status:** `fixed`
+**Schweregrad:** `high`
+**Entdeckt:** 2026-11-02
+**Behoben:** 2026-11-02
+**Behoben in Version:** 0.50.55
+**Test geschrieben:** Ja – `tests/unit/lib/dashboard-event-proposals.test.ts` reproduziert gecachte ISO-Zeitstempel und prüft die stabile Sortierung.
+
+**Beschreibung:** Das angemeldete Dashboard kann beim Sortieren gleich bewerteter Spielvorschläge mit `TypeError: a.createdAt.getTime is not a function` abbrechen.
+**Reproduktion:** Dashboard laden, wenn der Vorschlagsdaten-Cache einen Treffer liefert. Bei gleicher Stimmenzahl sortiert die Top-drei-Rangfolge anhand `createdAt`; der Cache liefert das Prisma-Datum als ISO-String.
+**Erwartetes Verhalten:** Die Rangfolge sortiert Prisma-`Date`-Werte und aus dem Next.js-Cache gelesene ISO-Zeitstempel gleichwertig.
+**Tatsächliches Verhalten:** Der Server ruft `.getTime()` direkt auf dem gecachten String auf; Digest `113253834`.
+**Ursache:** Die Ranglogik für FEAT-015 nahm an, dass das Datum aus `cachedQuery` zur Laufzeit immer ein Prisma-`Date` bleibt. Der Cache serialisiert Datumsspalten zwischen Requests als ISO-Strings.
+**Lösung:** Der Rangtyp akzeptiert `Date | string`; ein gemeinsamer Zeitstempel-Helper normalisiert beide Varianten vor dem Tie-Breaker.
+**Referenz im Changelog:** Version 0.50.55 – gecachte Dashboard-Vorschlagsdaten sicher sortieren.
+
+---
+
 ## Statistik
 
 - **Offene Bugs:** 4
 - **In Bearbeitung:** 4
-- **Behoben:** 54
+- **Behoben:** 55
 - **Wontfix:** 0
-- **Gesamt:** 62
+- **Gesamt:** 63

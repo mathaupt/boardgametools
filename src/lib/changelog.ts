@@ -12,6 +12,16 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.55",
+    date: "2026-11-02",
+    title: "Dashboard-Vorschläge sicher sortieren",
+    description: "Gecachte Spieldaten können die Dashboard-Rangfolge nicht mehr durch serialisierte Zeitstempel abbrechen lassen.",
+    changes: [
+      { type: "fix", text: "Die Sortierung gleich bewerteter Spielvorschläge verarbeitet Daten sowohl als Prisma-Datum als auch als gecachten ISO-Zeitstempel.", bugRef: "BUG-063" },
+      { type: "internal", text: "Ein Regressionstest deckt die Sortierung gecachter Dashboard-Vorschlagsdaten ab." },
+    ],
+  },
+  {
     version: "0.50.54",
     date: "2026-11-02",
     title: "Spiele in der Session-Anlage schneller finden",

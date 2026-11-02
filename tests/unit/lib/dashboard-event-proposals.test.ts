@@ -40,6 +40,18 @@ describe("getTopDashboardProposalRanks", () => {
     expect(result.map(({ id }) => id)).toEqual(["a", "b", "z"]);
   });
 
+  it("sortiert gecachte ISO-Zeitstempel zusammen mit Prisma-Date-Werten", () => {
+    const cachedProposals = [
+      { id: "newer", votes: 2, guestVotes: 0, createdAt: "2026-10-02T18:00:00.000Z" },
+      { id: "older", votes: 2, guestVotes: 0, createdAt: "2026-10-01T18:00:00.000Z" },
+    ] as unknown as DashboardProposalVoteCount[];
+
+    expect(getTopDashboardProposalRanks(cachedProposals).map(({ id }) => id)).toEqual([
+      "older",
+      "newer",
+    ]);
+  });
+
   it("liefert für null bis zwei Vorschläge alle vorhandenen Einträge", () => {
     expect(getTopDashboardProposalRanks([])).toEqual([]);
     expect(getTopDashboardProposalRanks([proposal("only", 0)])).toEqual([

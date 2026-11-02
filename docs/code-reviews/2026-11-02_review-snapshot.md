@@ -1,5 +1,12 @@
 # Review-Snapshot – FEAT-015 Dashboard-Top-drei (0.50.48)
 
+## BUG-063 – Dashboard-Cache-Datum
+
+- Regressionstest reproduzierte Digest `113253834`: `createdAt.getTime is not a function` bei gecachtem ISO-String.
+- Ranglogik normalisiert jetzt Prisma-`Date`- und Cache-Stringwerte vor dem Tie-Breaker.
+- Regressionstests für Rangfolge und Dashboard-Datumsnormalisierung: 6/6 bestanden.
+- TypeScript, gezieltes ESLint und Produktionsbuild bestanden; vollständiger Regressionsevaluator folgt im Commit-Hook.
+
 FEAT-015 ergänzt die hervorgehobene Eventkarte um eine Rangliste der drei meistgewählten Vorschläge. Konto- und Gaststimmen fließen ein. Für das autorisierte nächste Event liest die Abfrage nur Rangdaten aller Vorschläge und lädt vollständige Spiel-/Bilddetails nur für die angezeigten Top drei.
 
 - Gezielte Unit-Tests: 7/7 bestanden (Rangfolge, gemischte Stimmen, Tie-Breaker, Vorschlagslimit, Cover-Fallback, ausgewähltes Spiel und geschlossenes Voting).

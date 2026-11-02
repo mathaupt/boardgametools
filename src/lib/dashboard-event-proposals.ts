@@ -2,7 +2,7 @@ export interface DashboardProposalVoteCount {
   id: string;
   votes: number;
   guestVotes: number;
-  createdAt: Date;
+  createdAt: Date | string;
 }
 
 export interface DashboardProposalRank {
@@ -18,7 +18,7 @@ export function getTopDashboardProposalRanks(
       const votesDifference = b.votes + b.guestVotes - a.votes - a.guestVotes;
       if (votesDifference !== 0) return votesDifference;
 
-      const createdDifference = a.createdAt.getTime() - b.createdAt.getTime();
+      const createdDifference = getTimestamp(a.createdAt) - getTimestamp(b.createdAt);
       if (createdDifference !== 0) return createdDifference;
 
       return a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
@@ -28,4 +28,8 @@ export function getTopDashboardProposalRanks(
       id,
       totalVotes: votes + guestVotes,
     }));
+}
+
+function getTimestamp(value: Date | string): number {
+  return value instanceof Date ? value.getTime() : new Date(value).getTime();
 }
