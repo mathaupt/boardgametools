@@ -19,3 +19,20 @@ Die Spielauswahl im Session-Formular ist derzeit ein nicht durchsuchbares
 Dropdown. FEAT-016 hält eine Texteingabe zum Filtern der eigenen Spiele als
 Backlog-Anforderung fest. Es wurde kein Produktionscode geändert und keine
 Umsetzungsfreigabe erteilt.
+
+## Ergänzung: FEAT-017 Impeccable-Prüfung der Sessions-Liste
+
+Die aktuelle Liste wiederholt ein Würfelzeichen statt spielbezogener Bilder.
+Die unabhängige Designprüfung bewertete sie mit 21/40; der Impeccable-Detektor
+meldete 0 statische Findings. Browserprüfung war wegen des nicht verfügbaren
+Browser-Host nicht verfügbar. Cover in Sessionkarten wurden als FEAT-017
+aufgenommen; Plan und Umsetzungsfreigabe stehen aus.
+
+## Ergänzung: FEAT-018 Coverage-Ausgangsstand
+
+`npm run test:coverage`: 849/849 Tests in 117 Dateien bestanden. Coverage:
+46,84 % Statements, 44,59 % Branches, 48,65 % Functions, 48,08 % Lines;
+`src/lib`: 81,69 %, 75,65 %, 83,16 %, 83,67 %. Coverageplan und stufenweises
+80-%-Ziel sind dokumentiert. 91 erfasste Produktionsdateien liegen bei 0 %
+Lines; diese werden im Plan nach Risiko priorisiert. Es wurde keine Schwelle
+geändert.

@@ -609,13 +609,52 @@ Checkliste am ersten Tag abgearbeitet worden:
 
 ## Teil 6: Metriken & Erfolgskontrolle
 
+## Verbindliches testgetriebenes Arbeiten
+
+Änderungen an Laufzeitverhalten werden nach RED-GREEN-REFACTOR entwickelt:
+
+1. Vor dem Produktionscode einen gezielten Unit-, Komponenten-, API- oder
+   Vertragstest schreiben.
+2. Den Test ausführen und bestätigen, dass er aus dem beabsichtigten Grund
+   fehlschlägt.
+3. Die kleinste Produktionsänderung schreiben, die den Test bestehen lässt.
+4. Den Test erneut ausführen, anschließend die betroffenen Regressionstests
+   und die passende Suite starten.
+5. Erst bei grünem Test refaktorieren. Prüfergebnisse in Plan und Reviewlog
+   dokumentieren.
+
+Dokumentation ohne Laufzeitänderung benötigt keinen künstlichen Test. Eine
+Änderung der Test-/Coverage-Konfiguration braucht dagegen einen ausführbaren
+Konfigurationsnachweis. Kein Agent darf Produktionscode vor dem zugehörigen
+fehlgeschlagenen Test schreiben. Maßgeblich sind die Skills
+`test-driven-development` und `skills/testing/SKILL.md`.
+
+### Coverage-Ziel FEAT-018
+
+Der gemessene Ausgangsstand vom 02.11.2026 beträgt global 46,84 % Statements,
+44,59 % Branches, 48,65 % Functions und 48,08 % Lines (849 Tests in 117
+Dateien; 91 erfasste Produktionsdateien haben derzeit 0 % Lines. `src/lib`
+liegt bei 81,69 % Statements, 75,65 % Branches, 83,16 %
+Functions und 83,67 % Lines; die dortige aktuelle Schwelle beträgt 50 % für
+Statements/Functions/Lines und 45 % für Branches. Das langfristige Ziel ist
+mindestens 80 % in allen vier Metriken für die explizit erfassten,
+ausführbaren Produktionsmodule. Global ist derzeit keine Coverage-Schwelle
+konfiguriert; das bestehende `src/lib`-Gate beträgt 50 % für
+Statements/Functions/Lines und 45 % für Branches. Geplante Zwischenstufen:
+zuerst ein Baseline-Gate unterhalb des gemessenen Ist-Stands, dann mindestens 55 %,
+65 %, 72 % und schließlich 80 % je Metrik. Der Nenner darf nicht durch
+unbegründetes Ausschließen ungetesteter Laufzeitdateien verkleinert werden;
+Framework-/Generierungsdateien, reine Daten und UI-Primitiven dürfen nur mit
+begründeter Dokumentation ausgenommen werden. Details und Reihenfolge stehen
+im [FEAT-018-Plan](superpowers/plans/2026-11-02-FEAT-018-coverage-80.md).
+
 | Metrik | Schwellenwert | Pruefung |
 |--------|---------------|----------|
 | TypeScript Errors | 0 | `tsc --noEmit` |
 | ESLint Errors + Warnings | 0 | `eslint src/ --max-warnings 0` |
 | Unit Tests | 100% bestanden | `npm test` |
-| Coverage (global) | >= 30% | vitest coverage |
-| Coverage (lib/) | >= 50% | vitest coverage |
+| Coverage (global, aktuell) | Keine Schwelle; Ist-Stand im Coverage-Bericht; Ziel 80% | `npm run test:coverage` |
+| Coverage (`src/lib`, aktuell) | >= 50% Statements/Functions/Lines und >= 45% Branches; Ziel ebenfalls 80% | `npm run test:coverage` |
 | npm audit (prod) | 0 high/critical | `npm audit --omit=dev` |
 | API-Route-Testabdeckung | >= 1 Test/Methode | Manuell pruefen |
 | Dateien > 400 Zeilen | 0 | Automatisierbar |

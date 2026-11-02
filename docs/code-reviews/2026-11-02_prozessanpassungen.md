@@ -22,3 +22,13 @@ bestanden. Die fehlende gerenderte Browserabnahme bleibt ausdrücklich offen.
 - [x] Backlog, Changelog und Review-Dokumentation aktualisiert.
 - [ ] Implementierungsplan mit Impeccable-, Accessibility-, Security- und Testabnahme erstellen.
 - [ ] Keine Umsetzung freigegeben.
+
+### FEAT-017/018 Aufnahme und Agentenprozess
+
+- [x] Sessions-Liste geprüft: Spielcover fehlen; Designreview 21/40, Detektor 0 statische Findings.
+- [x] Live-Browserprüfung mangels verfügbarem Browserhost ausgelassen und protokolliert.
+- [x] Coverage-Baseline mit `npm run test:coverage` erhoben: 849 Tests bestanden; 46,84/44,59/48,65/48,08 % global.
+- [x] 80-%-Plan mit Ratchet-Stufen und unverändertem Coverage-Inventar erstellt.
+- [x] TDD als Pflicht für Laufzeitänderungen in `AGENTS.md` und Testing-Skill festgeschrieben.
+- [x] Vercel React Best Practices und Next.js Best Practices als lokale Agenten-Skills aufgenommen.
+- [ ] Keine Umsetzung des Coverage-Ausbaus freigegeben; Coverage-Schwellen unverändert.

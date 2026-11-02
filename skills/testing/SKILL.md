@@ -45,6 +45,21 @@ BoardGameTools folgt der klassischen Test-Pyramide. Die Basis bilden schnelle, i
 | **Lesbarkeit**        | Test-Beschreibungen dokumentieren das erwartete Verhalten. Ein fehlgeschlagener Test muss sofort zeigen, WAS kaputt ist. |
 | **Keine Seiteneffekte** | Tests veraendern weder Dateisystem noch Datenbank noch globalen State dauerhaft. `beforeEach`/`afterEach` stellt den Ausgangszustand wieder her. |
 
+### Verbindlicher TDD-Ablauf
+
+Für Features, Fehlerbehebungen, Refactorings und Laufzeitänderungen gilt
+RED-GREEN-REFACTOR: zuerst einen Verhaltenstest formulieren, ihn ausführen und
+den erwarteten Fehlschlag bestätigen, dann die kleinste Änderung implementieren
+und den Test grün ausführen. Erst danach wird refaktoriert. Ein Test, der erst
+nach dem Produktionscode entsteht, erfüllt diese Regel nicht. Bei reinen
+Dokumentationsänderungen wird kein Test erzwungen; Änderungen an
+Testkonfigurationen müssen anhand der tatsächlichen Runner-Ausgabe nachgewiesen
+werden. Bei reinen Coverage-Ergänzungen darf ein Charakterisierungstest für
+unverändertes bestehendes Verhalten sofort bestehen; ein gefundener Defekt
+braucht vor seinem Fix einen reproduzierbar fehlschlagenden Regressionstest.
+Die übergreifende Projektregel steht in `AGENTS.md`; das verfügbare
+`test-driven-development`-Skill beschreibt den vollständigen Zyklus.
+
 ### AAA-Pattern – Beispiel
 
 ```typescript
@@ -146,10 +161,10 @@ export default defineConfig({
       ],
       thresholds: {
         "src/lib/**": {
-          statements: 60,
-          branches: 50,
-          functions: 60,
-          lines: 60,
+          statements: 50,
+          branches: 45,
+          functions: 50,
+          lines: 50,
         },
       },
     },
@@ -170,7 +185,7 @@ export default defineConfig({
 | `globals`            | `true`                                      | `describe`, `it`, `expect` ohne Import    |
 | `setupFiles`         | `./tests/setup.ts`                          | `@testing-library/jest-dom` Matcher       |
 | `coverage.provider`  | `v8`                                        | Schnelle native Coverage-Erfassung        |
-| `coverage.thresholds`| `src/lib/**`: 60% Lines/Stmts/Funcs        | Mindeststandard fuer Business-Logik       |
+| `coverage.thresholds`| global ohne Schwelle; `src/lib/**`: 50% Statements/Functions/Lines, 45% Branches | FEAT-018 ergänzt globale Baseline und erhöht sie gestuft |
 | `alias @`            | `./src`                                     | Gleiche Pfadaufloesung wie in Next.js     |
 
 **Abhaengigkeiten:** `vitest` ^4.1.12, `@vitejs/plugin-react` ^6.0.2, `@vitest/coverage-v8` ^4.1.12, `jsdom` ^29.1.1, `@testing-library/react` ^16.3.2, `@testing-library/jest-dom` ^7.0.0, `@testing-library/user-event` ^14.6.3, `jest-axe` ^11.0.0.
@@ -252,6 +267,15 @@ export const config = {
 ---
 
 ## 4. Code-Abdeckung (Coverage)
+
+### Ausgangsstand und Ziel
+
+Stand 02.11.2026: global 46,84 % Statements, 44,59 % Branches, 48,65 %
+Functions und 48,08 % Lines bei 849 Unit-Tests aus 117 Dateien. Langfristiges
+Ziel: mindestens 80 % in allen vier Metriken. Die Coverage wird über
+`npm run test:coverage` ermittelt. Schwellen werden nach dem FEAT-018-Plan
+gestuft angehoben; ein Wechsel des Denominators muss ausdrücklich begründet
+und dokumentiert werden.
 
 ### Coverage-Befehle
 

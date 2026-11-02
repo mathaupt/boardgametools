@@ -134,7 +134,35 @@ include: { createdBy: { select: { id: true, name: true, email: true } } }
 - Grosse Komponenten in Subkomponenten aufteilen
 - Shared State ueber Props oder Context weitergeben
 
-### 6. Dokumentations-Pflicht (KRITISCH!)
+### 6. Test-Driven Development (KRITISCH!)
+
+**Jede Änderung an Laufzeitverhalten wird testgetrieben umgesetzt.** Vor dem
+Produktionscode entsteht ein gezielter Test, der den gewünschten Vertrag
+zunächst fehlschlagen lässt. Erst nach bestätigtem RED wird die kleinste
+passende Änderung vorgenommen (GREEN), danach werden Tests und Code
+refaktoriert. Der Test muss für das erwartete Verhalten fehlschlagen, nicht
+aufgrund eines Testfehlers.
+
+- Gilt für Features, Fehlerbehebungen, Refactorings und Änderungen an
+  Sicherheitsverhalten.
+- Bei Dokumentationsänderungen ohne Laufzeitverhalten ist kein künstlicher
+  Test nötig. Änderungen an Test-, Build- oder Coverage-Konfiguration brauchen
+  mindestens einen Nachweis, dass die neue Konfiguration tatsächlich greift.
+- Tests nachträglich an bereits geschriebenen Produktionscode anzuhängen gilt
+  nicht als TDD.
+- Bei reinen Coverage-Ergänzungen für bereits vorhandenes Verhalten darf ein
+  neuer Charakterisierungstest sofort bestehen; in diesem Fall wird kein
+  Produktionscode geändert. Wird ein Defekt gefunden, muss der gezielte
+  Regressionstest vor dem Fix erwartungsgemäß fehlschlagen.
+- Vor dem ersten Test die Skills `test-driven-development` und
+  `skills/testing/SKILL.md` lesen; für Next.js-/React-Code zusätzlich die unten
+  aufgeführten Stack-Skills.
+- Jeder Implementierungsplan muss RED, GREEN und REFACTOR samt konkreten
+  Testbefehlen und erwartetem Ergebnis ausweisen.
+
+Siehe [verbindliche TDD-Regel im Entwicklungsprozess](docs/DEVELOPMENT-PROCESS.md#verbindliches-testgetriebenes-arbeiten).
+
+### 7. Dokumentations-Pflicht (KRITISCH!)
 
 **Alle Dokumentationen MUESSEN bei jeder Aenderung aktuell gehalten werden!**
 
@@ -186,7 +214,7 @@ include: { createdBy: { select: { id: true, name: true, email: true } } }
 - Auth: `security: []` fuer oeffentliche Endpunkte, Session-Cookie fuer geschuetzte
 - Fehler immer als `{ error: string }` Schema referenzieren
 
-### 7. Bug-Tracking (KRITISCH!)
+### 8. Bug-Tracking (KRITISCH!)
 
 **Jeder gefundene Bug muss in `docs/bugs.md` dokumentiert werden!**
 
@@ -223,7 +251,7 @@ include: { createdBy: { select: { id: true, name: true, email: true } } }
 - Test-Status im Bug-Eintrag dokumentieren
 - Ziel: Regression verhindern
 
-### 8. Deutsche Rechtschreibung und Grammatik (KRITISCH!)
+### 9. Deutsche Rechtschreibung und Grammatik (KRITISCH!)
 
 **Alle deutschen Texte MUESSEN korrekte deutsche Rechtschreibung verwenden!**
 
@@ -295,8 +323,14 @@ boardgametools/
 | `architecture` | Schichtenarchitektur, Datenfluss, 29 Prisma-Modelle, Deployment, State Management |
 | `testing` | Unit Tests (Vitest), E2E Tests (CodeceptJS/Playwright), Test-Strategie |
 | `bill-of-materials` | Technologie-Inventar (53 Dependencies), Lizenz-Compliance, Update-Policy |
+| `test-driven-development` | Verbindlicher RED-GREEN-REFACTOR-Zyklus vor jeder Laufzeitänderung |
+| `next-best-practices` | Next.js App Router, RSC-Grenzen, Datenzugriff und Route-Handler; `.agents/skills/next-best-practices/SKILL.md` |
+| `vercel-react-best-practices` | React-/Next.js-Performance und sichere Rendering-Muster; `.agents/skills/vercel-react-best-practices/SKILL.md` |
+| `testing` | Vitest, Coverage, UI- und API-Teststrategie; `skills/testing/SKILL.md` |
 
 **Lies den relevanten Skill bevor du an einem Feature arbeitest!**
+Für jede Änderung an Web-Runtimecode sind außerdem die TDD-Regel und der passende
+Next.js-/React-Skill anzuwenden.
 
 ## Entwicklungs-Workflows
 

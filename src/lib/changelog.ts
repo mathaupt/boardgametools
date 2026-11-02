@@ -12,6 +12,17 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.50",
+    date: "2026-11-02",
+    title: "Qualitätssicherung und Session-Übersicht erweitern",
+    description: "Neue Anforderungen wurden geplant, TDD verbindlich gemacht und Stack-Wissen für Agenten ergänzt.",
+    changes: [
+      { type: "internal", text: "FEAT-017 aufgenommen: Spiele sollen in der Sessions-Übersicht mit Covern erkennbar sein; die Impeccable-Kritik ist dokumentiert, ein Umsetzungsplan steht aus." },
+      { type: "internal", text: "FEAT-018 geplant: Testabdeckung soll stufenweise auf mindestens 80 % für Statements, Branches, Funktionen und Zeilen steigen; der aktuelle Ist-Stand ist erfasst." },
+      { type: "internal", text: "TDD ist für Änderungen am Laufzeitverhalten verpflichtend; Vercel React Best Practices und Next.js Best Practices liegen nun als lokale Agenten-Skills vor." },
+    ],
+  },
+  {
     version: "0.50.49",
     date: "2026-11-02",
     title: "Schnellere Spielauswahl für Sessions vormerken",
