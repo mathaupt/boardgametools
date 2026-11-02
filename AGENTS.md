@@ -19,6 +19,7 @@ Die Impeccable-Design-Hooks sind für das Projekt aktiviert. Sie melden nach Än
 - Sammlungskarten und Filter: `collection-game-card.tsx` und `collection-filters.tsx` neben `games-list-client.tsx`.
 - Spielauswahl bei Session-Anlage: `src/components/sessions/session-game-picker.tsx` und `session-game-options.ts`; der gemeinsame Radix-Popover-Wrapper liegt in `src/components/ui/popover.tsx`. Der Picker filtert lokal und liefert ausschließlich eine Spiel-ID.
 - BGG-Ausgabenwahl: `src/components/bgg/bgg-version-picker.tsx`; `src/lib/bgg-versions.ts` prüft die Zuordnung zum Hauptspiel und sichere BGG-Coveradressen. Einzelimporte verwenden `/api/games/import-bgg` mit optionaler `versionId`.
+- Gemeinsamer Website-Footer: `src/components/layout/site-footer.tsx`, einmalig in `src/app/layout.tsx`. Offizielles BGG-Asset und Herkunft unter `public/images/bgg/`; keine zusätzlichen Seiten-Footer für dieselbe Quellenkennzeichnung.
 - Navigationstests: `tests/unit/components/club-navigation.test.tsx` und `tests/e2e/navigation_test.ts`; Dashboardzustände: `tests/unit/components/club-dashboard.test.tsx`.
 - Für gerenderte UI-Abnahmen bei Bedarf einen lokalen App-/Vorschau-Server starten. Ein fehlender DOM-Browserhost ist kein Grund, auf die Prüfung zu verzichten: verfügbare native Browsersteuerung verwenden und die tatsächliche Daten-/Prüfgrenze dokumentieren.
 - Öffentliche Sammlung-/BGG-Suchbereiche teilen `src/components/public-event/proposal-search-panel.tsx` für Panel, Liste und Ergebniszeile; Beschriftung und Suchverhalten verbleiben in den jeweiligen Komponenten.

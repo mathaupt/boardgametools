@@ -136,7 +136,11 @@ nicht übersetzt. Ohne passende Ausgabe, bei fehlendem Cover oder Ladefehler
 bleibt der Standardimport möglich. Der Server prüft die Ausgabe erneut zum
 gewählten Hauptspiel; beliebige Client-Bildadressen werden nicht übernommen.
 Sammlungs- und Schnellimporte verwenden weiterhin das BGG-Hauptcover.
-FEAT-022 folgt mit der offiziellen Quellenkennzeichnung im Website-Footer.
+**FEAT-022 umgesetzt:** Ein gemeinsamer Website-Footer zeigt „Spieldaten von
+BoardGameGeek“ und das offizielle, direkt verlinkte Powered-by-BGG-Logo.
+Er erscheint genau einmal auf Login, Landingpage, öffentlichen Eventseiten und
+angemeldeten Seiten. Das Original-Logo wird lokal geladen und bleibt im Dark
+Mode auf einer weißen Fläche lesbar. Der Footer steht im normalen Dokumentfluss.
 
 ### BGG-Suche
 

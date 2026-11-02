@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Barlow, Geist_Mono } from "next/font/google";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/next";
+import { SiteFooter } from "@/components/layout/site-footer";
 import "./globals.css";
 
 const barlow = Barlow({
@@ -30,9 +31,10 @@ export default function RootLayout({
     <html lang="de" suppressHydrationWarning>
       <body
         suppressHydrationWarning
-        className={`${barlow.variable} ${geistMono.variable} antialiased`}
+        className={`${barlow.variable} ${geistMono.variable} flex min-h-screen flex-col antialiased`}
       >
-        {children}
+        <div className="flex min-w-0 flex-1 flex-col">{children}</div>
+        <SiteFooter />
         <SpeedInsights />
         <Analytics />
       </body>

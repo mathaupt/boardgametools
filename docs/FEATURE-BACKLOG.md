@@ -35,7 +35,7 @@ Bedarf zu aktualisieren. Ergebnis am jeweiligen Plan dokumentieren:
 | FEAT-019 | Spracheingabe für Suche und Session-Anlage | Konzept dokumentiert; Plan und Umsetzung offen | [Spracheingabe-Konzept](superpowers/specs/2026-11-02-spracheingabe-design.md) | Keine |
 | FEAT-020 | Lesbare Trefferflächen für öffentliche Spielvorschläge | Web nachgebessert; lokal gerendert geprüft (Hell/Dunkel, 390/1024 px, 200 % Schrift) | [Kontrast der Spielvorschläge](superpowers/plans/2026-11-02-FEAT-020-public-event-proposal-contrast.md) | Web am 02.11.2026 freigegeben und umgesetzt; iOS nicht betroffen |
 | FEAT-021 | Deutsche BGG-Ausgabe beim Import auswählen | Umgesetzt (0.50.63) | [Deutsche BGG-Ausgabe](superpowers/plans/2026-11-02-FEAT-021-bgg-deutsche-ausgabe.md) | 02.11.2026, Web |
-| FEAT-022 | BGG-Quellenkennzeichnung auf Loginseite und Website-Footer | Freigegeben; folgt nach FEAT-021 | [BGG-Attribution](superpowers/plans/2026-11-02-FEAT-022-bgg-attribution.md) | 02.11.2026, Web |
+| FEAT-022 | BGG-Quellenkennzeichnung auf Loginseite und Website-Footer | Umgesetzt (0.50.64) | [BGG-Attribution](superpowers/plans/2026-11-02-FEAT-022-bgg-attribution.md) | 02.11.2026, Web |
 
 Am 30.10.2026 aufgenommen. Bei der Planung sind Web, iOS sowie angemeldete und
 öffentliche Voting-Ansichten auf Relevanz und bereits vorhandene Teilfunktionen
@@ -852,6 +852,7 @@ zur lokalen gerenderten Prüfung ist damit für diese Komponenten erfüllt.
 
 ## FEAT-022 – BGG-Quellenkennzeichnung auf Loginseite und Website-Footer
 
-**Status:** Am 02.11.2026 freigegeben; Umsetzung nach FEAT-021.
+**Status:** Umgesetzt in 0.50.64; am 02.11.2026 freigegeben. FEAT-021 zuvor in Commit `cb21991` abgeschlossen.
+**Abnahme:** 7 gezielte Footer-/Layouttests einschließlich Tastatur und Axe; insgesamt 1.036 Tests und Coverage-Gates bestanden. Produktionsbuild, TypeScript, ESLint (0 Fehler), Security und Review-Regressionscheck bestanden. Lokal gerendert in Safari geprüft, dabei BUG-066 behoben. Keine schreibenden Produktionsprüfungen.
 **Implementierungsplan:** [BGG-Attribution](superpowers/plans/2026-11-02-FEAT-022-bgg-attribution.md).
 **Umfang:** Offizielle BGG-Kennzeichnung auf Loginseite und konsistentem Website-Footer nach Prüfung der dann geltenden BGG-Vorgaben.

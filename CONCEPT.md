@@ -487,6 +487,7 @@ ApiLog
 - `DELETE /api/games/[id]` - Spiel löschen
 - `POST /api/games/bulk-delete` - Mehrere Spiele löschen
 - `POST /api/games/import-bgg` - Spiel aus BGG importieren; optional `versionId` für das Cover einer serverseitig verifizierten deutschen Ausgabe (FEAT-021).
+- FEAT-022: Ein gemeinsamer Root-Footer kennzeichnet BoardGameGeek mit dem lokal gespeicherten offiziellen Logo als Datenquelle auf Login sowie öffentlichen und angemeldeten Seiten.
 - `GET /api/bgg/{id}/versions` - Authentifizierte, begrenzte Abfrage deutschsprachiger BGG-Ausgaben. Titel und Beschreibung bleiben beim Import die Daten des Hauptspiels; kein Schemawechsel nötig.
 
 ### BGG Integration

@@ -1910,10 +1910,30 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 ---
 
+### [BUG-066] Login und Landingpage laufen bei großer Schrift seitlich über
+
+**Status:** `fixed`
+**Schweregrad:** `medium`
+**Entdeckt:** 2026-11-02
+**Behoben:** 2026-11-02
+**Behoben in Version:** 0.50.64
+**Test geschrieben:** Ja – `tests/unit/components/site-footer.test.tsx` (RED: zwei fehlende Layout-/Linkverträge, danach sieben Tests grün); gerenderte Safari-Nachprüfung.
+
+**Beschreibung:** Die Footerabnahme zeigte vorhandene Überläufe im Login-Titel und in den Navigations-/Aktionszeilen der Landingpage. Dort waren außerdem Buttons in Links verschachtelt.
+**Reproduktion:** Login beziehungsweise Landingpage mit 390 px Breite und 200 % Schrift öffnen.
+**Erwartetes Verhalten:** Inhalte umbrechen, alle Aktionen und Footer bleiben im sichtbaren Dokumentbereich und sind mit eindeutiger Linksemantik erreichbar.
+**Tatsächliches Verhalten:** Login 423 px, Landingpage zunächst 831 px Dokumentbreite bei circa 388 px verfügbarem Viewport; verschachtelte Aktionen ohne eindeutige zugängliche Linknamen im nativen Browser.
+**Ursache:** Fehlender Titelumbruch, nicht umbrechende Header-/Aktionsgruppen und nicht schrumpfbare große Schaltflächen; interaktive Elemente ineinander verschachtelt.
+**Lösung:** Schrumpfbare Inhalte, Umbruch für lange Titel und Zeilen, auf die verfügbare Breite begrenzte Aktionslinks mit `Button asChild`. Der Footer bleibt im Dokumentfluss.
+**Prüfnachweis:** Safari meldet nach Korrektur weder überlaufende Seiteninhalte noch Footerflächen bei mobiler Breite und 200 % Schrift. Login und Landingpage enthalten jeweils genau einen Footer mit 200 px breitem Original-Logo; Links haben ihre sichtbaren Aktionsnamen.
+**Referenz im Changelog:** Version 0.50.64 – BUG-066.
+
+---
+
 ## Statistik
 
 - **Offene Bugs:** 4
 - **In Bearbeitung:** 4
-- **Behoben:** 57
+- **Behoben:** 58
 - **Wontfix:** 0
-- **Gesamt:** 65
+- **Gesamt:** 66

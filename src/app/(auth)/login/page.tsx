@@ -45,15 +45,15 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-secondary/40 to-primary/5 p-4">
-      <Card className="w-full max-w-md shadow-lg">
+    <div className="flex flex-1 items-center justify-center bg-gradient-to-br from-background via-secondary/40 to-primary/5 p-4">
+      <Card className="w-full min-w-0 max-w-md shadow-lg">
         <CardHeader className="text-center pb-2">
           <div className="flex justify-center mb-3">
             <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary shadow-md">
               <Dice6 className="h-7 w-7 text-primary-foreground" aria-hidden="true" />
             </div>
           </div>
-          <CardTitle as="h1" className="text-2xl tracking-tight">BoardGameTools</CardTitle>
+          <CardTitle as="h1" className="text-2xl tracking-tight [overflow-wrap:anywhere]">BoardGameTools</CardTitle>
           <CardDescription>Melde dich an, um fortzufahren</CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit} data-testid="login-form">
@@ -76,7 +76,7 @@ export default function LoginPage() {
               />
             </div>
             <div className="space-y-2">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-wrap items-center justify-between gap-2">
                 <Label htmlFor="password">Passwort</Label>
                 <Link
                   href="/passwort-vergessen"

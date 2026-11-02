@@ -220,3 +220,14 @@ Für den Vercel-WAF-Regelvorschlag siehe [Health-Firewall-Runbook](operations/he
 Zugangsdaten dürfen ausschließlich aus Umgebungsvariablen oder der lokal ignorierten `.env.pipeline-check` stammen. Keine Tokens versionieren. Unkonfigurierte Provider werden bei einem allgemeinen Lauf übersprungen; ausdrücklich ausgewählte unkonfigurierte Provider führen zu einem Fehler. Exitcodes: 0 erfolgreich, 1 fehlgeschlagene konfigurierte/ausgewählte Prüfung, 2 keine ausgeführte Prüfung oder ungültiger Aufruf. Laufende GitHub-Jobs werden als noch nicht abgeschlossen gemeldet; eine solche Meldung bestätigt keinen abgeschlossenen CI-Erfolg.
 
 Die Impeccable-Quellen und gemeinsamen Hook-Manifeste sind versioniert. Plattformspezifische Engine-Binaries werden lokal bezogen und anhand der mitgelieferten Prüfsummen geprüft; sie sind ebenso wie persönliche Claude-Hook-Einstellungen nicht Teil des Repositories. Produktiv-Build und Datenbankmigration bleiben getrennte Schritte.
+
+## BGG-Quellenkennzeichnung (FEAT-022)
+
+Der Root-Footer liefert das offizielle BGG-Logo aus `public/images/bgg/`
+lokal aus und verlinkt direkt auf BoardGameGeek. Herkunft, Prüftag und SHA-256
+stehen in `public/images/bgg/README.md`. Es sind keine neuen Umgebungsvariablen,
+CSP-Freigaben oder Deploy-Schritte nötig. BGG-App-Registrierung, Bearer-Token
+und gegebenenfalls erforderliche individuelle Lizenz bleiben Betreiberaufgaben;
+die Kennzeichnung ersetzt diese nicht. Bei geänderten BGG-Vorgaben die
+[offiziellen Bedingungen](https://boardgamegeek.com/wiki/page/XML_API_Terms_of_Use)
+und die dort verlinkten Originalassets erneut prüfen. Nicht umfärben oder verzerren.

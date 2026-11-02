@@ -12,6 +12,17 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.64",
+    date: "2026-11-02",
+    title: "BoardGameGeek als Datenquelle sichtbar machen",
+    description: "Ein gemeinsamer Footer kennzeichnet die Quelle der BGG-Spieldaten auf Login, öffentlichen und angemeldeten Seiten.",
+    changes: [
+      { type: "feature", text: "FEAT-022: Das offizielle Powered-by-BGG-Logo führt direkt zu BoardGameGeek und wird lokal ohne zusätzliche Drittanbieteranfrage geladen." },
+      { type: "improvement", text: "Login und Landingpage verwenden die gemeinsame Fußzeile; lange Seiten bleiben frei scrollbar und das Anmeldeformular wird nicht überlagert." },
+      { type: "fix", text: "BUG-066: Login und Landingpage bleiben auch bei großer Schrift innerhalb der Bildschirmbreite; Aktionen besitzen eindeutige Linksemantik.", bugRef: "BUG-066" },
+    ],
+  },
+  {
     version: "0.50.63",
     date: "2026-11-02",
     title: "Deutsche BGG-Ausgabe beim Import wählen",

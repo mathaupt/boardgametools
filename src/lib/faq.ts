@@ -19,6 +19,10 @@ export const faqSections: FaqSection[] = [
     description: "So startest du mit BoardGameTools.",
     items: [
       {
+        question: "Was bedeutet Powered by BGG am Seitenende?",
+        answer: "BoardGameGeek ist die Quelle der über den BGG-Import geladenen Spieldaten und Cover. Der Hinweis am Seitenende verlinkt direkt zu BoardGameGeek. Das offizielle Logo wird von BoardGameTools selbst geladen; dadurch entsteht beim Anzeigen keine zusätzliche Anfrage an BGG oder Google.",
+      },
+      {
         question: "Kann ich beim BGG-Import ein deutsches Cover auswählen?",
         answer: "Ja. Lade ein Spiel im BGG-Einzelimport und wähle unter Ausgabe wählen eine von BGG als deutschsprachig gekennzeichnete Ausgabe. Angezeigt werden Sprache, Jahr, Verlag und das verfügbare Cover. Ohne passende Ausgabe oder bei Ladefehlern kannst du die Standardausgabe importieren. Fehlt das Cover einer Ausgabe, wird das Hauptcover verwendet. Titel und Beschreibung werden nicht übersetzt. Sammlungs- und Schnellimporte verwenden das Hauptcover.",
       },
