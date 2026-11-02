@@ -128,6 +128,12 @@ Drei Import-Methoden:
 Importierte Daten: Name, Bild, Spieleranzahl, Spieldauer, Komplexitaet,
 Kategorien, Mechaniken, BGG-Rating, BGG-Rang.
 
+**Geplant, noch nicht umgesetzt:** FEAT-021 sieht die optionale Auswahl einer
+deutschsprachigen BGG-Ausgabe einschließlich ihres BGG-Covers vor. Die aktuelle
+Importfunktion übersetzt Titel und Beschreibung nicht. FEAT-022 plant zusätzlich
+die offizielle BGG-Quellenkennzeichnung auf Loginseite und Website-Footer; die
+Umsetzung beider Features ist separat freizugeben.
+
 ### BGG-Suche
 
 **Route:** `/dashboard/bgg` | **Zugriff:** Angemeldet

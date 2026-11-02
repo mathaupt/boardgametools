@@ -68,6 +68,39 @@ describe("BGG catalog service", () => {
     });
   });
 
+  it("uses safe defaults and rejects non-HTTP images when optional detail fields are absent", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(xmlResponse(
+      '<items><item id="13" type="boardgame"><name type="primary" value="Catan"/><image>javascript:alert(1)</image><thumbnail>data:image/png;base64,AA==</thumbnail></item></items>',
+    )));
+
+    await expect(getBggCatalogDetail("13")).resolves.toMatchObject({
+      name: "Catan", description: "", minPlayers: 1, maxPlayers: 4,
+      complexity: null, imageUrl: null, thumbnailUrl: null, rating: null,
+    });
+  });
+
+  it("rejects an absent detail item and incomplete search results", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(xmlResponse('<items total="0"></items>')));
+    await expect(getBggCatalogDetail("404")).rejects.toMatchObject({ status: 404 });
+
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(xmlResponse(
+      '<items total="1"><item type="boardgame" id="13"><yearpublished value="1995"/></item></items>',
+    )));
+    await expect(searchBggCatalog("Catan")).rejects.toMatchObject({ status: 502 });
+  });
+
+  it("rejects overlong BGG ids and whitespace-only search names", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(xmlResponse(
+      '<items total="1"><item type="boardgame" id="1234567890123"><name type="primary" value="Catan"/></item></items>',
+    )));
+    await expect(searchBggCatalog("Catan")).rejects.toMatchObject({ status: 502 });
+
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(xmlResponse(
+      '<items total="1"><item type="boardgame" id="13"><name type="primary" value="   "/></item></items>',
+    )));
+    await expect(searchBggCatalog("Catan")).rejects.toMatchObject({ status: 502 });
+  });
+
   it("rejects responses above 2 MB even without a content-length header", async () => {
     const payload = new Uint8Array(2 * 1024 * 1024 + 1);
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response(new ReadableStream({

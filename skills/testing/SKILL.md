@@ -191,7 +191,7 @@ export default defineConfig({
 | `globals`            | `true`                                      | `describe`, `it`, `expect` ohne Import    |
 | `setupFiles`         | `./tests/setup.ts`                          | `@testing-library/jest-dom` Matcher       |
 | `coverage.provider`  | `v8`                                        | Schnelle native Coverage-Erfassung        |
-| `coverage.thresholds`| global und `src/lib/**`: 50% Statements/Branches, 60% Functions, 55% Lines | FEAT-018 hebt vorhandene Schwellen gestuft an |
+| `coverage.thresholds`| global: 55/55/61/56 %; `src/lib/**`: 80/80/80/80 % | FEAT-018 erhöht Gates nur nach bestandenem vollständigem Messlauf |
 | `alias @`            | `./src`                                     | Gleiche Pfadaufloesung wie in Next.js     |
 
 **Abhaengigkeiten:** `vitest` ^4.1.12, `@vitejs/plugin-react` ^6.0.2, `@vitest/coverage-v8` ^4.1.12, `jsdom` ^29.1.1, `@testing-library/react` ^16.3.2, `@testing-library/jest-dom` ^7.0.0, `@testing-library/user-event` ^14.6.3, `jest-axe` ^11.0.0.
@@ -277,9 +277,9 @@ export const config = {
 ### Ausgangsstand und Ziel
 
 Planmesslauf 02.11.2026 gegen Commit `c497641`: global 48,56/45,95/51,27/49,78 %.
-Nach den FEAT-018-Testpaketen: 953 Tests/136 Dateien; global 54,90/51,60/61,07/56,18 %,
-`src/lib` 88,23/81,79/89,16/90,95 %. Das aktuelle globale und `src/lib`-Gate ist
-50/50/60/55 %.
+Nach FEAT-018-Paket 4: 994 Tests/141 Dateien; global 59,45/55,70/64,14/60,96 %,
+`src/lib` 88,94/80,00/90,60/91,47 %. Das aktuelle globale Gate ist 55/55/61/56 %,
+das `src/lib`-Gate 80/80/80/80 %.
 Langfristiges Ziel: mindestens 80 % in allen vier Metriken. Die Coverage wird über
 `npm run test:coverage` ermittelt. Schwellen werden nach dem FEAT-018-Plan
 gestuft angehoben; ein Wechsel des Denominators muss ausdrücklich begründet

@@ -11,6 +11,23 @@
 - [x] Bei 200 % gefundenen Listenüberlauf korrigiert und ohne horizontale Überläufe nachgemessen.
 - [x] TypeScript/Build, gezieltes ESLint und Impeccable-Detektor bestanden. Regressionsevaluator ohne Regression, 10/10 (`history/2026-11-02_1305.json`).
 
+## FEAT-018 Coveragepaket 4
+
+- [x] BGG-Transporttests für 202-Retry, anhaltendes 202, Abbruch während Wartezeit, gestreamte Größenbegrenzung und Netzwerkfehler ergänzt.
+- [x] Vollständige Suite: 994/994 Tests in 141 Dateien; global 59,45/55,70/64,14/60,96 %, `src/lib` 88,94/80,00/90,60/91,47 %.
+- [x] Globales Gate 55/55/61/56 % und alle vier `src/lib`-Gates bei 80 % bestehen.
+- [ ] 80 % global und Coverage-Artefakt im CI-Job erreichen.
+- [x] Typecheck und gezieltes ESLint bestanden; Security-Check: 0 Fehler, 3 bestehende Warnungen.
+- [x] Regressionsevaluator nach Sandbox-Auditfehler mit Registryzugriff wiederholt: 10/10, Sicherheit 9,9/10, keine offenen/neuen Findings oder Regressionen (`history/2026-11-02_1309.json`).
+- [ ] 65-%-globales Coverage-Gate erst nach vollständigem Messlauf über alle vier Metriken anheben.
+
+- [x] Charakterisierungstests zuerst ergänzt und gegen reale BGG-/Barcode-Handler und Scan-Komponenten ausgeführt.
+- [x] 25 gezielte Testfälle für BGG-Suche/Details, Barcode-Lookup, OCR, Kamera-Fehler und Barcode-Dialog ergänzt.
+- [x] Vollständige Suite: 979/979 Tests in 140 Dateien; Coverage 59,24/55,07/64,06/60,82 %.
+- [x] Globales Gate auf 55/55/61/56 % und `src/lib`-Gate auf 80/80/80/80 % angehoben; Coverage-Lauf besteht.
+- [ ] 80 % global und Coverage-Artefakt im CI-Job erreichen.
+- [ ] Typecheck, Security-Check und Regressionsevaluator für dieses Paket ergänzen.
+
 ## FEAT-018 Coveragepaket 1
 
 - [x] Frische Baseline gegen `c497641` aufgenommen und Coverage-Inventar unverändert gelassen.

@@ -631,18 +631,23 @@ fehlgeschlagenen Test schreiben. Maßgeblich sind die Skills
 
 ### Coverage-Ziel FEAT-018
 
-Der Planmessstand vom 02.11.2026 gegen Commit `c497641` beträgt global
+Der erste Planmessstand vom 02.11.2026 gegen Commit `c497641` betrug global
 48,56 % Statements, 45,95 % Branches, 51,27 % Functions und 49,78 % Lines
 (891 Tests in 124 Dateien; 89 von 248 erfassten Produktionsdateien hatten 0 %
 Lines). Nach den FEAT-018-Testpaketen liegen 953 Tests in 136 Dateien bei global
-54,90/51,60/61,07/56,18 %; `src/lib` liegt bei 88,23/81,79/89,16/90,95 %.
-Das aktuelle globale und `src/lib`-Gate liegt bei 50/50/60/55 %.
+54,90/51,60/61,07/56,18 %; der aktuelle Coverage-Lauf nach Paket 4 umfasst 994 Tests in
+141 Dateien und misst global 59,45/55,70/64,14/60,96 %. `src/lib` liegt bei
+88,94/80,00/90,60/91,47 %.
+Das aktuelle globale Gate ist 55/55/61/56 %; das `src/lib`-Gate liegt bei
+80/80/80/80 %.
 Das langfristige Ziel ist
 mindestens 80 % in allen vier Metriken für die explizit erfassten,
 ausführbaren Produktionsmodule. Der frühere Planhinweis auf
 ein fehlendes globales Gate war falsch und wurde beim Quellenabgleich
-korrigiert. Aktueller Ratchet-Schritt: 50/50/60/55 %; danach mindestens 55 %,
-65 %, 72 % und schließlich 80 % je Metrik. Der Nenner darf nicht durch
+korrigiert. Das aktuelle globale Gate 55/55/61/56 % folgt auf einen bestandenen
+Coverage-Lauf; `src/lib` hat 80 % in allen vier Metriken als Gate. Der nächste
+globale Ratchet-Schritt ist 65 %, danach 72 % und schließlich 80 % je Metrik.
+Der Nenner darf nicht durch
 unbegründetes Ausschließen ungetesteter Laufzeitdateien verkleinert werden;
 Framework-/Generierungsdateien, reine Daten und UI-Primitiven dürfen nur mit
 begründeter Dokumentation ausgenommen werden. Details und Reihenfolge stehen
@@ -653,8 +658,8 @@ im [FEAT-018-Plan](superpowers/plans/2026-11-02-FEAT-018-coverage-80.md).
 | TypeScript Errors | 0 | `tsc --noEmit` |
 | ESLint Errors + Warnings | 0 | `eslint src/ --max-warnings 0` |
 | Unit Tests | 100% bestanden | `npm test` |
-| Coverage (global, aktuell) | >= 50% Statements/Branches, 60% Functions, 55% Lines; Ziel 80% | `npm run test:coverage` |
-| Coverage (`src/lib`, aktuell) | >= 50% Statements/Branches, 60% Functions, 55% Lines; Ziel ebenfalls 80% | `npm run test:coverage` |
+| Coverage (global, aktuell) | >= 55/55/61/56 % Statements/Branches/Functions/Lines; Ziel 80 % | `npm run test:coverage` |
+| Coverage (`src/lib`, aktuell) | >= 80 % in allen vier Metriken | `npm run test:coverage` |
 | npm audit (prod) | 0 high/critical | `npm audit --omit=dev` |
 | API-Route-Testabdeckung | >= 1 Test/Methode | Manuell pruefen |
 | Dateien > 400 Zeilen | 0 | Automatisierbar |

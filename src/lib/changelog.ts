@@ -12,6 +12,16 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.62",
+    date: "2026-11-02",
+    title: "BGG-Ausbau und Testabdeckung dokumentieren",
+    description: "Dieser Release hält die erreichten Coverage-Ziele sowie die geprüften Pläne für den nächsten BGG-Ausbau fest.",
+    changes: [
+      { type: "internal", text: "FEAT-018 erreicht für src/lib mindestens 80 % Statements, Branches, Functions und Lines; die Gesamtabdeckung wird schrittweise weiter erhöht." },
+      { type: "internal", text: "FEAT-021 und FEAT-022 sind mit verlinkten Implementierungsplänen dokumentiert. Für beide Features ist eine separate Umsetzungsfreigabe erforderlich." },
+    ],
+  },
+  {
     version: "0.50.61",
     date: "2026-11-02",
     title: "Spielvorschläge klarer und einheitlicher bedienen",
@@ -19,6 +29,35 @@ export const changelog: ChangelogEntry[] = [
     changes: [
       { type: "fix", text: "Öffentliche Vorschlagsbereiche heben sich deckend vom Hintergrund ab. Suchfelder, deaktivierte Aktionen und Trefferlisten bleiben in Hell und Dunkel gut lesbar; Aktionsbeschriftungen umbrechen bei großer Schrift.", bugRef: "BUG-064" },
       { type: "improvement", text: "Die Sammlungssuche ist sichtbar beschriftet. „Zurücksetzen“ ersetzt „Reset“, und „Vorschlagen“ bleibt auch auf schmalen Bildschirmen ausgeschrieben." },
+    ],
+  },
+  {
+    version: "0.50.60",
+    date: "2026-11-02",
+    title: "Coveragepaket für BGG-Transport abschließen",
+    description: "Weitere Fehler- und Abbruchpfade der BGG-Anbindung sind abgesichert; das 80-%-Ziel für die Bibliotheksmodule ist jetzt in allen vier Messwerten erreicht.",
+    changes: [
+      { type: "internal", text: "FEAT-018 ergänzt Tests für BGG-Warteschleifen, übergroße Antworten und Netzwerkfehler. Die vollständige Suite besteht mit 994 Tests in 141 Dateien." },
+      { type: "internal", text: "Coverage: global 59,45/55,70/64,14/60,96 %; src/lib 88,94/80,00/90,60/91,47 %. Das globale Gate bleibt 55/55/61/56 %, das src/lib-Gate 80 % in allen vier Metriken." },
+    ],
+  },
+  {
+    version: "0.50.59",
+    date: "2026-11-02",
+    title: "BGG- und Scanpfade besser absichern",
+    description: "Verhaltenstests decken weitere Such-, Barcode- und Cover-Scan-Abläufe ab; die globalen Coverage-Gates steigen auf den bestätigten Messstand.",
+    changes: [
+      { type: "internal", text: "FEAT-018 ergänzt BGG-, Barcode-Lookup-, Cover-Scan- und Barcode-Scanner-Tests. Der folgende Coverage-Messstand und das src/lib-Gate sind in Version 0.50.60 aktualisiert." },
+    ],
+  },
+  {
+    version: "0.50.58",
+    date: "2026-11-02",
+    title: "BGG-Import und Testabdeckung weiter planen",
+    description: "Zwei BGG-Themen sind als nächste Features dokumentiert; der Coverage-Plan beruht auf einem frischen vollständigen Messlauf.",
+    changes: [
+      { type: "internal", text: "FEAT-021 plant die Auswahl einer deutschen BGG-Ausgabe; FEAT-022 plant die offizielle Quellenkennzeichnung auf Loginseite und Website-Footer. Für beide ist die Umsetzung noch nicht freigegeben." },
+      { type: "internal", text: "FEAT-018 ist mit 953 Tests in 136 Dateien und Coverage von 54,90/51,60/61,07/56,18 % aktualisiert; die nächsten Pakete priorisieren ungetestete BGG-, Barcode-, Event- und Gruppenpfade." },
     ],
   },
   {

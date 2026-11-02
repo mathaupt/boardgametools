@@ -31,9 +31,11 @@ Bedarf zu aktualisieren. Ergebnis am jeweiligen Plan dokumentieren:
 | FEAT-015 | Top-3-Spiele im Event-Kurzüberblick | Umgesetzt (Web; Browser-Viewportabnahme offen) | [Dashboard Top drei](superpowers/plans/2026-11-02-FEAT-015-dashboard-top-three.md) | Web-Umsetzung am 02.11.2026 freigegeben und umgesetzt; iOS separat |
 | FEAT-016 | Spielauswahl bei Session-Anlage per Eingabe filtern | Web umgesetzt; manuelle Browser-/VoiceOver-Abnahme offen | [Durchsuchbare Spielauswahl](superpowers/plans/2026-11-02-FEAT-016-session-spielsuche.md) | Web am 02.11.2026 durch „implementiere FEAT-016“ freigegeben und umgesetzt; iOS separat planen |
 | FEAT-017 | Spielcover in der Sessions-Übersicht anzeigen | Web umgesetzt; Browser-/Viewportabnahme offen | [Cover in Sessionkarten](superpowers/plans/2026-11-02-FEAT-017-session-cover.md) | Web-Umsetzung am 02.11.2026 freigegeben und umgesetzt; iOS separat |
-| FEAT-018 | Testabdeckung schrittweise auf 80 % erhöhen | In Umsetzung; Gate 50/50/60/55 erreicht; weitere UI-/API-Pakete offen | [Coverage-Ziel 80 %](superpowers/plans/2026-11-02-FEAT-018-coverage-80.md) | Durch „implementiere FEAT-018“ am 02.11.2026 freigegeben |
+| FEAT-018 | Testabdeckung schrittweise auf 80 % erhöhen | In Umsetzung; globale Gates 55/55/61/56 und `src/lib` 80/80/80/80 erreicht; weitere Pakete offen | [Coverage-Ziel 80 %](superpowers/plans/2026-11-02-FEAT-018-coverage-80.md) | Durch „implementiere FEAT-018“ am 02.11.2026 freigegeben |
 | FEAT-019 | Spracheingabe für Suche und Session-Anlage | Konzept dokumentiert; Plan und Umsetzung offen | [Spracheingabe-Konzept](superpowers/specs/2026-11-02-spracheingabe-design.md) | Keine |
 | FEAT-020 | Lesbare Trefferflächen für öffentliche Spielvorschläge | Web nachgebessert; lokal gerendert geprüft (Hell/Dunkel, 390/1024 px, 200 % Schrift) | [Kontrast der Spielvorschläge](superpowers/plans/2026-11-02-FEAT-020-public-event-proposal-contrast.md) | Web am 02.11.2026 freigegeben und umgesetzt; iOS nicht betroffen |
+| FEAT-021 | Deutsche BGG-Ausgabe beim Import auswählen | Plan erstellt; Umsetzung nicht freigegeben | [Deutsche BGG-Ausgabe](superpowers/plans/2026-11-02-FEAT-021-bgg-deutsche-ausgabe.md) | Keine |
+| FEAT-022 | BGG-Quellenkennzeichnung auf Loginseite und Website-Footer | Plan erstellt; Umsetzung nicht freigegeben | [BGG-Attribution](superpowers/plans/2026-11-02-FEAT-022-bgg-attribution.md) | Keine |
 
 Am 30.10.2026 aufgenommen. Bei der Planung sind Web, iOS sowie angemeldete und
 öffentliche Voting-Ansichten auf Relevanz und bereits vorhandene Teilfunktionen
@@ -167,12 +169,15 @@ und mobile Zeilen-/Kartenbreiten als Prüfgegenstände fest. Der Plan liegt für
 
 Erneuerter Messstand am 02.11.2026 gegen Commit `c497641`: 891 Unit-Tests in
 124 Dateien; global 48,56/45,95/51,27/49,78 %. Nach den Testpaketen stehen
-953 Tests/136 Dateien bei 54,90/51,60/61,07/56,18 % global; `src/lib` liegt bei
-88,23/81,79/89,16/90,95 %. Langfristiges Ziel sind mindestens 80 % in allen
+994 Tests/141 Dateien bei 59,45/55,70/64,14/60,96 % global; `src/lib` liegt bei
+88,94/80,00/90,60/91,47 %. Der vollständige Coverage-Lauf nach Paket 4 besteht.
+Langfristiges Ziel sind mindestens 80 % in allen
 vier Metriken für den nachvollziehbar festgelegten Anwendungscode. Das Gate
-liegt jetzt bei 50/50/60/55 %; der 100-%-CLI-Override scheitert wie erwartet
-an der realen Abdeckung. Weitere schrittweise Erhöhungen und Tests für bisher unbedeckte
-Bereiche stehen aus. TDD wurde als verbindliche
+liegt jetzt global bei 55/55/61/56 % und für `src/lib` bei 80/80/80/80 %.
+Der 100-%-CLI-Override scheiterte erwartungsgemäß an der realen Abdeckung.
+Weitere schrittweise Erhöhungen und Tests für bisher unbedeckte Bereiche stehen
+aus. Nächste globale Ratchet-Stufe nach weiteren Tests: 65/65/65/65 %.
+TDD wurde als verbindliche
 Agentenregel ergänzt. Zwei Stack-Skills wurden lokal aufgenommen.
 
 ### I. Spracheingabe: FEAT-019
@@ -779,21 +784,21 @@ ohne Datum, Titel, Ergebnisse und Aktionen aus dem Blick zu verlieren.
 
 ## FEAT-018 – Testabdeckung schrittweise auf 80 % erhöhen
 
-**Status:** In Umsetzung; globales und `src/lib`-Gate bei 50/50/60/55 %, Ausbau auf 80 % läuft.
+**Status:** In Umsetzung; globales Gate 55/55/61/56 %, `src/lib` liegt bei 88,94/80,00/90,60/91,47 %; globale Coverageausweitung läuft.
 **Umsetzungsplan:** [Coverage-Ziel 80 %](superpowers/plans/2026-11-02-FEAT-018-coverage-80.md).
 **Plattformumfang:** Vitest-erfasster Web-/Backend-Runtimecode; Browser-E2E und iOS-Verträge als separate Nachweise.
 **Umsetzungsfreigabe:** Am 02.11.2026 durch „implementiere FEAT-018“ erteilt.
 
-**Aktualitätsprüfung vor Umsetzung 02.11.2026:** Gegen Commit `c497641`,
-`vitest.config.ts`, Testinventar und Coveragebericht nach FEAT-016/017/020
-geprüft. `npm run test:coverage` lief mit 891 Tests in 124 Dateien erfolgreich;
-global 48,56/45,95/51,27/49,78 %, `src/lib` 84,21/74,49/85,75/86,53 %.
-Das Inventar enthält 248 Runtime-Dateien, 89 davon mit 0 % Lines. Der Plan ist
-aktuell; die erste Ratchet-Stufe 50/50/60/55 % ist durch den aktuellen Coverage-Lauf gedeckt.
+**Aktualitätsprüfung vor Umsetzung 02.11.2026:** Ursprünglicher Planabgleich
+gegen Commit `c497641`; danach Paket 4 gegen den aktuellen Arbeitsbaum geprüft.
+Der aktuelle Lauf besteht mit 994 Tests in 141 Dateien und globalen Werten von
+59,45/55,70/64,14/60,96 %; `src/lib` liegt bei 88,94/80,00/90,60/91,47 %.
+Das Gate liegt global bei 55/55/61/56 % und für `src/lib` bei 80/80/80/80 %.
+Die Coverage-Summary priorisiert
+als Nächstes Einladungen, Terminvorschläge und öffentliche Antworten.
 
-**Plan:** Das globale Gate und das `src/lib`-Gate wurden auf 50/50/60/55 % erhöht. Danach Testpakete
-nach Risiko bearbeiten und alle
-vier Metriken stufenweise auf 55, 65, 72 und 80 % anheben. Quelleninventar,
+**Plan:** Das aktuelle globale Gate ist 55/55/61/56 %, `src/lib` besteht das 80/80/80/80-%-Gate. Danach Testpakete nach Risiko bearbeiten und alle vier globalen
+Metriken stufenweise auf 65, 72 und 80 % anheben. Quelleninventar,
 Messlücken, Charakterisierungstests und TDD für Fehlerkorrekturen sind im Plan
 festgelegt. Neue eigene Session-Komponenten werden automatisch mitgemessen.
 Kein Entfernen schlecht getesteter Runtime-Dateien aus dem Nenner.
@@ -837,3 +842,15 @@ Produktionsdatenbank wird verwendet. Safari-Prüfung: 390/1024 px, Hell/Dunkel u
 200 % Schrift; gemessener minimaler Textkontrast 5,59:1 hell und 5,33:1 dunkel.
 Der bei 200 % entdeckte seitliche Listenüberlauf ist korrigiert. Die Anforderung
 zur lokalen gerenderten Prüfung ist damit für diese Komponenten erfüllt.
+
+## FEAT-021 – Deutsche BGG-Ausgabe beim Import auswählen
+
+**Status:** Implementierungsplan erstellt; Umsetzung nicht freigegeben.
+**Implementierungsplan:** [Deutsche BGG-Ausgabe](superpowers/plans/2026-11-02-FEAT-021-bgg-deutsche-ausgabe.md).
+**Umfang:** Ausschließlich Auswahl einer deutschsprachigen BGG-Ausgabe und Nutzung ihrer BGG-gelieferten Ausgabenabbildung beim Import. Titel/Beschreibungen werden nicht übersetzt; keine zusätzlichen Metadatenquellen.
+
+## FEAT-022 – BGG-Quellenkennzeichnung auf Loginseite und Website-Footer
+
+**Status:** Implementierungsplan erstellt; Umsetzung nicht freigegeben.
+**Implementierungsplan:** [BGG-Attribution](superpowers/plans/2026-11-02-FEAT-022-bgg-attribution.md).
+**Umfang:** Offizielle BGG-Kennzeichnung auf Loginseite und konsistentem Website-Footer nach Prüfung der dann geltenden BGG-Vorgaben.

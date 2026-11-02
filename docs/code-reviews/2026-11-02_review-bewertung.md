@@ -11,6 +11,27 @@
 | Evaluator | 10/10 gesamt, Sicherheit 9,9/10; 0 offene/neue Findings, keine Regression | Snapshot `history/2026-11-02_1315.json` |
 | Commit-Hook | Commit `1686bc0`: lint-staged, relevante Tests, Security- und Regressionsevaluator bestanden | 0 Vulnerabilities, 2 bestehende Codehinweise |
 
+## FEAT-018 – Coveragepaket 4 aktualisiert (vor Commit)
+
+| Prüffeld | Ergebnis | Einschränkung |
+|---|---|---|
+| Unit-/Coverage-Lauf | 994/994 Tests in 141 Dateien; global 59,45/55,70/64,14/60,96 % | Globales 80-%-Ziel offen |
+| `src/lib` | 88,94/80,00/90,60/91,47 % | Alle vier 80-%-Gates bestehen |
+| BGG-Transport | Warteschleifen, Caller-Abbruch, Streamlimit, Netzwerkfehler abgedeckt | Provider bleibt gemockt |
+| TypeScript / gezieltes ESLint | Bestanden | — |
+| Security-Check | 0 Fehler, 3 bestehende Warnungen | npm-Audit-Sandboxhinweis, Raw SQL und Debug-Routen |
+| Evaluator | 10/10, Sicherheit 9,9/10; 0 offene/neue Findings und keine Regression | `history/2026-11-02_1309.json`; vollständiger Audit mit Registryzugriff |
+
+## FEAT-018 – Coveragepaket 4 (vor Commit)
+
+| Prüffeld | Ergebnis | Einschränkung |
+|---|---|---|
+| Unit-/Coverage-Lauf | 979/979 Tests in 140 Dateien; global 59,24/55,07/64,06/60,82 % | Das 80-%-Gesamtziel bleibt offen |
+| `src/lib` | 88,23/81,79/89,16/90,95 % | Neues Gate 80/80/80/80 % besteht |
+| Gezielte Pfade | BGG-Route, Barcode-Lookup, Cover-Scan und Barcode-Scanner Verhaltenstests | BGG-Netzwerk, OCR, Kamera und Datenbank werden kontrolliert gemockt |
+| Threshold-Verhalten | Neues globales Gate 55/55/61/56 % besteht | Nächste Stufe 65/65/65/65 % erfordert weitere Tests |
+| TypeScript / Security / Evaluator | Für diesen historischen Messstand ausstehend; der aktuelle Abschluss steht oben | — |
+
 ## FEAT-018 – Coveragepaket 1 (vor Commit)
 
 | Prüffeld | Ergebnis | Einschränkung |

@@ -11,6 +11,24 @@
 - API-/Auth-/Datenbankverträge unverändert; keine Produktionsdaten oder schreibenden Datenbank-E2E verwendet. Lokale UI-Prüfung ist kein vollständiger Backend-E2E-Nachweis.
 - Commit `1686bc0`: lint-staged-ESLint und relevante Tests, Security-Check (0 Fehler, 0 Vulnerabilities, 2 bestehende Hinweise zu Raw SQL/Debug-Routen) und Regressionsevaluator bestanden. Evaluator 10/10, Sicherheit 9,9/10; Snapshot `history/2026-11-02_1315.json`. Lokaler Vorschau-Server nach Abschluss gestoppt. Versionsnummer auf 0.50.61 gesetzt, da die parallele Coveragearbeit ebenfalls 0.50.60 verwendete.
 
+## FEAT-018 – Coveragepaket 4 aktualisiert (0.50.60)
+
+- 994/994 Tests in 141 Dateien; global 59,45/55,70/64,14/60,96 %.
+- `src/lib`: 88,94/80,00/90,60/91,47 %; alle vier 80-%-Gates bestehen.
+- Neue BGG-Transportfälle: Retry/Abbruch bei 202, übergroßer Stream und Netzwerkfehler.
+- Globale Gates 55/55/61/56 % bestehen; 65-%-Stufe und globales 80-%-Ziel bleiben offen.
+- Typecheck und gezieltes ESLint bestanden; Security-Check 0 Fehler und 3 bestehende Warnungen.
+- Regressionsevaluator mit Registryzugriff: 10/10, Sicherheit 9,9/10, keine offenen/neuen Findings oder Regressionen (`history/2026-11-02_1309.json`).
+
+## FEAT-018 – Coveragepaket 4 (0.50.59)
+
+- 979/979 Tests in 140 Dateien; global 59,24/55,07/64,06/60,82 %.
+- `src/lib`: 88,23/81,79/89,16/90,95 %; das `src/lib`-Gate ist jetzt 80/80/80/80 %.
+- Neue Verhaltenstests decken BGG-API, Barcode-Lookup, Cover-Scan und Barcode-Scanner ab.
+- Globales Coverage-Gate nach bestandenem Lauf auf 55/55/61/56 % angehoben.
+- Nächste globale Stufe 65/65/65/65 %; 80-%-Ziel bleibt offen.
+- Für diesen historischen Messstand war der finale Evaluatorlauf noch offen; der Abschlussnachweis steht im Eintrag 0.50.60 oben.
+
 ## FEAT-018 – Coveragepaket 1 (0.50.57)
 
 - Globales und `src/lib`-Coverage-Gate auf 50/50/60/55 % angehoben.

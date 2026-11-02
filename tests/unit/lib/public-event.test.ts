@@ -226,4 +226,34 @@ describe("serializePublicEvent", () => {
     const result = serializePublicEvent(event, null);
     expect(result.proposals).toEqual([]);
   });
+
+  it("serializes optional event and proposal data with safe defaults", () => {
+    const event = makeEvent({
+      invites: undefined,
+      selectedGame: { id: "selected-game", name: "Azul", imageUrl: null, minPlayers: 2, maxPlayers: 4, playTimeMinutes: 30 },
+      winningProposal: { id: "winner", bggId: "13", bggName: null, bggImageUrl: null, bggMinPlayers: null, bggMaxPlayers: null, bggPlayTimeMinutes: null, gameId: null },
+      proposals: [{
+        id: "sparse-proposal", createdAt: null, bggId: null, bggName: null, bggImageUrl: null,
+        bggMinPlayers: null, bggMaxPlayers: null, bggPlayTimeMinutes: null,
+        game: null, proposedBy: null, guest: null, votes: undefined,
+        _count: { votes: 0, guestVotes: 0 },
+      }],
+      guestParticipants: [{ id: "guest-2", nickname: "Nina", createdAt: new Date("2026-03-20T10:00:00Z") }],
+      dateProposals: undefined,
+    });
+
+    const result = serializePublicEvent(event, "user-1");
+
+    expect(result.invites).toEqual([]);
+    expect(result.selectedGame?.name).toBe("Azul");
+    expect(result.winningProposal?.bggName).toBeNull();
+    expect(result.proposals[0]).toMatchObject({
+      createdAt: null,
+      game: { id: "bgg-null", name: "Unbekanntes Spiel", imageUrl: null, minPlayers: null, maxPlayers: null, playTimeMinutes: null },
+      proposedBy: null,
+      userHasVoted: false,
+    });
+    expect(result.guestParticipants[0].votesCount).toBe(0);
+    expect(result.dateProposals).toEqual([]);
+  });
 });
