@@ -15,7 +15,7 @@ export function BggSearchResults({ results, detailLoadingId, onShowDetails }: Bg
   return (
     <ul className="max-h-[400px] min-w-0 space-y-2 overflow-y-auto pr-1" aria-label="Suchergebnisse">
       {results.map((result) => (
-        <li key={result.bggId} className="flex min-w-0 flex-wrap items-center gap-3 rounded-lg border border-border/60 bg-background/80 px-3 py-2">
+        <li key={result.bggId} className="flex min-w-0 flex-wrap items-center gap-3 rounded-lg border border-border bg-card text-card-foreground px-3 py-2">
           {result.imageUrl ? (
             <Image src={result.imageUrl} alt="" width={40} height={40} className="shrink-0 rounded object-cover" />
           ) : (

@@ -33,7 +33,7 @@ Bedarf zu aktualisieren. Ergebnis am jeweiligen Plan dokumentieren:
 | FEAT-017 | Spielcover in der Sessions-Übersicht anzeigen | Web umgesetzt; Browser-/Viewportabnahme offen | [Cover in Sessionkarten](superpowers/plans/2026-11-02-FEAT-017-session-cover.md) | Web-Umsetzung am 02.11.2026 freigegeben und umgesetzt; iOS separat |
 | FEAT-018 | Testabdeckung schrittweise auf 80 % erhöhen | Plan erstellt; Governance und Skills ergänzt; Testausbau offen | [Coverage-Ziel 80 %](superpowers/plans/2026-11-02-FEAT-018-coverage-80.md) | Keine |
 | FEAT-019 | Spracheingabe für Suche und Session-Anlage | Konzept dokumentiert; Plan und Umsetzung offen | [Spracheingabe-Konzept](superpowers/specs/2026-11-02-spracheingabe-design.md) | Keine |
-| FEAT-020 | Lesbare Trefferflächen für öffentliche Spielvorschläge | Plan erstellt; Umsetzung offen | [Kontrast der Spielvorschläge](superpowers/plans/2026-11-02-FEAT-020-public-event-proposal-contrast.md) | Keine |
+| FEAT-020 | Lesbare Trefferflächen für öffentliche Spielvorschläge | Web umgesetzt; gerenderte Theme-/Viewportabnahme offen | [Kontrast der Spielvorschläge](superpowers/plans/2026-11-02-FEAT-020-public-event-proposal-contrast.md) | Web am 02.11.2026 freigegeben und umgesetzt; iOS nicht betroffen |
 
 Am 30.10.2026 aufgenommen. Bei der Planung sind Web, iOS sowie angemeldete und
 öffentliche Voting-Ansichten auf Relevanz und bereits vorhandene Teilfunktionen
@@ -809,16 +809,18 @@ ihre IDs und Abnahmekriterien.
 
 ## FEAT-020 – Kontrast öffentlicher Spielvorschläge
 
-**Status:** Plan erstellt; Umsetzung offen.
+**Status:** Web umgesetzt; gerenderte Theme-/Viewportabnahme offen.
 **Design-Spec:** [Lesbare Spielvorschläge auf der öffentlichen Eventseite](superpowers/specs/2026-11-02-public-event-proposal-contrast-design.md).
 **Implementierungsplan:** [Kontrast der Spielvorschläge](superpowers/plans/2026-11-02-FEAT-020-public-event-proposal-contrast.md).
 **Plattformumfang:** Öffentliche Web-Eventseite; iOS ist nicht betroffen.
-**Umsetzungsfreigabe:** Keine erteilt.
+**Umsetzungsfreigabe:** Web am 02.11.2026 durch „implementiere FEAT-020“ erteilt.
 
 **Ziel:** BGG- und Sammlungstreffer sollen sich klar vom umgebenden
 Suchbereich abheben und in Light/Dark Theme gut lesbar bleiben.
 
-**Plan:** Beide Trefferzeilen erhalten semantische `card`-Farben und eine
-deutlichere Border. Tests sichern beide Komponenten ab; Such-, Bild- und
-Vorschlagsverhalten bleiben unverändert. Impeccable-, Accessibility-,
-Security- und Theme-Abnahme sind im Implementierungsplan beschrieben.
+**Umsetzung 02.11.2026:** BGG- und Sammlungstreffer verwenden deckende
+semantische Kartenfarben und eine sichtbare Border. Suche, Inhalt, Bilder und
+Aktionen bleiben unverändert. Zwei Regressionstests und vier angrenzende
+Public-Event-Tests bestehen. TypeScript, ESLint und Build bestanden. Die
+statische Impeccable-Prüfung meldet 0 Regex-Findings; vollständige gerenderte
+Theme-/Viewportprüfung blieb mangels Browserhost offen.

@@ -3,8 +3,10 @@
 ## Public Event – Kontrast der Spielvorschläge
 
 - Design-Spec für semantische Kartenflächen auf BGG- und Sammlungstreffern erstellt.
-- Spec vom Nutzer freigegeben; FEAT-020-Implementierungsplan erstellt und im Feature-Backlog verlinkt.
-- Keine Laufzeitänderung oder Umsetzungsfreigabe erfolgt.
+- FEAT-020 freigegeben und umgesetzt: BGG- und Sammlungstreffer verwenden `bg-card`, `text-card-foreground` und `border-border`.
+- Gezielte Public-Event-Tests: 6/6 bestanden; TypeScript, ESLint und Build bestanden.
+- Impeccable-Detektor: 0 Regex-Findings; gerenderte Prüfung nicht möglich, Browserhost nicht verfügbar.
+- Security- und Regressionsevaluator folgen im Commit-Hook.
 
 ## BUG-063 – Dashboard-Cache-Datum
 

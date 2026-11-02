@@ -373,6 +373,9 @@ Vorschläge annimmt. Sucheingabe, Ladezustand, Treffer, leere Trefferliste und
 Fehler werden getrennt angezeigt. Ein sichtbares Label benennt das Suchfeld;
 Vorschlagen erfordert eine aktive Identität.
 
+Treffer aus der BGG-Suche und der eigenen Sammlung sind mit einer deckenden,
+semantischen Kartenfläche und einer feinen Umrandung vom Suchbereich abgesetzt.
+
 ### Oeffentliche Gruppe
 
 **Route:** `/public/group/[token]` | **Zugriff:** Jeder mit Link (optional Passwort)

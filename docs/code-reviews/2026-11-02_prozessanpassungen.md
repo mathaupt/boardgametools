@@ -6,7 +6,12 @@
 - [x] Flächenkontrast als bestätigte Lösung festgehalten; BGG- und Sammlungstreffer bleiben funktional unverändert.
 - [x] Design-Spec geprüft und vom Nutzer freigegeben.
 - [x] FEAT-020-Implementierungsplan, Backlogverknüpfung und Changelog erstellt.
-- [ ] Keine Umsetzungsfreigabe erteilt; TDD und UI-Änderungen stehen aus.
+- [x] Implementierungsplan vor Umsetzung gegen `caa78ae` und tatsächliche Theme-Tokens geprüft; keine neuen Runtime-Änderungen seit Planung.
+- [x] TDD-RED für beide Oberflächen beobachtet, danach semantische `card`-Flächen eingebaut; gezielte Suites 6/6 grün.
+- [x] TypeScript, gezieltes ESLint, Produktionsbuild und statischer Impeccable-Detektor abgeschlossen.
+- [x] Browserprüfung angefragt; Browserhost nicht verfügbar, gerenderte Light/Dark-/Viewportabnahme offen dokumentiert.
+- [x] Backlog, Feature-Doku, Plan, Changelog und Review-Dokumentation aktualisiert.
+- [ ] Security- und Regressionsevaluator über Commit-Hook abschließen.
 
 ## BUG-063 Dashboard-Datumsregression
 

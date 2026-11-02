@@ -14,10 +14,11 @@ export const changelog: ChangelogEntry[] = [
   {
     version: "0.50.56",
     date: "2026-11-02",
-    title: "Kontrast der öffentlichen Spielvorschläge verbessern",
-    description: "Design-Spezifikation und Implementierungsplan halten die Lesbarkeitsverbesserung für BGG- und Sammlungstreffer fest.",
+    title: "Öffentliche Spielvorschläge besser lesbar machen",
+    description: "Treffer aus BGG-Suche und eigener Sammlung heben sich mit einer klaren Kartenfläche vom Suchbereich ab.",
     changes: [
-      { type: "internal", text: "FEAT-020 dokumentiert eine Umsetzung mit semantischen Kartenfarben, klarer Umrandung und Theme-Abnahme; eine Umsetzungsfreigabe steht aus." },
+      { type: "feature", text: "BGG- und Sammlungstreffer auf öffentlichen Eventseiten verwenden deckende Kartenfarben und eine sichtbare Umrandung." },
+      { type: "internal", text: "FEAT-020 mit Darstellungstests und unverändertem Such- und Vorschlagsverhalten umgesetzt." },
     ],
   },
   {

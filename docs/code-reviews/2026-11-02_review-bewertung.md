@@ -5,8 +5,10 @@
 | Prüffeld | Ergebnis | Einschränkung |
 |---|---|---|
 | Designrichtung | Bestätigt: deckende semantische `card`-Flächen mit feiner Border für BGG- und Sammlungstreffer | — |
-| Implementierungsplan | FEAT-020 erstellt und im Backlog verlinkt | Umsetzungsfreigabe ausstehend |
-| Umsetzung / Tests | Offen | Noch keine UI-Änderung vorgenommen |
+| Darstellung / Tests | FEAT-020 umgesetzt; 6/6 gezielte Public-Event-Tests bestanden | Browserhost nicht verfügbar; kein gerenderter Dark-/Light- oder Viewportnachweis |
+| TypeScript / ESLint / Build | Bestanden | ESLint gezielt für geänderte TS/TSX-Dateien |
+| Impeccable | 0 Regex-Findings | Regeln für gerenderte Seiten liefen nicht |
+| Security / Review | Commit-Hook läuft nach dem Staging | Bestehende Hinweise unverändert dokumentieren |
 
 ## BUG-063 – Dashboard-Cache-Datum
 

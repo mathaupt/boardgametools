@@ -144,7 +144,7 @@ export function CollectionGameProposer({
               filteredGames.map((game) => (
                 <div
                   key={game.id}
-                  className="flex items-center justify-between rounded-lg border border-border/60 bg-background/80 px-3 py-2"
+                  className="flex items-center justify-between rounded-lg border border-border bg-card text-card-foreground px-3 py-2"
                 >
                   <div>
                     <p className="font-medium text-sm text-foreground">{game.name}</p>
