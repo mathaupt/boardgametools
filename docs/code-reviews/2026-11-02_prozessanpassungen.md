@@ -4,8 +4,9 @@
 
 - [x] Aktuelle Komponenten und Club-Programme-Farbrollen geprüft.
 - [x] Flächenkontrast als bestätigte Lösung festgehalten; BGG- und Sammlungstreffer bleiben funktional unverändert.
-- [x] Design-Spec und Changelog dokumentiert.
-- [ ] Nutzerprüfung der Spec abwarten; anschließend Implementierungsplan und TDD-Umsetzung erstellen.
+- [x] Design-Spec geprüft und vom Nutzer freigegeben.
+- [x] FEAT-020-Implementierungsplan, Backlogverknüpfung und Changelog erstellt.
+- [ ] Keine Umsetzungsfreigabe erteilt; TDD und UI-Änderungen stehen aus.
 
 ## BUG-063 Dashboard-Datumsregression
 

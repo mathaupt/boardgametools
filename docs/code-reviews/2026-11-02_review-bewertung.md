@@ -4,7 +4,8 @@
 
 | Prüffeld | Ergebnis | Einschränkung |
 |---|---|---|
-| Designrichtung | Bestätigt: deckende semantische `card`-Flächen mit feiner Border für BGG- und Sammlungstreffer | Spec wartet auf abschließende Textprüfung |
+| Designrichtung | Bestätigt: deckende semantische `card`-Flächen mit feiner Border für BGG- und Sammlungstreffer | — |
+| Implementierungsplan | FEAT-020 erstellt und im Backlog verlinkt | Umsetzungsfreigabe ausstehend |
 | Umsetzung / Tests | Offen | Noch keine UI-Änderung vorgenommen |
 
 ## BUG-063 – Dashboard-Cache-Datum

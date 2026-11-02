@@ -3,7 +3,8 @@
 ## Public Event – Kontrast der Spielvorschläge
 
 - Design-Spec für semantische Kartenflächen auf BGG- und Sammlungstreffern erstellt.
-- Umsetzung und Laufzeittests stehen nach Spec-Prüfung aus.
+- Spec vom Nutzer freigegeben; FEAT-020-Implementierungsplan erstellt und im Feature-Backlog verlinkt.
+- Keine Laufzeitänderung oder Umsetzungsfreigabe erfolgt.
 
 ## BUG-063 – Dashboard-Cache-Datum
 
