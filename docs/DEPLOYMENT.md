@@ -231,3 +231,20 @@ und gegebenenfalls erforderliche individuelle Lizenz bleiben Betreiberaufgaben;
 die Kennzeichnung ersetzt diese nicht. Bei geänderten BGG-Vorgaben die
 [offiziellen Bedingungen](https://boardgamegeek.com/wiki/page/XML_API_Terms_of_Use)
 und die dort verlinkten Originalassets erneut prüfen. Nicht umfärben oder verzerren.
+
+## Qualitätsmesswerte veröffentlichen (BUG-067)
+
+Vor einem Release `npm run test:coverage` ausführen. Der Befehl schreibt den
+Vitest-JSON-Bericht unter `coverage/test-results.json` und aktualisiert erst nach
+erfolgreichem vollständigem Lauf einschließlich Coverage-Gates die versionierte
+`src/data/quality-metrics.json`. Die Messdatei zusammen mit dem geprüften Code
+committen; Rohberichte und lokale Review-History bleiben lokal. Der Generator
+prüft Testdateivollständigkeit, erfolgreiche Ergebnisse und gültige Messwerte;
+bei Fehlern bleibt der vorherige veröffentlichte Stand erhalten.
+
+Das Admin-Monitoring liest das gebündelte Artefakt ohne zusätzliche Umgebungsvariable
+oder Datenbankzugriff und zeigt Messdatum und Messversion. Ein Deployment ohne
+neuen Messlauf behält sichtbar den letzten gemessenen Stand. Es führt nicht selbst
+Tests oder Messungen aus. Neu erzeugte lokale Messwerte werden erst mit einem
+neuen Deployment auf der Website sichtbar. Andere Review-Kennzahlen bleiben als
+historisch beschriftet. Es sind keine Migrationen nötig.

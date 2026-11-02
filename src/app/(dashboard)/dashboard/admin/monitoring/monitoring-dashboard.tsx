@@ -160,7 +160,7 @@ export function MonitoringDashboard() {
             )}
           </TabsTrigger>
           <TabsTrigger value="quality">
-            Qualitaet
+            Qualität
             {quality && (
               <Badge variant="outline" className="ml-2 text-xs">
                 {quality.overallScore.toFixed(1)}

@@ -552,7 +552,7 @@ Nutzerliste zeigt: Name, E-Mail, Rolle-Badge, Aktiv-Status, Anzahl Spiele/Events
 
 4 Tabs mit konfigurierbarem Zeitraum (1h / 6h / 24h / 7d / 30d):
 
-#### Tab 1: Uebersicht
+#### Tab 1: Übersicht
 - API-Anfragen pro Minute
 - Fehlerrate (4xx/5xx)
 - Durchschnittliche Antwortzeit
@@ -560,23 +560,34 @@ Nutzerliste zeigt: Name, E-Mail, Rolle-Badge, Aktiv-Status, Anzahl Spiele/Events
 
 #### Tab 2: Logs
 - Alle API-Requests mit: Methode, Pfad, Status-Code, Dauer, Nutzer-ID, Zeitstempel
-- Logs loeschen
+- Logs löschen
 
 #### Tab 3: Anomalien
 - Automatische Erkennung von:
   - Langsamen Endpoints (P95 > 1s)
-  - Fehlerhaeufungen (gehaeuftes 4xx/5xx)
-  - Ungewoehnlich hoher Aktivitaet einzelner Nutzer
-- Anomalie-Zaehler als Badge im Tab
+  - Fehlerhäufungen (gehäuftes 4xx/5xx)
+  - Ungewöhnlich hoher Aktivität einzelner Nutzer
+- Anomalie-Zähler als Badge im Tab
 
-#### Tab 4: Qualitaet
+#### Tab 4: Qualität
 - Deep-Dive Review Score (Radar-Chart, 10 Kategorien)
-- Findings nach Prioritaet (Balkendiagramm)
-- Score-Verlauf ueber Zeit (Liniendiagramm)
-- Code-Qualitaets-Badges (TypeScript, ESLint, npm audit, Error Boundaries, Loading States)
+- Findings nach Priorität (Balkendiagramm)
+- Score-Verlauf über Zeit (Liniendiagramm)
+- Code-Qualitäts-Badges (TypeScript, ESLint, npm audit, Error Boundaries, Loading States)
 - Code Coverage
 - Architektur-Diagramm (4 Schichten: Client → Next.js → Business Logic → Daten)
 - Tech-Stack mit Logos und Lizenzen
+
+
+**Messdaten (BUG-067, 0.50.65):** Coverage und Testzahlen stammen aus einer
+versionierten, im Deployment enthaltenen Messdatei. `npm run test:coverage`
+erzeugt sie nach einem vollständigen erfolgreichen Lauf automatisch; ungültige,
+fehlgeschlagene oder gefilterte Läufe ersetzen den vorherigen Stand nicht.
+Gesamter Messumfang und gewichtete Bibliothekswerte (`src/lib`) werden getrennt
+mit Messzeitpunkt und gemessener Version angezeigt. Ein älterer Review-Snapshot
+kann diese Messwerte nicht überschreiben. Weitere manuell gepflegte Kennzahlen
+bleiben als historischer Reviewstand v0.39.1 gekennzeichnet; es gibt keinen
+künstlichen Coverage-Vergleich.
 
 ---
 

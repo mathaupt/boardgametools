@@ -807,6 +807,8 @@ Kein Entfernen schlecht getesteter Runtime-Dateien aus dem Nenner.
 Commit, grüne Tests und CI-Gates, nachvollziehbarer Messumfang und aktuelle
 Review-Dokumentation. Die Planung ändert keine Schwelle.
 
+**Monitoring-Korrektur:** BUG-067 verbindet Coverage/Testzahlen mit der versionierten vollständigen Messdatei. Gesamtumfang und `src/lib` bleiben getrennt; die Anzeige nennt Messzeitpunkt und Version. Plan: [BUG-067](superpowers/plans/2026-11-02-BUG-067-monitoring-messwerte.md).
+
 ## Nachverfolgung
 
 Je Feature werden Planpfad, offene Entscheidungen, Datum und Umfang der expliziten

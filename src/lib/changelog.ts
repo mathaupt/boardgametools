@@ -12,6 +12,17 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.65",
+    date: "2026-11-02",
+    title: "Verlässliche Qualitätsmesswerte im Monitoring",
+    description: "Das Qualitätsmonitoring verwendet die veröffentlichten Ergebnisse vollständiger Testläufe und nennt ihren Messstand.",
+    changes: [
+      { type: "fix", text: "BUG-067: Veraltete Coverage-Prozente und fest hinterlegte Testzahlen werden durch überprüfte Messwerte ersetzt.", bugRef: "BUG-067" },
+      { type: "improvement", text: "Gesamte Testabdeckung und Bibliotheksabdeckung werden getrennt mit Messdatum und Version angezeigt. Weitere historische Review-Kennzahlen sind ausdrücklich gekennzeichnet." },
+      { type: "fix", text: "Qualität, Übersicht und weitere deutsche Beschriftungen verwenden korrekte Umlaute." },
+    ],
+  },
+  {
     version: "0.50.64",
     date: "2026-11-02",
     title: "BoardGameGeek als Datenquelle sichtbar machen",

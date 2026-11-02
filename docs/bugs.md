@@ -1930,10 +1930,31 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 ---
 
+### [BUG-067] Monitoring zeigt veraltete Coverage und Testzahlen
+
+**Status:** `fixed`
+**Schweregrad:** `medium`
+**Entdeckt:** 2026-11-02
+**Behoben:** 2026-11-02
+**Behoben in Version:** 0.50.65
+**Test geschrieben:** Ja – Generator-, API-, Komponenten- und Umlauttests; erwartetes RED vor dem Fix bestätigt.
+
+**Beschreibung:** Unter Monitoring → Qualität erscheinen noch Coverage-Werte im Bereich von 20 %, obwohl vollständige lokale Messungen inzwischen deutlich höhere Werte liefern.
+**Reproduktion:** Angemeldet als Administrator Monitoring → Qualität → Code-Qualität öffnen, die Coverage mit dem letzten vollständigen Testlauf vergleichen.
+**Erwartetes Verhalten:** Die ausgelieferte Version zeigt nachvollziehbare Messwerte mit Messzeitpunkt und Umfang. Gesamtwerte und Bibliotheksziel werden getrennt dargestellt.
+**Tatsächliches Verhalten:** Coverage wird aus lokalen Review-History-Dateien gelesen; im Git-Checkout liegt nur ein älterer freigegebener Snapshot. Testzahlen und vorherige Coverage sind fest einprogrammiert; die Kennzeichnung verwendet teilweise „Qualitaet“.
+**Ursache:** Lokale, ignorierte Review-History wurde als deploybare Messdatenquelle verwendet; tatsächliche Testberichte und Produktionsanzeige waren nicht verbunden.
+**Lösung:** Versionierte Messdatei aus vollständigem erfolgreichem Vitest-/Coverage-Lauf generieren und im API-Bundle mitliefern. Fehlgeschlagene, ungültige und unvollständige Berichte erhalten den vorherigen Stand. Messdatum, Version und Bibliothekswerte anzeigen, künstlichen Coverage-Vergleich entfernen; übrige Reviewzahlen als historisch kennzeichnen. Deutsche Umlaute korrigieren.
+
+**Prüfnachweis:** 12 gezielte Tests grün (Generator, Adminschutz/API-Quelle, Anzeige, historische Einordnung, Umlaut). Vollständiger Coverage-Lauf: 152 Dateien, 1.048 Tests bestanden; Messdatei tatsächlich erzeugt. Gesamt 60,91/57,07/66,00/62,31 %, `src/lib` 89,01/80,48/90,93/91,53 %. Produktionsbuild mit Typprüfung, ESLint ohne Fehler, Security- und Review-Regressionscheck bestanden. Native Safari-Prüfung über lokalen Server: Desktop hell, mobil dunkel und 200 % Schrift; keine horizontalen Überläufe. Keine Produktionsdatenbank verwendet.
+**Referenz im Changelog:** Version 0.50.65 – Verlässliche Qualitätsmesswerte im Monitoring.
+
+---
+
 ## Statistik
 
 - **Offene Bugs:** 4
 - **In Bearbeitung:** 4
-- **Behoben:** 58
+- **Behoben:** 59
 - **Wontfix:** 0
-- **Gesamt:** 66
+- **Gesamt:** 67

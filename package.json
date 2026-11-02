@@ -1,6 +1,6 @@
 {
   "name": "boardgametools",
-  "version": "0.50.64",
+  "version": "0.50.65",
   "private": true,
   "scripts": {
     "dev": "NODE_OPTIONS='--max-old-space-size=4096' next dev",
@@ -13,7 +13,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage",
+    "test:coverage": "vitest run --coverage --reporter=default --reporter=json --outputFile=coverage/test-results.json && node scripts/update-quality-metrics.mjs",
     "test:related": "vitest run --reporter=default",
     "test:e2e": "codeceptjs run --steps --config tests/e2e/codecept.conf.ts",
     "test:e2e:headless": "HEADLESS=true codeceptjs run --steps --config tests/e2e/codecept.conf.ts",

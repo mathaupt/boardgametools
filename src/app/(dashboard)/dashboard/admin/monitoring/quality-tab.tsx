@@ -12,6 +12,8 @@ import { useState } from "react";
 import { formatShortDateTime } from "@/lib/date";
 import { Button } from "@/components/ui/button";
 
+import { QualityCoverage } from "./quality-coverage";
+
 // --- Types ---
 
 interface CategoryScore {
@@ -55,6 +57,10 @@ export interface QualityData {
     loadingStates: number; serverComponentPages: number; fetchWaterfallPages: number;
   };
   coverage: { statements: number; branches: number; functions: number; lines: number } | null;
+  libraryCoverage: { statements: number; branches: number; functions: number; lines: number } | null;
+  coverageMeasuredAt: string | null;
+  coverageVersion: string | null;
+  historicalReviewVersion: string;
   previousCoverage: { statements: number; branches: number; functions: number; lines: number } | null;
   findings: FindingSummary;
   findingDetails: Finding[];
@@ -152,7 +158,7 @@ export function QualityTab({ data, loading }: { data: QualityData | null; loadin
   if (!data) {
     return (
       <TabsContent value="quality" className="space-y-4">
-        <Card><CardContent className="py-12 text-center text-muted-foreground">Keine Qualitaetsdaten verfuegbar</CardContent></Card>
+        <Card><CardContent className="py-12 text-center text-muted-foreground">Keine Qualitätsdaten verfügbar</CardContent></Card>
       </TabsContent>
     );
   }
@@ -181,6 +187,9 @@ export function QualityTab({ data, loading }: { data: QualityData | null; loadin
 
   return (
     <TabsContent value="quality" className="space-y-6">
+      <p className="rounded-lg border border-border bg-card p-4 text-sm text-muted-foreground">
+        Testzahlen und Testabdeckung stammen aus dem unten angegebenen vollständigen Messlauf. Weitere Kennzahlen und Deep-Dive-Bewertungen zeigen den historischen Reviewstand v{data.historicalReviewVersion}; sie sind keine aktuellen Live-Messungen.
+      </p>
       {/* Score Overview */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
         <Card className="lg:col-span-1">
@@ -192,7 +201,7 @@ export function QualityTab({ data, loading }: { data: QualityData | null; loadin
             </div>
             {data.lastReviewDate && (
               <p className="text-[10px] text-muted-foreground mt-1">
-                Letztes Review: {formatShortDateTime(data.lastReviewDate)}
+                Letztes Evaluator-Review: {formatShortDateTime(data.lastReviewDate)}
               </p>
             )}
           </CardContent>
@@ -225,7 +234,7 @@ export function QualityTab({ data, loading }: { data: QualityData | null; loadin
         <Card>
           <CardHeader>
             <CardTitle as="h2" className="text-base">Kategorie-Details</CardTitle>
-            <CardDescription>Klicken fuer Findings pro Kategorie</CardDescription>
+            <CardDescription>Klicken für Findings pro Kategorie</CardDescription>
           </CardHeader>
           <CardContent className="space-y-2">
             {data.categoryScores.map((cat) => {
@@ -264,7 +273,7 @@ export function QualityTab({ data, loading }: { data: QualityData | null; loadin
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
-            <CardTitle as="h2" className="text-base">Findings nach Prioritaet</CardTitle>
+            <CardTitle as="h2" className="text-base">Findings nach Priorität</CardTitle>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={200}>
@@ -303,8 +312,8 @@ export function QualityTab({ data, loading }: { data: QualityData | null; loadin
       {/* Code Quality Cards */}
       <Card>
         <CardHeader>
-          <CardTitle as="h2" className="text-base">Code-Qualitaet</CardTitle>
-          <CardDescription>TypeScript, ESLint, Coverage, Architektur</CardDescription>
+          <CardTitle as="h2" className="text-base">Code-Qualität</CardTitle>
+          <CardDescription>Historische Qualitätskennzahlen: Review v{data.historicalReviewVersion}. Die Testabdeckung darunter hat einen eigenen Messstand.</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
@@ -315,17 +324,7 @@ export function QualityTab({ data, loading }: { data: QualityData | null; loadin
             <QualityBadge label="Loading States" value={data.codeQuality.loadingStates} good={10} unit="/41" inverse />
             <QualityBadge label="Fetch Waterfall" value={data.codeQuality.fetchWaterfallPages} good={0} unit=" Pages" />
           </div>
-          {data.coverage && (
-            <div className="mt-4">
-              <p className="text-xs font-medium text-muted-foreground mb-2">Code Coverage</p>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                <CoverageBar label="Statements" value={data.coverage.statements} previous={data.previousCoverage?.statements} />
-                <CoverageBar label="Branches" value={data.coverage.branches} previous={data.previousCoverage?.branches} />
-                <CoverageBar label="Functions" value={data.coverage.functions} previous={data.previousCoverage?.functions} />
-                <CoverageBar label="Lines" value={data.coverage.lines} previous={data.previousCoverage?.lines} />
-              </div>
-            </div>
-          )}
+          <QualityCoverage coverage={data.coverage} libraryCoverage={data.libraryCoverage} coverageMeasuredAt={data.coverageMeasuredAt} coverageVersion={data.coverageVersion} />
         </CardContent>
       </Card>
 
@@ -335,7 +334,7 @@ export function QualityTab({ data, loading }: { data: QualityData | null; loadin
           <CardHeader>
             <CardTitle as="h2" className="text-base flex items-center gap-2">
               <Layers className="h-4 w-4" />
-              Architektur-Uebersicht
+              Architekturübersicht
             </CardTitle>
             <CardDescription>Schichtenarchitektur mit Hauptkomponenten</CardDescription>
           </CardHeader>
@@ -448,13 +447,13 @@ export function QualityTab({ data, loading }: { data: QualityData | null; loadin
         </Card>
       )}
 
-      {/* Test-Uebersicht — nur sichtbar wenn Testing Kategorie ausgewaehlt */}
+      {/* Testübersicht — nur sichtbar wenn Testing Kategorie ausgewaehlt */}
       {selectedCategory === "Testing" && data.tests.byArea && (
         <Card>
           <CardHeader>
             <CardTitle as="h2" className="text-base flex items-center gap-2">
               <TestTube className="h-4 w-4" />
-              Test-Uebersicht
+              Testübersicht
             </CardTitle>
             <CardDescription>
               {data.tests.total} Tests in {data.tests.files} Dateien — alle bestanden
@@ -591,29 +590,6 @@ function QualityBadge({ label, value, good, unit, inverse }: { label: string; va
     <div className={`p-3 rounded-lg text-center ${isGood ? "bg-success/10" : "bg-warning/10"}`}>
       <p className={`text-lg font-bold ${isGood ? "text-success" : "text-warning-foreground"}`}>{value}{unit}</p>
       <p className="text-xs text-muted-foreground">{label}</p>
-    </div>
-  );
-}
-
-function CoverageBar({ label, value, previous }: { label: string; value: number; previous?: number }) {
-  const color = value >= 60 ? "bg-success" : value >= 40 ? "bg-warning" : "bg-destructive";
-  const delta = previous != null ? value - previous : null;
-  return (
-    <div>
-      <div className="flex justify-between text-xs mb-1">
-        <span className="text-muted-foreground">{label}</span>
-        <div className="flex items-center gap-1.5">
-          <span className="font-medium">{value.toFixed(1)}%</span>
-          {delta != null && delta !== 0 && (
-            <span className={`text-[10px] ${delta > 0 ? "text-success" : "text-destructive"}`}>
-              {delta > 0 ? "+" : ""}{delta.toFixed(1)}
-            </span>
-          )}
-        </div>
-      </div>
-      <div className="h-2 bg-muted rounded-full overflow-hidden">
-        <div className={`h-full ${color} rounded-full transition-[width]`} style={{ width: `${Math.min(value, 100)}%` }} />
-      </div>
     </div>
   );
 }

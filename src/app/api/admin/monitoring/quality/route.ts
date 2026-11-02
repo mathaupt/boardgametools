@@ -3,6 +3,8 @@ import { requireAdmin, handleApiError } from "@/lib/require-auth";
 import { withApiLogging } from "@/lib/api-logger";
 import { readFileSync, readdirSync, existsSync } from "fs";
 import path from "path";
+import qualityMetrics from "@/data/quality-metrics.json";
+import packageInfo from "../../../../../../package.json";
 
 interface ReviewSnapshot {
   date: string;
@@ -46,11 +48,11 @@ const DEEP_DIVE_FINDINGS: DeepDiveFinding[] = [
   { id: "DD-SEC-01", title: "Bulk Date-Vote Enum-Validierung", priority: "P1", category: "Security", status: "resolved", version: "v0.32.0" },
   { id: "DD-SEC-02", title: "Guest Date-Vote Enum-Validierung", priority: "P1", category: "Security", status: "resolved", version: "v0.32.0" },
   { id: "DD-SEC-03", title: "Poll-Status Enum-Validierung", priority: "P1", category: "Security", status: "resolved", version: "v0.32.0" },
-  { id: "DD-SEC-04", title: "Poll-Option Laengenvalidierung", priority: "P1", category: "Security", status: "resolved", version: "v0.32.0" },
+  { id: "DD-SEC-04", title: "Poll-Option Längenvalidierung", priority: "P1", category: "Security", status: "resolved", version: "v0.32.0" },
   { id: "DD-SEC-05", title: "Poll-Vote Array-Limit", priority: "P1", category: "Security", status: "resolved", version: "v0.32.0" },
   { id: "DD-SEC-06", title: "Rate Limiting Public Group GET", priority: "P1", category: "Security", status: "resolved", version: "v0.32.0" },
   { id: "DD-SEC-07", title: "Rate Limiting Public Vote DELETE", priority: "P1", category: "Security", status: "resolved", version: "v0.32.0" },
-  { id: "DD-SEC-08", title: "Passwort Max-Laenge (128)", priority: "P3", category: "Security", status: "resolved", version: "v0.39.0" },
+  { id: "DD-SEC-08", title: "Passwort Max-Länge (128)", priority: "P3", category: "Security", status: "resolved", version: "v0.39.0" },
   { id: "DD-SEC-09", title: "Upload Magic-Bytes-Validierung", priority: "P3", category: "Security", status: "resolved", version: "v0.39.0" },
   { id: "DD-ARCH-01", title: "8 Pages Server Component Migration", priority: "P1", category: "Architecture", status: "resolved", version: "v0.34.0" },
   { id: "DD-ARCH-06", title: "N+1 in import-bgg ($transaction)", priority: "P1", category: "Architecture", status: "resolved", version: "v0.32.0" },
@@ -76,7 +78,7 @@ const DEEP_DIVE_FINDINGS: DeepDiveFinding[] = [
   { id: "DD-PERF-04", title: "Client-Fetch-Waterfall eliminiert", priority: "P2", category: "Performance", status: "resolved", version: "v0.34.0" },
   { id: "DD-DB-02", title: "FK-Indices ergaenzt (30 total)", priority: "P2", category: "Database", status: "resolved", version: "v0.32.0" },
   { id: "DD-API-01", title: "Success-Response-Format vereinheitlicht", priority: "P2", category: "API Design", status: "resolved", version: "v0.35.0" },
-  { id: "DD-API-03", title: "PATCH-Aliases fuer partielle Updates", priority: "P2", category: "API Design", status: "resolved", version: "v0.37.0" },
+  { id: "DD-API-03", title: "PATCH-Aliases für partielle Updates", priority: "P2", category: "API Design", status: "resolved", version: "v0.37.0" },
   { id: "DD-API-04", title: "Input-Validierung in 5 Routes", priority: "P2", category: "API Design", status: "resolved", version: "v0.35.0" },
   { id: "DD-API-05", title: "Admin Create 201 statt 200", priority: "P2", category: "API Design", status: "resolved", version: "v0.35.0" },
   { id: "DD-BP-03", title: "console.* Cleanup", priority: "P2", category: "Best Practices", status: "resolved", version: "v0.35.0" },
@@ -89,7 +91,7 @@ const DEEP_DIVE_FINDINGS: DeepDiveFinding[] = [
   { id: "DD-TEST-02", title: "Public-Voting-Flow-Tests", priority: "P1", category: "Testing", status: "resolved", version: "v0.37.0" },
   { id: "DD-TEST-03", title: "Admin-Operations-Tests", priority: "P1", category: "Testing", status: "resolved", version: "v0.37.0" },
   { id: "DD-TEST-04", title: "Auth-Flow-Tests", priority: "P1", category: "Testing", status: "resolved", version: "v0.37.0" },
-  { id: "DD-TEST-06", title: "Coverage-Schwellen erhoeht", priority: "P3", category: "Testing", status: "resolved", version: "v0.37.0" },
+  { id: "DD-TEST-06", title: "Coverage-Schwellen erhöht", priority: "P3", category: "Testing", status: "resolved", version: "v0.37.0" },
   // Akzeptierte Design-Entscheidungen (als resolved markiert mit Vermerk)
   { id: "DD-ARCH-03", title: "13 Dateien >300 Zeilen (akzeptiert)", priority: "P2", category: "Architecture", status: "resolved", version: "Design-Decision" },
   { id: "DD-ARCH-04", title: "Direct Prisma in Server Pages (akzeptiert)", priority: "P3", category: "Architecture", status: "resolved", version: "Design-Decision" },
@@ -172,32 +174,20 @@ export const GET = withApiLogging(async function GET() {
       overallScore: 9.5,
       previousScore: 8.3,
       evaluatorScore: latestSnapshot?.overall ?? 9.9,
-      version: "0.39.1",
+      version: packageInfo.version,
       lastReviewDate: latestSnapshot?.date ?? null,
 
       // Category scores
       categoryScores: CATEGORY_SCORES,
 
-      // Tests
-      tests: {
-        total: 508,
-        files: 50,
-        allPassing: true,
-        apiRouteTests: 75,
-        byArea: [
-          { area: "Services", files: 7, tests: 85, modules: ["event", "game", "group", "series", "session", "shared", "tag"] },
-          { area: "Lib/Utilities", files: 17, tests: 208, modules: ["validation (46)", "bgg-xml (35)", "public-event (19)", "bgg (15)", "public-link (15)", "password-reset (15)", "require-auth (14)", "cache-tags (14)", "rate-limit (12)", "error-messages (9)", "utils (9)", "event-share (8)", "group-share (8)", "api-logger (8)", "changelog (7)", "mailer (7)", "crypto (6)"] },
-          { area: "Components", files: 6, tests: 43, modules: ["voting-client (10)", "date-voting (9)", "register (8)", "guest-registration (8)", "new-game (6)", "login (6)"] },
-          { area: "API Routes", files: 12, tests: 75, modules: ["public-voting-flow (13)", "events-crud (9)", "sessions-crud (8)", "games (7)", "admin-operations (7)", "series-crud (7)", "groups-crud (7)", "auth-register (6)", "auth-flow (6)", "admin-users (5)", "statistics (4)", "public-event (4)"] },
-          { area: "Accessibility", files: 1, tests: 6, modules: ["WCAG axe-core (6)"] },
-          { area: "Security", files: 1, tests: 19, modules: ["security-check (19)"] },
-          { area: "Infrastruktur", files: 6, tests: 61, modules: ["cache (4)", "db (2)", "env (4)", "faq (4)", "logger (3)", "storage (6)"] },
-        ],
-      },
-
-      // Coverage (from evaluator + previous for comparison)
-      coverage: latestSnapshot?.coverage ?? null,
-      previousCoverage: { statements: 25.1, branches: 24.0, functions: 21.5, lines: 25.5 },
+      // Measured artifacts are bundled with the deployment, independent of local review history.
+      tests: qualityMetrics.tests,
+      coverage: qualityMetrics.coverage,
+      libraryCoverage: qualityMetrics.libraryCoverage,
+      coverageMeasuredAt: qualityMetrics.measuredAt,
+      coverageVersion: qualityMetrics.version,
+      previousCoverage: null,
+      historicalReviewVersion: "0.39.1",
 
       // Code quality
       codeQuality: {
@@ -249,7 +239,7 @@ export const GET = withApiLogging(async function GET() {
         { name: "Lucide", version: "0.563", category: "Icons", logo: "https://cdn.simpleicons.org/lucide/F56565", url: "https://lucide.dev", license: "ISC" },
         { name: "bcryptjs", version: "3.x", category: "Crypto", logo: "https://cdn.simpleicons.org/letsencrypt/003A70", url: "https://github.com/dcodeIO/bcrypt.js", license: "MIT" },
       ],
-    });
+    }, { headers: { "Cache-Control": "private, no-store" } });
   } catch (error) {
     return handleApiError(error);
   }

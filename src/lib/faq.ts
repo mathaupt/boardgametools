@@ -19,6 +19,10 @@ export const faqSections: FaqSection[] = [
     description: "So startest du mit BoardGameTools.",
     items: [
       {
+        question: "Warum zeigt das Qualitätsmonitoring unterschiedliche Werte für die Testabdeckung?",
+        answer: "Der gesamte Messumfang und die Bibliotheken unter src/lib werden getrennt gemessen. Das Ziel sind jeweils 80 % pro Kennzahl; ein erreichter Bibliothekswert bedeutet noch keine 80 % für die gesamte Anwendung. Messzeitpunkt und Version stehen direkt bei den Werten. Coverage und Testzahlen stammen aus einem vollständigen erfolgreichen Testlauf und werden mit dem Deployment veröffentlicht. Weitere Review-Kennzahlen sind als historisch gekennzeichnet.",
+      },
+      {
         question: "Was bedeutet Powered by BGG am Seitenende?",
         answer: "BoardGameGeek ist die Quelle der über den BGG-Import geladenen Spieldaten und Cover. Der Hinweis am Seitenende verlinkt direkt zu BoardGameGeek. Das offizielle Logo wird von BoardGameTools selbst geladen; dadurch entsteht beim Anzeigen keine zusätzliche Anfrage an BGG oder Google.",
       },

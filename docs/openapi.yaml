@@ -73,6 +73,14 @@ tags:
 
 components:
   schemas:
+    QualityCoverage:
+      type: object
+      required: [statements, branches, functions, lines]
+      properties:
+        statements: { type: number, minimum: 0, maximum: 100, description: Anteil abgedeckter Anweisungen in Prozent }
+        branches: { type: number, minimum: 0, maximum: 100, description: Anteil abgedeckter Zweige in Prozent }
+        functions: { type: number, minimum: 0, maximum: 100, description: Anteil abgedeckter Funktionen in Prozent }
+        lines: { type: number, minimum: 0, maximum: 100, description: Anteil abgedeckter Zeilen in Prozent }
     PublicGuest:
       type: object
       required: [id, nickname, createdAt, votesCount]
@@ -2213,9 +2221,32 @@ paths:
   /api/admin/monitoring/quality:
     get:
       tags: [Admin Monitoring]
-      summary: Qualitaets-Dashboard
+      summary: Qualitätsdashboard für Administratoren
+      description: Coverage und Testzahlen stammen aus der mit dem Deployment ausgelieferten vollständigen Messung. Weitere Review-Kennzahlen sind historisch; der Zugriff erfordert die ADMIN-Rolle. Antwort ist privat und wird nicht zwischengespeichert.
       responses:
-        '200': { description: Review-Scores, Findings, Coverage, Tech-Stack }
+        '200':
+          description: Messwerte mit Herkunft sowie historische Review-Scores, Findings und Tech-Stack
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  coverage: { $ref: '#/components/schemas/QualityCoverage' }
+                  libraryCoverage: { $ref: '#/components/schemas/QualityCoverage' }
+                  coverageMeasuredAt: { type: string, format: date-time, description: Zeitpunkt des vollständigen gemessenen Testlaufs }
+                  coverageVersion: { type: string, description: Version des gemessenen Codes }
+                  historicalReviewVersion: { type: string, description: Historischer Stand der übrigen manuell gepflegten Kennzahlen }
+                  previousCoverage: { type: object, nullable: true, description: Kein Vergleich ohne verifizierte vergleichbare Vormessung }
+                  tests:
+                    type: object
+                    properties:
+                      total: { type: integer }
+                      files: { type: integer }
+                      allPassing: { type: boolean }
+                      apiRouteTests: { type: integer }
+                      byArea: { type: array, items: { type: object } }
+        '401': { description: Anmeldung erforderlich, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+        '403': { description: ADMIN-Rolle erforderlich, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
 
   # ===== SYSTEM =====
   /api/health:

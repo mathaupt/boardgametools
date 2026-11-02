@@ -123,7 +123,7 @@ Die Weboberfläche verwendet seit 0.50.20 die bestätigte Gestaltung „Club Pro
 - **Prod-Datenbank-Backup**: Automatisiertes Backup-System (max. 10 Backups)
 - **Soft-Delete**: Spiele, Sessions, Events, Gruppen, Serien werden per `deletedAt` markiert statt physisch geloescht
 - **Strukturiertes Logging**: Pino JSON-Logging, API-Request-Logging in DB (ApiLog)
-- **Qualitaets-Dashboard**: Admin-Monitoring-Tab mit Review-Scores, Findings, Coverage, Architektur-Diagramm, Tech-Stack
+- **Qualitäts-Dashboard**: Admin-Monitoring-Tab mit Review-Scores, Findings, Coverage, Architektur-Diagramm, Tech-Stack. Coverage und Testzahlen werden aus einer versionierten vollständigen Messung ausgeliefert; Gesamtumfang und `src/lib` sind getrennt. Weitere manuelle Kennzahlen sind als historisch gekennzeichnet (BUG-067).
 - **Zentrales Error-Messages-Modul**: Alle API-Fehlermeldungen auf Deutsch in `src/lib/error-messages.ts`
 - **Security Headers**: CSP, HSTS, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy
 
