@@ -54,3 +54,19 @@ geändert.
 - Security-Check im Commit-Hook: 0 Fehler, 2 bestehende Warnungen zu Raw-SQL und Debug-Routen; `npm audit` meldete 0 Vulnerabilities.
 - Impeccable-Detektor: 0 Regex-Findings. Browserhost nicht verfügbar; responsive/Zoom-/Dark-Mode- und Bildressourcenprüfung bleibt offen.
 - Sessionliste prüft Auth vor Query und selektiert nur ID, Name und Bild-URL. Keine API-, Schema- oder Datenbankänderung. BUG-062 für ungültiges HTML wurde mit Regressionstest behoben.
+
+## FEAT-016 – durchsuchbare Spielauswahl (0.50.54)
+
+- 37/37 gezielte Unit-Tests bestanden (Filter, Picker, Sessionformular,
+  Sessions-CRUD und Session-Service); TDD-RED für zuvor fehlenden Filter,
+  Picker und Formularvalidierung beobachtet.
+- `npm run typecheck`, gezieltes ESLint und `npm run build` bestanden.
+- Security-Check: 0 Fehler, 2 bestehende Hinweise zu Raw-SQL und Debug-Routen;
+  Registry-Audit meldet 0 Vulnerabilities.
+- Impeccable-Detektor: 0 Regex-Findings. Die Prüfung ist statisch und hat keine
+  gerenderte Seite erhalten.
+- Browserhost nicht verfügbar; 390/1440 px, Hell/Dunkel, 200-%-Zoom und
+  manuelle VoiceOver-Abnahme bleiben offen. Schreibendes Browser-E2E wurde
+  nicht ausgeführt.
+- Keine API-, Datenbankschema-, Migrations- oder Produktionsdatenänderung;
+  serverseitige Session-Besitzprüfung bleibt erhalten.

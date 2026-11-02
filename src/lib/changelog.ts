@@ -12,6 +12,17 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.54",
+    date: "2026-11-02",
+    title: "Spiele in der Session-Anlage schneller finden",
+    description: "Die Spielauswahl lässt sich nach Namen durchsuchen; gespeichert wird weiterhin nur ein ausgewähltes Spiel aus der eigenen Sammlung.",
+    changes: [
+      { type: "feature", text: "Die Spielauswahl in der Session-Anlage öffnet eine durchsuchbare Liste mit Tastaturbedienung, Trefferstatus und verständlichen Leerzuständen." },
+      { type: "fix", text: "Sessions werden vor dem Speichern auf eine gültige Spiel-ID aus der aktuellen Sammlung geprüft." },
+      { type: "internal", text: "FEAT-016 mit Filter-, Picker- und Formularregressionstests umgesetzt; API und serverseitige Besitzprüfung bleiben unverändert." },
+    ],
+  },
+  {
     version: "0.50.53",
     date: "2026-11-02",
     title: "Spracheingabe als neues Feature planen",

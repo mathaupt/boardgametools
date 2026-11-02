@@ -55,3 +55,20 @@ bestanden. Die fehlende gerenderte Browserabnahme bleibt ausdrücklich offen.
 Erfolgsmessung: Cover und semantischer Fallback sind in der Web-Sessions-Liste
 integriert. 20/20 gezielte Tests sind erfolgreich. iOS und unbekannte
 Vercel-Blob-Hosts sind separat offen; es wurde keine Datenbank oder API geändert.
+
+### FEAT-016 Umsetzung
+
+- [x] Plan vor Implementierung gegen Commit `14271bb`, FEAT-017/018, aktuelle Session-Query und Service-Berechtigungen geprüft; fehlende Popover-Hülle als Planabweichung dokumentiert.
+- [x] Filtertests zuerst geschrieben; RED für fehlende Filterfunktion, Picker und Auswahlvalidierung gesehen; danach GREEN.
+- [x] 37/37 gezielte Unit-Tests einschließlich API- und Service-Regressions bestanden.
+- [x] TypeScript, gezieltes ESLint und Produktionsbuild bestanden.
+- [x] Security-Check mit Registryzugriff: 0 Fehler, `npm audit` 0 Vulnerabilities; 2 vorhandene Hinweise zu Raw-SQL/Debug-Routen.
+- [x] Impeccable-Detektor: 0 Regex-Findings; CLI kennzeichnet fehlende Render-/Layoutprüfung.
+- [x] Backlog, Plan, Feature-Doku, FAQ, Konzept, Changelog und Agentenhinweise aktualisiert; API/OpenAPI unverändert.
+- [ ] Commit-Hook und Regressionsevaluator abschließen; Ergebnisse anschließend im Review-Snapshot nachtragen.
+- [ ] Browser-Viewport-/Dark-Mode-/200-%-Zoom- und manuelle VoiceOver-Abnahme nach Wiederverfügbarkeit des Browserhosts.
+- [ ] Schreibendes Browser-E2E nur mit isolierter Testdatenbank.
+
+Erfolgsmessung: Die Web-Spielauswahl filtert lokal und speichert ausschließlich
+eine gültige ID aus den aktuellen Optionen. Die bestehende Serverautorisierung
+bleibt aktiv. Responsive und manuelle Screenreaderabnahmen sind offen.

@@ -29,7 +29,7 @@ Bedarf zu aktualisieren. Ergebnis am jeweiligen Plan dokumentieren:
 | FEAT-013 | Aktive Identität verständlich machen | Web umgesetzt; Browser-E2E/Viewport-Abnahme offen | [Eine aktive Identität](superpowers/plans/2026-10-31-FEAT-013-aktive-identitaet.md) | Umgesetzt am 01.11.2026; ohne Gastwechsel |
 | FEAT-014 | Suchzustände und Beschriftung der BGG-Suche | Implementiert (Web; Browser-E2E offen) | [Öffentliche BGG-Suche](superpowers/plans/2026-10-31-FEAT-014-bgg-suchzustaende.md) | Am 01.11.2026 freigegeben und umgesetzt; native iOS-Suche nicht Teil dieses öffentlichen Web-Umfangs |
 | FEAT-015 | Top-3-Spiele im Event-Kurzüberblick | Umgesetzt (Web; Browser-Viewportabnahme offen) | [Dashboard Top drei](superpowers/plans/2026-11-02-FEAT-015-dashboard-top-three.md) | Web-Umsetzung am 02.11.2026 freigegeben und umgesetzt; iOS separat |
-| FEAT-016 | Spielauswahl bei Session-Anlage per Eingabe filtern | Plan erstellt; Umsetzung offen | [Durchsuchbare Spielauswahl](superpowers/plans/2026-11-02-FEAT-016-session-spielsuche.md) | Keine |
+| FEAT-016 | Spielauswahl bei Session-Anlage per Eingabe filtern | Web umgesetzt; manuelle Browser-/VoiceOver-Abnahme offen | [Durchsuchbare Spielauswahl](superpowers/plans/2026-11-02-FEAT-016-session-spielsuche.md) | Web am 02.11.2026 durch „implementiere FEAT-016“ freigegeben und umgesetzt; iOS separat planen |
 | FEAT-017 | Spielcover in der Sessions-Übersicht anzeigen | Web umgesetzt; Browser-/Viewportabnahme offen | [Cover in Sessionkarten](superpowers/plans/2026-11-02-FEAT-017-session-cover.md) | Web-Umsetzung am 02.11.2026 freigegeben und umgesetzt; iOS separat |
 | FEAT-018 | Testabdeckung schrittweise auf 80 % erhöhen | Plan erstellt; Governance und Skills ergänzt; Testausbau offen | [Coverage-Ziel 80 %](superpowers/plans/2026-11-02-FEAT-018-coverage-80.md) | Keine |
 | FEAT-019 | Spracheingabe für Suche und Session-Anlage | Konzept dokumentiert; Plan und Umsetzung offen | [Spracheingabe-Konzept](superpowers/specs/2026-11-02-spracheingabe-design.md) | Keine |
@@ -141,11 +141,14 @@ Gastwechsel in FEAT-013.
 
 ### F. Session-Spielauswahl beschleunigen: FEAT-016
 
-Das Spiel-Dropdown in der Session-Anlage soll eine Texteingabe zum Filtern der
-eigenen Sammlung erhalten. Der Implementierungsplan ist erstellt; eine
-Umsetzungsfreigabe steht aus. Der Umfang betrifft die Spielauswahl; das Spieler-Dropdown,
-die Session-API und Berechtigungen bleiben davon getrennt. Das Feature ist noch
-nicht in die vorgeschlagene Reihenfolge A bis E eingeteilt.
+Die Web-Sessionanlage verwendet einen lokalen Suchpicker für Spiele aus der
+eigenen Sammlung. Suche und Trefferliste unterstützen Umlaute, `ß`/`ss` und
+HTML-Entities; die Auswahl bindet ausschließlich die Spiel-ID. Ein fehlender
+oder veralteter Wert wird vor dem API-Aufruf abgewiesen und fokussiert. Die
+vorhandene Session-API und serverseitige Eigentumsprüfung bleiben unverändert.
+Gezielte Filter-, Picker-, Formular-, API- und Service-Tests bestanden. Die
+native iOS-Auswahl bleibt separat zu planen; manuelle Browser-/VoiceOver- und
+Viewportabnahmen sind noch offen.
 
 ### G. Spiele in der Session-Übersicht erkennen: FEAT-017
 
@@ -689,43 +692,45 @@ Browserhost nicht verfügbar war.
 
 ## FEAT-016 – Spielauswahl bei Session-Anlage per Eingabe filtern
 
-**Status:** Plan erstellt; Umsetzung offen.
+**Status:** Web umgesetzt; manuelle Browser-/VoiceOver-Abnahme offen.
 **Umsetzungsplan:** [Durchsuchbare Spielauswahl](superpowers/plans/2026-11-02-FEAT-016-session-spielsuche.md).
 **Plattformumfang:** Webformular `/dashboard/sessions/new`; native iOS-Sessionanlage ist geprüft und bleibt separat zu planen.
-**Umsetzungsfreigabe:** Keine erteilt.
-**Bestand:** Das Pflichtfeld „Spiel“ in `session-form-client.tsx` ist ein
-Dropdown mit allen Spielen aus der eigenen Sammlung, sortiert nach Namen. Das
-Optionsmenü hat derzeit kein Such- oder Texteingabefeld. Das Mitspielerfeld
+**Umsetzungsfreigabe:** Web am 02.11.2026 durch „implementiere FEAT-016“ erteilt.
+**Bestand vor Umsetzung:** Pflichtfeld „Spiel“ war ein Dropdown mit allen
+Spielen aus der eigenen Sammlung, sortiert nach Namen. Das Mitspielerfeld
 bleibt außerhalb dieses Features.
 
 **Ziel:** Bei großen Sammlungen das gespielte Brettspiel schneller finden und
 auswählen, ohne sich durch eine lange Optionsliste bewegen zu müssen.
 
-**Anforderung:** Die Spielauswahl soll weiterhin die eigene Sammlung als
-verbindliche Optionsliste verwenden. Zusätzlich soll eine Texteingabe die
-angezeigten Optionen nach Spielnamen filtern, während das Dropdown für die
-Auswahl erhalten bleibt. Freitext allein darf kein gültiger Spielwert sein;
-gespeichert wird weiterhin ausschließlich die ID eines ausgewählten Spiels.
-Der Plan empfiehlt einen Popover-Picker mit Suchfeld und Listbox, lokalem
-Namensfilter und verbindlicher ID-Auswahl. Der Vorschlag sowie die
-responsive Abnahme sind vor der Umsetzung zu bestätigen.
+**Umsetzung:** Ein Radix-Popover mit lokaler Suche und Listbox filtert Namen
+der eigenen Sammlung. Groß-/Kleinschreibung, Umlaute, `ß`/`ss` und
+HTML-Entities werden normalisiert; Ergebnisreihenfolge und gleichnamige Spiele
+bleiben erhalten. Maus, Pfeiltasten, Enter, Escape und Tab sind unterstützt;
+Trefferstatus, leere Sammlung, kein Treffer und Suchleeren sind beschriftet.
+Das Formular sendet nur die gewählte ID und weist fehlende oder nicht mehr
+verfügbare IDs vor dem Request ab. Serverabfrage, API, Mitspielerfeld und
+serverseitige Besitz-/Soft-Deleteprüfung bleiben unverändert.
 
-**Abnahmekriterien für die spätere Umsetzung:**
+**Abnahmekriterien:**
 
-- Die Eingabe eines Namens filtert die verfügbaren eigenen Spiele unmittelbar und
-  lässt passende Optionen auswählbar.
-- Session kann nur mit einer ausgewählten Spiel-ID gespeichert werden; ein
-  nicht passender Freitext ist kein gültiger Wert.
-- Tastatur- und Screenreaderbedienung zeigen Eingabe, Trefferzahl, aktive
-  Option, Auswahl und ergebnislosen Suchzustand verständlich an.
-- Suche lässt sich leeren und erneut verwenden; Auswahl und Filterzustand
-  verhalten sich eindeutig.
-- Leere Sammlung, sehr lange Liste, Umlaute/Teilsuche und kein Treffer sind
-  berücksichtigt.
-- Das Mitspieler-Dropdown und Session-API-/Berechtigungsverhalten bleiben
-  außerhalb des Umfangs unverändert.
-- Gezielte Tests prüfen Filterung, Auswahlbindung und barrierefreie Zustände;
-  Impeccable- und Securityprüfung sind im Plan enthalten.
+- [x] Lokale Teilnamensuche filtert die eigenen Spiele sofort, ohne Trefferlimit.
+- [x] Auswahl bleibt ID-gebunden; Freitext kann keine Session erstellen.
+- [x] Keyboard- und Screenreaderbeziehungen, aktive Option, Status, Fehler und
+  leere Zustände sind im Picker implementiert und automatisiert geprüft.
+- [x] Suche leeren, Auswahlbeibehaltung, Escape und Tab-Fokusverhalten geprüft.
+- [x] Leere Liste, 1.000 Optionen, Umlaute, Teilsuche, `ß`/`ss`, Entities und
+  doppelte Namen mit Tests abgedeckt.
+- [x] Bestehende Session-API-, Service- und Berechtigungsprüfung unverändert;
+  gezielte API-/Service-Tests bestanden.
+- [x] Impeccable-Detektor ohne Regex-Findings; Security-Check ohne Fehler.
+- [ ] Gerenderte Abnahme für 390/1440 px, Hell/Dunkel, 200-%-Zoom und VoiceOver.
+
+**Testergebnis:** 4 Filter-, 12 Picker-, 3 Formular- sowie bestehende
+Session-CRUD-/Service-Tests bestanden (37 gesamt). TypeScript und gezieltes
+ESLint bestanden. Der Browserhost war nicht erreichbar; die statische
+Detektorprüfung lief nur mit Regexregeln. Die manuelle Browser-/VoiceOver-
+Abnahme bleibt offen.
 
 ## FEAT-017 – Spielcover in der Sessions-Übersicht anzeigen
 

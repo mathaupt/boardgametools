@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,17 +9,12 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { SessionGamePicker } from "@/components/sessions/session-game-picker";
+import type { SessionGameOption } from "@/components/sessions/session-game-options";
 import { Plus, Trash2, Trophy, Users } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
-import { gameTextForRead } from "@/lib/game-text";
 
-export interface GameOption {
-  id: string;
-  name: string;
-  imageUrl: string | null;
-  minPlayers: number;
-  maxPlayers: number;
-}
+export type GameOption = SessionGameOption;
 
 export interface UserOption {
   id: string;
@@ -44,6 +39,8 @@ export default function SessionFormClient({ games, users }: SessionFormClientPro
   const { toast } = useToast();
 
   const [saving, setSaving] = useState(false);
+  const [gameError, setGameError] = useState("");
+  const gamePickerRef = useRef<HTMLButtonElement>(null);
 
   const [formData, setFormData] = useState({
     gameId: "",
@@ -80,6 +77,11 @@ export default function SessionFormClient({ games, users }: SessionFormClientPro
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!games.some((game) => game.id === formData.gameId)) {
+      setGameError("Bitte wähle ein Spiel aus deiner aktuellen Sammlung.");
+      gamePickerRef.current?.focus();
+      return;
+    }
     setSaving(true);
     try {
       const response = await fetch("/api/sessions", {
@@ -125,19 +127,18 @@ export default function SessionFormClient({ games, users }: SessionFormClientPro
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="gameId">Spiel *</Label>
-                <Select value={formData.gameId} onValueChange={(value) => setFormData((prev) => ({ ...prev, gameId: value }))}>
-                  <SelectTrigger id="gameId">
-                    <SelectValue placeholder="Spiel auswählen…" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {games.map((game) => (
-                      <SelectItem key={game.id} value={game.id}>
-                        {gameTextForRead(game.name)} ({game.minPlayers}-{game.maxPlayers} Spieler)
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <input type="hidden" name="gameId" value={formData.gameId} required />
+                <SessionGamePicker
+                  games={games}
+                  value={formData.gameId}
+                  id="gameId"
+                  disabled={saving}
+                  error={gameError}
+                  triggerRef={gamePickerRef}
+                  onValueChange={(gameId) => {
+                    setFormData((prev) => ({ ...prev, gameId }));
+                    setGameError("");
+                  }}
+                />
               </div>
               <div>
                 <Label htmlFor="playedAt">Gespielt am *</Label>

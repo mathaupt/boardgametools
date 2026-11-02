@@ -50,3 +50,14 @@ ausgewiesen. Umsetzungsfreigaben und neue Laufzeit-Abnahmen sind weiterhin offen
 | Browser / Viewport | Offen | Browserhost nicht verfügbar; keine Aussage zu 390/1440 px, Dark Mode, 200-%-Zoom oder `srcset` |
 | Daten / Berechtigungen | Auth-Guard vor Cache und DB; Eigentums- und Soft-Deletefilter erhalten | Keine API-, Schema- oder Produktionsdatenbankänderung |
 | Bug-Fix | BUG-062 geschlossen und getestet | Ungültige `<div>`-Verschachtelung der Metadaten beseitigt |
+
+## FEAT-016 – Ergebnis der Umsetzung
+
+| Prüffeld | Ergebnis | Einschränkung |
+|---|---|---|
+| Gezielte Unit-Tests | 37/37 bestanden | Filter, Picker, Formular, Session-API und Service |
+| TypeScript / ESLint / Build | Bestanden | ESLint gezielt für geänderte TypeScript-Dateien |
+| Security | 0 Fehler; Audit 0 Vulnerabilities | 2 bestehende Hinweise zu Raw-SQL und Debug-Routen |
+| Impeccable | 0 Regex-Findings | Kein gerenderter Browserlauf; Kontrast/Layout damit nicht geprüft |
+| Browser / Viewport / VoiceOver | Offen | Browserhost nicht erreichbar; keine Aussage zu 390/1440 px, Hell/Dunkel oder 200-%-Zoom |
+| Daten / Berechtigungen | Ausschließlich Auswahl-ID; API prüft weiter Besitz und Löschstatus | Keine API-, Schema- oder Datenbankänderung |

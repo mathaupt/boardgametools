@@ -22,6 +22,7 @@ Die Weboberfläche verwendet seit 0.50.20 die bestätigte Gestaltung „Club Pro
 
 ### 2. Spielsessions/Partien tracken
 - Session erstellen mit Datum, Spiel, Spielern
+- Die Web-Spielauswahl filtert die eigene Sammlung nach Namen und speichert nur eine ausgewählte Spiel-ID
 - Ergebnisse erfassen (Gewinner, Punkte, Platzierung)
 - Notizen zur Session
 - Dauer tracken

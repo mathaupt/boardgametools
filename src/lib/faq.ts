@@ -233,7 +233,7 @@ export const faqSections: FaqSection[] = [
       {
         question: "Wie erstelle ich eine Session?",
         answer:
-          'Gehe zu "Sessions" \u2192 "Neue Session". Waehle ein Spiel aus deiner Sammlung, fuege die Mitspieler hinzu (aus allen registrierten Nutzern), trage optional Punkte, Platzierungen und den Gewinner ein. Das Datum wird automatisch auf heute gesetzt, kann aber geaendert werden.',
+          'Gehe zu "Sessions" \u2192 "Neue Session". Wähle im Feld „Spiel“ einen Eintrag aus deiner Sammlung; du kannst die Liste direkt nach dem Namen filtern. Füge die Mitspieler hinzu, trage optional Punkte, Platzierungen und den Gewinner ein. Das Datum wird automatisch auf heute gesetzt und kann geändert werden.',
       },
       {
         question: "Kann ich Sessions nachtraeglich bearbeiten?",

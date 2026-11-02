@@ -1,6 +1,6 @@
 # FEAT-016 – Durchsuchbare Spielauswahl bei der Session-Anlage
 
-> **Für ausführende Agenten:** Aufgaben einzeln bearbeiten; bei Laufzeitänderungen RED → GREEN → REFACTOR belegen. Dieser Plan ist zur Prüfung erstellt und erteilt keine Umsetzungsfreigabe.
+> **Für ausführende Agenten:** Aufgaben einzeln bearbeiten; bei Laufzeitänderungen RED → GREEN → REFACTOR belegen. Die Web-Umsetzung wurde am 02.11.2026 durch „implementiere FEAT-016“ freigegeben.
 
 **Ziel:** Ein Spiel aus der eigenen Sammlung im Webformular `/dashboard/sessions/new` durch Eingabe eines Namens finden und verbindlich auswählen.
 
@@ -15,10 +15,10 @@ Am 02.11.2026 gegen Commit `80d770d` und die aktuellen Quellen geprüft:
 - `src/app/(dashboard)/dashboard/sessions/new/page.tsx` liest eigene, nicht gelöschte Spiele; die Abfrage sortiert nach Namen und liefert ID, Namen, Bild-URL und Spielerbereich.
 - `session-form-client.tsx` verwendet ein Radix-Select ohne sichtbare Texteingabe. Mitspieler verwenden separate Selects.
 - `src/lib/services/session.service.ts` prüft beim Erstellen Besitz und Löschstatus des Spiels. Diese serverseitige Prüfung bleibt maßgeblich.
-- `radix-ui` ist vorhanden; `cmdk`, ein Command-Primitiv und ein eigener Combobox-Baustein sind nicht vorhanden. Eine neue Paketabhängigkeit ist nicht erforderlich.
+- `radix-ui` ist vorhanden; `cmdk`, ein Command-Primitiv und ein eigener Combobox-Baustein sind nicht vorhanden. Das Radix-Popover-Primitiv ist verfügbar, ein gemeinsamer Wrapper in `src/components/ui/popover.tsx` fehlt noch. Eine neue Paketabhängigkeit ist nicht erforderlich.
 - iOS verwendet in `BoardGameTools/BoardGameTools/Views/SessionEditView.swift` einen nativen Picker ohne `.searchable`. Eine iOS-Suchauswahl ist ein eigener späterer Plan.
 
-Vor der Umsetzung denselben Abgleich wiederholen, insbesondere nach FEAT-017/018: Picker-Bausteine, Formulartests, aktuelle Coverage und Planstatus prüfen; Ergebnis mit Commit/Datum hier ergänzen.
+**Aktualitätsprüfung vor Umsetzung 02.11.2026:** Gegen Commit `14271bb` und den nachfolgenden Arbeitsstand geprüft. FEAT-017 hat die Sessions-Übersicht mit Covern ergänzt; FEAT-018 hat Test-Governance und Coverage-Planung ergänzt. Beide ändern die Session-Anlage, Spielauswahl, API oder Berechtigungen nicht. Die Serverabfrage bleibt eigentumsgebunden und nach Namen sortiert; die Serviceprüfung bleibt maßgeblich. Es gibt weiterhin keinen Picker und keine zugehörigen Picker-/Formulartests. Abweichung zum ursprünglichen Plan: Es existiert keine UI-Popover-Hülle, daher wird eine kleine gemeinsame Hülle auf Basis des vorhandenen Radix-Primitivs ergänzt. Der übrige Plan bleibt aktuell.
 
 ## Empfohlener Bedienablauf und Alternativen
 
@@ -54,6 +54,7 @@ Suchfeld, Listbox, aktive Option und Fehler werden programmatisch verbunden (`ar
 
 | Datei | Änderung |
 |---|---|
+| `src/components/ui/popover.tsx` | Schlanke gemeinsame Hülle des installierten Radix-Popover-Primitivs; keine neue Paketabhängigkeit. |
 | `src/components/sessions/session-game-options.ts` | Typ `SessionGameOption`, Normalisierung und unverändernder Filter. |
 | `src/components/sessions/session-game-picker.tsx` | Popover, lokaler Filterzustand, Listbox und Tastatur-/Fokussteuerung; unter 300 Zeilen. |
 | `src/app/(dashboard)/dashboard/sessions/new/session-form-client.tsx` | Picker anbinden; gültige ID vor `fetch` prüfen, Feldfehler zeigen und Fokus zum Picker setzen. |
@@ -67,7 +68,7 @@ Der Picker erhält `games`, `value`, `onValueChange`, `id`, `disabled` und optio
 
 ### 1. Reinen Filter testgetrieben erstellen
 
-- [ ] In `tests/unit/lib/session-game-options.test.ts` einen Verhaltenstest schreiben:
+- [x] In `tests/unit/lib/session-game-options.test.ts` einen Verhaltenstest schreiben:
 
 ```ts
 import { expect, it } from "vitest";
@@ -84,25 +85,24 @@ it("findet Umlaute und erhält die Optionsreihenfolge", () => {
 });
 ```
 
-- [ ] Nach Anlage des Tests bei Bedarf einen typisierten Export ohne Filterverhalten bereitstellen, damit der Test ausführbar ist. `npx vitest run tests/unit/lib/session-game-options.test.ts` ausführen: die Erwartung auf „Mühle“ muss fachlich fehlschlagen. Import-/Syntaxfehler sind kein solcher RED-Nachweis.
-- [ ] Den Typ und Filter in `session-game-options.ts` ergänzen. Normalisierung: `gameTextForRead`, Unicode-NFD, kombinierende Zeichen entfernen, deutsche Kleinschreibung, `ß` → `ss`, Rand-Leerraum entfernen. Leere Query liefert die unveränderte Reihenfolge, kein In-place-Sortieren.
-- [ ] Tests für Teilsuche, Entities, Leerzeichen, „Straße“, keine Treffer und doppelte Namen ergänzen; anschließend denselben Testbefehl grün ausführen.
+- [x] RED fachlich verifizieren; dann Filter ergänzen. Import-/Syntaxfehler wurden nicht als RED-Nachweis gezählt.
+- [x] Typ und Filter in `session-game-options.ts` ergänzen. Normalisierung nutzt `gameTextForRead`, Unicode-NFD, entfernt kombinierende Zeichen, normalisiert deutsche Kleinschreibung sowie `ß` → `ss` und Rand-Leerraum. Leere Query erhält die Reihenfolge ohne In-place-Sortieren.
+- [x] Teilsuche, Entities, Leerzeichen, „Straße“, keine Treffer und doppelte Namen ergänzen; alle Filtertests grün.
 
 ### 2. Picker mit Tastatur- und Statusvertrag erstellen
 
-- [ ] Zuerst Interaktionstests in `tests/unit/components/session-game-picker.test.tsx` schreiben: Öffnen, Suchfeldfokus, Filterung, Auswahl per Klick und Pfeil/Enter, genau eine ID-Rückgabe, Escape, Tab, Query-Reset, Leeren ohne Auswahlverlust, IME und kein Submit bei Enter ohne Treffer.
-- [ ] `npx vitest run tests/unit/components/session-game-picker.test.tsx` ausführen und fehlendes Verhalten als RED belegen.
-- [ ] Den Picker mit `Popover` aus `radix-ui` und vorhandenen `Button`/`Input` entwickeln. Keine Eingabe in das bestehende Radix-Select verschachteln; seine Typeahead- und Fokussteuerung würde mit dem Suchfeld konkurrieren.
-- [ ] Feld-/Statusbeziehungen und `jest-axe` prüfen. Leere Liste und 1.000 lokale Testoptionen abdecken; keine stille Begrenzung auf die ersten Treffer einbauen.
-- [ ] Test grün ausführen, dann Aufteilung und Zustandsnamen refaktorieren.
+- [x] Interaktionstests zuerst schreiben: Öffnen, Fokus, Filterung, Klick-/Tastaturauswahl, Escape, Tab, Leeren, IME und Enter ohne Treffer.
+- [x] RED für den fehlenden Picker und die Interaktionen verifiziert.
+- [x] Picker mit einer gemeinsamen Hülle des `radix-ui`-Popover-Primitivs und den vorhandenen `Button`/`Input` entwickelt; kein verschachteltes Radix-Select.
+- [x] ARIA-Feld-/Statusbeziehungen und `jest-axe` geprüft; leere Sammlung und 1.000 lokale Optionen getestet, ohne Trefferlimit.
+- [x] Tests grün ausgeführt; der Picker bleibt unter 300 Zeilen.
 
 ### 3. Formularintegration absichern
 
-- [ ] In `tests/unit/components/session-form-client.test.tsx` zuerst belegen, dass ein bloß eingegebener Spielname nicht als `gameId` gesendet wird. Fehlende/ungültige ID verhindert `fetch` und erzeugt einen fokussierbaren Feldfehler.
-- [ ] Erfolgreiche Auswahl testen: Suchtext „az“, gewählte ID „game-azul“; der POST-Body enthält `gameId: "game-azul"`, keinen Suchtext. Mitspieler, Datum, Dauer und Notizen bleiben im bestehenden Payload.
-- [ ] `npx vitest run tests/unit/components/session-form-client.test.tsx` für RED ausführen. Dann die Spielauswahl ersetzen und die Zugehörigkeit zur Optionsliste vor dem Speichern prüfen. Ein `required` an `type="hidden"` ersetzt diese Prüfung nicht.
-- [ ] Fehler bei erneuter gültiger Auswahl zurücknehmen; während des Speicherns die Auswahl deaktivieren. Fehlgeschlagener POST erhält die Auswahl.
-- [ ] Die drei neuen Testsuiten sowie bestehende Session-API- und Service-Tests grün ausführen:
+- [x] Formular-RED für fehlende und veraltete Spiel-IDs verifiziert; ungültige ID verhindert `fetch` und setzt einen fokussierbaren Fehler.
+- [x] Erfolgreiche Auswahl sendet nur `gameId`; der bestehende Payload für Datum, Dauer, Notizen und Mitspieler bleibt erhalten.
+- [x] Picker integrieren und ID-Zugehörigkeit vor dem Speichern prüfen; Fehler bei Auswahl löschen und Picker während des Speicherns deaktivieren.
+- [x] Drei neue Testsuiten plus vorhandene Session-API- und Service-Tests ausführen:
 
 ```sh
 npx vitest run tests/unit/lib/session-game-options.test.ts tests/unit/components/session-game-picker.test.tsx tests/unit/components/session-form-client.test.tsx tests/unit/api/sessions-crud.test.ts tests/unit/lib/services/session.test.ts
@@ -110,21 +110,39 @@ npx vitest run tests/unit/lib/session-game-options.test.ts tests/unit/components
 
 ### 4. Impeccable-, Sicherheits- und Browserabnahme
 
-- [ ] Vor UI-Änderungen `.agents/skills/impeccable/reference/craft-floor.md` lesen; Kontext und Oberflächenbrief für die konkrete Datei berücksichtigen. Die bestehende Club-Programme-Gestaltung verfeinern.
-- [ ] Detektor auf `src/components/sessions/session-game-picker.tsx` und das Sessionformular anwenden; Findings beheben oder begründet einordnen.
-- [ ] Lesende Browserprüfung bei 390 und 1440 px, hell/dunkel und 200 % Zoom: lange Namen umbrechen, Touch-Ziele mindestens 44 px, Popover bleibt bei Bildschirmtastatur bedienbar; keine horizontale Überbreite. Browserzugriff war zuletzt nicht verfügbar und ist vor Abnahme erneut zu prüfen.
-- [ ] Tastatur und VoiceOver manuell prüfen; automatische ARIA-Prüfung ersetzt diesen Nachweis nicht.
-- [ ] Server-Besitzprüfung und Löschstatus anhand bestehender Service-Tests bestätigen. Keine neue API und keine Suchanfragen an fremde Dienste.
+- [x] `.agents/skills/impeccable/reference/craft-floor.md` und Club-Programme-Kontext vor der UI-Änderung gelesen.
+- [x] Detector für Picker, Formular und Popover-Hülle ausgeführt: 0 Regex-Findings. CLI weist darauf hin, dass ohne gerenderte Seite Layout- und Kontrastregeln nicht mitgeprüft wurden.
+- [ ] Lesende Browserprüfung bei 390 und 1440 px, Hell/Dunkel und 200 % Zoom: Browserhost nicht verfügbar; Abnahme bleibt offen.
+- [x] Tastaturbedienung automatisiert mit Escape, Tab, Auswahl und Enter geprüft; [ ] manuelle VoiceOver-Prüfung offen.
+- [x] Server-Besitz- und Soft-Delete-Prüfung mit vorhandenen Service-Tests bestätigt. Keine API und keine externen Suchanfragen.
 - [ ] Schreibende Browser-E2E nur mit ausdrücklich isolierter Testdatenbank und entsprechender Freigabe; bis dahin Submit im Komponenten-Test mocken.
 
 ### 5. Dokumentation und Abschluss
 
-- [ ] `docs/FEATURES.md`, `src/lib/faq.ts`, `CONCEPT.md`, Backlog, Changelog und die drei aktuellen Review-Dokumente mit tatsächlichem Verhalten aktualisieren. OpenAPI nur ändern, falls sich entgegen diesem Plan ein API-Vertrag ändert.
-- [ ] `npm run typecheck`, gezieltes ESLint, betroffene Unit-Tests, `npm run security-check` und `npm run review-evaluate:regression` ausführen. Nach Einbindung der neuen Tests Coverage für FEAT-018 aktualisieren.
+- [ ] `docs/FEATURES.md`, `src/lib/faq.ts`, `CONCEPT.md`, Backlog, Changelog und die drei aktuellen Review-Dokumente mit tatsächlichem Verhalten aktualisieren. OpenAPI ist unverändert, da sich der API-Vertrag nicht änderte.
+- [ ] `npm run typecheck`, gezieltes ESLint, betroffene Unit-Tests, `npm run security-check` und `npm run review-evaluate:regression` ausführen. Coverage nach FEAT-018 ist bereits durch neue Picker-/Formtests erweitert.
 - [ ] Commit einschließlich Hook-Prüfungen erstellen. Browser-/VoiceOver-Nachweise und offene Abnahmen im Plan ausweisen; ohne Nachweis keine vollständige UI-Abnahme behaupten.
 
 ## Freigabekriterien
 
-Alle bestehenden Abnahmekriterien von FEAT-016 sind durch die Schritte abgedeckt. Eine Freigabe bestätigt Web zuerst, den Suchpicker und dessen Zustandsvertrag. iOS und Suche im Mitspielerfeld benötigen eigene Planung. Vor Umsetzung Datum, freigegebenen Umfang und aktuellen Commit ergänzen.
+Die Web-Umsetzung wurde am 02.11.2026 freigegeben. iOS und Suche im
+Mitspielerfeld benötigen eigene Planung. Commit-/Review-Nachweis wird nach den
+Repository-Hooks ergänzt; gerenderte Browser- und manuelle VoiceOver-Abnahme
+bleiben offen.
 
-**Selbstprüfung 02.11.2026:** Anforderungsabgleich mit dem Backlog durchgeführt; Auswahl-ID, Suchtext, Formularvalidierung und serverseitiger Besitznachweis sind getrennt beschrieben. Tastatur-, IME-, Leer-/Fehlerzustände und große Listen haben konkrete Testschritte. Die Planung führt keine Runtimeänderung aus.
+**Selbstprüfung 02.11.2026:** Anforderungsabgleich mit dem Backlog durchgeführt; Auswahl-ID, Suchtext, Formularvalidierung und serverseitiger Besitznachweis sind getrennt beschrieben. Tastatur-, IME-, Leer-/Fehlerzustände und große Listen haben konkrete Testschritte. Die Planaktualisierung vor der Umsetzung bestätigt FEAT-017/018 als nicht betroffen und dokumentiert den fehlenden Radix-Wrapper.
+
+## Ergebnis der Umsetzung 02.11.2026
+
+- Lokaler Filter normalisiert Groß-/Kleinschreibung, Umlaute, `ß`/`ss` und
+  HTML-Entities; Ergebnisreihenfolge und doppelte Namen bleiben erhalten.
+- Radix-Popover-Picker zeigt eine beschriftete Suche, Trefferstatus, Listbox,
+  aktive Option, verständliche Leerzustände und Link zur Sammlungserstellung.
+- Auswahl bindet ausschließlich die ID. Die Formularintegration prüft die ID
+  erneut gegen die aktuelle Optionsliste, setzt bei fehlendem/veraltetem Wert
+  einen Feldfehler und fokussiert den Auslöser. API und serverseitige
+  Besitzprüfung blieben unverändert.
+- TDD: Filter (4), Picker (12) und Formular (3) Tests bestanden; RED-Läufe
+  belegten zunächst fehlenden Filter, Picker und fehlende Formularvalidierung.
+- Ausstehend: manuelle Browser-/VoiceOver-Prüfung bei 390/1440 px, Hell/Dunkel
+  und 200-%-Zoom, falls der Browserhost nicht verfügbar ist.

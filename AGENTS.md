@@ -17,6 +17,7 @@ Die Impeccable-Design-Hooks sind für das Projekt aktiviert. Sie melden nach Än
 - Gemeinsame Anwendungsstile: `src/app/club.css`; semantische Farbvariablen: `src/app/globals.css`.
 - Reine Dashboard-/Eventdarstellung: `src/components/dashboard/`; Datenabfragen verbleiben in den Server-Seiten.
 - Sammlungskarten und Filter: `collection-game-card.tsx` und `collection-filters.tsx` neben `games-list-client.tsx`.
+- Spielauswahl bei Session-Anlage: `src/components/sessions/session-game-picker.tsx` und `session-game-options.ts`; der gemeinsame Radix-Popover-Wrapper liegt in `src/components/ui/popover.tsx`. Der Picker filtert lokal und liefert ausschließlich eine Spiel-ID.
 - Navigationstests: `tests/unit/components/club-navigation.test.tsx` und `tests/e2e/navigation_test.ts`; Dashboardzustände: `tests/unit/components/club-dashboard.test.tsx`.
 - Lokale Impeccable-Prüfberichte und Browserbelege liegen unter `.impeccable/critique/`;
   bestätigte Fehler werden zusätzlich dauerhaft in `docs/bugs.md` erfasst.

@@ -56,7 +56,7 @@ Seit 0.50.20: kobaltblaue Seitennavigation, hellblaue Arbeitsflächen, Barlow un
 
 Spielnamen und Beschreibungen werden beim Import und Speichern vereinheitlicht. Bekannte HTML-Entities werden in Klartext überführt; die Anzeige behandelt diesen Inhalt weiterhin als Text. Suche und Web-/Mobile-Ausgabe verwenden dieselbe Darstellung. Eine kontrollierte Bereinigung bestehender Produktionsdaten ist separat freizugeben.
 
-### Uebersicht
+### Übersicht
 
 **Route:** `/dashboard/games` | **Zugriff:** Angemeldet
 
@@ -167,9 +167,14 @@ Liste der letzten 20 Sessions als Karten. Jede Karte zeigt:
 
 **Route:** `/dashboard/sessions/new` | **Zugriff:** Angemeldet
 
+Im Pflichtfeld „Spiel“ lässt sich die eigene Sammlung direkt nach Namen
+filtern. Umlaute und „ß“ werden berücksichtigt. Gespeichert wird nur ein
+ausgewähltes Spiel; Freitext allein genügt nicht. Ist die Sammlung leer, führt
+der Picker zum Hinzufügen eines Spiels.
+
 | Feld | Typ | Pflicht |
 |------|-----|---------|
-| Spiel | Auswahl aus eigener Sammlung | Ja |
+| Spiel | Suchpicker mit gefilterter Auswahl aus eigener Sammlung | Ja |
 | Datum | Datumspicker (Standard: heute) | Ja |
 | Dauer (Min.) | Zahl | Nein |
 | Mitspieler | Auswahl aus registrierten Nutzern | Nein |
