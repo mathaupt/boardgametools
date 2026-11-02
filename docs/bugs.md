@@ -1876,7 +1876,7 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 **Schweregrad:** `medium`
 **Entdeckt:** 2026-11-02
 **Behoben:** 2026-11-02
-**Behoben in Version:** 0.50.60
+**Behoben in Version:** 0.50.61
 **Test geschrieben:** Ja – `tests/unit/components/public-event-proposal-surfaces.test.tsx`; erwartetes RED für fehlende Beschriftung und doppelten Suchhinweis, anschließend grün. Native Browserprüfung ergänzt Layout-/Kontrastnachweise.
 
 **Beschreibung:** Die vorherige FEAT-020-Korrektur änderte nur die Trefferflächen. Äußere BGG-/Sammlungspanels blieben halbtransparent, die Sammlungssuche unbeschriftet und unterschiedlich hoch; „Reset“ hatte ein Suchsymbol. Der deaktivierte BGG-Button wurde durch halbe Deckkraft unnötig blass. Bei 200 % Schrift konnte die Vorschlagaktion innerhalb der scrollbaren Liste seitlich überlaufen.
@@ -1886,7 +1886,7 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 **Ursache:** Getrennte Darstellungsregeln für beide Suchbereiche, `bg-background/70` auf Außenflächen, globale `disabled:opacity-50` und nicht umbrechende Aktionsbeschriftungen.
 **Lösung:** Gemeinsames Panel-/Listenlayout, deckende semantische Flächen, beschriftete 44-px-Suchkontrollen und ausgeschriebene Vorschlagaktionen; explizit lesbarer deaktivierter Suchzustand. Aktionsbeschriftungen sind in der verfügbaren Breite umbrechbar.
 **Prüfnachweis:** 13/13 gezielte Tests einschließlich Axe; native Browserprüfung über lokalen Vite-Server mit realen Komponenten/synthetischen Daten bei 390/1024 px, Hell/Dunkel und 200 % Schrift. Nach Korrektur keine horizontalen Listenüberläufe; minimale gemessene Textkontraste 5,59:1 hell und 5,33:1 dunkel.
-**Referenz im Changelog:** Version 0.50.60 – Spielvorschläge klarer und einheitlicher bedienen.
+**Referenz im Changelog:** Version 0.50.61 – Spielvorschläge klarer und einheitlicher bedienen.
 
 ---
 

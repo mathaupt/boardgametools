@@ -827,7 +827,7 @@ Public-Event-Tests bestehen. TypeScript, ESLint und Build bestanden. Die
 statische Impeccable-Prüfung meldet 0 Regex-Findings; vollständige gerenderte
 Theme-/Viewportprüfung blieb zunächst mangels Browserhost offen.
 
-**Nachbesserung 02.11.2026 (0.50.60, BUG-064):** Der Nutzerscreenshot und die
+**Nachbesserung 02.11.2026 (0.50.61, BUG-064):** Der Nutzerscreenshot und die
 lokale Vorschau reproduzierten schwache äußere Flächen sowie uneinheitliche
 Suchkontrollen. Ein gemeinsames Panel und gemeinsame Listenzeilen vereinheitlichen
 Sammlung und BGG. Beschriftete Suchfelder, 44-px-Aktionen, deutsche Reset-Beschriftung

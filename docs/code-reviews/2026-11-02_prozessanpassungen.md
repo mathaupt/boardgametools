@@ -2,6 +2,8 @@
 
 ## BUG-064 / FEAT-020 – Lokale UI-Abnahme abschließen
 
+- [x] Commit `1686bc0` mit allen Hooks erfolgreich; 0 Vulnerabilities, keine Regression; Snapshot `history/2026-11-02_1315.json`. Lokaler Server gestoppt. Release 0.50.61 verhindert eine Versionskollision mit paralleler Coveragearbeit.
+
 - [x] Fehlenden DOM-Browserhost durch lokalen Server und native Browsersteuerung ergänzt.
 - [x] Screenshot in Chrome reproduziert; Nachbesserung in Safari mit realen Komponenten und synthetischen Daten geprüft.
 - [x] Gemeinsame Darstellung für beide Vorschlagsquellen eingeführt; verschachtelte Ergebniskarten durch geteilte Listen ersetzt.

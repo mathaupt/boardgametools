@@ -12,7 +12,7 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
-    version: "0.50.60",
+    version: "0.50.61",
     date: "2026-11-02",
     title: "Spielvorschläge klarer und einheitlicher bedienen",
     description: "Sammlung und BoardGameGeek erhalten klar getrennte Suchflächen, gut lesbare Aktionen und ein gemeinsames Listenlayout.",

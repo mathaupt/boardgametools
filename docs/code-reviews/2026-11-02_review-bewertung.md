@@ -8,7 +8,8 @@
 | Gerenderte Prüfung | Safari lokal: 390/1024 px, Hell/Dunkel, 200 % Schrift; 5,59:1 / 5,33:1 Textkontrastminimum | Reale Komponenten, synthetische Daten; kein Backend-E2E |
 | TDD / Regression | 2 erwartete RED-Fälle; nach Umsetzung 13/13 Tests einschließlich Axe grün | Layout zusätzlich im Browser gemessen |
 | Build / Lint | Produktionsbuild einschließlich Typprüfung und gezieltes ESLint bestanden | Parallel laufende Coverage-Änderungen separat |
-| Evaluator | 10/10 gesamt, Sicherheit 9,9/10; 0 offene/neue Findings, keine Regression | Snapshot `history/2026-11-02_1305.json` |
+| Evaluator | 10/10 gesamt, Sicherheit 9,9/10; 0 offene/neue Findings, keine Regression | Snapshot `history/2026-11-02_1315.json` |
+| Commit-Hook | Commit `1686bc0`: lint-staged, relevante Tests, Security- und Regressionsevaluator bestanden | 0 Vulnerabilities, 2 bestehende Codehinweise |
 
 ## FEAT-018 – Coveragepaket 1 (vor Commit)
 
