@@ -13,19 +13,19 @@ export const POST = withApiLogging(async function POST(
   request: NextRequest,
   { params }: RouteContext
 ) {
-  const { userId } = await requireAuth();
-
-  const { id: seriesId } = await params;
-
-  const series = await prisma.gameSeries.findFirst({
-    where: { id: seriesId, ownerId: userId, deletedAt: null },
-  });
-
-  if (!series) {
-    return NextResponse.json({ error: Errors.SERIES_NOT_FOUND }, { status: 404 });
-  }
-
   try {
+    const { userId } = await requireAuth();
+
+    const { id: seriesId } = await params;
+
+    const series = await prisma.gameSeries.findFirst({
+      where: { id: seriesId, ownerId: userId, deletedAt: null },
+    });
+
+    if (!series) {
+      return NextResponse.json({ error: Errors.SERIES_NOT_FOUND }, { status: 404 });
+    }
+
     const body = await request.json();
     const { gameId, bggId, difficulty } = body;
 
@@ -84,7 +84,7 @@ export const POST = withApiLogging(async function POST(
 
     if (existingEntry) {
       return NextResponse.json(
-        { error: "Game is already in this series" },
+        { error: "Dieses Spiel ist bereits in dieser Reihe." },
         { status: 409 }
       );
     }

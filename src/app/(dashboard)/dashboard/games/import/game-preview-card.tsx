@@ -12,6 +12,7 @@ interface GamePreviewCardProps {
   selectedGame: BGGGameData | null;
   isLoading: boolean;
   isImporting: boolean;
+  isImported?: boolean;
   error: string | null;
   isAlreadyOwned: boolean;
   onImport: () => void;
@@ -22,6 +23,7 @@ export function GamePreviewCard({
   selectedGame,
   isLoading,
   isImporting,
+  isImported = false,
   error,
   isAlreadyOwned,
   onImport,
@@ -34,7 +36,7 @@ export function GamePreviewCard({
           {error}
         </div>
       )}
-      {selectedGame && isAlreadyOwned && (
+      {selectedGame && isAlreadyOwned && !isImported && (
         <div className="p-3 text-sm bg-warning/10 border border-warning/20 text-warning rounded-md mb-4">
           Dieses Spiel befindet sich bereits in deiner Sammlung.
         </div>
@@ -99,6 +101,7 @@ export function GamePreviewCard({
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
+            {isImported && <p role="status" className="text-sm text-foreground">Spiel erfolgreich importiert. Die Sammlung wird geöffnet.</p>}
             {children}
             {selectedGame.description && (
               <p className="text-sm text-muted-foreground line-clamp-4">
@@ -136,8 +139,8 @@ export function GamePreviewCard({
             )}
 
             <div className="flex gap-2 pt-4">
-              <Button onClick={onImport} disabled={isImporting} className="min-h-11 h-auto min-w-0 flex-1 whitespace-normal py-2">
-                {isImporting ? (
+              <Button onClick={onImport} disabled={isImporting || isImported} className="min-h-11 h-auto min-w-0 flex-1 whitespace-normal py-2">
+                {isImported ? "Importiert" : isImporting ? (
                   <><Loader2 className="h-4 w-4 mr-2 animate-spin" aria-hidden="true" />Importieren…</>
                 ) : (
                   "Zur Sammlung hinzufügen"

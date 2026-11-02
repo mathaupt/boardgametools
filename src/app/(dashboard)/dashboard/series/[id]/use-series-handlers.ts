@@ -2,13 +2,13 @@
 
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/use-toast";
-import type { GameSeries, SeriesEntry } from "./types";
+import type { GameSeries, SeriesEntry, AddSeriesGameInput } from "./types";
 
 interface UseSeriesHandlersOptions {
   seriesId: string;
   series: GameSeries | null;
   setSeries: React.Dispatch<React.SetStateAction<GameSeries | null>>;
-  loadSeries: () => Promise<void>;
+  loadSeries: () => Promise<GameSeries | null>;
   setExpandedEntry: React.Dispatch<React.SetStateAction<string | null>>;
   setDeleteEntryTarget: React.Dispatch<React.SetStateAction<SeriesEntry | null>>;
   setDeleting: React.Dispatch<React.SetStateAction<boolean>>;
@@ -189,8 +189,15 @@ export function useSeriesHandlers({
     setDeleting(false);
   }
 
-  function handleGameAdded() {
-    loadSeries();
+  async function handleGameAdded(input: AddSeriesGameInput) {
+    const current = await loadSeries();
+    if (!current) {
+      throw new Error("Die Reihe konnte nicht aktualisiert werden. Bitte versuche es erneut.");
+    }
+    const found = current.entries.some(entry => "gameId" in input ? entry.gameId === input.gameId : entry.game.bggId === input.bggId);
+    if (!found) {
+      throw new Error("Das Spiel konnte in der aktualisierten Reihe nicht gefunden werden. Bitte lade die Seite neu.");
+    }
     setAddDialogOpen(false);
   }
 

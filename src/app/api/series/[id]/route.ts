@@ -13,7 +13,7 @@ export const GET = withApiLogging(async function GET(
     const { userId } = await requireAuth();
     const { id } = await params;
     const result = await SeriesService.getById(userId, id);
-    return NextResponse.json(result);
+    return NextResponse.json(result, { headers: { "Cache-Control": "private, no-store" } });
   } catch (error) {
     return handleApiError(error);
   }

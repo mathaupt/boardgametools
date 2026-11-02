@@ -7,7 +7,7 @@ import { SeriesProgressCard } from "./series-progress-card";
 import { SeriesEntryList } from "./series-entry-list";
 import { SeriesDeleteDialogs } from "./series-delete-dialogs";
 import { useSeriesHandlers } from "./use-series-handlers";
-import type { GameSeries, SeriesEntry } from "./types";
+import type { GameSeries, SeriesEntry, AddSeriesGameInput } from "./types";
 
 interface SeriesDetailClientProps {
   initialSeries: GameSeries;
@@ -15,6 +15,7 @@ interface SeriesDetailClientProps {
 }
 
 export default function SeriesDetailClient({ initialSeries, seriesId }: SeriesDetailClientProps) {
+  const [listRevision, setListRevision] = useState(0);
   const [series, setSeries] = useState<GameSeries | null>(initialSeries);
   const [deleteSeriesOpen, setDeleteSeriesOpen] = useState(false);
   const [deleteEntryTarget, setDeleteEntryTarget] = useState<SeriesEntry | null>(null);
@@ -23,8 +24,15 @@ export default function SeriesDetailClient({ initialSeries, seriesId }: SeriesDe
   const [expandedEntry, setExpandedEntry] = useState<string | null>(null);
 
   const loadSeries = useCallback(async () => {
-    const res = await fetch(`/api/series/${seriesId}`);
-    if (res.ok) setSeries(await res.json());
+    try {
+      const res = await fetch(`/api/series/${seriesId}`, { cache: "no-store" });
+      if (!res.ok) return null;
+      const current: GameSeries = await res.json();
+      setSeries(current);
+      return current;
+    } catch {
+      return null;
+    }
   }, [seriesId]);
 
   const {
@@ -35,7 +43,7 @@ export default function SeriesDetailClient({ initialSeries, seriesId }: SeriesDe
     handleMoveEntry,
     handleDeleteEntry,
     handleDeleteSeries,
-    handleGameAdded,
+    handleGameAdded: refreshAfterGameAdded,
   } = useSeriesHandlers({
     seriesId,
     series,
@@ -48,13 +56,18 @@ export default function SeriesDetailClient({ initialSeries, seriesId }: SeriesDe
     deleteEntryTarget,
   });
 
+  async function handleGameAdded(input: AddSeriesGameInput) {
+    await refreshAfterGameAdded(input);
+    setListRevision(revision => revision + 1);
+  }
+
   if (!series) return null;
 
   return (
     <div className="space-y-6">
       <SeriesDetailHeader series={series} seriesId={seriesId} onDeleteClick={() => setDeleteSeriesOpen(true)} />
       <SeriesProgressCard entries={series.entries} />
-      <SeriesEntryList
+      <SeriesEntryList key={listRevision}
         entries={series.entries}
         expandedEntry={expandedEntry}
         onToggleExpanded={(id) => setExpandedEntry(expandedEntry === id ? null : id)}

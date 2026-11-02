@@ -39,3 +39,5 @@ export type DifficultyFilter = "alle" | "einsteiger" | "fortgeschritten" | "prof
 export type EntrySortOption = "sortOrder" | "name_asc" | "name_desc" | "rating_desc" | "difficulty";
 
 export const DIFFICULTY_ORDER: Record<string, number> = { einsteiger: 1, fortgeschritten: 2, profi: 3 };
+
+export type AddSeriesGameInput = { gameId: string } | { bggId: string };

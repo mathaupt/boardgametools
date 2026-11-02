@@ -33,4 +33,15 @@ describe("edition import entry points",()=>{
   await waitFor(()=>expect(mocks.fetch).toHaveBeenCalledWith("/api/games/import-bgg",expect.objectContaining({method:"POST",body:JSON.stringify({bggId:"13",versionId:"101"})})));
   expect(mocks.fetch.mock.calls.some(([url,init])=>url==="/api/games"&&(init as RequestInit | undefined)?.method==="POST")).toBe(false);
  });
+ it("shows success instead of a duplicate warning while collection navigation is pending",async()=>{
+  const user=userEvent.setup();render(<ImportPage/>);
+  await user.type(screen.getByRole("textbox",{name:"BGG-ID"}),"13");await user.click(screen.getByRole("button",{name:"Laden"}));
+  await screen.findByRole("radio",{name:/German edition/});
+  await user.click(screen.getByRole("button",{name:"Zur Sammlung hinzufügen"}));
+  await waitFor(()=>expect(mocks.push).toHaveBeenCalledWith("/dashboard/games"));
+  expect(screen.queryByText("Dieses Spiel befindet sich bereits in deiner Sammlung.")).not.toBeInTheDocument();
+  expect(screen.getByRole("status")).toHaveTextContent("Spiel erfolgreich importiert");
+  expect(screen.getByRole("button",{name:"Importiert"})).toBeDisabled();
+ });
+
 });

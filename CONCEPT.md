@@ -619,6 +619,7 @@ ApiLog
 - `POST /api/admin/users/change-password` - Passwort ändern
 - `POST /api/admin/users/deactivate` - Account deaktivieren
 - `GET /api/admin/monitoring/logs` - API-Logs
+- BUG-068: Serienimporte unterscheiden vorhandene Einträge (409) von Fehlern. Nach Hinzufügen oder Konflikt wird die private Reihe frisch geladen und das Zielspiel geprüft; keine Änderung des Datenmodells oder der Eigentümerrechte.
 - `GET /api/admin/monitoring/stats` - Monitoring-Statistiken
 - `GET /api/admin/monitoring/anomalies` - Anomalie-Erkennung
 

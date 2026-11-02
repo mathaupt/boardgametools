@@ -19,6 +19,10 @@ export const faqSections: FaqSection[] = [
     description: "So startest du mit BoardGameTools.",
     items: [
       {
+        question: "Warum heißt es beim Hinzufügen eines Spiels Bereits in der Reihe?",
+        answer: "Das Spiel ist auf dem Server bereits mit dieser Reihe verknüpft. Es wird kein zweiter Eintrag angelegt. Die App lädt die Reihe neu und setzt aktive Filter zurück, damit du den vorhandenen Eintrag sehen kannst. Kann die Liste nicht geladen oder das Spiel darin nicht gefunden werden, bleibt der Dialog mit einer Fehlermeldung offen. Du kannst es dann erneut versuchen oder die Seite neu laden.",
+      },
+      {
         question: "Warum zeigt das Qualitätsmonitoring unterschiedliche Werte für die Testabdeckung?",
         answer: "Der gesamte Messumfang und die Bibliotheken unter src/lib werden getrennt gemessen. Das Ziel sind jeweils 80 % pro Kennzahl; ein erreichter Bibliothekswert bedeutet noch keine 80 % für die gesamte Anwendung. Messzeitpunkt und Version stehen direkt bei den Werten. Coverage und Testzahlen stammen aus einem vollständigen erfolgreichen Testlauf und werden mit dem Deployment veröffentlicht. Weitere Review-Kennzahlen sind als historisch gekennzeichnet.",
       },

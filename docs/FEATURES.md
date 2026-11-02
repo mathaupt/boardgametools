@@ -128,6 +128,8 @@ Drei Import-Methoden:
 Importierte Daten: Name, Bild, Spieleranzahl, Spieldauer, Komplexitaet,
 Kategorien, Mechaniken, BGG-Rating, BGG-Rang.
 
+**Erfolgsrückmeldung (BUG-069):** Nach bestätigtem Einzelimport erscheint „Spiel erfolgreich importiert“ mit deaktiviertem „Importiert“, solange die Sammlung geöffnet wird. Dies löst keine Warnung für einen bereits vorher vorhandenen Eintrag aus.
+
 **FEAT-021 umgesetzt:** Beide Einzelimporte (`/dashboard/games/import` und
 `/dashboard/bgg`, einschließlich Barcode-Detailauswahl) bieten die bei BGG explizit
 als German markierten Ausgaben mit Sprache, Jahr, Verlag und Cover an.
@@ -256,6 +258,15 @@ Zeigt alle Eintraege der Reihe mit erweiterten Erfassungsmoeglichkeiten:
 ---
 
 ## 6. Events & Spieleabende
+
+**Konfliktabgleich (BUG-068):** Ist ein Spiel bereits in der Reihe, bleibt der
+Serverstatus 409 bestehen. Die Oberfläche erklärt „Bereits in der Reihe“, lädt
+frische Seriendetails, prüft den Eintrag und setzt aktive Listenfilter zurück.
+Erst danach schließt der Dialog. Bei Nachladefehlern oder weiterhin fehlendem
+Zielspiel bleibt er mit einer deutschen Fehlermeldung offen. Pro Dialog ist nur
+eine Hinzufügen-Anfrage gleichzeitig möglich; der Abgleich sendet kein zweites
+POST. Das gilt für Sammlung, BGG und die gemeinsamen Barcode-Einstiegspunkte.
+
 
 ### Uebersicht
 

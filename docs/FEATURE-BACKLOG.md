@@ -36,6 +36,11 @@ Bedarf zu aktualisieren. Ergebnis am jeweiligen Plan dokumentieren:
 | FEAT-020 | Lesbare Trefferflächen für öffentliche Spielvorschläge | Web nachgebessert; lokal gerendert geprüft (Hell/Dunkel, 390/1024 px, 200 % Schrift) | [Kontrast der Spielvorschläge](superpowers/plans/2026-11-02-FEAT-020-public-event-proposal-contrast.md) | Web am 02.11.2026 freigegeben und umgesetzt; iOS nicht betroffen |
 | FEAT-021 | Deutsche BGG-Ausgabe beim Import auswählen | Umgesetzt (0.50.63) | [Deutsche BGG-Ausgabe](superpowers/plans/2026-11-02-FEAT-021-bgg-deutsche-ausgabe.md) | 02.11.2026, Web |
 | FEAT-022 | BGG-Quellenkennzeichnung auf Loginseite und Website-Footer | Umgesetzt (0.50.64) | [BGG-Attribution](superpowers/plans/2026-11-02-FEAT-022-bgg-attribution.md) | 02.11.2026, Web |
+| FEAT-023 | Sammlung vor einem Import prüfen | Erfasst; Planung offen | Noch kein Implementierungsplan | Keine |
+| FEAT-024 | Mehrfachauswahl beim Hinzufügen zu Reihen, auch aus BGG | Erfasst; Planung offen | Noch kein Implementierungsplan | Keine |
+| FEAT-025 | Reihenspiele unabhängig von dauerhaftem Sammlungsbesitz | Erfasst; Datenmodell und Planung offen | Noch kein Implementierungsplan | Keine |
+| FEAT-026 | Seitennavigation in der Spielesammlung | Erfasst; Planung offen | Noch kein Implementierungsplan | Keine |
+| FEAT-027 | Eindeutige Leermeldung in allen BGG-Suchansichten | Erfasst; Bestandsabgleich und Planung offen | Noch kein Implementierungsplan | Keine |
 
 Am 30.10.2026 aufgenommen. Bei der Planung sind Web, iOS sowie angemeldete und
 öffentliche Voting-Ansichten auf Relevanz und bereits vorhandene Teilfunktionen
@@ -858,3 +863,50 @@ zur lokalen gerenderten Prüfung ist damit für diese Komponenten erfüllt.
 **Abnahme:** 7 gezielte Footer-/Layouttests einschließlich Tastatur und Axe; insgesamt 1.036 Tests und Coverage-Gates bestanden. Produktionsbuild, TypeScript, ESLint (0 Fehler), Security und Review-Regressionscheck bestanden. Lokal gerendert in Safari geprüft, dabei BUG-066 behoben. Keine schreibenden Produktionsprüfungen.
 **Implementierungsplan:** [BGG-Attribution](superpowers/plans/2026-11-02-FEAT-022-bgg-attribution.md).
 **Umfang:** Offizielle BGG-Kennzeichnung auf Loginseite und konsistentem Website-Footer nach Prüfung der dann geltenden BGG-Vorgaben.
+
+## Neue Anforderungen vom 02.11.2026 – geplante Abarbeitung
+
+Für FEAT-023 bis FEAT-027 sind vor der Umsetzung jeweils Bestandsabgleich und
+Implementierungsplan mit RED/GREEN/REFACTOR, konkreten Tests, Security,
+Impeccable einschließlich gerenderter Prüfung sowie Dokumentationsaufgaben
+verpflichtend. Vor jeder späteren Implementierung den Plan erneut auf Aktualität
+prüfen und die ausdrückliche Umsetzungsfreigabe festhalten. Die Aufnahme hier ist
+keine Freigabe. Web zunächst prüfen; iOS-Auswirkungen gesondert ausweisen.
+Empfohlene Planungsreihenfolge: FEAT-023 → FEAT-025 → FEAT-024, anschließend
+FEAT-026 und FEAT-027; das Besitzmodell beeinflusst Mehrfachimporte.
+
+## FEAT-023 – Sammlung vor einem Import prüfen
+
+**Status:** Erfasst; Planung und Umsetzung nicht freigegeben.
+**Ziel:** Vor einem BGG-Import prüfen und erklären, ob das Spiel schon in der eigenen Sammlung vorhanden ist. Ein vorhandenes Spiel verwenden statt einen unnötigen neuen Import auszulösen.
+**Umfang für die Planung:** Einzelimport, BGG-Suche und Import beim Hinzufügen zu Reihen abgleichen. Bestehende BGG-ID-Prüfung im Einzelimport und serverseitige Duplikatsperren berücksichtigen; BUG-068/069 sind Fehlerkorrekturen, keine vollständige Umsetzung dieser Anforderung.
+**Abnahmekriterien:** Exakte BGG-ID und eigene Sammlung prüfen, vorhandenes Spiel mit verständlichem Status anzeigen, unvollständige/fehlgeschlagene Prüfung nicht als „nicht vorhanden“ ausgeben. Serverseitige Prüfung bleibt verbindlich und schützt auch bei parallelen Anfragen. Keine Auskunft über fremde Sammlungen. Verhalten für temporäre Reihenspiele mit FEAT-025 abstimmen.
+**Plan:** Noch zu erstellen; Daten-/Berechtigungsfälle, TDD, Impeccable und Abnahme konkretisieren.
+
+## FEAT-024 – Mehrere Spiele zu einer Reihe hinzufügen
+
+**Status:** Erfasst; Planung und Umsetzung nicht freigegeben.
+**Ziel:** Mehrere Spiele in einem Durchgang auswählen und zu einer Reihe hinzufügen, sowohl aus der Sammlung als auch über die BGG-Suche.
+**Abnahmekriterien:** Auswahl über Suchanfragen hinweg behalten, gewählte Anzahl zeigen, vor dem Absenden entfernen können. Vorhandene Einträge, Erfolge und Fehler pro Spiel erklären; Teilerfolge und gezieltes Wiederholen ohne Duplikate ermöglichen. Reihenfolge und Anzahl begrenzen, BGG-Ratenlimits berücksichtigen und Eigentümerrechte für jede Auswahl prüfen. Zustände für Laden, Teilfehler und Abschluss zugänglich gestalten; temporäre Einträge nach FEAT-025 berücksichtigen.
+**Plan:** Nach Abgleich mit FEAT-023/025 erstellen; Strategie für Sammel-Endpunkt versus begrenzte Einzelanfragen samt Kosten-/Lastwirkung klären.
+
+## FEAT-025 – Reihenspiele ohne dauerhaften Sammlungsbesitz
+
+**Status:** Erfasst; Produkt-/Datenmodellentscheidung und Planung offen, keine Umsetzung freigegeben.
+**Ziel:** Ein Spiel für eine Reihe verwenden können, ohne es dauerhaft in die eigene Sammlung übernehmen zu müssen – etwa ausgeliehen, von jemandem mitgebracht oder später verkauft.
+**Abnahmekriterien:** Dauerhafter Besitz und Verwendung in einer Reihe getrennt behandeln. Temporären Import bewusst wählen und verständlich kennzeichnen. Verkauf/Entfernen aus der Sammlung darf Reihenfortschritt und Spielhistorie nicht unbeabsichtigt löschen. Übernahme in die Sammlung und Umgang mit vorhandenen Spielen/Duplikaten festlegen. Zugriffsrechte, Löschung, Aufbewahrung, Statistiken, APIs und iOS-Verträge berücksichtigen.
+**Offene Entscheidungen für den Plan:** Eigenständiger Reihenspiel-Datensatz oder entkoppelte Sammlungszuordnung; Bedeutung der Zustände „ausgeliehen“, „mitgebracht“, „verkauft“ und Lebensdauer temporärer Daten. Keine Schemaänderung/Migration ohne geprüften, freigegebenen Plan.
+
+## FEAT-026 – Seitennavigation im Boardgames-Dashboard
+
+**Status:** Erfasst; Planung und Umsetzung nicht freigegeben.
+**Ziel:** Einen Pager für die Spieleübersicht bereitstellen. Vorläufiger Zielbereich: `/dashboard/games` (Sammlung); endgültigen Einbaupunkt im Plan anhand des aktuellen Dashboards bestätigen.
+**Abnahmekriterien:** Seiten und Gesamtumfang nachvollziehbar anzeigen, Filter/Sortierung erhalten und beim Ändern auf eine gültige Seite wechseln. Stabile Reihenfolge, leere/letzte Seite sowie Änderungen nach Import/Löschen behandeln. Serverseitige und lokale Paginierung mit tatsächlicher Datenmenge abgleichen; keine doppelte Seitennavigation. Kleine Bildschirme, Tastatur und Lade-/Fehlerzustände prüfen.
+**Plan:** Vorhandene Listen-/API-Paginierung und Cacheverträge zuerst prüfen; Datenumfang und barrierearme Seitenauswahl festlegen.
+
+## FEAT-027 – Keine Treffer in der BGG-Suche eindeutig melden
+
+**Status:** Erfasst; Bestandsabgleich, Planung und Umsetzung offen.
+**Ziel:** Nach einer erfolgreich abgeschlossenen BGG-Suche ohne Treffer eine klare deutsche Meldung mit nächstem Schritt anzeigen.
+**Abnahmekriterien:** „Keine passenden Spiele gefunden“ erst nach tatsächlich abgeschlossener Suche zeigen. Noch nicht gesucht, Mindestlänge, Laden, keine Treffer und Provider-/Verbindungsfehler unterscheiden. Suchbegriff ändern und erneut suchen ermöglichen; veraltete Antworten nicht über neuere Ergebnisse schreiben. Suchstatus zugänglich ankündigen. Vorhandene FEAT-014-Zustände der öffentlichen Suche und bestehende BGG-/Reihenansichten übernehmen beziehungsweise vereinheitlichen.
+**Plan:** Betroffene BGG-Suchoberflächen vollständig inventarisieren, vorhandene Teilfunktionen und fehlende Zustände benennen; keine pauschale Neuimplementierung bereits erfüllter Verträge.

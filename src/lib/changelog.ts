@@ -12,6 +12,19 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.66",
+    date: "2026-11-02",
+    title: "Importe und vorhandene Spiele verständlich anzeigen",
+    description: "Erfolgreiche Sammlungsimporte und bereits vorhandene Reihenspiele erhalten passende Rückmeldungen.",
+    changes: [
+      { type: "fix", text: "BUG-068: Eine Konfliktantwort wird als Hinweis auf einen vorhandenen Eintrag erklärt. Die Liste wird neu geladen und aktive Filter werden zurückgesetzt.", bugRef: "BUG-068" },
+      { type: "fix", text: "Fehlgeschlagenes Nachladen oder weiterhin fehlende Einträge werden im offenen Dialog angezeigt. Laufende Hinzufügen-Anfragen verhindern weitere Klicks." },
+      { type: "improvement", text: "Seriendetails werden ohne Zwischenspeicherung geladen; der Server meldet bereits vorhandene Spiele auf Deutsch." },
+      { type: "fix", text: "BUG-069: Nach erfolgreichem Sammlungsimport erscheint eine Bestätigung statt der gelben Duplikatswarnung.", bugRef: "BUG-069" },
+      { type: "internal", text: "FEAT-023 bis FEAT-027 erfassen Import-Vorabprüfung, Mehrfachauswahl, temporäre Reihenspiele, Seitennavigation und klare BGG-Leermeldungen für spätere freizugebende Pläne." },
+    ],
+  },
+  {
     version: "0.50.65",
     date: "2026-11-02",
     title: "Verlässliche Qualitätsmesswerte im Monitoring",

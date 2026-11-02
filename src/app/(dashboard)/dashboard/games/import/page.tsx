@@ -24,6 +24,7 @@ export default function ImportBGGPage() {
   const [selectedVersion, setSelectedVersion] = useState<BGGGameVersion | null>(null);
   const [isSearching, setIsSearching] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [importedBggId, setImportedBggId] = useState<string | null>(null);
   const [isImporting, setIsImporting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -76,6 +77,7 @@ export default function ImportBGGPage() {
     setError(null);
     setSelectedGame(null);
     setSelectedVersion(null);
+    setImportedBggId(null);
 
     try {
       const response = await fetch(`/api/bgg/search?q=${encodeURIComponent(searchQuery)}`);
@@ -93,6 +95,7 @@ export default function ImportBGGPage() {
   }
 
   async function loadGameDetails(bggId: string) {
+    setImportedBggId(null);
     setSelectedVersion(null);
     setIsLoading(true);
     setError(null);
@@ -119,7 +122,7 @@ export default function ImportBGGPage() {
   }
 
   async function handleImport() {
-    if (!selectedGame) return;
+    if (!selectedGame || importedBggId === selectedGame.bggId) return;
 
     if (existingBggIds.has(selectedGame.bggId)) {
       setError("Dieses Spiel ist bereits in deiner Sammlung");
@@ -140,6 +143,7 @@ export default function ImportBGGPage() {
       });
 
       if (response.ok) {
+        setImportedBggId(selectedGame.bggId);
         setBarcodeEan(null);
         router.push("/dashboard/games");
         router.refresh();
@@ -264,8 +268,9 @@ export default function ImportBGGPage() {
           selectedGame={selectedGame ? { ...selectedGame, imageUrl: selectedVersion?.imageUrl ?? selectedVersion?.thumbnailUrl ?? selectedGame.imageUrl } : null}
           isLoading={isLoading}
           isImporting={isImporting}
+          isImported={!!selectedGame && importedBggId === selectedGame.bggId}
           error={error}
-          isAlreadyOwned={!isLoadingExistingGames && !!selectedGame && existingBggIds.has(selectedGame.bggId)}
+          isAlreadyOwned={!isLoadingExistingGames && !!selectedGame && importedBggId !== selectedGame.bggId && existingBggIds.has(selectedGame.bggId)}
           onImport={handleImport}
         >
           {selectedGame && !isLoading && <BggVersionPicker key={selectedGame.bggId} bggId={selectedGame.bggId} value={selectedVersion?.versionId ?? null} onChange={setSelectedVersion} disabled={isImporting} />}

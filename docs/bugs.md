@@ -1951,10 +1951,54 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 ---
 
+### [BUG-068] Serienimport erklärt vorhandene Spiele nicht und gleicht die Liste nicht ab
+
+**Status:** `fixed`
+**Schweregrad:** `medium`
+**Entdeckt:** 2026-11-02
+**Behoben:** 2026-11-02
+**Behoben in Version:** 0.50.66
+**Test geschrieben:** Ja – API- und UI-Verträge vor dem Fix erwartungsgemäß rot; Nachlade-Widerspruch ebenfalls zuerst rot.
+
+**Beschreibung:** Beim Hinzufügen über die BGG-Suche meldet POST `/api/series/{id}/entries` den Konflikt „Game is already in this series“. Der Nutzer bestätigt später, dass das Spiel offenbar hinzugefügt wird und vor allem die Rückmeldung irreführend ist.
+**Reproduktion:** Mit einer älteren oder gefilterten Reihenansicht ein serverseitig bereits vorhandenes Spiel über BGG hinzufügen. Ein erneuter Import liefert 409.
+**Erwartetes Verhalten:** Vorhandenes Spiel als Hinweis erklären, aktuelle Reihe laden, Zielspiel verifizieren und Filter zurücksetzen. Echte Fehler dürfen weder ignoriert noch als erfolgreicher Abgleich gemeldet werden.
+**Tatsächliches Verhalten:** Beide Hinzufügenpfade ignorieren alle Antworten außerhalb von 2xx. Ein 409 löst weder Hinweis noch Nachladen aus; englische Servermeldung. Nach erfolgreichem POST wird das Nachladen nicht abgewartet und der Dialog unmittelbar geschlossen.
+**Ursache:** Fehlender Konflikt-/Fehlerpfad und nicht abgewarteter Zustandsabgleich im Dialog. Der HTTP-Status 409 bleibt für einen tatsächlich vorhandenen Eintrag korrekt; der konkrete Ursprung des ersten Produktionskonflikts ist ohne weiteren Produktionsnachweis nicht abschließend bestimmt.
+**Lösung:** Gemeinsamer Hinzufügen-Hook für Sammlung/BGG/Barcode, 409-Abgleich ohne erneuten Schreibversuch, frische private Seriendetails, verifiziertes Zielspiel und zurückgesetzte Filter erst nach erfolgreichem Nachladen. Fehler/Widerspruch im Dialog behalten, deutsche Rückmeldung und Sperre laufender Anfragen. Authfehler der POST-Route werden kontrolliert beantwortet.
+**Datenabgrenzung:** Keine Sitzungscookies verwendet oder gespeichert. Schreibgeschützte Diagnose in der lokal konfigurierten Datenquelle fand die gemeldete Reihen-ID nicht; daraus wird keine Aussage über den Produktionsbestand abgeleitet. Keine Datenbankeinträge geändert.
+
+**Prüfnachweis:** 13 gezielte Serien-API-/UI-Tests grün; BGG und Sammlung, normale Übernahme, Konflikt mit frischem sichtbarem Eintrag und Filter-Reset, fehlgeschlagenes/widersprüchliches Nachladen, Auth/Eigentum sowie Doppelclick abgedeckt. Lokale Safari-Prüfung realer Komponenten mit synthetischen Antworten: BGG-Konflikt zeigt vorhandenes Spiel mit deutschem Hinweis; Fehlerdialog bleibt offen. Bei 390 px und 200 % Schrift gefundener Dialog-/Headerüberlauf korrigiert (danach 388 px Dokumentbreite bei 388 px Viewport, keine Dialogüberläufe). Keine Produktionsmutation und keine Nutzung übermittelter Cookies.
+**Referenz im Changelog:** Version 0.50.66 – BUG-068.
+
+---
+
+
+### [BUG-069] Erfolgreicher BGG-Sammlungsimport zeigt gelbe Duplikatswarnung
+
+**Status:** `fixed`
+**Schweregrad:** `medium`
+**Entdeckt:** 2026-11-02
+**Behoben:** 2026-11-02
+**Behoben in Version:** 0.50.66
+**Test geschrieben:** Ja – `tests/unit/components/bgg-import-editions.test.tsx`: erfolgreicher Import bei ausstehender Navigation erzeugte vor dem Fix erwartungsgemäß die gelbe Warnung.
+
+**Beschreibung:** Nach erfolgreichem BGG-Import erscheint kurz beziehungsweise bei verzögerter Navigation dauerhaft die Warnung, das Spiel sei bereits in der Sammlung.
+**Reproduktion:** Einzelimport erfolgreich absenden, während der Wechsel nach `/dashboard/games` noch aussteht. Ein Test mit zurückgehaltener Navigation reproduziert dies.
+**Erwartetes Verhalten:** Bestätigten Import als Erfolg anzeigen und erneutes Absenden verhindern. Schon vor dem Import vorhandene Spiele weiterhin als vorhanden kennzeichnen.
+**Tatsächliches Verhalten:** Die Antwort aktualisiert `existingBggIds`, während die Vorschau noch dasselbe ausgewählte Spiel zeigt. Die Darstellung behandelt den gerade erfolgreichen Import danach als bereits vorher vorhandenes Spiel.
+**Ursache:** Erfolgszustand und Bestandsprüfung wurden aus derselben ID-Menge abgeleitet, ohne den aktuellen erfolgreichen Import zu unterscheiden.
+**Lösung:** Bestätigten Import getrennt merken; Erfolg und deaktiviertes „Importiert“ zeigen, die gelbe Warnung für diesen Erfolg unterdrücken. Bei neuer Auswahl zurücksetzen. Echte Bestands-/Konfliktprüfungen beibehalten.
+
+**Prüfnachweis:** Gezielt erwartungsgemäß roter Regressionstest bei zurückgehaltener Navigation, anschließend 3/3 BGG-Einzelimportintegrationstests grün. Gerenderte Safari-Nachprüfung zeigt die Erfolgsbestätigung und deaktiviertes „Importiert“ ohne gelbe Warnung. Vollständiger Lauf für beide Korrekturen: 154 Dateien, 1.062 Tests und Coverage-Gates bestanden; Build/Typprüfung, ESLint, Security und Review-Regressionscheck bestanden.
+**Referenz im Changelog:** Version 0.50.66 – BUG-069.
+
+---
+
 ## Statistik
 
 - **Offene Bugs:** 4
 - **In Bearbeitung:** 4
-- **Behoben:** 59
+- **Behoben:** 61
 - **Wontfix:** 0
-- **Gesamt:** 67
+- **Gesamt:** 69

@@ -751,7 +751,8 @@ paths:
         schema: { type: string }
     get:
       tags: [Series]
-      summary: Reihen-Details mit Eintraegen
+      summary: Reihen-Details mit Einträgen
+      description: Private aktuelle Seriendetails; Cache-Control private, no-store.
       responses:
         '200': { description: Reihe mit Spielen, sortiert nach sortOrder }
     put:
@@ -786,7 +787,7 @@ paths:
                 difficulty: { type: string }
       responses:
         '201': { description: Eintrag erstellt }
-        '409': { description: Spiel bereits in der Reihe }
+        '409': { description: Spiel bereits in der Reihe; deutsche Fehlermeldung. Die Oberfläche gleicht die Liste über GET neu ab und legt keinen zweiten Eintrag an., content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
 
   /api/series/{id}/entries/{entryId}:
     parameters:
