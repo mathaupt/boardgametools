@@ -14,3 +14,11 @@
 Erfolgsmessung: FEAT-015 ist im Web-Dashboard umgesetzt. Keine API- oder
 Schemaänderung; native iOS-Oberfläche bleibt separat. Automatisierte Checks
 bestanden. Die fehlende gerenderte Browserabnahme bleibt ausdrücklich offen.
+
+### FEAT-016 Aufnahme
+
+- [x] Fortlaufende Feature-ID vergeben und aktuelle Session-Spielauswahl im Code geprüft.
+- [x] Scope auf Eingabefilter für eigene Spiele bei der Session-Anlage begrenzt; Spielerwahl separat gehalten.
+- [x] Backlog, Changelog und Review-Dokumentation aktualisiert.
+- [ ] Implementierungsplan mit Impeccable-, Accessibility-, Security- und Testabnahme erstellen.
+- [ ] Keine Umsetzung freigegeben.

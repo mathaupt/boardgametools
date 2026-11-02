@@ -12,3 +12,10 @@ FEAT-015 ergänzt die hervorgehobene Eventkarte um eine Rangliste der drei meist
 - Keine Datenbankmigration, API-Änderung oder Produktionsdatenbankabfrage.
 
 Ein erster Regressionsevaluatorlauf konnte die npm-Registry in der Sandbox nicht erreichen und markierte SEC-45 vorübergehend offen. Nach `npm audit --omit=dev` mit Registryzugriff (0 Befunde) bestand der erneute Regressionlauf mit Exitcode 0. Root Cause und Beleg stehen im Regressionslog.
+
+## Ergänzung: FEAT-016 aufgenommen
+
+Die Spielauswahl im Session-Formular ist derzeit ein nicht durchsuchbares
+Dropdown. FEAT-016 hält eine Texteingabe zum Filtern der eigenen Spiele als
+Backlog-Anforderung fest. Es wurde kein Produktionscode geändert und keine
+Umsetzungsfreigabe erteilt.

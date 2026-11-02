@@ -12,6 +12,15 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.49",
+    date: "2026-11-02",
+    title: "Schnellere Spielauswahl für Sessions vormerken",
+    description: "Eine Ergänzung für die Session-Anlage wurde im Feature-Backlog festgehalten.",
+    changes: [
+      { type: "internal", text: "FEAT-016 aufgenommen: Spiele der eigenen Sammlung sollen sich in der Session-Anlage per Eingabe im Dropdown schneller finden lassen; ein Implementierungsplan steht noch aus." },
+    ],
+  },
+  {
     version: "0.50.48",
     date: "2026-11-02",
     title: "Meistgewählte Spiele im Dashboard zeigen",

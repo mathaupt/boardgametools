@@ -29,6 +29,7 @@ Bedarf zu aktualisieren. Ergebnis am jeweiligen Plan dokumentieren:
 | FEAT-013 | Aktive Identität verständlich machen | Web umgesetzt; Browser-E2E/Viewport-Abnahme offen | [Eine aktive Identität](superpowers/plans/2026-10-31-FEAT-013-aktive-identitaet.md) | Umgesetzt am 01.11.2026; ohne Gastwechsel |
 | FEAT-014 | Suchzustände und Beschriftung der BGG-Suche | Implementiert (Web; Browser-E2E offen) | [Öffentliche BGG-Suche](superpowers/plans/2026-10-31-FEAT-014-bgg-suchzustaende.md) | Am 01.11.2026 freigegeben und umgesetzt; native iOS-Suche nicht Teil dieses öffentlichen Web-Umfangs |
 | FEAT-015 | Top-3-Spiele im Event-Kurzüberblick | Umgesetzt (Web; Browser-Viewportabnahme offen) | [Dashboard Top drei](superpowers/plans/2026-11-02-FEAT-015-dashboard-top-three.md) | Web-Umsetzung am 02.11.2026 freigegeben und umgesetzt; iOS separat |
+| FEAT-016 | Spielauswahl bei Session-Anlage per Eingabe filtern | Anforderung aufgenommen; Plan und Umsetzung offen | Noch nicht erstellt | Keine |
 
 Am 30.10.2026 aufgenommen. Bei der Planung sind Web, iOS sowie angemeldete und
 öffentliche Voting-Ansichten auf Relevanz und bereits vorhandene Teilfunktionen
@@ -37,10 +38,11 @@ zur Umsetzung freigegeben.
 
 ## Offene Abarbeitung
 
-Diese Übersicht fasst den Backlogstand vom 01.11.2026 zusammen. „Offen“ bedeutet
+Die Abschnitte A bis E spiegeln den Abarbeitungsstand vom 01.11.2026 wider.
+Neue offene Feature-Anforderungen werden nachfolgend ergänzt. „Offen“ bedeutet
 hier entweder eine ausdrücklich ausstehende Abnahme, eine gesonderte
 Produkt-/Betriebsfreigabe oder einen separat zu planenden Sicherheitsumfang.
-Es erteilt keine neue Umsetzungsfreigabe.
+Diese Übersicht erteilt keine neue Umsetzungsfreigabe.
 
 ### A. Öffentliche Eventseite im Web abnehmen
 
@@ -133,6 +135,14 @@ und [iOS FEAT-010–013](superpowers/plans/2026-11-01-ios-FEAT-010-013-public-ev
 Die iOS-Pläne sperren öffentliche Gastmutationen bis zur serverseitigen
 BUG-053-Lösung; sie ändern nicht die bestätigte Entscheidung gegen einen
 Gastwechsel in FEAT-013.
+
+### F. Session-Spielauswahl beschleunigen: FEAT-016
+
+Das Spiel-Dropdown in der Session-Anlage soll eine Texteingabe zum Filtern der
+eigenen Sammlung erhalten. Ein Implementierungsplan und eine Umsetzungsfreigabe
+stehen noch aus. Der Umfang betrifft die Spielauswahl; das Spieler-Dropdown,
+die Session-API und Berechtigungen bleiben davon getrennt. Das Feature ist noch
+nicht in die vorgeschlagene Reihenfolge A bis E eingeteilt.
 
 ### Vorgeschlagene Reihenfolge
 
@@ -596,6 +606,46 @@ und Bilder liest sie anschließend nur für die Top drei.
 Impeccable-Detektor meldet keine statischen Findings, TypeScript- und
 Lintprüfung bestanden. Browser-Viewportabnahme wurde nicht ausgeführt, da der
 Browserhost nicht verfügbar war.
+
+## FEAT-016 – Spielauswahl bei Session-Anlage per Eingabe filtern
+
+**Status:** Anforderung aufgenommen; Implementierungsplan und Umsetzung offen.
+**Plattformumfang:** Webformular `/dashboard/sessions/new`; native iOS-Sessionanlage
+bei der Planung separat prüfen.
+**Umsetzungsfreigabe:** Keine erteilt.
+**Bestand:** Das Pflichtfeld „Spiel“ in `session-form-client.tsx` ist ein
+Dropdown mit allen Spielen aus der eigenen Sammlung, sortiert nach Namen. Das
+Optionsmenü hat derzeit kein Such- oder Texteingabefeld. Das Mitspielerfeld
+bleibt außerhalb dieses Features.
+
+**Ziel:** Bei großen Sammlungen das gespielte Brettspiel schneller finden und
+auswählen, ohne sich durch eine lange Optionsliste bewegen zu müssen.
+
+**Anforderung:** Die Spielauswahl soll weiterhin die eigene Sammlung als
+verbindliche Optionsliste verwenden. Zusätzlich soll eine Texteingabe die
+angezeigten Optionen nach Spielnamen filtern, während das Dropdown für die
+Auswahl erhalten bleibt. Freitext allein darf kein gültiger Spielwert sein;
+gespeichert wird weiterhin ausschließlich die ID eines ausgewählten Spiels.
+Der genaue Bedienablauf (Eingabe im geöffneten Menü oder dauerhaft sichtbares
+Suchfeld) und die responsive Darstellung sind im Implementierungsplan
+festzulegen.
+
+**Abnahmekriterien für die spätere Umsetzung:**
+
+- Tippen eines Namensfilters die verfügbaren eigenen Spiele unmittelbar und
+  lässt passende Optionen auswählbar.
+- Session kann nur mit einer ausgewählten Spiel-ID gespeichert werden; ein
+  nicht passender Freitext ist kein gültiger Wert.
+- Tastatur- und Screenreaderbedienung zeigen Eingabe, Trefferzahl, aktive
+  Option, Auswahl und ergebnislosen Suchzustand verständlich an.
+- Suche lässt sich leeren und erneut verwenden; Auswahl und Filterzustand
+  verhalten sich eindeutig.
+- Leere Sammlung, sehr lange Liste, Umlaute/Teilsuche und kein Treffer sind
+  berücksichtigt.
+- Das Mitspieler-Dropdown und Session-API-/Berechtigungsverhalten bleiben
+  außerhalb des Umfangs unverändert.
+- Gezielte Tests prüfen Filterung, Auswahlbindung und barrierefreie Zustände;
+  Impeccable- und Securityprüfung sind im Plan enthalten.
 
 ## Nachverfolgung
 

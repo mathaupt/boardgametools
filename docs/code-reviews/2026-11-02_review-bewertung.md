@@ -12,3 +12,9 @@
 | `npm audit --omit=dev` | 0 Vulnerabilities | Dev-Abhängigkeiten sind nicht Bestandteil dieses gezielten Audits |
 | Review-Evaluator | 10/10, Sicherheit 9,9/10, keine Regression | Automatisierter Quellmuster-Evaluator, kein unabhängiger Penetrationstest |
 | Datenzugriff | Nur nächstes autorisiertes Event; Counts für die Rangfolge, Details nur für Top drei | Stimmen müssen über alle Vorschläge dieses Events aggregiert werden |
+
+## Ergänzung: FEAT-016
+
+Backlog-Aufnahme ohne Codeänderung. Die vorhandene Session-Spielauswahl wurde
+als eigenes, nicht durchsuchbares Dropdown bestätigt; Implementierungsplan und
+Umsetzung sind offen.
