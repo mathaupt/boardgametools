@@ -8,7 +8,7 @@
 | Darstellung / Tests | FEAT-020 umgesetzt; 6/6 gezielte Public-Event-Tests bestanden | Browserhost nicht verfügbar; kein gerenderter Dark-/Light- oder Viewportnachweis |
 | TypeScript / ESLint / Build | Bestanden | ESLint gezielt für geänderte TS/TSX-Dateien |
 | Impeccable | 0 Regex-Findings | Regeln für gerenderte Seiten liefen nicht |
-| Security / Review | Commit-Hook läuft nach dem Staging | Bestehende Hinweise unverändert dokumentieren |
+| Security / Review | 0 Fehler, 0 Vulnerabilities; Evaluator 10/10, keine offenen/neuen Findings und keine Regression | 2 bestehende Hinweise zu Raw SQL und Debug-Routen; Snapshot `history/2026-11-02_1204.json` |
 
 ## BUG-063 – Dashboard-Cache-Datum
 

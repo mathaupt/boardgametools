@@ -11,7 +11,8 @@
 - [x] TypeScript, gezieltes ESLint, Produktionsbuild und statischer Impeccable-Detektor abgeschlossen.
 - [x] Browserprüfung angefragt; Browserhost nicht verfügbar, gerenderte Light/Dark-/Viewportabnahme offen dokumentiert.
 - [x] Backlog, Feature-Doku, Plan, Changelog und Review-Dokumentation aktualisiert.
-- [ ] Security- und Regressionsevaluator über Commit-Hook abschließen.
+- [x] Commit `d93118a`: Security-Check ohne Fehler und ohne Dependency-Vulnerabilities; zwei vorhandene Raw-SQL-/Debug-Routen-Hinweise.
+- [x] Review-Evaluator 10/10, Sicherheit 9,9/10, 0 offen/neu und keine Regression; Snapshot `history/2026-11-02_1204.json`.
 
 ## BUG-063 Dashboard-Datumsregression
 

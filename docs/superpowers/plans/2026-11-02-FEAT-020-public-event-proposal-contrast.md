@@ -89,7 +89,7 @@ expect(row).toHaveClass("border-border", "bg-card", "text-card-foreground");
 - [x] **Schritt 3: Impeccable statisch prüfen.** 0 Regex-Findings; Detektor weist darauf hin, dass Regeln für gerenderte Seiten nicht liefen. Security-Check erfolgt über den Commit-Hook.
 - [x] **Schritt 4: Theme-/Viewportabnahme versuchen.** Browserhost meldet `The browser access host is unavailable`; keine gerenderte Light/Dark- oder Viewportabnahme behauptet.
 - [x] **Schritt 5: Feature- und Review-Dokumentation abschließen.** Backlog, Feature-Doku, Changelog, Review-Snapshot, Bewertung und Prozessnotizen mit tatsächlichen Ergebnissen aktualisiert.
-- [ ] **Schritt 6: Commit und Regressionsevaluator.** Änderungen committen; Pre-Commit-Tests, Security-Check und `npm run review-evaluate:regression` müssen ohne neue Findings oder Regressionen enden.
+- [x] **Schritt 6: Commit und Regressionsevaluator.** Commit `d93118a`; Pre-Commit-Tests und Security-Check bestanden. Review-Evaluator: 10/10, keine Regression, Snapshot `docs/code-reviews/history/2026-11-02_1204.json`.
 
 **Bisheriger Prüfnachweis:** RED für beide Fälle beobachtet, danach neue
 Darstellungstests und angrenzende Public-Event-Tests 6/6 bestanden. TypeScript,

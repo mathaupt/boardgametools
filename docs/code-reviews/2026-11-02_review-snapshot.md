@@ -6,7 +6,8 @@
 - FEAT-020 freigegeben und umgesetzt: BGG- und Sammlungstreffer verwenden `bg-card`, `text-card-foreground` und `border-border`.
 - Gezielte Public-Event-Tests: 6/6 bestanden; TypeScript, ESLint und Build bestanden.
 - Impeccable-Detektor: 0 Regex-Findings; gerenderte Prüfung nicht möglich, Browserhost nicht verfügbar.
-- Security- und Regressionsevaluator folgen im Commit-Hook.
+- Commit-Hook: Security-Check ohne Fehler; 0 Vulnerabilities, 2 bestehende Hinweise zu Raw SQL und Debug-Routen.
+- Review-Evaluator: 10/10, Sicherheit 9,9/10, 0 offen/neu und keine Regression. Snapshot `history/2026-11-02_1204.json`.
 
 ## BUG-063 – Dashboard-Cache-Datum
 
