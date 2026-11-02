@@ -31,17 +31,17 @@ export default defineConfig({
         "**/*.d.ts",
       ],
       thresholds: {
-        // Global baseline – lower due to API routes inclusion; prevents regression
-        statements: 22,
-        branches: 22,
-        functions: 22,
-        lines: 22,
+        // Global Ratchet – next checkpoint after the verified package-level gain.
+        statements: 50,
+        branches: 50,
+        functions: 60,
+        lines: 55,
         // Stricter thresholds for core library code
         "src/lib/**": {
           statements: 50,
-          branches: 45,
-          functions: 50,
-          lines: 50,
+          branches: 50,
+          functions: 60,
+          lines: 55,
         },
       },
     },

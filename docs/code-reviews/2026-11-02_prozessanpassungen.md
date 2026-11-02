@@ -1,5 +1,16 @@
 # Prozessanpassungen – FEAT-015
 
+## FEAT-018 Coveragepaket 1
+
+- [x] Frische Baseline gegen `c497641` aufgenommen und Coverage-Inventar unverändert gelassen.
+- [x] Globales und `src/lib`-Gate auf 50/50/60/55 % angehoben; der frische Coverage-Lauf besteht.
+- [x] CLI-Override mit 100 % Statements scheitert am tatsächlichen Messwert; normaler Gate-Lauf bleibt grün.
+- [x] Auth-, Apple-Auth-, Einladungs-, Serien-DTO-, Storage-, Rate-Limit-, Games-, Sessions-, Event-, Gruppen- und Barcodeverhalten erweitert.
+- [ ] 80 % in allen globalen und `src/lib`-Metriken sowie CI-Coverage-Artefakt erreichen.
+- [x] Typecheck und gezieltes ESLint bestanden; Security-Check ohne Fehler.
+- [x] Separater Registry-Audit meldet 0 Vulnerabilities; freigegebener Regressionsevaluator 10/10, 0 offen/neu und keine Regression (`history/2026-11-02_1223.json`).
+- [ ] Commit-Hook und Abschluss-Snapshot nach Commit bestätigen.
+
 ## Public Event – Kontrast der Spielvorschläge
 
 - [x] Aktuelle Komponenten und Club-Programme-Farbrollen geprüft.
@@ -98,3 +109,6 @@ Vercel-Blob-Hosts sind separat offen; es wurde keine Datenbank oder API geänder
 Erfolgsmessung: Die Web-Spielauswahl filtert lokal und speichert ausschließlich
 eine gültige ID aus den aktuellen Optionen. Die bestehende Serverautorisierung
 bleibt aktiv. Responsive und manuelle Screenreaderabnahmen sind offen.
+
+
+- [x] Evaluator erneut mit Registryzugriff ausgeführt: 10/10, Sicherheit 9,9/10, 0 offene/neue Findings, keine Regression; Snapshot `history/2026-11-02_1234.json`.

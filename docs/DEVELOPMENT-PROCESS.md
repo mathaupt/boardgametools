@@ -631,19 +631,17 @@ fehlgeschlagenen Test schreiben. Maßgeblich sind die Skills
 
 ### Coverage-Ziel FEAT-018
 
-Der gemessene Ausgangsstand vom 02.11.2026 beträgt global 46,84 % Statements,
-44,59 % Branches, 48,65 % Functions und 48,08 % Lines (849 Tests in 117
-Dateien; 91 erfasste Produktionsdateien haben derzeit 0 % Lines. `src/lib`
-liegt bei 81,69 % Statements, 75,65 % Branches, 83,16 %
-Functions und 83,67 % Lines; die dortige aktuelle Schwelle beträgt 50 % für
-Statements/Functions/Lines und 45 % für Branches. Das langfristige Ziel ist
+Der Planmessstand vom 02.11.2026 gegen Commit `c497641` beträgt global
+48,56 % Statements, 45,95 % Branches, 51,27 % Functions und 49,78 % Lines
+(891 Tests in 124 Dateien; 89 von 248 erfassten Produktionsdateien hatten 0 %
+Lines). Nach den FEAT-018-Testpaketen liegen 953 Tests in 136 Dateien bei global
+54,90/51,60/61,07/56,18 %; `src/lib` liegt bei 88,23/81,79/89,16/90,95 %.
+Das aktuelle globale und `src/lib`-Gate liegt bei 50/50/60/55 %.
+Das langfristige Ziel ist
 mindestens 80 % in allen vier Metriken für die explizit erfassten,
-ausführbaren Produktionsmodule. Global sind aktuell 22 % je Metrik
-konfiguriert; das bestehende `src/lib`-Gate beträgt 50 % für
-Statements/Functions/Lines und 45 % für Branches. Der frühere Planhinweis auf
+ausführbaren Produktionsmodule. Der frühere Planhinweis auf
 ein fehlendes globales Gate war falsch und wurde beim Quellenabgleich
-korrigiert. Geplante Zwischenstufen: zuerst das bestehende Gate auf
-46/44/48/48 % (Statements/Branches/Functions/Lines) anheben, dann mindestens 55 %,
+korrigiert. Aktueller Ratchet-Schritt: 50/50/60/55 %; danach mindestens 55 %,
 65 %, 72 % und schließlich 80 % je Metrik. Der Nenner darf nicht durch
 unbegründetes Ausschließen ungetesteter Laufzeitdateien verkleinert werden;
 Framework-/Generierungsdateien, reine Daten und UI-Primitiven dürfen nur mit
@@ -655,8 +653,8 @@ im [FEAT-018-Plan](superpowers/plans/2026-11-02-FEAT-018-coverage-80.md).
 | TypeScript Errors | 0 | `tsc --noEmit` |
 | ESLint Errors + Warnings | 0 | `eslint src/ --max-warnings 0` |
 | Unit Tests | 100% bestanden | `npm test` |
-| Coverage (global, aktuell) | >= 22% je Statements/Branches/Functions/Lines; Ziel 80% | `npm run test:coverage` |
-| Coverage (`src/lib`, aktuell) | >= 50% Statements/Functions/Lines und >= 45% Branches; Ziel ebenfalls 80% | `npm run test:coverage` |
+| Coverage (global, aktuell) | >= 50% Statements/Branches, 60% Functions, 55% Lines; Ziel 80% | `npm run test:coverage` |
+| Coverage (`src/lib`, aktuell) | >= 50% Statements/Branches, 60% Functions, 55% Lines; Ziel ebenfalls 80% | `npm run test:coverage` |
 | npm audit (prod) | 0 high/critical | `npm audit --omit=dev` |
 | API-Route-Testabdeckung | >= 1 Test/Methode | Manuell pruefen |
 | Dateien > 400 Zeilen | 0 | Automatisierbar |

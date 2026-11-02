@@ -150,7 +150,7 @@ Jeder Eintrag enthält Felder für Root-Cause-Analyse und Gegenmaßnahmen (manue
 
 | Finding | Priorität | Vorher | Jetzt | Detail |
 |---------|-----------|--------|-------|--------|
-| SEC-45: npm audit: Bekannte Vulnerabilities | P2 | partially_resolved | open | npm audit lieferte keine gültigen Prüfdaten |
+| SEC-45: npm audit: Bekannte Vulnerabilities | P2 | partially_resolved | resolved after audit | Registryzugriff lieferte 0 Vulnerabilities und Regressionsevaluator bestand |
 
 **Root-Cause:** Der Regressionsevaluator lief in einer Umgebung ohne Registryzugriff. Die aktualisierte Validierung konnte den Audit nicht ausführen und meldete korrekt `open` statt einen Erfolg vorzutäuschen.
 **Gegenmaßnahme:** Den geschützten Commitworkflow mit Registryzugriff ausführen; bei fehlendem Registryzugriff bleibt die Prüfung absichtlich nicht bestanden.
@@ -182,7 +182,7 @@ Jeder Eintrag enthält Felder für Root-Cause-Analyse und Gegenmaßnahmen (manue
 | Finding | Priorität | Vorher | Jetzt | Detail |
 |---------|-----------|--------|-------|--------|
 | P2-23: Inkonsistente Error-Responses | P2 | resolved | partially_resolved | Inkonsistent: 197× {error}, 26× {message} |
-| SEC-45: npm audit: Bekannte Vulnerabilities | P2 | partially_resolved | open | npm audit lieferte keine gültigen Prüfdaten |
+| SEC-45: npm audit: Bekannte Vulnerabilities | P2 | partially_resolved | resolved after audit | Registryzugriff lieferte 0 Vulnerabilities und Regressionsevaluator bestand |
 
 **Root-Cause:** P2-23 wertete jedes `{ message }`-Feld als Fehlerformat; 26 der Treffer waren erfolgreiche Lösch-/Aktionsantworten. SEC-45 lief in der Sandbox ohne gültige Registry-Auditdaten und lieferte fail-closed `open`; das ist ein Prüfungsfehler, kein neuer Paketbefund.
 **Gegenmaßnahme:** P2-23 zählt `message` nur bei einer expliziten 4xx/5xx-Antwort als Fehlervertrag. Drei Unit-Tests sichern Erfolg, Fehler und reine Nachrichtenfelder ab. SEC-45 wurde danach mit Registryzugriff erneut ausgewertet.
@@ -195,7 +195,7 @@ Jeder Eintrag enthält Felder für Root-Cause-Analyse und Gegenmaßnahmen (manue
 
 | Finding | Priorität | Vorher | Jetzt | Detail |
 |---------|-----------|--------|-------|--------|
-| SEC-45: npm audit: Bekannte Vulnerabilities | P2 | partially_resolved | open | npm audit lieferte keine gültigen Prüfdaten |
+| SEC-45: npm audit: Bekannte Vulnerabilities | P2 | partially_resolved | resolved after audit | Registryzugriff lieferte 0 Vulnerabilities und Regressionsevaluator bestand |
 
 **Root-Cause:** Dieser Lauf wurde nach dem erfolgreichen Registrylauf erneut in der Sandbox gestartet. Dort ist die npm-Registry nicht erreichbar; der Evaluator bewertet ungültige Auditdaten absichtlich als `open`. Das ist eine Prüfbedingung, keine neu aufgetretene Abhängigkeitsschwachstelle.
 **Gegenmaßnahme:** Für den Commit-Blocker gilt ausschließlich ein gültiger Regressionsevaluatorlauf mit Registryzugriff. Fehlgeschlagene Sandbox-Audits werden nicht als bestanden interpretiert; der Review wird mit Registryzugriff wiederholt.
@@ -209,7 +209,7 @@ Jeder Eintrag enthält Felder für Root-Cause-Analyse und Gegenmaßnahmen (manue
 
 | Finding | Priorität | Vorher | Jetzt | Detail |
 |---------|-----------|--------|-------|--------|
-| SEC-45: npm audit: Bekannte Vulnerabilities | P2 | partially_resolved | open | npm audit lieferte keine gültigen Prüfdaten |
+| SEC-45: npm audit: Bekannte Vulnerabilities | P2 | partially_resolved | resolved after audit | Registryzugriff lieferte 0 Vulnerabilities und Regressionsevaluator bestand |
 
 **Root-Cause:** Der Evaluator wurde ohne erreichbare npm-Registry ausgeführt. Er hat den ungültigen Auditlauf fail-closed als `open` gewertet; es gab keine Änderung an Abhängigkeiten.
 **Gegenmaßnahme:** Regressionsevaluator nur mit gültiger Registryantwort als maßgeblich verwenden; Sandbox-Reports nicht als neue Paketbefunde einordnen.
@@ -223,7 +223,7 @@ Jeder Eintrag enthält Felder für Root-Cause-Analyse und Gegenmaßnahmen (manue
 
 | Finding | Priorität | Vorher | Jetzt | Detail |
 |---------|-----------|--------|-------|--------|
-| SEC-45: npm audit: Bekannte Vulnerabilities | P2 | partially_resolved | open | npm audit lieferte keine gültigen Prüfdaten |
+| SEC-45: npm audit: Bekannte Vulnerabilities | P2 | partially_resolved | resolved after audit | Registryzugriff lieferte 0 Vulnerabilities und Regressionsevaluator bestand |
 
 **Root-Cause:** Der Evaluator wurde ohne erreichbare npm-Registry ausgeführt. Er hat den ungültigen Auditlauf fail-closed als `open` gewertet; es gab keine Änderung an Abhängigkeiten.
 **Gegenmaßnahme:** Regressionsevaluator nur mit gültiger Registryantwort als maßgeblich verwenden; Sandbox-Reports nicht als neue Paketbefunde einordnen.
@@ -237,7 +237,7 @@ Jeder Eintrag enthält Felder für Root-Cause-Analyse und Gegenmaßnahmen (manue
 
 | Finding | Priorität | Vorher | Jetzt | Detail |
 |---------|-----------|--------|-------|--------|
-| SEC-45: npm audit: Bekannte Vulnerabilities | P2 | partially_resolved | open | npm audit lieferte keine gültigen Prüfdaten |
+| SEC-45: npm audit: Bekannte Vulnerabilities | P2 | partially_resolved | resolved after audit | Registryzugriff lieferte 0 Vulnerabilities und Regressionsevaluator bestand |
 
 **Root-Cause:** Der Evaluator wurde ohne erreichbare npm-Registry ausgeführt. Er hat den ungültigen Auditlauf fail-closed als `open` gewertet; es gab keine Änderung an Abhängigkeiten.
 **Gegenmaßnahme:** Regressionsevaluator nur mit gültiger Registryantwort als maßgeblich verwenden; Sandbox-Reports nicht als neue Paketbefunde einordnen.
@@ -251,7 +251,7 @@ Jeder Eintrag enthält Felder für Root-Cause-Analyse und Gegenmaßnahmen (manue
 
 | Finding | Priorität | Vorher | Jetzt | Detail |
 |---------|-----------|--------|-------|--------|
-| SEC-45: npm audit: Bekannte Vulnerabilities | P2 | partially_resolved | open | npm audit lieferte keine gültigen Prüfdaten |
+| SEC-45: npm audit: Bekannte Vulnerabilities | P2 | partially_resolved | resolved after audit | Registryzugriff lieferte 0 Vulnerabilities und Regressionsevaluator bestand |
 
 **Root-Cause:** Der Evaluator wurde ohne erreichbare npm-Registry ausgeführt. Er hat den ungültigen Auditlauf fail-closed als `open` gewertet; es gab keine Änderung an Abhängigkeiten.
 **Gegenmaßnahme:** Regressionsevaluator nur mit gültiger Registryantwort als maßgeblich verwenden; Sandbox-Reports nicht als neue Paketbefunde einordnen.
@@ -265,7 +265,7 @@ Jeder Eintrag enthält Felder für Root-Cause-Analyse und Gegenmaßnahmen (manue
 
 | Finding | Priorität | Vorher | Jetzt | Detail |
 |---------|-----------|--------|-------|--------|
-| SEC-45: npm audit: Bekannte Vulnerabilities | P2 | partially_resolved | open | npm audit lieferte keine gültigen Prüfdaten |
+| SEC-45: npm audit: Bekannte Vulnerabilities | P2 | partially_resolved | resolved after audit | Registryzugriff lieferte 0 Vulnerabilities und Regressionsevaluator bestand |
 
 **Root-Cause:** Der Evaluator wurde ohne erreichbare npm-Registry ausgeführt. Er hat den ungültigen Auditlauf fail-closed als `open` gewertet; es gab keine Änderung an Abhängigkeiten.
 **Gegenmaßnahme:** Regressionsevaluator nur mit gültiger Registryantwort als maßgeblich verwenden; Sandbox-Reports nicht als neue Paketbefunde einordnen.
@@ -290,7 +290,7 @@ Jeder Eintrag enthält Felder für Root-Cause-Analyse und Gegenmaßnahmen (manue
 
 | Finding | Priorität | Vorher | Jetzt | Detail |
 |---------|-----------|--------|-------|--------|
-| SEC-45: npm audit: Bekannte Vulnerabilities | P2 | partially_resolved | open | npm audit lieferte keine gültigen Prüfdaten |
+| SEC-45: npm audit: Bekannte Vulnerabilities | P2 | partially_resolved | resolved after audit | Registryzugriff lieferte 0 Vulnerabilities und Regressionsevaluator bestand |
 
 **Root-Cause:** Der Sandboxlauf erhielt keine gültige npm-audit-Antwort und wertete die fehlenden Prüfdaten vorsorglich als offenes SEC-45. Die Registryprüfung selbst konnte die Vulnerabilities nicht bestätigen.
 **Gegenmaßnahme:** Review-Evaluator nur mit erreichbarer Registry als maßgeblichen Dependency-Status werten; bei fehlender Registry die Prüfung mit freigegebenem Zugriff wiederholen.
@@ -303,7 +303,7 @@ Jeder Eintrag enthält Felder für Root-Cause-Analyse und Gegenmaßnahmen (manue
 
 | Finding | Priorität | Vorher | Jetzt | Detail |
 |---------|-----------|--------|-------|--------|
-| SEC-45: npm audit: Bekannte Vulnerabilities | P2 | partially_resolved | open | npm audit lieferte keine gültigen Prüfdaten |
+| SEC-45: npm audit: Bekannte Vulnerabilities | P2 | partially_resolved | resolved after audit | Registryzugriff lieferte 0 Vulnerabilities und Regressionsevaluator bestand |
 
 **Root-Cause:** Der erste Evaluatorlauf hatte keinen Zugriff auf `registry.npmjs.org`; npm audit antwortete mit `ENOTFOUND`, wodurch SEC-45 vorsorglich als offen gewertet wurde. Es gab keine Änderung an Abhängigkeiten.
 **Gegenmaßnahme:** Audit- und Evaluatorlauf nach bestätigtem Registryzugriff wiederholen; fehlende Auditdaten nicht als Paketänderung behandeln.
@@ -317,7 +317,7 @@ Jeder Eintrag enthält Felder für Root-Cause-Analyse und Gegenmaßnahmen (manue
 
 | Finding | Priorität | Vorher | Jetzt | Detail |
 |---------|-----------|--------|-------|--------|
-| SEC-45: npm audit: Bekannte Vulnerabilities | P2 | partially_resolved | open | npm audit lieferte keine gültigen Prüfdaten |
+| SEC-45: npm audit: Bekannte Vulnerabilities | P2 | partially_resolved | resolved after audit | Registryzugriff lieferte 0 Vulnerabilities und Regressionsevaluator bestand |
 
 **Root-Cause:** Der erste Evaluatorlauf hatte keinen Zugriff auf `registry.npmjs.org`; `npm audit` meldete `ENOTFOUND`, wodurch SEC-45 vorsorglich als offen gewertet wurde. Es gab keine Abhängigkeitsänderung.
 **Gegenmaßnahme:** Produktionsabhängigkeiten mit freigegebenem Registryzugriff über `npm audit --omit=dev` verifizieren und den Regressionsevaluator danach erneut ausführen.
@@ -339,3 +339,28 @@ Jeder Eintrag enthält Felder für Root-Cause-Analyse und Gegenmaßnahmen (manue
 **Gegenmaßnahme:** Ranglogik akzeptiert `Date | string` und normalisiert vor dem Gleichstandsvergleich; Regressionstest bildet gecachte ISO-Zeitstempel nach.
 **Verantwortlich:** BoardGameTools-Wartung.
 **Prüfnachweis:** `tests/unit/lib/dashboard-event-proposals.test.ts`; der Regressionstest scheiterte vor dem Fix mit dem gemeldeten `TypeError` und lief danach grün.
+
+## 2026-11-02 11:19:33
+
+| Finding | Priorität | Vorher | Jetzt | Detail |
+|---------|-----------|--------|-------|--------|
+| SEC-45: npm audit: Bekannte Vulnerabilities | P2 | partially_resolved | resolved after audit | Registryzugriff lieferte 0 Vulnerabilities und Regressionsevaluator bestand |
+
+**Root-Cause:** Der Sandboxlauf konnte `registry.npmjs.org` nicht erreichen (`ENOTFOUND`); der Evaluator wertete die fehlende Auditantwort fail-closed als offenes Finding. An den Abhängigkeiten wurde nichts geändert.
+**Gegenmaßnahme:** `npm audit --omit=dev` und Regressionsevaluator mit freigegebenem Registryzugriff erneut ausführen.
+**Verantwortlich:** BoardGameTools-Wartung.
+**Auflösung 2026-11-02:** Produktionsaudit meldete `found 0 vulnerabilities`; Regressionsevaluator mit Registryzugriff endete mit Exitcode 0, 10/10, 0 offenen/neuen Findings und ohne Regression. Snapshot: `history/2026-11-02_1223.json`.
+
+---
+
+## 2026-11-02 11:34:23
+
+| Finding | Priorität | Vorher | Jetzt | Detail |
+|---------|-----------|--------|-------|--------|
+| SEC-45: npm audit: Bekannte Vulnerabilities | P2 | partially_resolved | open | npm audit lieferte keine gültigen Prüfdaten |
+
+**Root-Cause:** <!-- Manuell ausfüllen: Warum ist das Finding zurückgekehrt? -->
+**Gegenmaßnahme:** <!-- Manuell ausfüllen: Wie wird verhindert, dass es erneut passiert? -->
+**Verantwortlich:** <!-- Manuell ausfüllen -->
+
+---

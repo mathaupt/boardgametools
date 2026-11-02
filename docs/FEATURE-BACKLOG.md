@@ -31,7 +31,7 @@ Bedarf zu aktualisieren. Ergebnis am jeweiligen Plan dokumentieren:
 | FEAT-015 | Top-3-Spiele im Event-Kurzüberblick | Umgesetzt (Web; Browser-Viewportabnahme offen) | [Dashboard Top drei](superpowers/plans/2026-11-02-FEAT-015-dashboard-top-three.md) | Web-Umsetzung am 02.11.2026 freigegeben und umgesetzt; iOS separat |
 | FEAT-016 | Spielauswahl bei Session-Anlage per Eingabe filtern | Web umgesetzt; manuelle Browser-/VoiceOver-Abnahme offen | [Durchsuchbare Spielauswahl](superpowers/plans/2026-11-02-FEAT-016-session-spielsuche.md) | Web am 02.11.2026 durch „implementiere FEAT-016“ freigegeben und umgesetzt; iOS separat planen |
 | FEAT-017 | Spielcover in der Sessions-Übersicht anzeigen | Web umgesetzt; Browser-/Viewportabnahme offen | [Cover in Sessionkarten](superpowers/plans/2026-11-02-FEAT-017-session-cover.md) | Web-Umsetzung am 02.11.2026 freigegeben und umgesetzt; iOS separat |
-| FEAT-018 | Testabdeckung schrittweise auf 80 % erhöhen | Plan erstellt; Governance und Skills ergänzt; Testausbau offen | [Coverage-Ziel 80 %](superpowers/plans/2026-11-02-FEAT-018-coverage-80.md) | Keine |
+| FEAT-018 | Testabdeckung schrittweise auf 80 % erhöhen | In Umsetzung; Gate 50/50/60/55 erreicht; weitere UI-/API-Pakete offen | [Coverage-Ziel 80 %](superpowers/plans/2026-11-02-FEAT-018-coverage-80.md) | Durch „implementiere FEAT-018“ am 02.11.2026 freigegeben |
 | FEAT-019 | Spracheingabe für Suche und Session-Anlage | Konzept dokumentiert; Plan und Umsetzung offen | [Spracheingabe-Konzept](superpowers/specs/2026-11-02-spracheingabe-design.md) | Keine |
 | FEAT-020 | Lesbare Trefferflächen für öffentliche Spielvorschläge | Web umgesetzt; gerenderte Theme-/Viewportabnahme offen | [Kontrast der Spielvorschläge](superpowers/plans/2026-11-02-FEAT-020-public-event-proposal-contrast.md) | Web am 02.11.2026 freigegeben und umgesetzt; iOS nicht betroffen |
 
@@ -165,13 +165,14 @@ und mobile Zeilen-/Kartenbreiten als Prüfgegenstände fest. Der Plan liegt für
 
 ### H. Testqualität und 80-%-Coverage: FEAT-018
 
-Ausgangsstand am 02.11.2026: 849 Unit-Tests in 117 Dateien; global 46,84 %
-Statements, 44,59 % Branches, 48,65 % Functions und 48,08 % Lines; 91 erfasste
-Produktionsdateien liegen bei 0 % Lines. Langfristiges
-Ziel sind mindestens 80 % in allen vier Metriken für den nachvollziehbar
-festgelegten Anwendungscode. Der stufenweise Plan ist erstellt. Die
-Coverage-Schranken (global bereits 22 % je Metrik) bleiben zunächst unverändert; schrittweise Erhöhung und
-Tests für bisher unbedeckte Bereiche stehen aus. TDD wurde als verbindliche
+Erneuerter Messstand am 02.11.2026 gegen Commit `c497641`: 891 Unit-Tests in
+124 Dateien; global 48,56/45,95/51,27/49,78 %. Nach den Testpaketen stehen
+953 Tests/136 Dateien bei 54,90/51,60/61,07/56,18 % global; `src/lib` liegt bei
+88,23/81,79/89,16/90,95 %. Langfristiges Ziel sind mindestens 80 % in allen
+vier Metriken für den nachvollziehbar festgelegten Anwendungscode. Das Gate
+liegt jetzt bei 50/50/60/55 %; der 100-%-CLI-Override scheitert wie erwartet
+an der realen Abdeckung. Weitere schrittweise Erhöhungen und Tests für bisher unbedeckte
+Bereiche stehen aus. TDD wurde als verbindliche
 Agentenregel ergänzt. Zwei Stack-Skills wurden lokal aufgenommen.
 
 ### I. Spracheingabe: FEAT-019
@@ -778,19 +779,20 @@ ohne Datum, Titel, Ergebnisse und Aktionen aus dem Blick zu verlieren.
 
 ## FEAT-018 – Testabdeckung schrittweise auf 80 % erhöhen
 
-**Status:** Plan überarbeitet; Umsetzung offen.
+**Status:** In Umsetzung; globales und `src/lib`-Gate bei 50/50/60/55 %, Ausbau auf 80 % läuft.
 **Umsetzungsplan:** [Coverage-Ziel 80 %](superpowers/plans/2026-11-02-FEAT-018-coverage-80.md).
 **Plattformumfang:** Vitest-erfasster Web-/Backend-Runtimecode; Browser-E2E und iOS-Verträge als separate Nachweise.
-**Umsetzungsfreigabe:** Keine erteilt.
+**Umsetzungsfreigabe:** Am 02.11.2026 durch „implementiere FEAT-018“ erteilt.
 
-**Aktualitätsprüfung 02.11.2026:** Global sind bereits 22 % je Metrik
-konfiguriert; `src/lib` verlangt 50 % Statements/Functions/Lines und 45 %
-Branches. Die frühere Aussage über ein fehlendes globales Gate wurde korrigiert.
-Die historischen Messwerte sind vor Umsetzung, insbesondere nach FEAT-016/017,
-zu erneuern.
+**Aktualitätsprüfung vor Umsetzung 02.11.2026:** Gegen Commit `c497641`,
+`vitest.config.ts`, Testinventar und Coveragebericht nach FEAT-016/017/020
+geprüft. `npm run test:coverage` lief mit 891 Tests in 124 Dateien erfolgreich;
+global 48,56/45,95/51,27/49,78 %, `src/lib` 84,21/74,49/85,75/86,53 %.
+Das Inventar enthält 248 Runtime-Dateien, 89 davon mit 0 % Lines. Der Plan ist
+aktuell; die erste Ratchet-Stufe 50/50/60/55 % ist durch den aktuellen Coverage-Lauf gedeckt.
 
-**Plan:** Vorhandene Gates zunächst auf 46/44/48/48 % global erhöhen, sofern der
-frische Bericht dies trägt. Danach Testpakete nach Risiko bearbeiten und alle
+**Plan:** Das globale Gate und das `src/lib`-Gate wurden auf 50/50/60/55 % erhöht. Danach Testpakete
+nach Risiko bearbeiten und alle
 vier Metriken stufenweise auf 55, 65, 72 und 80 % anheben. Quelleninventar,
 Messlücken, Charakterisierungstests und TDD für Fehlerkorrekturen sind im Plan
 festgelegt. Neue eigene Session-Komponenten werden automatisch mitgemessen.

@@ -12,6 +12,15 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.57",
+    date: "2026-11-02",
+    title: "Testabdeckung gezielt ausbauen",
+    description: "Zentrale Sicherheits-, Daten- und Bedienpfade erhalten zusätzliche Verhaltenstests; das Coverage-Gate steigt auf den aktuellen Messstand.",
+    changes: [
+      { type: "internal", text: "FEAT-018 erhöht das Coverage-Gate global und für Kernmodule auf 50 % Statements/Branches, 60 % Functions und 55 % Lines. Neue Tests decken Auth, Events, Spiele, Sessions, Gruppen, Barcode-Ergebnisse und Provider-Fallbacks ab." },
+    ],
+  },
+  {
     version: "0.50.56",
     date: "2026-11-02",
     title: "Öffentliche Spielvorschläge besser lesbar machen",

@@ -1,5 +1,16 @@
 # Review-Snapshot – FEAT-015 Dashboard-Top-drei (0.50.48)
 
+## FEAT-018 – Coveragepaket 1 (0.50.57)
+
+- Globales und `src/lib`-Coverage-Gate auf 50/50/60/55 % angehoben.
+- 953/953 Tests in 136 Dateien; global 54,90/51,60/61,07/56,18 %.
+- `src/lib`: 88,23/81,79/89,16/90,95 %; alle vier Metriken überschreiten 80 %.
+- Bibliotheks-, Spiele-, Session-, Event-, Gruppen- und Barcodepfade ergänzt; 62 neue Tests seit Planbaseline.
+- 100-%-CLI-Override blockiert erwartungsgemäß; keine Laufzeitkorrektur oder Datenbankänderung in diesem Paket.
+- `npm audit --omit=dev`: 0 Vulnerabilities. Regressionsevaluator nach Registryfreigabe: 10/10, Sicherheit 9,9/10, 0 offene/neue Findings, keine Regression; Snapshot `history/2026-11-02_1234.json`.
+- Security-Check: 0 Fehler, 3 bestehende Warnungen (Audit ohne Registry im Sandboxlauf, Raw SQL, Debug-Routen); separater Registry-Audit sauber.
+- Gezieltes ESLint und Security-Check bestanden. Typecheck fand ungültige `exact`-Optionen in vier neu angelegten Testabfragen; behoben, Typecheck wird erneut ausgeführt. Commit-Hook steht noch aus.
+
 ## Public Event – Kontrast der Spielvorschläge
 
 - Design-Spec für semantische Kartenflächen auf BGG- und Sammlungstreffern erstellt.

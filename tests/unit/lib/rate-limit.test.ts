@@ -7,6 +7,9 @@ describe("rate-limit", () => {
 
   afterEach(() => {
     vi.useRealTimers();
+    vi.unstubAllEnvs();
+    vi.doUnmock("@upstash/ratelimit");
+    vi.doUnmock("@upstash/redis");
     vi.resetModules();
   });
 
@@ -116,6 +119,58 @@ describe("rate-limit", () => {
       const { rateLimitResponse } = await freshImport();
       const response = rateLimitResponse(1_500);
       expect(response.headers.get("Retry-After")).toBe("2");
+    });
+  });
+
+  describe("checkRateLimitAsync with Upstash", () => {
+    async function importWithUpstash(limit: ReturnType<typeof vi.fn>) {
+      vi.stubEnv("UPSTASH_REDIS_REST_URL", "https://redis.test");
+      vi.stubEnv("UPSTASH_REDIS_REST_TOKEN", "test-token");
+      const slidingWindow = vi.fn(() => "sliding-window");
+      vi.doMock("@upstash/ratelimit", () => ({
+        Ratelimit: class {
+          static slidingWindow = slidingWindow;
+          constructor() { return { limit }; }
+        },
+      }));
+      vi.doMock("@upstash/redis", () => ({
+        Redis: class { static fromEnv = vi.fn(() => ({ connection: "redis" })); },
+      }));
+      return { ...(await freshImport()), slidingWindow };
+    }
+
+    it("uses the shared Redis limiter and returns its success result", async () => {
+      const limit = vi.fn().mockResolvedValue({ success: true, remaining: 4, reset: Date.now() + 10_000 });
+      const { checkRateLimitAsync, slidingWindow } = await importWithUpstash(limit);
+
+      await expect(checkRateLimitAsync("user-redis", 5, 1_500)).resolves.toEqual({
+        allowed: true,
+        retryAfterMs: 0,
+      });
+      expect(slidingWindow).toHaveBeenCalledWith(5, "2 s");
+      expect(limit).toHaveBeenCalledWith("user-redis");
+    });
+
+    it("uses Redis reset time for blocked requests", async () => {
+      const reset = Date.now() + 7_000;
+      const limit = vi.fn().mockResolvedValue({ success: false, remaining: 0, reset });
+      const { checkRateLimitAsync } = await importWithUpstash(limit);
+
+      await expect(checkRateLimitAsync("blocked-user", 2, 5_000)).resolves.toMatchObject({
+        allowed: false,
+        retryAfterMs: expect.any(Number),
+      });
+      expect(limit).toHaveBeenCalledWith("blocked-user");
+    });
+
+    it("falls back to the in-memory limiter if the Redis client cannot initialize", async () => {
+      vi.stubEnv("UPSTASH_REDIS_REST_URL", "https://redis.test");
+      vi.stubEnv("UPSTASH_REDIS_REST_TOKEN", "test-token");
+      vi.doMock("@upstash/ratelimit", () => { throw new Error("package unavailable"); });
+      const { checkRateLimitAsync } = await freshImport();
+
+      await expect(checkRateLimitAsync("fallback-user", 1)).resolves.toEqual({ allowed: true, retryAfterMs: 0 });
+      await expect(checkRateLimitAsync("fallback-user", 1)).resolves.toMatchObject({ allowed: false });
     });
   });
 });
