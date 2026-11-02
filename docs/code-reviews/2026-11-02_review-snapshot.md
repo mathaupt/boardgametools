@@ -1,5 +1,10 @@
 # Review-Snapshot – FEAT-015 Dashboard-Top-drei (0.50.48)
 
+## Public Event – Kontrast der Spielvorschläge
+
+- Design-Spec für semantische Kartenflächen auf BGG- und Sammlungstreffern erstellt.
+- Umsetzung und Laufzeittests stehen nach Spec-Prüfung aus.
+
 ## BUG-063 – Dashboard-Cache-Datum
 
 - Regressionstest reproduzierte Digest `113253834`: `createdAt.getTime is not a function` bei gecachtem ISO-String.

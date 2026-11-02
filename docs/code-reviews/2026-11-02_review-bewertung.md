@@ -1,5 +1,12 @@
 # Bewertung – FEAT-015 Dashboard-Top-drei
 
+## Public Event – Kontrast der Spielvorschläge
+
+| Prüffeld | Ergebnis | Einschränkung |
+|---|---|---|
+| Designrichtung | Bestätigt: deckende semantische `card`-Flächen mit feiner Border für BGG- und Sammlungstreffer | Spec wartet auf abschließende Textprüfung |
+| Umsetzung / Tests | Offen | Noch keine UI-Änderung vorgenommen |
+
 ## BUG-063 – Dashboard-Cache-Datum
 
 | Prüffeld | Ergebnis | Einschränkung |

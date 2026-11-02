@@ -12,6 +12,15 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.56",
+    date: "2026-11-02",
+    title: "Kontrast der öffentlichen Spielvorschläge verbessern",
+    description: "Eine bestätigte Design-Spezifikation hält die Lesbarkeitsverbesserung für BGG- und Sammlungstreffer fest.",
+    changes: [
+      { type: "internal", text: "Die Ergebnisflächen auf öffentlichen Eventseiten werden mit semantischen Kartenfarben und klarer Umrandung vereinheitlicht; Umsetzung folgt nach Spec-Prüfung." },
+    ],
+  },
+  {
     version: "0.50.55",
     date: "2026-11-02",
     title: "Dashboard-Vorschläge sicher sortieren",

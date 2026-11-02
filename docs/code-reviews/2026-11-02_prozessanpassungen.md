@@ -1,5 +1,12 @@
 # Prozessanpassungen – FEAT-015
 
+## Public Event – Kontrast der Spielvorschläge
+
+- [x] Aktuelle Komponenten und Club-Programme-Farbrollen geprüft.
+- [x] Flächenkontrast als bestätigte Lösung festgehalten; BGG- und Sammlungstreffer bleiben funktional unverändert.
+- [x] Design-Spec und Changelog dokumentiert.
+- [ ] Nutzerprüfung der Spec abwarten; anschließend Implementierungsplan und TDD-Umsetzung erstellen.
+
 ## BUG-063 Dashboard-Datumsregression
 
 - [x] Gemeldeten Produktionsdigest `113253834` der Rangfolge in `dashboard-event-proposals.ts` zugeordnet.
