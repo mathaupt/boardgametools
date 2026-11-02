@@ -32,6 +32,7 @@ Bedarf zu aktualisieren. Ergebnis am jeweiligen Plan dokumentieren:
 | FEAT-016 | Spielauswahl bei Session-Anlage per Eingabe filtern | Plan erstellt; Umsetzung offen | [Durchsuchbare Spielauswahl](superpowers/plans/2026-11-02-FEAT-016-session-spielsuche.md) | Keine |
 | FEAT-017 | Spielcover in der Sessions-Übersicht anzeigen | Web umgesetzt; Browser-/Viewportabnahme offen | [Cover in Sessionkarten](superpowers/plans/2026-11-02-FEAT-017-session-cover.md) | Web-Umsetzung am 02.11.2026 freigegeben und umgesetzt; iOS separat |
 | FEAT-018 | Testabdeckung schrittweise auf 80 % erhöhen | Plan erstellt; Governance und Skills ergänzt; Testausbau offen | [Coverage-Ziel 80 %](superpowers/plans/2026-11-02-FEAT-018-coverage-80.md) | Keine |
+| FEAT-019 | Spracheingabe für Suche und Session-Anlage | Konzept dokumentiert; Plan und Umsetzung offen | [Spracheingabe-Konzept](superpowers/specs/2026-11-02-spracheingabe-design.md) | Keine |
 
 Am 30.10.2026 aufgenommen. Bei der Planung sind Web, iOS sowie angemeldete und
 öffentliche Voting-Ansichten auf Relevanz und bereits vorhandene Teilfunktionen
@@ -168,6 +169,60 @@ festgelegten Anwendungscode. Der stufenweise Plan ist erstellt. Die
 Coverage-Schranken (global bereits 22 % je Metrik) bleiben zunächst unverändert; schrittweise Erhöhung und
 Tests für bisher unbedeckte Bereiche stehen aus. TDD wurde als verbindliche
 Agentenregel ergänzt. Zwei Stack-Skills wurden lokal aufgenommen.
+
+### I. Spracheingabe: FEAT-019
+
+Das Konzept trennt zwei Fähigkeiten, damit einfache Spracheingabe ohne KI
+starten kann und strukturierte Session-Befehle eigene Datenschutz- und
+Qualitätsprüfungen erhalten:
+
+1. **Diktat für Suche und Notizen:** Nutzer:innen sprechen nach aktivem
+   Mikrofonstart in vorhandene Textfelder. Der erkannte Text bleibt editierbar;
+   bestehende Such- und Speicheraktionen werden unverändert verwendet. Dafür
+   ist keine KI erforderlich.
+2. **Gesprochene Session-Befehle:** Eine Aussage wie „Azul mit Anna, 90
+   Minuten“ wird zunächst in einen Session-Entwurf übersetzt. Spiele und
+   Personen müssen gegen die verfügbare Sammlung und vorhandenen Konten
+   aufgelöst werden. Unbekannte oder mehrdeutige Angaben bleiben offen; die
+   Anwendung speichert erst nach sichtbarer Prüfung und Bestätigung.
+
+**Empfohlene Reihenfolge:** Zuerst Diktat für Suche und Notizen im Web
+implementieren. Danach Session-Befehle separat planen. Eine KI ist dafür
+optional und darf höchstens den erkannten Text in ein strikt validiertes
+Entwurfsschema überführen; sie erhält keine Audiodateien und darf keine
+Aktionen direkt ausführen. Native iOS-Eingabe ist separat zu planen.
+
+**Bestandsbefund:** Die Web-App setzt derzeit global
+`microphone=()` in ihrer `Permissions-Policy`; Mikrofonzugriff ist daher vor
+einer Implementierung gezielt und eng begrenzt zu erlauben. Browser-
+Spracherkennung ist nicht überall verfügbar und kann Audio an einen
+Browserdienst übertragen. Deshalb bleiben manuelle Texteingabe, erkennbare
+Aufnahme-/Abbruchzustände und eine verständliche Berechtigungsablehnung
+Pflicht. Audio wird nicht dauerhaft gespeichert.
+
+**Vorgesehene Prüfkriterien:**
+
+- Mikrofonstart nur nach ausdrücklicher Nutzeraktion; Ablehnung, fehlende
+  Unterstützung, Abbruch und Erkennungsfehler erhalten einen bedienbaren
+  Textfeld-Fallback.
+- Erkannter Text ist vor Suche oder Verwendung editierbar; Diktat führt keine
+  Such- oder Speicheraktion ungefragt aus.
+- Session-Befehle werden ausschließlich als Entwurf angezeigt. Nur eindeutig
+  zugeordnete Sammlungsspiele und Konten werden vorausgefüllt; mehrdeutige
+  Felder müssen Nutzer:innen auswählen oder ergänzen.
+- Kein automatisches Speichern, keine unbestätigte Mutation und keine
+  dauerhafte Audiospeicherung. Ein optionaler KI-Anbieter, die Textübertragung,
+  Aufbewahrung und Einwilligung sind vor einem separaten Plan festzulegen.
+- Tests decken Erkennungszustände, Berechtigungsablehnung, Fallback,
+  Editierbarkeit, Schema-/Zuordnungsfehler, Mehrdeutigkeit, Bestätigung und
+  Abbruch ab. Serverberechtigungen und Session-API bleiben maßgeblich.
+- Tastatur, Screenreader-Status, Fokus, Mikrofonindikator und responsive
+  Darstellung werden abgenommen; Browser-E2E nur mit isolierten Testdaten.
+
+**Umfang:** Zunächst Web-Konzept. Es liegt noch kein Implementierungsplan und
+keine Umsetzungsfreigabe vor. Die konkrete Browsererkennung und ein möglicher
+KI-Anbieter sind vor der jeweiligen Planung anhand der dann aktuellen
+Plattformunterstützung und Datenschutzbedingungen zu entscheiden.
 
 ### Vorgeschlagene Reihenfolge
 

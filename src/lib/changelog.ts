@@ -12,6 +12,15 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.53",
+    date: "2026-11-02",
+    title: "Spracheingabe als neues Feature planen",
+    description: "Diktat für Suche und Notizen sowie getrennte Sprachbefehle für Session-Entwürfe sind als Konzepte mit Prüfkriterien festgehalten.",
+    changes: [
+      { type: "internal", text: "FEAT-019 dokumentiert zwei getrennte Funktionen: Diktat ohne KI und sprachgestützte Session-Entwürfe mit optionaler KI, expliziter Bestätigung, Datenschutzanforderungen und Testkriterien." },
+    ],
+  },
+  {
     version: "0.50.52",
     date: "2026-11-02",
     title: "Spielcover in der Sessions-Übersicht anzeigen",
