@@ -146,3 +146,7 @@ bleiben offen.
   belegten zunächst fehlenden Filter, Picker und fehlende Formularvalidierung.
 - Ausstehend: manuelle Browser-/VoiceOver-Prüfung bei 390/1440 px, Hell/Dunkel
   und 200-%-Zoom, falls der Browserhost nicht verfügbar ist.
+- Commit `7fba032` erstellt. Pre-Commit-ESLint, related Vitest, Security-Check
+  (0 Fehler; 2 bestehende Hinweise) und Regressionsevaluator (10/10, keine
+  Regression) bestanden. Review-Snapshot:
+  `docs/code-reviews/history/2026-11-02_1115.json`.

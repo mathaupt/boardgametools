@@ -58,6 +58,7 @@ ausgewiesen. Umsetzungsfreigaben und neue Laufzeit-Abnahmen sind weiterhin offen
 | Gezielte Unit-Tests | 37/37 bestanden | Filter, Picker, Formular, Session-API und Service |
 | TypeScript / ESLint / Build | Bestanden | ESLint gezielt für geänderte TypeScript-Dateien |
 | Security | 0 Fehler; Audit 0 Vulnerabilities | 2 bestehende Hinweise zu Raw-SQL und Debug-Routen |
+| Review-Evaluator | 10/10; Sicherheit 9,9/10; 49 erledigt, 0 offen/neu; keine Regression | Pre-Commit-Snapshot `history/2026-11-02_1115.json` |
 | Impeccable | 0 Regex-Findings | Kein gerenderter Browserlauf; Kontrast/Layout damit nicht geprüft |
 | Browser / Viewport / VoiceOver | Offen | Browserhost nicht erreichbar; keine Aussage zu 390/1440 px, Hell/Dunkel oder 200-%-Zoom |
 | Daten / Berechtigungen | Ausschließlich Auswahl-ID; API prüft weiter Besitz und Löschstatus | Keine API-, Schema- oder Datenbankänderung |

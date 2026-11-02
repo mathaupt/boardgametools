@@ -65,7 +65,8 @@ Vercel-Blob-Hosts sind separat offen; es wurde keine Datenbank oder API geänder
 - [x] Security-Check mit Registryzugriff: 0 Fehler, `npm audit` 0 Vulnerabilities; 2 vorhandene Hinweise zu Raw-SQL/Debug-Routen.
 - [x] Impeccable-Detektor: 0 Regex-Findings; CLI kennzeichnet fehlende Render-/Layoutprüfung.
 - [x] Backlog, Plan, Feature-Doku, FAQ, Konzept, Changelog und Agentenhinweise aktualisiert; API/OpenAPI unverändert.
-- [ ] Commit-Hook und Regressionsevaluator abschließen; Ergebnisse anschließend im Review-Snapshot nachtragen.
+- [x] Commit `7fba032` erstellt; Pre-Commit-ESLint, related Vitest, Security-Check und Regressionsevaluator bestanden.
+- [x] Review-Evaluator: 10/10 gesamt, Sicherheit 9,9/10, 49 erledigte Findings, 0 offen/neu, keine Regression; Snapshot `history/2026-11-02_1115.json` dokumentiert.
 - [ ] Browser-Viewport-/Dark-Mode-/200-%-Zoom- und manuelle VoiceOver-Abnahme nach Wiederverfügbarkeit des Browserhosts.
 - [ ] Schreibendes Browser-E2E nur mit isolierter Testdatenbank.
 

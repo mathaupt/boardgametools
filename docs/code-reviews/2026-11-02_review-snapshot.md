@@ -63,6 +63,9 @@ geändert.
 - `npm run typecheck`, gezieltes ESLint und `npm run build` bestanden.
 - Security-Check: 0 Fehler, 2 bestehende Hinweise zu Raw-SQL und Debug-Routen;
   Registry-Audit meldet 0 Vulnerabilities.
+- Pre-Commit-Review-Evaluator: 10/10 gesamt, Sicherheit 9,9/10, 49 Findings
+  erledigt, 0 offen, 0 neu und keine Regression. Snapshot:
+  `history/2026-11-02_1115.json`.
 - Impeccable-Detektor: 0 Regex-Findings. Die Prüfung ist statisch und hat keine
   gerenderte Seite erhalten.
 - Browserhost nicht verfügbar; 390/1440 px, Hell/Dunkel, 200-%-Zoom und
