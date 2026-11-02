@@ -139,7 +139,7 @@ npx vitest run tests/unit/lib/session-cover-source.test.ts tests/unit/components
 - [x] `docs/FEATURES.md`, FAQ, Feature-Backlog, Bugliste und Changelog aktualisiert. `CONCEPT.md` entfällt: bestehender Sessionbereich ohne neue Domäne. Kein API-/Schemawechsel.
 - [x] Review-Dokumente aktualisiert; den betroffenen Coverage-Nachweis für FEAT-018 mit dem nächsten Coveragepaket erneuern.
 - [x] Betroffene Unit-Tests (20/20), `npm run typecheck`, gezieltes ESLint, `npm run security-check`, Produktionsaudit und `npm run review-evaluate:regression` ausgeführt.
-- [ ] Commit mit Hook-Ergebnissen erstellen. Responsive Browserabnahme und unbekannte Blob-Hosts als Grenzen im Backlog sichtbar halten.
+- [x] Umsetzung in `9196645` und Review-/Planabschluss in `9c92d7d` committed; Commit-Hooks bestanden. Responsive Browserabnahme und unbekannte Blob-Hosts bleiben als Grenzen im Backlog sichtbar.
 
 ## Freigabekriterien
 
