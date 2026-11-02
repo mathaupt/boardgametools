@@ -1,6 +1,6 @@
 # FEAT-020 – Kontrast der öffentlichen Spielvorschläge: Implementierungsplan
 
-> **Für ausführende Agenten:** Aufgaben einzeln bearbeiten; bei Laufzeitänderungen RED → GREEN → REFACTOR belegen. Dieser Plan erteilt keine Umsetzungsfreigabe.
+> **Für ausführende Agenten:** Aufgaben einzeln bearbeiten; bei Laufzeitänderungen RED → GREEN → REFACTOR belegen. Die Web-Umsetzung wurde am 02.11.2026 freigegeben und umgesetzt.
 
 **Ziel:** BGG- und Sammlungstreffer auf der öffentlichen Eventseite erhalten eine klar lesbare, themefähige Kartenfläche.
 
