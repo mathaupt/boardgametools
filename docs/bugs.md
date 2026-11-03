@@ -1995,10 +1995,50 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 ---
 
+### [BUG-070] Reihenendpunkt validiert Importangaben nicht vollständig
+
+**Status:** `fixed`
+**Schweregrad:** `medium`
+**Entdeckt:** 2026-11-03
+**Behoben:** 2026-11-03
+**Behoben in Version:** 0.50.67
+**Test geschrieben:** Ja – `tests/unit/api/series-entry-conflict.test.ts`; der ungültige BGG-ID-Aufruf ergab vor dem Fix einen falschen Folgefehler.
+
+**Beschreibung:** Der Reihenendpunkt prüfte direkte BGG-IDs nicht vor Datenbank-/Katalogzugriffen und validierte außerdem den Typ des optionalen Schwierigkeitsgrads nicht.
+**Reproduktion:** `POST /api/series/{id}/entries` mit `{ "bggId": "13&evil" }` oder einem Objekt als `difficulty` senden.
+**Erwartetes Verhalten:** Ungültige BGG-IDs, Spiel-IDs und Schwierigkeitswerte werden vor Abfragen oder Schreiben mit HTTP 400 abgewiesen.
+**Tatsächliches Verhalten:** Ungültige Werte erreichten Datenbank/Katalog beziehungsweise die Prisma-Schreiboperation; die Antwort hing vom nachfolgenden Treffer ab.
+**Ursache:** Der Reihenendpunkt prüfte BGG-IDs nicht mit dem gemeinsamen ID-Vertrag und vertraute untypisierten optionalen Feldern.
+**Lösung:** JSON-Form, Spiel-ID, BGG-ID und Schwierigkeitswert vor DB-/Netzwerkzugriff validieren. Gültige numerische BGG-IDs bleiben unterstützt.
+**Prüfnachweis:** Zwei Regressionstests vor Fix rot, danach API-Tests und Typprüfung grün.
+**Referenz im Changelog:** Version 0.50.67 – FEAT-023 / BUG-070.
+
+---
+
+### [BUG-071] BGG-Importtitel läuft bei 200 % Schrift über
+
+**Status:** `fixed`
+**Schweregrad:** `low`
+**Entdeckt:** 2026-11-03
+**Behoben:** 2026-11-03
+**Behoben in Version:** 0.50.67
+**Test geschrieben:** Ja – `tests/unit/components/bgg-import-editions.test.tsx` prüft den Umbruchvertrag; zusätzlich lokale Safari-Prüfung bei 390 px und 200 % Schrift.
+
+**Beschreibung:** Der lange Seitentitel und das Suchformular der BGG-Importseite konnten bei stark vergrößerter Schrift die mobile Breite überschreiten.
+**Reproduktion:** `/dashboard/bgg` auf 390 px mit 200 % Schrift öffnen.
+**Erwartetes Verhalten:** Titel, Suche und Bestandsstatus bleiben innerhalb der verfügbaren Breite bedienbar.
+**Tatsächliches Verhalten:** Der Seitentitel „BoardGameGeek“ ließ sich nicht umbrechen; die Suchzeile konnte den Inhalt zusammendrücken.
+**Ursache:** Fehlender Titelumbruch und nicht umbrechbare Suchzeile.
+**Lösung:** Lange Wörter umbrechen, responsive Titelgröße verwenden und Suchfeld/Aktion umbrechbar sowie schrumpfbar gestalten.
+**Prüfnachweis:** Safari lokal mit synthetischem BGG-Bestand bei 390 px und 200 % Schrift: Dokumentbreite 384 px, überlaufende Felder/Schaltflächen keine; Sammlungstreffer verlinkt, Import deaktiviert.
+**Referenz im Changelog:** Version 0.50.67 – FEAT-023 / BUG-071.
+
+---
+
 ## Statistik
 
 - **Offene Bugs:** 4
 - **In Bearbeitung:** 4
-- **Behoben:** 61
+- **Behoben:** 63
 - **Wontfix:** 0
-- **Gesamt:** 69
+- **Gesamt:** 71

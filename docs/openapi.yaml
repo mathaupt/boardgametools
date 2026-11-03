@@ -495,6 +495,27 @@ paths:
       responses:
         '200': { description: Anzahl geloeschter Spiele, content: { application/json: { schema: { type: object, properties: { deleted: { type: integer } } } } } }
 
+  /api/games/bgg-presence:
+    post:
+      tags: [Games]
+      summary: BGG-Spiele in der eigenen Sammlung prüfen
+      description: Prüft bis zu 50 BGG-IDs ausschließlich gegen aktive Spiele des angemeldeten Kontos. Jede ID wird als eigener Treffer oder null zurückgegeben. Die Antwort ist privat und nicht speicherbar.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [bggIds]
+              properties:
+                bggIds: { type: array, minItems: 1, maxItems: 50, items: { type: string, pattern: '^[1-9][0-9]{0,11}$' } }
+      responses:
+        '200': { description: Eigentümerspezifische Trefferkarte; nicht gefundene IDs haben den Wert null }
+        '400': { description: Ungültige oder zu viele BGG-IDs, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+        '401': { description: Anmeldung erforderlich, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+        '429': { description: Zu viele Prüfungen, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+        '500': { description: Prüfung fehlgeschlagen; Abwesenheit wird nicht angenommen, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+
   /api/games/import-bgg:
     post:
       tags: [Games]
@@ -518,7 +539,7 @@ paths:
         '401': { description: Anmeldung erforderlich, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
         '429': { description: Zu viele Importe, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
         '502': { description: Ungültige BGG-Antwort, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
-        '503': { description: BGG vorübergehend nicht verfügbar, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+        '503': { description: BGG oder Importtransaktion vorübergehend nicht verfügbar, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
         '504': { description: BGG-Zeitüberschreitung, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
 
   # ===== BGG =====
@@ -583,7 +604,7 @@ paths:
         '401': { description: Anmeldung erforderlich, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
         '429': { description: Zu viele Abfragen, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
         '502': { description: Ungültige BGG-Antwort, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
-        '503': { description: BGG vorübergehend nicht verfügbar, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+        '503': { description: BGG oder Importtransaktion vorübergehend nicht verfügbar, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
         '504': { description: BGG-Zeitüberschreitung, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
 
   /api/bgg/search:
@@ -774,7 +795,7 @@ paths:
         schema: { type: string }
     post:
       tags: [Series]
-      summary: Spiel zur Reihe hinzufuegen
+      summary: Spiel zur Reihe hinzufügen
       requestBody:
         required: true
         content:
@@ -783,10 +804,13 @@ paths:
               type: object
               properties:
                 gameId: { type: string, description: Spiel-ID aus eigener Sammlung }
-                bggId: { type: string, description: BGG-ID (importiert automatisch) }
-                difficulty: { type: string }
+                bggId: { type: string, pattern: '^[1-9][0-9]{0,11}$', description: Gültige BGG-ID; ein vorhandenes eigenes Spiel wird verwendet. }
+                difficulty: { type: string, maxLength: 100 }
       responses:
         '201': { description: Eintrag erstellt }
+        '400': { description: Ungültige Spiel-ID, BGG-ID oder Schwierigkeit, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+        '401': { description: Anmeldung erforderlich, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+        '404': { description: Reihe oder eigenes Spiel nicht gefunden, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
         '409': { description: Spiel bereits in der Reihe; deutsche Fehlermeldung. Die Oberfläche gleicht die Liste über GET neu ab und legt keinen zweiten Eintrag an., content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
 
   /api/series/{id}/entries/{entryId}:

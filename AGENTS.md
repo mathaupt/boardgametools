@@ -28,6 +28,12 @@ Die Impeccable-Design-Hooks sind für das Projekt aktiviert. Sie melden nach Än
 - Lokale Impeccable-Prüfberichte und Browserbelege liegen unter `.impeccable/critique/`;
   bestätigte Fehler werden zusätzlich dauerhaft in `docs/bugs.md` erfasst.
 
+## BGG-Bestandsprüfung
+
+- `POST /api/games/bgg-presence` ist eine private, auf 50 IDs begrenzte Prüfung ausschließlich aktiver Spiele des angemeldeten Kontos; keine Treffer oder Fehler dürfen fremde Bestände offenlegen.
+- `src/components/bgg/use-bgg-collection-presence.ts` behandelt unvollständige Antworten als Fehler. BGG-Importaktionen bleiben bis zu einer erfolgreichen Abwesenheitsprüfung deaktiviert.
+- `src/lib/bgg-import-game.ts` prüft nach dem BGG-Netzwerkabruf erneut innerhalb einer serialisierbaren Transaktion und verwendet den bestehenden Datensatz ohne dessen Nutzerdaten zu überschreiben.
+
 ## Native iOS-Gestaltung
 
 - Übersicht, Navigation, Sammlung und Spieleabende folgen der bestätigten nativen

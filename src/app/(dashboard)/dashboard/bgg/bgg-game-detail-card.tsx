@@ -21,7 +21,7 @@ export interface BGGGame {
   rank?: string;
 }
 
-export function BggGameDetailCard({ selectedGame, importing, onImport, children }: { selectedGame: BGGGame; importing: boolean; onImport:()=>void; children:ReactNode }) {
+export function BggGameDetailCard({ selectedGame, importing, importDisabled = false, onImport, children }: { selectedGame: BGGGame; importing: boolean; importDisabled?: boolean; onImport:()=>void; children:ReactNode }) {
   const getComplexityStars = (complexity?: string) => {
     if (!complexity) return "☆☆☆☆☆";
     const value = parseFloat(complexity);
@@ -46,7 +46,7 @@ export function BggGameDetailCard({ selectedGame, importing, onImport, children 
               </div>
               <Button
                 onClick={onImport}
-                disabled={importing}
+                disabled={importing || importDisabled}
                 className="flex items-center gap-2"
               >
                 <Plus className="h-4 w-4" aria-hidden="true" />

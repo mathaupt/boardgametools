@@ -9,6 +9,8 @@ import { useToast } from "@/components/ui/use-toast";
 import { BggVersionPicker } from "@/components/bgg/bgg-version-picker";
 import type { BGGGameVersion } from "@/lib/bgg-types";
 import { BggGameDetailCard, type BGGGame } from "./bgg-game-detail-card";
+import { useBggCollectionPresence } from "@/components/bgg/use-bgg-collection-presence";
+import { BggCollectionStatus } from "@/components/bgg/bgg-collection-status";
 
 interface BGGSearchResult {
   bggId: string;
@@ -22,6 +24,8 @@ export default function BGGImportPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<BGGSearchResult[]>([]);
   const [selectedGame, setSelectedGame] = useState<BGGGame | null>(null);
+  const presence = useBggCollectionPresence(selectedGame ? [selectedGame.bggId] : []);
+  const collectionMatch = selectedGame ? presence.matches[selectedGame.bggId] : null;
   const [selectedVersion, setSelectedVersion] = useState<BGGGameVersion | null>(null);
   const [_loading, setLoading] = useState(false);
   const [searching, setSearching] = useState(false);
@@ -70,7 +74,7 @@ export default function BGGImportPage() {
   };
 
   const handleImport = async () => {
-    if (!selectedGame) return;
+    if (!selectedGame || presence.status !== "ready" || collectionMatch) return;
 
     setImporting(true);
     try {
@@ -82,9 +86,8 @@ export default function BGGImportPage() {
         body: JSON.stringify({ bggId: selectedGame.bggId, versionId: selectedVersion?.versionId }),
       });
 
-      if (!response.ok) {
-        throw new Error('Import failed');
-      }
+      if (response.status === 409) { presence.retry(); return; }
+      if (!response.ok) throw new Error('Import failed');
 
       const { game: importedGame } = await response.json();
       toast({ title: "Spiel importiert", description: `Spiel "${importedGame.name}" erfolgreich importiert!` });
@@ -106,7 +109,7 @@ export default function BGGImportPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold">BoardGameGeek Import</h1>
+        <h1 className="break-words text-2xl font-bold [overflow-wrap:anywhere] sm:text-3xl">BoardGameGeek Import</h1>
         <p className="text-muted-foreground">Spiele direkt von BoardGameGeek importieren</p>
       </div>
 
@@ -119,14 +122,15 @@ export default function BGGImportPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSearch} className="flex gap-2">
+          <form onSubmit={handleSearch} className="flex flex-wrap gap-2">
             <Input
+              className="min-w-0 flex-1"
               placeholder="z.B. Catan, Monopoly, Carcassonne…"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               aria-label="Spiel suchen"
             />
-            <Button type="submit" disabled={searching} aria-label={searching ? 'Suche läuft' : 'Suchen'}>
+            <Button type="submit" className="min-h-11" disabled={searching} aria-label={searching ? 'Suche läuft' : 'Suchen'}>
               <Search className="h-4 w-4" aria-hidden="true" />
               <span className="ml-2">{searching ? 'Suche…' : 'Suchen'}</span>
             </Button>
@@ -166,8 +170,9 @@ export default function BGGImportPage() {
         </Card>
       )}
 
-      {selectedGame && <BggGameDetailCard selectedGame={{ ...selectedGame, imageUrl: selectedVersion?.imageUrl ?? selectedVersion?.thumbnailUrl ?? selectedGame.imageUrl }} importing={importing} onImport={handleImport}>
-        <BggVersionPicker key={selectedGame.bggId} bggId={selectedGame.bggId} value={selectedVersion?.versionId ?? null} onChange={setSelectedVersion} disabled={importing} />
+      {selectedGame && <BggGameDetailCard selectedGame={{ ...selectedGame, imageUrl: selectedVersion?.imageUrl ?? selectedVersion?.thumbnailUrl ?? selectedGame.imageUrl }} importing={importing} importDisabled={presence.status !== "ready" || !!collectionMatch} onImport={handleImport}>
+        <BggCollectionStatus status={presence.status} match={collectionMatch} retry={presence.retry} />
+        {presence.status === "ready" && !collectionMatch && <BggVersionPicker key={selectedGame.bggId} bggId={selectedGame.bggId} value={selectedVersion?.versionId ?? null} onChange={setSelectedVersion} disabled={importing} />}
       </BggGameDetailCard>}
     </div>
   );

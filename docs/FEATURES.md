@@ -3,7 +3,7 @@
 Geplante Erweiterungen stehen separat im [nummerierten Feature-Backlog](FEATURE-BACKLOG.md).
 Dort erfasste TODOs sind noch nicht implementiert oder zur Umsetzung freigegeben.
 
-> **Version 0.50.48** | 42 Seiten | 95 API-Endpunkte | 29 Datenbank-Modelle
+> **Version 0.50.67** | 42 Seiten | 96 API-Endpunkte | 29 Datenbank-Modelle
 >
 > Vollstaendige Dokumentation aller Nutzer-sichtbaren Features,
 > organisiert nach Bereichen mit Screenshots-Beschreibungen,
@@ -131,6 +131,8 @@ Kategorien, Mechaniken, BGG-Rating, BGG-Rang.
 **Erfolgsrückmeldung (BUG-069):** Nach bestätigtem Einzelimport erscheint „Spiel erfolgreich importiert“ mit deaktiviertem „Importiert“, solange die Sammlung geöffnet wird. Dies löst keine Warnung für einen bereits vorher vorhandenen Eintrag aus.
 
 **FEAT-021 umgesetzt:** Beide Einzelimporte (`/dashboard/games/import` und
+
+**FEAT-023 umgesetzt:** Vor beiden BGG-Einzelimporten und beim Auswählen eines BGG-Spiels für eine Reihe wird die exakte BGG-ID mit aktiven Spielen des angemeldeten Kontos abgeglichen. Vorhandene Spiele werden verlinkt oder direkt für die Reihe verwendet. Bei Lade- oder Prüfungsfehlern bleibt der Import gesperrt. Der private Endpunkt `POST /api/games/bgg-presence` liefert ausschließlich eigene Treffer. Die Importpfade prüfen vor dem Schreiben erneut und behandeln parallele Importe konfliktfrei; ein Reihenimport bleibt bis zur Entscheidung aus FEAT-025 ein dauerhaftes Sammlungsspiel.
 `/dashboard/bgg`, einschließlich Barcode-Detailauswahl) bieten die bei BGG explizit
 als German markierten Ausgaben mit Sprache, Jahr, Verlag und Cover an.
 Die Auswahl bestimmt ausschließlich das Cover; Titel und Beschreibung werden

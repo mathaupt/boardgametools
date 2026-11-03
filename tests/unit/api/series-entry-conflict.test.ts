@@ -1,11 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { NextRequest } from "next/server";
-const mocks=vi.hoisted(()=>({auth:vi.fn(),series:vi.fn(),game:vi.fn(),existing:vi.fn(),create:vi.fn(),max:vi.fn(),invalidate:vi.fn(),get:vi.fn()}));
+const mocks=vi.hoisted(()=>({auth:vi.fn(),series:vi.fn(),game:vi.fn(),existing:vi.fn(),create:vi.fn(),max:vi.fn(),invalidate:vi.fn(),get:vi.fn(),fetchBgg:vi.fn()}));
 vi.mock("@/lib/db",()=>({default:{gameSeries:{findFirst:mocks.series},game:{findFirst:mocks.game},gameSeriesEntry:{findUnique:mocks.existing,findFirst:mocks.max,create:mocks.create}}}));
 vi.mock("@/lib/require-auth",()=>({requireAuth:mocks.auth,handleApiError:(error:{statusCode?:number})=>Response.json({error:"Anmeldung erforderlich"},{status:error.statusCode??500})}));
 vi.mock("@/lib/api-logger",()=>({withApiLogging:(handler:unknown)=>handler}));
 vi.mock("@/lib/cache",()=>({invalidateTag:mocks.invalidate}));
-vi.mock("@/lib/bgg",()=>({fetchBGGGame:vi.fn()}));
+vi.mock("@/lib/bgg",()=>({fetchBGGGame:mocks.fetchBgg}));
 vi.mock("@/lib/services",()=>({SeriesService:{getById:mocks.get}}));
 import { POST } from "@/app/api/series/[id]/entries/route";
 import { GET } from "@/app/api/series/[id]/route";
@@ -14,7 +14,10 @@ const request=()=>new Request("http://localhost/api/series/series-1/entries",{me
 describe("Serieneinträge und Konflikte",()=>{
  beforeEach(()=>{vi.clearAllMocks();mocks.auth.mockResolvedValue({userId:"user-1"});mocks.series.mockResolvedValue({id:"series-1"});mocks.game.mockResolvedValue({id:"game-1"});mocks.existing.mockResolvedValue({id:"entry-1"});mocks.max.mockResolvedValue(null);mocks.create.mockResolvedValue({id:"new-entry"});mocks.get.mockResolvedValue({id:"series-1",entries:[]});});
  it("meldet vorhandene Einträge auf Deutsch, ohne einen zweiten Eintrag anzulegen",async()=>{const response=await POST(request(),context);expect(response.status).toBe(409);expect(await response.json()).toEqual({error:"Dieses Spiel ist bereits in dieser Reihe."});expect(mocks.create).not.toHaveBeenCalled();expect(mocks.series).toHaveBeenCalledWith(expect.objectContaining({where:{id:"series-1",ownerId:"user-1",deletedAt:null}}));});
+ it("weist ungültige BGG-IDs vor Datenbank- oder BGG-Zugriff zurück",async()=>{mocks.game.mockResolvedValue(null);const response=await POST(new Request("http://localhost/api/series/series-1/entries",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({bggId:"13&evil"})}) as NextRequest,context);expect(response.status).toBe(400);expect(mocks.game).not.toHaveBeenCalled();expect(mocks.fetchBgg).not.toHaveBeenCalled();});
+ it("weist ungültige Schwierigkeitswerte vor dem Schreiben zurück",async()=>{mocks.existing.mockResolvedValue(null);const response=await POST(new Request("http://localhost/api/series/series-1/entries",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({gameId:"game-1",difficulty:{invalid:true}})}) as NextRequest,context);expect(response.status).toBe(400);expect(mocks.create).not.toHaveBeenCalled();});
  it("legt neue Einträge weiterhin an",async()=>{mocks.existing.mockResolvedValue(null);expect((await POST(request(),context)).status).toBe(201);expect(mocks.create).toHaveBeenCalledTimes(1);});
+ it("übersetzt einen parallelen Unique-Konflikt in einen deutschen 409",async()=>{mocks.existing.mockResolvedValue(null);mocks.create.mockRejectedValue({code:"P2002"});const response=await POST(request(),context);expect(response.status).toBe(409);expect(await response.json()).toEqual({error:"Dieses Spiel ist bereits in dieser Reihe."});});
  it("schützt fremde Reihen vor Abfragen auf vorhandene Einträge",async()=>{mocks.series.mockResolvedValue(null);expect((await POST(request(),context)).status).toBe(404);expect(mocks.existing).not.toHaveBeenCalled();});
  it("gibt bei abgelaufener Anmeldung eine kontrollierte Antwort zurück",async()=>{mocks.auth.mockRejectedValue(Object.assign(new Error("auth"),{statusCode:401}));expect((await POST(request(),context)).status).toBe(401);expect(mocks.series).not.toHaveBeenCalled();});
  it("liefert frische private Seriendetails für den Konfliktabgleich",async()=>{const response=await GET(request(),context);expect(response.headers.get("Cache-Control")).toBe("private, no-store");expect(mocks.get).toHaveBeenCalledWith("user-1","series-1");});

@@ -877,11 +877,11 @@ FEAT-026 und FEAT-027; das Besitzmodell beeinflusst Mehrfachimporte.
 
 ## FEAT-023 – Sammlung vor einem Import prüfen
 
-**Status:** Erfasst; Planung und Umsetzung nicht freigegeben.
+**Status:** Umgesetzt am 03.11.2026 in Version 0.50.67.
 **Ziel:** Vor einem BGG-Import prüfen und erklären, ob das Spiel schon in der eigenen Sammlung vorhanden ist. Ein vorhandenes Spiel verwenden statt einen unnötigen neuen Import auszulösen.
 **Umfang für die Planung:** Einzelimport, BGG-Suche und Import beim Hinzufügen zu Reihen abgleichen. Bestehende BGG-ID-Prüfung im Einzelimport und serverseitige Duplikatsperren berücksichtigen; BUG-068/069 sind Fehlerkorrekturen, keine vollständige Umsetzung dieser Anforderung.
 **Abnahmekriterien:** Exakte BGG-ID und eigene Sammlung prüfen, vorhandenes Spiel mit verständlichem Status anzeigen, unvollständige/fehlgeschlagene Prüfung nicht als „nicht vorhanden“ ausgeben. Serverseitige Prüfung bleibt verbindlich und schützt auch bei parallelen Anfragen. Keine Auskunft über fremde Sammlungen. Verhalten für temporäre Reihenspiele mit FEAT-025 abstimmen.
-**Plan:** Noch zu erstellen; Daten-/Berechtigungsfälle, TDD, Impeccable und Abnahme konkretisieren.
+**Implementierungsplan:** [Bestandsprüfung vor BGG-Importen](superpowers/plans/2026-11-03-FEAT-023-import-bestandspruefung.md). Aktualitätsprüfung vor Umsetzung: 03.11.2026, HEAD `32eea14`; Webumfang bestätigt, FEAT-025 bleibt separat.
 
 ## FEAT-024 – Mehrere Spiele zu einer Reihe hinzufügen
 

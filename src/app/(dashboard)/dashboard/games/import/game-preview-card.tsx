@@ -15,6 +15,7 @@ interface GamePreviewCardProps {
   isImported?: boolean;
   error: string | null;
   isAlreadyOwned: boolean;
+  importDisabled?: boolean;
   onImport: () => void;
   children?: ReactNode;
 }
@@ -26,6 +27,7 @@ export function GamePreviewCard({
   isImported = false,
   error,
   isAlreadyOwned,
+  importDisabled = false,
   onImport,
   children,
 }: GamePreviewCardProps) {
@@ -34,11 +36,6 @@ export function GamePreviewCard({
       {error && (
         <div className="p-3 text-sm text-destructive bg-destructive/10 rounded-md mb-4">
           {error}
-        </div>
-      )}
-      {selectedGame && isAlreadyOwned && !isImported && (
-        <div className="p-3 text-sm bg-warning/10 border border-warning/20 text-warning rounded-md mb-4">
-          Dieses Spiel befindet sich bereits in deiner Sammlung.
         </div>
       )}
 
@@ -139,7 +136,7 @@ export function GamePreviewCard({
             )}
 
             <div className="flex gap-2 pt-4">
-              <Button onClick={onImport} disabled={isImporting || isImported} className="min-h-11 h-auto min-w-0 flex-1 whitespace-normal py-2">
+              <Button onClick={onImport} disabled={isImporting || isImported || isAlreadyOwned || importDisabled} className="min-h-11 h-auto min-w-0 flex-1 whitespace-normal py-2">
                 {isImported ? "Importiert" : isImporting ? (
                   <><Loader2 className="h-4 w-4 mr-2 animate-spin" aria-hidden="true" />Importieren…</>
                 ) : (

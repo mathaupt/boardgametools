@@ -12,6 +12,20 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.67",
+    date: "2026-11-03",
+    title: "Vor BGG-Importen die eigene Sammlung prüfen",
+    description: "Vorhandene Spiele werden beim Import erkannt und können direkt für eine Spielreihe verwendet werden.",
+    changes: [
+      { type: "feature", text: "FEAT-023: Einzelimporte und BGG-Spiele für Reihen gleichen die BGG-ID mit deiner aktiven Sammlung ab und verlinken vorhandene Spiele." },
+      { type: "improvement", text: "Kann die Prüfung nicht abgeschlossen werden, bleibt der Import gesperrt und lässt sich erneut versuchen." },
+      { type: "fix", text: "Parallele BGG-Importe prüfen vor dem Schreiben erneut und legen kein zweites Sammlungsspiel an; parallele Reihen-Einträge liefern eine verständliche Konfliktmeldung." },
+      { type: "fix", text: "BUG-070: Reihenimporte weisen ungültige BGG-IDs vor Datenbank- und Katalogzugriff ab.", bugRef: "BUG-070" },
+      { type: "fix", text: "BUG-071: Titel und Suchzeile der BGG-Importseite bleiben bei 200 % Schrift innerhalb der mobilen Breite.", bugRef: "BUG-071" },
+      { type: "internal", text: "Die Eigentümerprüfung ist auf angemeldete Konten beschränkt und liefert keine Auskunft über fremde Sammlungen." },
+    ],
+  },
+  {
     version: "0.50.66",
     date: "2026-11-02",
     title: "Importe und vorhandene Spiele verständlich anzeigen",

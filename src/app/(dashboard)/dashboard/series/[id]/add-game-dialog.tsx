@@ -17,6 +17,7 @@ import { SeriesBggSearch, type BGGSearchResult } from "./series-bgg-search";
 import type { AddSeriesGameInput } from "./types";
 import { useSeriesGameAdd } from "./use-series-game-add";
 import { gameTextForRead } from "@/lib/game-text";
+import { useBggCollectionPresence, fetchBggCollectionPresence } from "@/components/bgg/use-bgg-collection-presence";
 
 interface CollectionGame {
   id: string;
@@ -51,8 +52,10 @@ export function AddGameDialog({
   const [bggSearch, setBggSearch] = useState("");
   const [bggResults, setBggResults] = useState<BGGSearchResult[]>([]);
   const [bggSearching, setBggSearching] = useState(false);
+  const presence = useBggCollectionPresence(bggResults.map(result => result.bggId));
   const { adding, error, clearError, addGame } = useSeriesGameAdd(seriesId, onGameAdded);
   const [barcodeScannerOpen, setBarcodeScannerOpen] = useState(false);
+  const [presenceError, setPresenceError] = useState<string | null>(null);
 
   const loadGames = useCallback(async () => {
     setLoadingGames(true);
@@ -89,7 +92,17 @@ export function AddGameDialog({
   }
 
   const handleAddFromCollection = (gameId: string) => addGame({ gameId });
-  const handleAddFromBGG = (bggId: string) => addGame({ bggId });
+  const handleAddFromBGG = async (bggId: string) => {
+    setPresenceError(null);
+    try {
+      const checked = await fetchBggCollectionPresence([bggId]);
+      const match = checked[bggId];
+      await addGame(match ? {gameId: match.id} : {bggId});
+    } catch {
+      setPresenceError("Sammlung konnte nicht geprüft werden. Bitte versuche es erneut.");
+      presence.retry();
+    }
+  };
 
   async function handleBarcodeGameSelected(bggId: string, _ean: string) {
     setBarcodeScannerOpen(false);
@@ -127,6 +140,7 @@ export function AddGameDialog({
           </Button>
         </DialogHeader>
 
+        {presenceError && <p role="alert" className="rounded-md border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">{presenceError}</p>}
         {error && <p role="alert" className="rounded-md border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">{error}</p>}
 
         {/* Tab navigation */}
@@ -249,7 +263,7 @@ export function AddGameDialog({
               )}
             </div>
           ) : (
-            <SeriesBggSearch bggSearch={bggSearch} setBggSearch={setBggSearch} bggResults={bggResults} bggSearching={bggSearching} handleSearchBGG={handleSearchBGG} handleAddFromBGG={handleAddFromBGG} adding={adding} />
+            <SeriesBggSearch bggSearch={bggSearch} setBggSearch={setBggSearch} bggResults={bggResults} bggSearching={bggSearching} handleSearchBGG={handleSearchBGG} handleAddFromBGG={handleAddFromBGG} adding={adding} presenceStatus={presence.status} matches={presence.matches} retryPresence={presence.retry} existingGameIds={existingGameIds} />
           )}
         </div>
       </DialogContent>

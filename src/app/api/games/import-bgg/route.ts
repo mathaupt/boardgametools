@@ -11,6 +11,7 @@ import { withApiLogging } from "@/lib/api-logger";
 import { CacheTags } from "@/lib/cache-tags";
 import { Errors } from "@/lib/error-messages";
 import { TagService } from "@/lib/services";
+import { createOrReuseBggGame } from "@/lib/bgg-import-game";
 
 export const POST = withApiLogging(async function POST(request: NextRequest) {
   try {
@@ -56,20 +57,20 @@ export const POST = withApiLogging(async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Diese deutsche Ausgabe gehört nicht zum gewählten BGG-Spiel oder ist nicht mehr verfügbar." }, { status: 400 });
     }
 
-    const game = await prisma.game.create({
-      data: {
-        name: bggData.name,
-        description: bggData.description,
-        minPlayers: bggData.minPlayers,
-        maxPlayers: bggData.maxPlayers,
-        playTimeMinutes: bggData.playTimeMinutes,
-        complexity: bggData.complexity ? Math.round(bggData.complexity) : null,
-        bggId: bggData.bggId,
-        imageUrl: version?.imageUrl ?? version?.thumbnailUrl ?? bggData.imageUrl,
-        ownerId: userId,
-        ...(ean ? { ean: ean.toString() } : {}),
-      },
+    const result = await createOrReuseBggGame(userId, bggId, {
+      name: bggData.name,
+      description: bggData.description,
+      minPlayers: bggData.minPlayers,
+      maxPlayers: bggData.maxPlayers,
+      playTimeMinutes: bggData.playTimeMinutes,
+      complexity: bggData.complexity ? Math.round(bggData.complexity) : null,
+      imageUrl: version?.imageUrl ?? version?.thumbnailUrl ?? bggData.imageUrl,
+      ...(ean ? { ean: ean.toString() } : {}),
     });
+    if (!result.created) {
+      return NextResponse.json({error: Errors.GAME_ALREADY_EXISTS, game: result.game}, {status: 409});
+    }
+    const game = result.game;
 
     // Auto-create tags from BGG categories
     if (bggData.categories && bggData.categories.length > 0) {

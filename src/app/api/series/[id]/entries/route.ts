@@ -3,9 +3,11 @@ import { invalidateTag } from "@/lib/cache";
 import { requireAuth, handleApiError } from "@/lib/require-auth";
 import prisma from "@/lib/db";
 import { fetchBGGGame } from "@/lib/bgg";
+import { isBggIdentifier } from "@/lib/bgg-versions";
 import { withApiLogging } from "@/lib/api-logger";
 import { CacheTags } from "@/lib/cache-tags";
 import { Errors } from "@/lib/error-messages";
+import { createOrReuseBggGame } from "@/lib/bgg-import-game";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -26,9 +28,23 @@ export const POST = withApiLogging(async function POST(
       return NextResponse.json({ error: Errors.SERIES_NOT_FOUND }, { status: 404 });
     }
 
-    const body = await request.json();
-    const { gameId, bggId, difficulty } = body;
-
+    const body: unknown = await request.json();
+    if (!body || typeof body !== "object" || Array.isArray(body)) {
+      return NextResponse.json({error: "Ungültige Eingabe."}, {status: 400});
+    }
+    const {gameId: rawGameId, bggId: rawBggId, difficulty} = body as Record<string, unknown>;
+    const bggId = typeof rawBggId === "number" && Number.isSafeInteger(rawBggId) ? String(rawBggId) : rawBggId;
+    if (rawGameId !== undefined && rawGameId !== null && (typeof rawGameId !== "string" || rawGameId.length === 0 || rawGameId.length > 100)) {
+      return NextResponse.json({error: "Ungültige Spiel-ID."}, {status: 400});
+    }
+    if (rawBggId !== undefined && rawBggId !== null && !isBggIdentifier(bggId)) {
+      return NextResponse.json({error: "Ungültige BGG-ID."}, {status: 400});
+    }
+    if (difficulty !== undefined && difficulty !== null && (typeof difficulty !== "string" || difficulty.length > 100)) {
+      return NextResponse.json({error: "Ungültiger Schwierigkeitsgrad."}, {status: 400});
+    }
+    const gameId = rawGameId as string | undefined;
+    const normalizedDifficulty = difficulty as string | null | undefined;
     let resolvedGameId = gameId;
 
     // If bggId provided, import or find the game first
@@ -43,19 +59,16 @@ export const POST = withApiLogging(async function POST(
           return NextResponse.json({ error: Errors.GAME_NOT_FOUND_BGG }, { status: 404 });
         }
 
-        game = await prisma.game.create({
-          data: {
-            name: bggData.name,
-            description: bggData.description,
-            minPlayers: bggData.minPlayers,
-            maxPlayers: bggData.maxPlayers,
-            playTimeMinutes: bggData.playTimeMinutes,
-            complexity: bggData.complexity ? Math.round(bggData.complexity) : null,
-            bggId: bggData.bggId,
-            imageUrl: bggData.imageUrl,
-            ownerId: userId,
-          },
+        const imported = await createOrReuseBggGame(userId, bggId.toString(), {
+          name: bggData.name,
+          description: bggData.description,
+          minPlayers: bggData.minPlayers,
+          maxPlayers: bggData.maxPlayers,
+          playTimeMinutes: bggData.playTimeMinutes,
+          complexity: bggData.complexity ? Math.round(bggData.complexity) : null,
+          imageUrl: bggData.imageUrl,
         });
+        game = imported.game;
       }
 
       resolvedGameId = game.id;
@@ -97,28 +110,18 @@ export const POST = withApiLogging(async function POST(
     });
     const nextOrder = (maxEntry?.sortOrder ?? -1) + 1;
 
-    const entry = await prisma.gameSeriesEntry.create({
-      data: {
-        seriesId,
-        gameId: resolvedGameId,
-        sortOrder: nextOrder,
-        difficulty: difficulty || null,
-      },
-      include: {
-        game: {
-          select: {
-            id: true,
-            name: true,
-            imageUrl: true,
-            minPlayers: true,
-            maxPlayers: true,
-            playTimeMinutes: true,
-            complexity: true,
-            bggId: true,
-          },
-        },
-      },
-    });
+    let entry;
+    try {
+      entry = await prisma.gameSeriesEntry.create({
+        data: {seriesId, gameId: resolvedGameId, sortOrder: nextOrder, difficulty: normalizedDifficulty || null},
+        include: {game: {select: {id: true, name: true, imageUrl: true, minPlayers: true, maxPlayers: true, playTimeMinutes: true, complexity: true, bggId: true}}},
+      });
+    } catch (error) {
+      if ((error as {code?: string})?.code === "P2002") {
+        return NextResponse.json({error: "Dieses Spiel ist bereits in dieser Reihe."}, {status: 409});
+      }
+      throw error;
+    }
 
     invalidateTag(CacheTags.userSeries(userId));
 

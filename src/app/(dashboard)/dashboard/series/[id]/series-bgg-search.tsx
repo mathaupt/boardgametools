@@ -3,6 +3,8 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, Loader2, ExternalLink, Plus } from "lucide-react";
+import { BggCollectionStatus } from "@/components/bgg/bgg-collection-status";
+import type { BggCollectionMatch } from "@/components/bgg/use-bgg-collection-presence";
 
 export interface BGGSearchResult {
   bggId: string;
@@ -17,8 +19,12 @@ interface SeriesBggSearchProps {
   handleSearchBGG: () => Promise<void>;
   handleAddFromBGG: (id: string) => Promise<void>;
   adding: string | null;
+  presenceStatus: "loading" | "ready" | "error";
+  matches: Record<string, BggCollectionMatch | null>;
+  retryPresence: () => void;
+  existingGameIds: string[];
 }
-export function SeriesBggSearch({ bggSearch, setBggSearch, bggResults, bggSearching, handleSearchBGG, handleAddFromBGG, adding }: SeriesBggSearchProps) {
+export function SeriesBggSearch({ bggSearch, setBggSearch, bggResults, bggSearching, handleSearchBGG, handleAddFromBGG, adding, presenceStatus, matches, retryPresence, existingGameIds }: SeriesBggSearchProps) {
   return (
 <div className="space-y-3">
               <form
@@ -55,6 +61,8 @@ export function SeriesBggSearch({ bggSearch, setBggSearch, bggResults, bggSearch
                   </p>
                 </div>
               ) : (
+                <>
+                <BggCollectionStatus status={presenceStatus} retry={retryPresence} hideAbsent />
                 <div className="space-y-1">
                   {bggResults.map((result) => (
                     <div
@@ -67,26 +75,35 @@ export function SeriesBggSearch({ bggSearch, setBggSearch, bggResults, bggSearch
                           <p className="text-xs text-muted-foreground">{result.yearPublished}</p>
                         )}
                       </div>
+                      <div className="flex min-w-0 flex-wrap items-center justify-end gap-2">
+                      {presenceStatus === "ready" && matches[result.bggId] && (() => {
+                        const match = matches[result.bggId]!;
+                        return <span className="max-w-48 truncate text-xs text-muted-foreground" title={match.name}>
+                          {existingGameIds.includes(match.id) ? "Bereits in dieser Reihe" : `In Sammlung: ${match.name}`}
+                        </span>;
+                      })()}
                       <Button
                         size="sm"
                         variant="outline"
                         onClick={() => handleAddFromBGG(result.bggId)}
-                        disabled={adding !== null}
-                        className="shrink-0"
-                        aria-label={adding === result.bggId ? "Wird importiert" : "Importieren"}
+                        disabled={adding !== null || presenceStatus !== "ready" || (!!matches[result.bggId] && existingGameIds.includes(matches[result.bggId]!.id))}
+                        className="min-h-11 shrink-0 whitespace-normal"
+                        aria-label={adding === result.bggId ? "Wird hinzugefügt" : matches[result.bggId] ? "Aus Sammlung hinzufügen" : "Importieren"}
                       >
                         {adding === result.bggId ? (
                           <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
                         ) : (
                           <>
                             <Plus className="h-4 w-4 mr-1" aria-hidden="true" />
-                            Import
+                            {matches[result.bggId] ? "Aus Sammlung hinzufügen" : "Importieren"}
                           </>
                         )}
                       </Button>
+                      </div>
                     </div>
                   ))}
                 </div>
+                </>
               )}
             </div>
   );

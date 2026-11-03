@@ -14,6 +14,8 @@ import { GamePreviewCard } from "./game-preview-card";
 import type { BGGGameData, BGGSearchResult, BGGGameVersion } from "@/lib/bgg-types";
 import { BggVersionPicker } from "@/components/bgg/bgg-version-picker";
 import { ImportSearchResults } from "./import-search-results";
+import { useBggCollectionPresence } from "@/components/bgg/use-bgg-collection-presence";
+import { BggCollectionStatus } from "@/components/bgg/bgg-collection-status";
 
 export default function ImportBGGPage() {
   const router = useRouter();
@@ -22,6 +24,8 @@ export default function ImportBGGPage() {
   const [searchResults, setSearchResults] = useState<BGGSearchResult[]>([]);
   const [selectedGame, setSelectedGame] = useState<BGGGameData | null>(null);
   const [selectedVersion, setSelectedVersion] = useState<BGGGameVersion | null>(null);
+  const presence = useBggCollectionPresence(selectedGame ? [selectedGame.bggId] : []);
+  const collectionMatch = selectedGame ? presence.matches[selectedGame.bggId] : null;
   const [isSearching, setIsSearching] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [importedBggId, setImportedBggId] = useState<string | null>(null);
@@ -122,12 +126,7 @@ export default function ImportBGGPage() {
   }
 
   async function handleImport() {
-    if (!selectedGame || importedBggId === selectedGame.bggId) return;
-
-    if (existingBggIds.has(selectedGame.bggId)) {
-      setError("Dieses Spiel ist bereits in deiner Sammlung");
-      return;
-    }
+    if (!selectedGame || importedBggId === selectedGame.bggId || presence.status !== "ready" || collectionMatch) return;
 
     setIsImporting(true);
     setError(null);
@@ -153,12 +152,7 @@ export default function ImportBGGPage() {
           return next;
         });
       } else if (response.status === 409) {
-        setError("Dieses Spiel ist bereits in deiner Sammlung");
-        setExistingBggIds((prev) => {
-          const next = new Set(prev);
-          next.add(selectedGame.bggId);
-          return next;
-        });
+        presence.retry();
       } else {
         setError("Import fehlgeschlagen");
       }
@@ -270,10 +264,12 @@ export default function ImportBGGPage() {
           isImporting={isImporting}
           isImported={!!selectedGame && importedBggId === selectedGame.bggId}
           error={error}
-          isAlreadyOwned={!isLoadingExistingGames && !!selectedGame && importedBggId !== selectedGame.bggId && existingBggIds.has(selectedGame.bggId)}
+          isAlreadyOwned={!!collectionMatch && importedBggId !== selectedGame?.bggId}
+          importDisabled={!!selectedGame && (presence.status !== "ready" || !!collectionMatch)}
           onImport={handleImport}
         >
-          {selectedGame && !isLoading && <BggVersionPicker key={selectedGame.bggId} bggId={selectedGame.bggId} value={selectedVersion?.versionId ?? null} onChange={setSelectedVersion} disabled={isImporting} />}
+          {selectedGame && !isLoading && importedBggId !== selectedGame.bggId && <BggCollectionStatus status={presence.status} match={collectionMatch} retry={presence.retry} />}
+          {selectedGame && !isLoading && presence.status === "ready" && !collectionMatch && <BggVersionPicker key={selectedGame.bggId} bggId={selectedGame.bggId} value={selectedVersion?.versionId ?? null} onChange={setSelectedVersion} disabled={isImporting} />}
         </GamePreviewCard>
       </div>
 

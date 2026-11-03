@@ -1,24 +1,24 @@
 {
   "schemaVersion": 1,
-  "version": "0.50.66",
-  "measuredAt": "2026-11-02T18:26:11.047Z",
+  "version": "0.50.67",
+  "measuredAt": "2026-11-03T07:54:30.294Z",
   "coverage": {
-    "statements": 62.09,
-    "branches": 58.15,
-    "functions": 67.3,
-    "lines": 63.6
+    "statements": 62.56,
+    "branches": 58.75,
+    "functions": 67.78,
+    "lines": 63.98
   },
   "libraryCoverage": {
-    "statements": 89.01,
-    "branches": 80.48,
-    "functions": 90.93,
-    "lines": 91.53
+    "statements": 89.1,
+    "branches": 80.56,
+    "functions": 90.98,
+    "lines": 91.59
   },
   "tests": {
-    "total": 1062,
-    "files": 154,
+    "total": 1089,
+    "files": 157,
     "allPassing": true,
-    "apiRouteTests": 151,
+    "apiRouteTests": 166,
     "byArea": [
       {
         "area": "Weitere Tests",
@@ -46,14 +46,15 @@
       },
       {
         "area": "API-Routen",
-        "files": 25,
-        "tests": 151,
+        "files": 26,
+        "tests": 166,
         "modules": [
           "admin-operations",
           "admin-users",
           "auth-flow",
           "auth-register",
           "barcode-lookup",
+          "bgg-presence",
           "bgg-route",
           "bgg-versions",
           "event-proposal-details",
@@ -78,11 +79,12 @@
       },
       {
         "area": "Komponenten",
-        "files": 48,
-        "tests": 220,
+        "files": 49,
+        "tests": 227,
         "modules": [
           "barcode-results-panel",
           "barcode-scanner",
+          "bgg-collection-presence",
           "bgg-game-search",
           "bgg-import-editions",
           "bgg-version-picker",
@@ -133,8 +135,8 @@
       },
       {
         "area": "Bibliotheken",
-        "files": 56,
-        "tests": 527,
+        "files": 57,
+        "tests": 532,
         "modules": [
           "api-auth",
           "api-logger",
@@ -142,6 +144,7 @@
           "auth",
           "bgg-catalog",
           "bgg-fetch",
+          "bgg-import-game",
           "bgg-versions",
           "bgg-xml",
           "bgg",

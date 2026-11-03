@@ -42,6 +42,7 @@ Die Weboberfläche verwendet seit 0.50.20 die bestätigte Gestaltung „Club Pro
 - Gruppen-Statistiken
 
 ### 5. BGG (BoardGameGeek) Integration
+- Vor BGG-Einzelimporten und Reihenimporten die exakte ID gegen die aktive eigene Sammlung prüfen; vorhandene Spiele wiederverwenden und bei fehlgeschlagener Prüfung Schreibzugriffe sperren
 - Spiele per BGG-ID importieren
 - Daten von BGG abrufen (Name, Bild, Spieleranzahl, etc.)
 - BGG-Suche nach Spielnamen

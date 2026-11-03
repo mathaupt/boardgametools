@@ -14,6 +14,7 @@ const edition={versionId:"101",name:"German edition",languages:["German"],yearPu
 describe("edition import entry points",()=>{
  beforeEach(()=>{vi.clearAllMocks();vi.stubGlobal("fetch",mocks.fetch);mocks.fetch.mockImplementation(async(input:string,init?:RequestInit)=>{
   if(input==="/api/games")return Response.json([]);
+  if(input==="/api/games/bgg-presence") { const {bggIds}=JSON.parse(String(init?.body)); return Response.json({matches:Object.fromEntries(bggIds.map((id:string)=>[id,null]))}); }
   if(input.endsWith("/versions"))return Response.json([edition]);
   if(input.includes("query=")||input.includes("search?q="))return Response.json([{bggId:"13",name:"Catan"}]);
   if(input==="/api/games/import-bgg" && init?.method==="POST")return Response.json({game:{id:"saved",name:"Catan"}},{status:201});
@@ -32,6 +33,35 @@ describe("edition import entry points",()=>{
   await user.click(screen.getByRole("button",{name:kind==="import"?"Zur Sammlung hinzufügen":"Importieren"}));
   await waitFor(()=>expect(mocks.fetch).toHaveBeenCalledWith("/api/games/import-bgg",expect.objectContaining({method:"POST",body:JSON.stringify({bggId:"13",versionId:"101"})})));
   expect(mocks.fetch.mock.calls.some(([url,init])=>url==="/api/games"&&(init as RequestInit | undefined)?.method==="POST")).toBe(false);
+ });
+ it("verlinkt ein eigenes Spiel und sperrt den unnötigen BGG-Import",async()=>{
+  mocks.fetch.mockImplementation(async(input:string,init?:RequestInit)=>{
+   if(input==="/api/games")return Response.json([]);
+   if(input==="/api/games/bgg-presence")return Response.json({matches:{"13":{id:"owned-game",name:"Catan in meiner Sammlung"}}});
+   if(input.includes("query="))return Response.json([{bggId:"13",name:"Catan"}]);
+   if(input==="/api/games/import-bgg")return Response.json({game:{id:"new"}},{status:201});
+   return Response.json(base);
+  });
+  const user=userEvent.setup();render(<ImportPage/>);
+  await user.type(screen.getByRole("textbox",{name:"BGG-ID"}),"13");await user.click(screen.getByRole("button",{name:"Laden"}));
+  const link=await screen.findByRole("link",{name:"Catan in meiner Sammlung"});
+  expect(link).toHaveAttribute("href","/dashboard/games/owned-game");
+  expect(screen.getByRole("button",{name:"Zur Sammlung hinzufügen"})).toBeDisabled();
+  expect(mocks.fetch).not.toHaveBeenCalledWith("/api/games/import-bgg",expect.anything());
+ });
+ it("zeigt auch auf der BGG-Importseite vorhandenen Bestand statt einer Importaktion",async()=>{
+  mocks.fetch.mockImplementation(async(input:string,init?:RequestInit)=>{
+   if(input==="/api/games/bgg-presence")return Response.json({matches:{"13":{id:"owned-game",name:"Catan vorhanden"}}});
+   if(input.includes("query="))return Response.json([{bggId:"13",name:"Catan"}]);
+   if(input==="/api/games/import-bgg")return Response.json({game:{id:"new"}},{status:201});
+   return Response.json(base);
+  });
+  const user=userEvent.setup();render(<BggPage/>);
+  expect(screen.getByRole("heading",{name:"BoardGameGeek Import"})).toHaveClass("break-words", "[overflow-wrap:anywhere]");
+  await user.type(screen.getByRole("textbox",{name:"Spiel suchen"}),"Catan");await user.click(screen.getByRole("button",{name:"Suchen"}));
+  await user.click(await screen.findByRole("button",{name:"Details für Catan"}));
+  expect(await screen.findByRole("link",{name:"Catan vorhanden"})).toHaveAttribute("href","/dashboard/games/owned-game");
+  expect(screen.getByRole("button",{name:"Importieren"})).toBeDisabled();
  });
  it("shows success instead of a duplicate warning while collection navigation is pending",async()=>{
   const user=userEvent.setup();render(<ImportPage/>);
