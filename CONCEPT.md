@@ -128,6 +128,22 @@ Die Weboberfläche verwendet seit 0.50.20 die bestätigte Gestaltung „Club Pro
 - **Zentrales Error-Messages-Modul**: Alle API-Fehlermeldungen auf Deutsch in `src/lib/error-messages.ts`
 - **Security Headers**: CSP, HSTS, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy
 
+### 17. Gamification (FEAT-028 – Konzept, nicht umgesetzt)
+
+- Persönliche Abzeichen für dokumentierte Sessions, gespielte Vielfalt und
+  Fortschritt in Spielereihen; Erfolge sind standardmäßig privat.
+- Persönliche Entdeckerziele regen dazu an, Spiele aus der eigenen Sammlung
+  auszuprobieren.
+- Freiwillige Gruppen-Challenges zählen Sessions teilnehmender Gruppenmitglieder
+  gemeinsam, auch wenn diese nicht miteinander gespielt haben. Die Gruppe sieht
+  nur den Gesamtfortschritt, keine einzelnen Beiträge oder Sessiondetails.
+- Es gibt keine Ranglisten, täglichen Streaks, Strafen, Käufe oder
+  Siege-Voraussetzungen. Gäste werden nicht über öffentliche Events hinweg
+  profiliert.
+- Die Produktentscheidungen und Datenschutzregeln stehen in
+  `docs/superpowers/specs/2026-11-03-FEAT-028-gamification-design.md`.
+  Implementierungsplan und Umsetzungsfreigabe sind offen.
+
 ---
 
 ## Technologie-Stack

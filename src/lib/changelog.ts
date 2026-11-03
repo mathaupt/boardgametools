@@ -12,6 +12,15 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.74",
+    date: "2026-11-03",
+    title: "Gamification-Konzept festhalten",
+    description: "Das Konzept setzt auf persönliche Meilensteine, Sammlungsentdeckung und freiwillige gemeinsame Gruppen-Challenges ohne Ranglisten.",
+    changes: [
+      { type: "internal", text: "FEAT-028 mit bestätigtem Produktumfang, Datenschutzprinzipien, Gruppenfortschritt und Stufenplan dokumentiert; keine Umsetzungsfreigabe." },
+    ],
+  },
+  {
     version: "0.50.73",
     date: "2026-11-03",
     title: "Gastzugänge sicher wiederaufnehmen",

@@ -41,6 +41,7 @@ Bedarf zu aktualisieren. Ergebnis am jeweiligen Plan dokumentieren:
 | FEAT-025 | Reihenspiele unabhängig von dauerhaftem Sammlungsbesitz | Plan erstellt; Schema-/Umsetzung nicht freigegeben | [Temporäre Reihenspiele](superpowers/plans/2026-11-03-FEAT-025-temporaere-reihenspiele.md) | Keine |
 | FEAT-026 | Seitennavigation in der Spielesammlung | Plan erstellt; Umsetzung nicht freigegeben | [Pager der Spielesammlung](superpowers/plans/2026-11-03-FEAT-026-spielesammlung-pager.md) | Keine |
 | FEAT-027 | Eindeutige Leermeldung in allen BGG-Suchansichten | Umgesetzt (Web, 0.50.70) | [BGG-Leerzustände](superpowers/plans/2026-11-03-FEAT-027-bgg-leerzustand.md) | 03.11.2026 freigegeben und umgesetzt; öffentliche FEAT-014-Zustände erhalten |
+| FEAT-028 | Gamification: persönliche und gemeinsame Ziele | Konzeptentwurf erstellt; Implementierungsplan und Umsetzung offen | [Gamification-Konzept](superpowers/specs/2026-11-03-FEAT-028-gamification-design.md) | Konzept am 03.11.2026 bestätigt; keine Umsetzungsfreigabe |
 
 Am 30.10.2026 aufgenommen. Bei der Planung sind Web, iOS sowie angemeldete und
 öffentliche Voting-Ansichten auf Relevanz und bereits vorhandene Teilfunktionen
@@ -51,7 +52,7 @@ zur Umsetzung freigegeben.
 
 Die Abschnitte A bis I dokumentieren Betriebs-, Abnahme- und Feature-Restarbeiten
 mit ihrem jeweiligen Prüfdatum. Der aktuelle Featurestatus steht in der
-Übersicht; neue Anforderungen FEAT-023 bis FEAT-027 sind darunter verlinkt.
+Übersicht; neue Anforderungen FEAT-023 bis FEAT-028 sind darunter verlinkt.
 „Offen“ bedeutet
 hier entweder eine ausdrücklich ausstehende Abnahme, eine gesonderte
 Produkt-/Betriebsfreigabe oder einen separat zu planenden Sicherheitsumfang.
@@ -866,9 +867,9 @@ zur lokalen gerenderten Prüfung ist damit für diese Komponenten erfüllt.
 **Implementierungsplan:** [BGG-Attribution](superpowers/plans/2026-11-02-FEAT-022-bgg-attribution.md).
 **Umfang:** Offizielle BGG-Kennzeichnung auf Loginseite und konsistentem Website-Footer nach Prüfung der dann geltenden BGG-Vorgaben.
 
-## Neue Anforderungen vom 02.11.2026 – geplante Abarbeitung
+## Neue Anforderungen vom 02./03.11.2026 – geplante Abarbeitung
 
-Für FEAT-023 bis FEAT-027 sind vor der Umsetzung jeweils Bestandsabgleich und
+Für FEAT-023 bis FEAT-028 sind vor der Umsetzung jeweils Bestandsabgleich und
 Implementierungsplan mit RED/GREEN/REFACTOR, konkreten Tests, Security,
 Impeccable einschließlich gerenderter Prüfung sowie Dokumentationsaufgaben
 verpflichtend. Vor jeder späteren Implementierung den Plan erneut auf Aktualität
@@ -914,3 +915,11 @@ danach können FEAT-026 und FEAT-027 unabhängig geplant umgesetzt werden.
 **Ziel:** Nach einer erfolgreich abgeschlossenen BGG-Suche ohne Treffer eine klare deutsche Meldung mit nächstem Schritt anzeigen.
 **Abnahmekriterien:** „Keine passenden Spiele gefunden“ erst nach tatsächlich abgeschlossener Suche zeigen. Noch nicht gesucht, Mindestlänge, Laden, keine Treffer und Provider-/Verbindungsfehler unterscheiden. Suchbegriff ändern und erneut suchen ermöglichen; veraltete Antworten nicht über neuere Ergebnisse schreiben. Suchstatus zugänglich ankündigen. Vorhandene FEAT-014-Zustände der öffentlichen Suche und bestehende BGG-/Reihenansichten übernehmen beziehungsweise vereinheitlichen.
 **Implementierungsplan:** [BGG-Leerzustände](superpowers/plans/2026-11-03-FEAT-027-bgg-leerzustand.md). Der Plan trennt echte Leerresultate von Providerfehlern und erhält den bereits implementierten FEAT-014-Vertrag der öffentlichen Eventseite.
+
+## FEAT-028 – Gamification: persönliche und gemeinsame Ziele
+
+**Status:** Konzept erstellt und vom Nutzer bestätigt; Implementierungsplan steht zur Prüfung des Konzeptdokuments noch aus. Keine Umsetzung freigegeben.
+**Ziel:** Sessions dokumentieren, die eigene Spielesammlung entdecken und mit Gruppen gemeinsame Spielziele erreichen – ohne Druck oder Ranglisten.
+**Bestätigte Entscheidungen:** Persönliche Meilensteine, Entdeckerziele und kooperative Gruppen-Challenges; keine Ranglisten. Der Gruppenfortschritt zählt die Sessions teilnehmender Gruppenmitglieder zusammen, auch wenn diese nicht gemeinsam gespielt haben.
+**Abnahmekriterien für die spätere Umsetzung:** Persönliche Erfolge bleiben privat; Teilnahme an Gruppen-Challenges ist freiwillig und wird nur aggregiert sichtbar. Sessiondaten werden eigentümergeprüft, Soft-Deletes und Korrekturen aktualisieren den Fortschritt. Gäste werden nicht über Events hinweg profiliert. Keine Pflichtfelder, täglichen Streaks, Strafen oder Siege als Erfolgsvoraussetzung. Web und iOS werden separat abgeglichen.
+**Konzept:** [Gamification-Konzept](superpowers/specs/2026-11-03-FEAT-028-gamification-design.md). Exakte Meilenstein-Schwellen, Challenge-Katalog und Daten-/Berechtigungsverträge im Implementierungsplan festlegen.
