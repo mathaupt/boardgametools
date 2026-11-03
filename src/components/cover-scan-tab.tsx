@@ -30,8 +30,10 @@ export function CoverScanTab({ onGameSelected }: CoverScanTabProps) {
   const [ocrText, setOcrText] = useState("");
   const [ocrSearching, setOcrSearching] = useState(false);
   const [ocrResults, setOcrResults] = useState<BGGResult[]>([]);
+  const [ocrSearchCompleted, setOcrSearchCompleted] = useState(false);
   const [ocrError, setOcrError] = useState<string | null>(null);
   const coverInputRef = useRef<HTMLInputElement>(null);
+  const ocrSearchRequest = useRef(0);
   const videoRef = useRef<HTMLVideoElement>(null);
   const coverStreamRef = useRef<MediaStream | null>(null);
   const [coverCameraActive, setCoverCameraActive] = useState(false);
@@ -104,6 +106,7 @@ export function CoverScanTab({ onGameSelected }: CoverScanTabProps) {
     setOcrError(null);
     setOcrText("");
     setOcrResults([]);
+    setOcrSearchCompleted(false);
     try {
       const Tesseract = await import("tesseract.js");
       const { data } = await Tesseract.recognize(imageData, "deu+eng", {});
@@ -124,20 +127,30 @@ export function CoverScanTab({ onGameSelected }: CoverScanTabProps) {
     setOcrProcessing(false);
   }
 
-  async function handleOcrSearch(e: React.FormEvent) {
-    e.preventDefault();
+  async function searchOcrText() {
     if (ocrText.trim().length < 2) return;
     setOcrSearching(true);
     setOcrResults([]);
+    setOcrSearchCompleted(false);
+    setOcrError(null);
+    const requestId = ++ocrSearchRequest.current;
     try {
       const res = await fetch(`/api/bgg/search?q=${encodeURIComponent(ocrText.trim())}`);
-      if (res.ok) {
-        setOcrResults(await res.json());
+      if (!res.ok) throw new Error("BoardGameGeek ist gerade nicht erreichbar. Bitte versuche es erneut.");
+      const results = await res.json();
+      if (requestId === ocrSearchRequest.current) {
+        setOcrResults(results);
+        setOcrSearchCompleted(true);
       }
     } catch {
-      setOcrError("Fehler bei der BGG-Suche");
+      if (requestId === ocrSearchRequest.current) setOcrError("BoardGameGeek ist gerade nicht erreichbar. Bitte versuche es erneut.");
     }
-    setOcrSearching(false);
+    if (requestId === ocrSearchRequest.current) setOcrSearching(false);
+  }
+
+  async function handleOcrSearch(e: React.FormEvent) {
+    e.preventDefault();
+    await searchOcrText();
   }
 
   function handleSelectOcrResult(bggId: string) {
@@ -148,6 +161,7 @@ export function CoverScanTab({ onGameSelected }: CoverScanTabProps) {
   function resetCover() {
     setCoverImage(null);
     setOcrText("");
+    ocrSearchRequest.current += 1;
     setOcrResults([]);
     setOcrError(null);
     setOcrProcessing(false);
@@ -239,9 +253,10 @@ export function CoverScanTab({ onGameSelected }: CoverScanTabProps) {
 
           {/* OCR error */}
           {ocrError && (
-            <div className="flex items-start gap-3 p-3 rounded-lg bg-destructive/10 text-sm text-destructive">
+            <div role="alert" className="flex flex-wrap items-start gap-3 p-3 rounded-lg bg-destructive/10 text-sm">
               <AlertCircle className="h-5 w-5 shrink-0 mt-0.5" aria-hidden="true" />
-              <p>{ocrError}</p>
+              <p className="min-w-0 flex-1 text-destructive">{ocrError}</p>
+              {ocrText.trim().length >= 2 && <Button type="button" size="sm" variant="outline" onClick={() => void searchOcrText()}>Erneut versuchen</Button>}
             </div>
           )}
 
@@ -257,7 +272,7 @@ export function CoverScanTab({ onGameSelected }: CoverScanTabProps) {
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" aria-hidden="true" />
                   <Input
                     value={ocrText}
-                    onChange={(e) => setOcrText(e.target.value)}
+                    onChange={(e) => { ocrSearchRequest.current += 1; setOcrSearching(false); setOcrText(e.target.value); setOcrSearchCompleted(false); setOcrResults([]); setOcrError(null); }}
                     placeholder="Spielname bearbeiten…"
                     aria-label="Erkannter Spielname"
                     className="pl-9"
@@ -308,9 +323,9 @@ export function CoverScanTab({ onGameSelected }: CoverScanTabProps) {
           )}
 
           {/* No OCR results */}
-          {!ocrSearching && ocrText && ocrResults.length === 0 && !ocrProcessing && (
+          {!ocrSearching && ocrSearchCompleted && ocrText && ocrResults.length === 0 && !ocrProcessing && !ocrError && (
             <p className="text-xs text-muted-foreground text-center py-2">
-              Bearbeite den erkannten Text und suche erneut.
+              Keine passenden Spiele gefunden. Ändere den erkannten Text und suche erneut.
             </p>
           )}
         </div>

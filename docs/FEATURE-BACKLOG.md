@@ -40,7 +40,7 @@ Bedarf zu aktualisieren. Ergebnis am jeweiligen Plan dokumentieren:
 | FEAT-024 | Mehrfachauswahl beim Hinzufügen zu Reihen, auch aus BGG | Umgesetzt (Web, 0.50.69) | [Mehrfachauswahl bei Reihen](superpowers/plans/2026-11-03-FEAT-024-mehrfachauswahl-reihen.md) | Am 03.11.2026 freigegeben und umgesetzt; iOS separat |
 | FEAT-025 | Reihenspiele unabhängig von dauerhaftem Sammlungsbesitz | Plan erstellt; Schema-/Umsetzung nicht freigegeben | [Temporäre Reihenspiele](superpowers/plans/2026-11-03-FEAT-025-temporaere-reihenspiele.md) | Keine |
 | FEAT-026 | Seitennavigation in der Spielesammlung | Plan erstellt; Umsetzung nicht freigegeben | [Pager der Spielesammlung](superpowers/plans/2026-11-03-FEAT-026-spielesammlung-pager.md) | Keine |
-| FEAT-027 | Eindeutige Leermeldung in allen BGG-Suchansichten | Plan erstellt; Umsetzung nicht freigegeben | [BGG-Leerzustände](superpowers/plans/2026-11-03-FEAT-027-bgg-leerzustand.md) | Keine |
+| FEAT-027 | Eindeutige Leermeldung in allen BGG-Suchansichten | Umgesetzt (Web, 0.50.70) | [BGG-Leerzustände](superpowers/plans/2026-11-03-FEAT-027-bgg-leerzustand.md) | 03.11.2026 freigegeben und umgesetzt; öffentliche FEAT-014-Zustände erhalten |
 
 Am 30.10.2026 aufgenommen. Bei der Planung sind Web, iOS sowie angemeldete und
 öffentliche Voting-Ansichten auf Relevanz und bereits vorhandene Teilfunktionen
@@ -910,7 +910,7 @@ danach können FEAT-026 und FEAT-027 unabhängig geplant umgesetzt werden.
 
 ## FEAT-027 – Keine Treffer in der BGG-Suche eindeutig melden
 
-**Status:** Erfasst; Bestandsabgleich, Planung und Umsetzung offen.
+**Status:** Umgesetzt am 03.11.2026 in Version 0.50.70.
 **Ziel:** Nach einer erfolgreich abgeschlossenen BGG-Suche ohne Treffer eine klare deutsche Meldung mit nächstem Schritt anzeigen.
 **Abnahmekriterien:** „Keine passenden Spiele gefunden“ erst nach tatsächlich abgeschlossener Suche zeigen. Noch nicht gesucht, Mindestlänge, Laden, keine Treffer und Provider-/Verbindungsfehler unterscheiden. Suchbegriff ändern und erneut suchen ermöglichen; veraltete Antworten nicht über neuere Ergebnisse schreiben. Suchstatus zugänglich ankündigen. Vorhandene FEAT-014-Zustände der öffentlichen Suche und bestehende BGG-/Reihenansichten übernehmen beziehungsweise vereinheitlichen.
 **Implementierungsplan:** [BGG-Leerzustände](superpowers/plans/2026-11-03-FEAT-027-bgg-leerzustand.md). Der Plan trennt echte Leerresultate von Providerfehlern und erhält den bereits implementierten FEAT-014-Vertrag der öffentlichen Eventseite.

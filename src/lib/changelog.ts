@@ -12,6 +12,16 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.70",
+    date: "2026-11-03",
+    title: "BGG-Suchergebnisse klar unterscheiden",
+    description: "Leere Suchergebnisse und vorübergehende BGG-Fehler werden verständlich und getrennt angezeigt.",
+    changes: [
+      { type: "feature", text: "FEAT-027: BGG-Suchen zeigen nach erfolgreicher Suche ohne Treffer eine klare Meldung und bei Verbindungsfehlern eine erneute Versuchsmöglichkeit." },
+      { type: "fix", text: "BGG-Ausfälle erscheinen nicht mehr als leere Treffer oder erfundene Catan-Vorschläge." },
+    ],
+  },
+  {
     version: "0.50.69",
     date: "2026-11-03",
     title: "Mehrere Spiele zu einer Reihe hinzufügen",

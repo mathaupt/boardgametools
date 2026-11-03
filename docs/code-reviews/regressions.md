@@ -357,11 +357,13 @@ Jeder Eintrag enthält Felder für Root-Cause-Analyse und Gegenmaßnahmen (manue
 
 | Finding | Priorität | Vorher | Jetzt | Detail |
 |---------|-----------|--------|-------|--------|
-| SEC-45: npm audit: Bekannte Vulnerabilities | P2 | partially_resolved | open | npm audit lieferte keine gültigen Prüfdaten |
+| SEC-45: npm audit: Bekannte Vulnerabilities | P2 | partially_resolved | resolved after audit | Sandbox-Audit lieferte zunächst keine Prüfdaten; Registryprüfung meldete 0 Produktionslücken |
 
-**Root-Cause:** <!-- Manuell ausfüllen: Warum ist das Finding zurückgekehrt? -->
-**Gegenmaßnahme:** <!-- Manuell ausfüllen: Wie wird verhindert, dass es erneut passiert? -->
-**Verantwortlich:** <!-- Manuell ausfüllen -->
+**Root-Cause:** Der erste Evaluatorlauf hatte im Sandboxmodus keinen Registryzugriff. Dadurch wurde fehlendes Audit-JSON fälschlich als offenes SEC-45 gewertet.
+**Gegenmaßnahme:** `npm audit --omit=dev` mit Registryzugriff erneut ausführen und den Regressionsevaluator erst mit gültigen Auditdaten bewerten.
+**Verantwortlich:** BoardGameTools-Wartung.
+
+**Auflösung 2026-11-03:** `npm audit --omit=dev` meldete 0 Vulnerabilities. Der Regressionsevaluator mit Registryzugriff endete mit Exitcode 0, Gesamt 10/10, Sicherheit 9,9/10, 0 offenen Findings und 0 Regressionen. Snapshot `history/2026-11-03_1604.json`.
 
 ---
 
@@ -403,5 +405,19 @@ Jeder Eintrag enthält Felder für Root-Cause-Analyse und Gegenmaßnahmen (manue
 **Verantwortlich:** BoardGameTools-Wartung.
 
 **Auflösung 2026-11-03:** `npm audit --omit=dev` mit Registryzugriff meldete 0 Vulnerabilities. Reviewläufe mit Registryzugriff endeten mit Exitcode 0, Gesamt 10/10, Sicherheit 9,9/10, keine Regression. SEC-45 bleibt gemäß gültiger Auditbewertung nicht regressiv. Finaler Snapshot: `history/2026-11-03_1239.json`.
+
+---
+
+## 2026-11-03 14:56:26
+
+| Finding | Priorität | Vorher | Jetzt | Detail |
+|---------|-----------|--------|-------|--------|
+| SEC-45: npm audit: Bekannte Vulnerabilities | P2 | partially_resolved | resolved after audit | Sandbox-Audit lieferte zunächst keine Prüfdaten; Registryprüfung meldete 0 Produktionslücken |
+
+**Root-Cause:** Der erste Evaluatorlauf hatte im Sandboxmodus keinen Registryzugriff. Dadurch wurde fehlendes Audit-JSON fälschlich als offenes SEC-45 gewertet.
+**Gegenmaßnahme:** `npm audit --omit=dev` mit Registryzugriff erneut ausführen und den Regressionsevaluator erst mit gültigen Auditdaten bewerten.
+**Verantwortlich:** BoardGameTools-Wartung.
+
+**Auflösung 2026-11-03:** `npm audit --omit=dev` meldete 0 Vulnerabilities. Der Regressionsevaluator mit Registryzugriff endete mit Exitcode 0, Gesamt 10/10, Sicherheit 9,9/10, 0 offenen Findings und 0 Regressionen. Finaler Snapshot `history/2026-11-03_1604.json`.
 
 ---

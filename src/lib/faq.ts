@@ -27,6 +27,10 @@ export const faqSections: FaqSection[] = [
         answer: "Ja. Wähle bis zu 20 Spiele aus deiner Sammlung oder den BGG-Suchergebnissen aus. Deine Auswahl bleibt erhalten, wenn du die Suche oder Quelle wechselst. Die Spiele werden einzeln nacheinander hinzugefügt; bei Teilerfolgen siehst du den Status pro Spiel und kannst fehlgeschlagene Einträge erneut versuchen.",
       },
       {
+        question: "Warum zeigt die BGG-Suche keine Ergebnisse oder einen Fehler?",
+        answer: "Eine Meldung ohne Treffer erscheint erst nach einer erfolgreich abgeschlossenen Suche. Ist BoardGameGeek vorübergehend nicht erreichbar, zeigen wir einen separaten Fehler an. Du kannst die Suche erneut starten oder den Suchbegriff ändern.",
+      },
+      {
         question: "Warum zeigt das Qualitätsmonitoring unterschiedliche Werte für die Testabdeckung?",
         answer: "Der gesamte Messumfang und die Bibliotheken unter src/lib werden getrennt gemessen. Das Ziel sind jeweils 80 % pro Kennzahl; ein erreichter Bibliothekswert bedeutet noch keine 80 % für die gesamte Anwendung. Messzeitpunkt und Version stehen direkt bei den Werten. Coverage und Testzahlen stammen aus einem vollständigen erfolgreichen Testlauf und werden mit dem Deployment veröffentlicht. Weitere Review-Kennzahlen sind als historisch gekennzeichnet.",
       },

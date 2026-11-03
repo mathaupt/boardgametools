@@ -108,6 +108,60 @@ describe("AddGameDialog multi-selection", () => {
     ]);
   });
 
+  it("shows a no-results message only after a successful empty BGG search", async () => {
+    const user = userEvent.setup();
+    fetchMock.mockImplementation(async (url: string) => {
+      if (url === "/api/games") return Response.json(games);
+      if (url.startsWith("/api/bgg/search")) return Response.json([]);
+      return Response.json({ matches: {} });
+    });
+    renderDialog();
+    await user.click(screen.getByRole("tab", { name: "BGG Import" }));
+    await user.type(screen.getByRole("textbox", { name: "Spiel auf BGG suchen" }), "Unbekannt");
+    expect(screen.queryByText(/Keine passenden Spiele gefunden/)).not.toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Suchen" }));
+    expect(await screen.findByText(/Keine passenden Spiele gefunden/)).toBeInTheDocument();
+  });
+
+  it("shows provider failures separately from an empty BGG result", async () => {
+    const user = userEvent.setup();
+    fetchMock.mockImplementation(async (url: string) => {
+      if (url === "/api/games") return Response.json(games);
+      if (url.startsWith("/api/bgg/search")) return Response.json({ error: "BGG nicht erreichbar" }, { status: 503 });
+      return Response.json({ matches: {} });
+    });
+    renderDialog();
+    await user.click(screen.getByRole("tab", { name: "BGG Import" }));
+    await user.type(screen.getByRole("textbox", { name: "Spiel auf BGG suchen" }), "Catan");
+    await user.click(screen.getByRole("button", { name: "Suchen" }));
+    expect(await screen.findByRole("alert")).toHaveTextContent("BoardGameGeek ist gerade nicht erreichbar");
+    expect(screen.queryByText(/Keine passenden Spiele gefunden/)).not.toBeInTheDocument();
+  });
+
+  it("ignores a stale response after the search term changes", async () => {
+    const user = userEvent.setup();
+    let resolveOldSearch: ((response: Response) => void) | undefined;
+    fetchMock.mockImplementation((url: string) => {
+      if (url === "/api/games") return Promise.resolve(Response.json(games));
+      if (url.includes("q=Catan")) return new Promise<Response>((resolve) => { resolveOldSearch = resolve; });
+      if (url.includes("q=Azul")) return Promise.resolve(Response.json([{ bggId: "230802", name: "Azul", yearPublished: 2017 }]));
+      if (url === "/api/games/bgg-presence") return Promise.resolve(Response.json({ matches: {} }));
+      return Promise.resolve(Response.json({ error: "Unexpected request" }, { status: 500 }));
+    });
+    renderDialog();
+    await user.click(screen.getByRole("tab", { name: "BGG Import" }));
+    const search = screen.getByRole("textbox", { name: "Spiel auf BGG suchen" });
+    await user.type(search, "Catan");
+    await user.click(screen.getByRole("button", { name: "Suchen" }));
+    await user.clear(search);
+    await user.type(search, "Azul");
+    await user.click(screen.getByRole("button", { name: "Suchen" }));
+    expect(await screen.findByRole("checkbox", { name: "Azul auswählen" })).toBeInTheDocument();
+    resolveOldSearch?.(Response.json([{ bggId: "13", name: "Catan", yearPublished: 1995 }]));
+    await waitFor(() => expect(screen.getByRole("checkbox", { name: "Azul auswählen" })).toBeInTheDocument());
+    expect(screen.queryByRole("checkbox", { name: "Catan auswählen" })).not.toBeInTheDocument();
+  });
+
   it("limits a batch to twenty selected games", async () => {
     const user = userEvent.setup();
     const manyGames = Array.from({ length: 21 }, (_, index) => ({

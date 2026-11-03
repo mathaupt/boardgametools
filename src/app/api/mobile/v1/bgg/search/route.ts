@@ -3,7 +3,7 @@ import { apiAuth } from "@/lib/api-auth";
 import { withApiLogging } from "@/lib/api-logger";
 import { ApiError, handleApiError } from "@/lib/require-auth";
 import { Errors } from "@/lib/error-messages";
-import { searchBGGGames } from "@/lib/bgg";
+import { BggSearchError, searchBGGGames } from "@/lib/bgg";
 
 export const GET = withApiLogging(async function GET(request: NextRequest) {
   try {
@@ -19,6 +19,9 @@ export const GET = withApiLogging(async function GET(request: NextRequest) {
     const results = await searchBGGGames(q);
     return NextResponse.json(results);
   } catch (error) {
+    if (error instanceof BggSearchError) {
+      return NextResponse.json({ error: error.message }, { status: error.statusCode, headers: error.retryAfterSeconds ? { "Retry-After": String(error.retryAfterSeconds) } : undefined });
+    }
     return handleApiError(error);
   }
 });

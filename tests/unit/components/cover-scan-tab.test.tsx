@@ -83,7 +83,7 @@ describe("CoverScanTab", () => {
     expect(fetch).not.toHaveBeenCalled();
   });
 
-  it("leaves an explanatory empty state when the BGG search returns an error", async () => {
+  it("shows a BGG provider error and retry action instead of a no-results message", async () => {
     const user = userEvent.setup();
     mocks.recognize.mockResolvedValueOnce({ data: { text: "Catan" } });
     vi.mocked(fetch).mockResolvedValueOnce(new Response("{}", { status: 503 }));
@@ -94,6 +94,23 @@ describe("CoverScanTab", () => {
 
     await user.click(await screen.findByRole("button", { name: "Auf BoardGameGeek suchen" }));
 
-    expect(await screen.findByText("Bearbeite den erkannten Text und suche erneut.")).toBeInTheDocument();
+    expect(await screen.findByRole("alert")).toHaveTextContent("BoardGameGeek ist gerade nicht erreichbar");
+    expect(screen.getByRole("button", { name: "Erneut versuchen" })).toBeInTheDocument();
+    expect(screen.queryByText("Bearbeite den erkannten Text und suche erneut.")).not.toBeInTheDocument();
+  });
+
+  it("shows the no-results message only after a successful empty BGG response", async () => {
+    const user = userEvent.setup();
+    mocks.recognize.mockResolvedValueOnce({ data: { text: "Catan" } });
+    vi.mocked(fetch).mockResolvedValueOnce(new Response("[]", { status: 200 }));
+    const { container } = render(<CoverScanTab onGameSelected={vi.fn()} />);
+    fireEvent.change(container.querySelector<HTMLInputElement>('input[type="file"]')!, {
+      target: { files: [new File(["cover"], "cover.jpg", { type: "image/jpeg" })] },
+    });
+
+    await screen.findByRole("textbox", { name: "Erkannter Spielname" });
+    expect(screen.queryByText(/Keine passenden Spiele gefunden/)).not.toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Auf BoardGameGeek suchen" }));
+    expect(await screen.findByText(/Keine passenden Spiele gefunden/)).toBeInTheDocument();
   });
 });

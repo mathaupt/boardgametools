@@ -100,7 +100,9 @@ describe("BarcodeResultsPanel", () => {
 
     await user.type(screen.getByLabelText("Spielname eingeben"), "Catan");
     await user.click(screen.getByRole("button", { name: "Suchen" }));
-    await waitFor(() => expect(screen.getByText("Keine Ergebnisse. Versuche einen anderen Suchbegriff.")).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByRole("alert")).toHaveTextContent("BoardGameGeek ist gerade nicht erreichbar"));
+    expect(screen.getByRole("button", { name: "Erneut versuchen" })).toBeInTheDocument();
+    expect(screen.queryByText("Keine Ergebnisse. Versuche einen anderen Suchbegriff.")).not.toBeInTheDocument();
     expect(onGameSelected).not.toHaveBeenCalled();
   });
 });

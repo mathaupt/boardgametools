@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -52,6 +52,9 @@ export function BarcodeResultsPanel({
   const [fallbackName, setFallbackName] = useState("");
   const [fallbackSearching, setFallbackSearching] = useState(false);
   const [fallbackResults, setFallbackResults] = useState<BGGResult[]>([]);
+  const [fallbackError, setFallbackError] = useState<string | null>(null);
+  const [fallbackSearched, setFallbackSearched] = useState(false);
+  const fallbackRequestId = useRef(0);
 
   function handleSelectBGGResult(bggId: string) {
     const ean = result.ean || scannedEan;
@@ -60,20 +63,30 @@ export function BarcodeResultsPanel({
     }
   }
 
-  async function handleFallbackSearch(e: React.FormEvent) {
-    e.preventDefault();
+  async function searchFallback() {
     if (fallbackName.trim().length < 2) return;
     setFallbackSearching(true);
     setFallbackResults([]);
+    setFallbackError(null);
+    setFallbackSearched(false);
+    const requestId = ++fallbackRequestId.current;
     try {
       const res = await fetch(`/api/bgg/search?q=${encodeURIComponent(fallbackName.trim())}`);
-      if (res.ok) {
-        setFallbackResults(await res.json());
+      if (!res.ok) throw new Error("BoardGameGeek ist gerade nicht erreichbar. Bitte versuche es erneut.");
+      const results = await res.json();
+      if (requestId === fallbackRequestId.current) {
+        setFallbackResults(results);
+        setFallbackSearched(true);
       }
     } catch {
-      // ignore
+      if (requestId === fallbackRequestId.current) setFallbackError("BoardGameGeek ist gerade nicht erreichbar. Bitte versuche es erneut.");
     }
-    setFallbackSearching(false);
+    if (requestId === fallbackRequestId.current) setFallbackSearching(false);
+  }
+
+  async function handleFallbackSearch(e: React.FormEvent) {
+    e.preventDefault();
+    await searchFallback();
   }
 
   function handleSelectFallbackResult(bggId: string) {
@@ -187,7 +200,7 @@ export function BarcodeResultsPanel({
                       <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" aria-hidden="true" />
                       <Input
                         value={fallbackName}
-                        onChange={(e) => setFallbackName(e.target.value)}
+                        onChange={(e) => { fallbackRequestId.current += 1; setFallbackSearching(false); setFallbackName(e.target.value); setFallbackResults([]); setFallbackError(null); setFallbackSearched(false); }}
                         placeholder="Spielname eingeben…"
                         className="pl-9"
                         aria-label="Spielname eingeben"
@@ -231,7 +244,14 @@ export function BarcodeResultsPanel({
                     </div>
                   )}
 
-                  {!fallbackSearching && fallbackName.trim().length >= 2 && fallbackResults.length === 0 && (
+                  {!fallbackSearching && fallbackError && (
+                    <div role="alert" className="space-y-2 text-center text-xs">
+                      <p className="text-destructive">{fallbackError}</p>
+                      <Button type="button" size="sm" variant="outline" onClick={() => void searchFallback()}>Erneut versuchen</Button>
+                    </div>
+                  )}
+
+                  {!fallbackSearching && fallbackSearched && !fallbackError && fallbackName.trim().length >= 2 && fallbackResults.length === 0 && (
                     <p className="text-xs text-muted-foreground text-center py-2">
                       Keine Ergebnisse. Versuche einen anderen Suchbegriff.
                     </p>

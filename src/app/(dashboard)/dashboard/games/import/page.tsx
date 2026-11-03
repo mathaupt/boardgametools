@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -22,6 +22,9 @@ export default function ImportBGGPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [bggIdInput, setBggIdInput] = useState("");
   const [searchResults, setSearchResults] = useState<BGGSearchResult[]>([]);
+  const [searchCompleted, setSearchCompleted] = useState(false);
+  const [searchError, setSearchError] = useState<string | null>(null);
+  const searchRequestId = useRef(0);
   const [selectedGame, setSelectedGame] = useState<BGGGameData | null>(null);
   const [selectedVersion, setSelectedVersion] = useState<BGGGameVersion | null>(null);
   const presence = useBggCollectionPresence(selectedGame ? [selectedGame.bggId] : []);
@@ -73,11 +76,15 @@ export default function ImportBGGPage() {
     };
   }, []);
 
-  async function handleSearch(e: React.FormEvent) {
-    e.preventDefault();
+  async function handleSearch(e?: React.FormEvent) {
+    e?.preventDefault();
     if (!searchQuery || searchQuery.length < 2) return;
 
     setIsSearching(true);
+    setSearchResults([]);
+    setSearchCompleted(false);
+    setSearchError(null);
+    const requestId = ++searchRequestId.current;
     setError(null);
     setSelectedGame(null);
     setSelectedVersion(null);
@@ -86,15 +93,19 @@ export default function ImportBGGPage() {
     try {
       const response = await fetch(`/api/bgg/search?q=${encodeURIComponent(searchQuery)}`);
       if (response.ok) {
-        const results = await response.json();
-        setSearchResults(results);
+        const results = await response.json() as BGGSearchResult[];
+        if (requestId === searchRequestId.current) {
+          setSearchResults(results);
+          setSearchCompleted(true);
+        }
       } else {
-        setError("Suche fehlgeschlagen");
+        const body = await response.json().catch(() => null) as { error?: string } | null;
+        if (requestId === searchRequestId.current) setSearchError(body?.error ?? "BoardGameGeek ist gerade nicht erreichbar. Bitte versuche es erneut.");
       }
     } catch {
-      setError("Verbindungsfehler");
+      if (requestId === searchRequestId.current) setSearchError("BoardGameGeek ist gerade nicht erreichbar. Bitte prüfe deine Verbindung und versuche es erneut.");
     } finally {
-      setIsSearching(false);
+      if (requestId === searchRequestId.current) setIsSearching(false);
     }
   }
 
@@ -223,7 +234,7 @@ export default function ImportBGGPage() {
                 <Input className="min-w-0"
                   placeholder="z.B. Catan, Wingspan…"
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={(e) => { searchRequestId.current += 1; setIsSearching(false); setSearchQuery(e.target.value); setSearchResults([]); setSearchCompleted(false); setSearchError(null); }}
                   aria-label="Spiel suchen"
                 />
                 <Button type="submit" disabled={isSearching || searchQuery.length < 2} aria-label={isSearching ? "Suche läuft" : "Suchen"}>
@@ -232,6 +243,12 @@ export default function ImportBGGPage() {
               </form>
             </CardContent>
           </Card>
+
+          <div aria-live="polite" className="text-sm">
+            {isSearching && <p role="status">Suche auf BoardGameGeek läuft …</p>}
+            {!isSearching && searchCompleted && searchResults.length === 0 && <p role="status">Keine passenden Spiele gefunden. Ändere den Suchbegriff oder prüfe die Schreibweise.</p>}
+            {searchError && <div role="alert" className="space-y-2 text-destructive"><p>{searchError}</p><Button type="button" variant="outline" onClick={() => void handleSearch()}>Erneut versuchen</Button></div>}
+          </div>
 
           <Card>
             <CardHeader>

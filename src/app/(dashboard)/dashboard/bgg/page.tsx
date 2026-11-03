@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -23,6 +23,9 @@ export default function BGGImportPage() {
   const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<BGGSearchResult[]>([]);
+  const [searchCompleted, setSearchCompleted] = useState(false);
+  const [searchError, setSearchError] = useState<string | null>(null);
+  const searchRequestId = useRef(0);
   const [selectedGame, setSelectedGame] = useState<BGGGame | null>(null);
   const presence = useBggCollectionPresence(selectedGame ? [selectedGame.bggId] : []);
   const collectionMatch = selectedGame ? presence.matches[selectedGame.bggId] : null;
@@ -31,11 +34,15 @@ export default function BGGImportPage() {
   const [searching, setSearching] = useState(false);
   const [importing, setImporting] = useState(false);
 
-  const handleSearch = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSearch = async (e?: React.FormEvent) => {
+    e?.preventDefault();
     if (!searchQuery.trim()) return;
 
     setSearching(true);
+    setSearchResults([]);
+    setSearchCompleted(false);
+    setSearchError(null);
+    const requestId = ++searchRequestId.current;
     try {
       const response = await fetch(`/api/bgg?query=${encodeURIComponent(searchQuery)}`);
       
@@ -44,12 +51,15 @@ export default function BGGImportPage() {
       }
 
       const results = await response.json();
-      setSearchResults(results);
+      if (requestId === searchRequestId.current) {
+        setSearchResults(results);
+        setSearchCompleted(true);
+      }
     } catch (error) {
       console.error('Search error:', error);
-      toast({ title: "Fehler", description: "Fehler bei der Suche", variant: "destructive" });
+      if (requestId === searchRequestId.current) setSearchError("BoardGameGeek ist gerade nicht erreichbar. Bitte versuche es erneut.");
     } finally {
-      setSearching(false);
+      if (requestId === searchRequestId.current) setSearching(false);
     }
   };
 
@@ -127,7 +137,7 @@ export default function BGGImportPage() {
               className="min-w-0 flex-1"
               placeholder="z.B. Catan, Monopoly, Carcassonne…"
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={(e) => { searchRequestId.current += 1; setSearching(false); setSearchQuery(e.target.value); setSearchResults([]); setSearchCompleted(false); setSearchError(null); }}
               aria-label="Spiel suchen"
             />
             <Button type="submit" className="min-h-11" disabled={searching} aria-label={searching ? 'Suche läuft' : 'Suchen'}>
@@ -137,6 +147,12 @@ export default function BGGImportPage() {
           </form>
         </CardContent>
       </Card>
+
+      <div aria-live="polite" className="text-sm">
+        {searching && <p role="status">Suche auf BoardGameGeek läuft …</p>}
+        {!searching && searchCompleted && searchResults.length === 0 && <p role="status">Keine passenden Spiele gefunden. Ändere den Suchbegriff oder prüfe die Schreibweise.</p>}
+        {searchError && <div role="alert" className="space-y-2 text-destructive"><p>{searchError}</p><Button type="button" variant="outline" onClick={() => void handleSearch()}>Erneut versuchen</Button></div>}
+      </div>
 
       {/* Search Results */}
       {searchResults.length > 0 && !selectedGame && (

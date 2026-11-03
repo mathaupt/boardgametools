@@ -17,6 +17,13 @@ export type { BGGGameData, BGGCollectionItem, BGGSearchResult };
 const BGG_API_URL = "https://boardgamegeek.com/xmlapi2";
 const BGG_AUTH_TOKEN = env.BGG_AUTH_TOKEN;
 
+export class BggSearchError extends Error {
+  constructor(public readonly statusCode: 429 | 502 | 503 | 504, message = "BoardGameGeek ist vorübergehend nicht erreichbar.", public readonly retryAfterSeconds?: number) {
+    super(message);
+    this.name = "BggSearchError";
+  }
+}
+
 function buildHeaders(): Record<string, string> {
   const headers: Record<string, string> = {
     Accept: "application/xml",
@@ -142,7 +149,7 @@ export async function searchBGGGames(query: string): Promise<BGGSearchResult[]> 
       }
 
       logger.error({ status: retryResponse.status }, "BGG search failed after retries");
-      return [];
+      throw new BggSearchError(504);
     }
 
     // Handle 429 (rate limited)
@@ -158,27 +165,19 @@ export async function searchBGGGames(query: string): Promise<BGGSearchResult[]> 
       }
 
       logger.error({ status: retryResponse.status }, "BGG search failed after rate limit retry");
-      return [];
+      throw new BggSearchError(429, "BoardGameGeek begrenzt gerade die Suchanfragen. Bitte versuche es später erneut.", 10);
     }
 
     if (!response.ok) {
       logger.error({ status: response.status }, "BGG search failed");
-      // Fallback for temporary API unavailability
-      if (response.status === 401 || response.status >= 500) {
-        logger.info("BGG API might be temporarily unavailable, using fallback");
-        return [
-          { bggId: "13", name: "Catan", yearPublished: 1995 },
-          { bggId: "823", name: "The Settlers of Catan: Seafarers", yearPublished: 1997 },
-          { bggId: "150", name: "The Settlers of Catan: Cities & Knights", yearPublished: 1998 },
-        ];
-      }
-      return [];
+      throw new BggSearchError(response.status >= 500 ? 503 : 502);
     }
 
     return parseBGGSearchResponse(await response.text());
   } catch (error) {
     logger.error({ err: error }, "Error searching BGG");
-    return [];
+    if (error instanceof BggSearchError) throw error;
+    throw new BggSearchError(503);
   }
 }
 

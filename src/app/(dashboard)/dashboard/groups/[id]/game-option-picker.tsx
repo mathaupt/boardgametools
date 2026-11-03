@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -55,6 +55,9 @@ export function GameOptionPicker({
   const [bggSearch, setBggSearch] = useState("");
   const [bggResults, setBggResults] = useState<BGGResult[]>([]);
   const [bggSearching, setBggSearching] = useState(false);
+  const [bggSearchError, setBggSearchError] = useState<string | null>(null);
+  const [bggHasSearched, setBggHasSearched] = useState(false);
+  const bggRequestId = useRef(0);
 
   useEffect(() => {
     if (optionsAreGames && collectionGames.length === 0) {
@@ -69,11 +72,20 @@ export function GameOptionPicker({
   async function handleSearchBGG() {
     if (bggSearch.length < 2) return;
     setBggSearching(true);
+    setBggResults([]);
+    setBggSearchError(null);
+    setBggHasSearched(false);
+    const requestId = ++bggRequestId.current;
     try {
       const res = await fetch(`/api/bgg/search?q=${encodeURIComponent(bggSearch)}`);
-      if (res.ok) setBggResults(await res.json());
-    } catch { /* ignore */ }
-    setBggSearching(false);
+      if (!res.ok) throw new Error("BoardGameGeek ist gerade nicht erreichbar. Bitte versuche es erneut.");
+      const results = await res.json();
+      if (requestId === bggRequestId.current) {
+        setBggResults(results);
+        setBggHasSearched(true);
+      }
+    } catch { if (requestId === bggRequestId.current) setBggSearchError("BoardGameGeek ist gerade nicht erreichbar. Bitte versuche es erneut."); }
+    if (requestId === bggRequestId.current) setBggSearching(false);
   }
 
   function addGameAsOption(name: string) {
@@ -259,7 +271,7 @@ export function GameOptionPicker({
                       placeholder="Spiel auf BGG suchen…"
                       aria-label="Spiel auf BGG suchen"
                       value={bggSearch}
-                      onChange={(e) => setBggSearch(e.target.value)}
+                      onChange={(e) => { bggRequestId.current += 1; setBggSearching(false); setBggSearch(e.target.value); setBggResults([]); setBggSearchError(null); setBggHasSearched(false); }}
                       onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), handleSearchBGG())}
                       className="pl-9"
                     />
@@ -277,10 +289,15 @@ export function GameOptionPicker({
                   <div className="flex items-center justify-center py-6">
                     <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
                   </div>
+                ) : bggSearchError ? (
+                  <div role="alert" className="space-y-2 py-4 text-center text-sm text-destructive">
+                    <p>{bggSearchError}</p>
+                    <Button type="button" variant="outline" onClick={() => void handleSearchBGG()}>Erneut versuchen</Button>
+                  </div>
                 ) : bggResults.length === 0 ? (
                   <p className="text-sm text-muted-foreground text-center py-4">
-                    {bggSearch.length >= 2
-                      ? "Keine Ergebnisse gefunden."
+                    {bggHasSearched
+                      ? "Keine passenden Spiele gefunden. Ändere den Suchbegriff oder prüfe die Schreibweise."
                       : "Suchbegriff eingeben und auf BGG suchen."}
                   </p>
                 ) : (

@@ -8,59 +8,58 @@
 
 **Technik:** Next.js Route Handler, vorhandenes `searchBGGGames`, typed BGG-Fehler, React-Hooks/Komponenten, Vitest/Testing Library.
 
-**Planungsstand:** 03.11.2026, HEAD `23cd674`, Version 0.50.67, Arbeitsbaum vor dieser Dokuänderung sauber. Die öffentliche Eventsuche aus FEAT-014 unterscheidet bereits `idle`, `loading`, `results`, `empty` und `error`. In authentifizierten Suchflächen unterscheiden Aufrufer diese Zustände uneinheitlich; `searchBGGGames` gibt nach Providerfehlern teilweise `[]` oder Beispieltreffer zurück. Die Implementierung muss zuerst die Fehlerquelle auflösen, sonst wäre eine leere Trefferliste weiterhin mehrdeutig.
+**Aktualitätsprüfung und Freigabe:** 03.11.2026, HEAD `37faabf`, Version `0.50.69`, Arbeitsbaum sauber. FEAT-024 ist umgesetzt; der Series-Dialog hat weiterhin keine Fehlermeldung bei fehlgeschlagener Suche. Aktuelle Inventur: `searchBGGGames` liefert nach erschöpften 202-/429-Retries `[]`, liefert bei HTTP 401/5xx synthetische Catan-Treffer und verschluckt Transportfehler ebenfalls als `[]`. Die öffentliche FEAT-014-Suche über `searchBggCatalog` unterscheidet bereits `idle/loading/results/empty/error` samt veralteten Requests und bleibt unverändert. Die ältere Dashboard-Route `/api/bgg?query=` verwendet einen separaten Transport/Parser; ihr Fehlerzustand ist bereits HTTP-Fehler, soll aber in den Oberflächen geprüft werden. FEAT-024 hat den Reihen-Suchdialog seit dem Planungsstand verändert.
+
+Der Nutzer hat am 03.11.2026 mit „implementiere FEAT-027“ die Umsetzung freigegeben. Freigegebener Umfang: erfolgreiche Nulltreffer und Providerfehler auf den authentifizierten BGG-Suchflächen auseinanderhalten, verlässliche Providerfehler vom Backend transportieren und verständliche Leer-/Fehler-/Ladezustände mit erneuter Suche dort ergänzen, wo sie fehlen. Öffentliche FEAT-014-Zustände, Berechtigungen, Suchantwort-Formate und Scan/OCR-Erkennung bleiben erhalten. Web; iOS ist nicht betroffen.
 
 ---
 
 ## Aktualitätsprüfung vor Umsetzung
 
-- [ ] HEAD und FEAT-014 Browser-/Komponentenvertrag prüfen; öffentliches `useBggSearch` hat bereits explizite `empty`/`error` Zustände.
-- [ ] Suchflächen vollständig mit `rg` erfassen und Endpunkte zuordnen: `/dashboard/bgg`, `/dashboard/games/import`, Reihen-Dialog, Gruppen-Poll-Picker, Event-Voting, Cover-/Barcode-Suche und öffentliche Eventseite.
-- [ ] `searchBGGGames`-Verhalten erneut prüfen: aktuelle Fallback-Beispiele und Providerfehler dürfen nicht als echte Treffer oder leere Suche erscheinen.
-- [ ] Betroffene API-Verbraucher und OpenAPI-Schemas prüfen; keine pauschale Änderung auf neues Response-Envelope ohne vollständige Migration aller Aufrufer.
+- [x] HEAD, FEAT-014-Vertrag und Arbeitsbaum geprüft.
+- [x] Suchflächen und Verbraucher inventarisiert: Dashboard BGG, Einzelimport, Reihen-Dialog, Gruppen-Poll-Picker, Cover-/Barcode-Fallback sowie öffentliche Eventseite. Event-Voting nutzt die katalogbasierte Suche und bleibt unverändert.
+- [x] Providerfehler/-fallback in `searchBGGGames` bestätigt. Erfolgreiches Arrayformat bleibt erhalten; Fehler werden per existierendem `{ error }`-Vertrag und HTTP-Status transportiert.
+- [x] Planumfang nach FEAT-024 aktualisiert; mobile API-Verbraucher werden beim Fehlervertrag berücksichtigt. Kein neuer Endpunkt und kein Response-Envelope.
 
 ## Betroffene Dateien
 
 - `src/lib/bgg.ts`: Suchfehler getrennt von erfolgreichem Leerresultat modellieren; keine synthetischen Catan-Treffer bei Providerfehler.
-- `src/app/api/bgg/route.ts`, `src/app/api/bgg/search/route.ts`: valide Suchparameter, HTTP-Status/Retry-After und deutsches Fehlerobjekt.
-- `src/app/(dashboard)/dashboard/bgg/page.tsx`, `src/app/(dashboard)/dashboard/games/import/page.tsx`, `src/app/(dashboard)/dashboard/series/[id]/add-game-dialog.tsx`, `src/app/(dashboard)/dashboard/series/[id]/series-bgg-search.tsx`, `src/app/(dashboard)/dashboard/groups/[id]/game-option-picker.tsx`, `src/app/(dashboard)/dashboard/events/[id]/voting/voting-client.tsx`, `src/app/(dashboard)/dashboard/events/[id]/voting/game-proposal-panel.tsx`: sichtbare Zustände je Suchoberfläche.
+- `src/app/api/bgg/search/route.ts`, `src/app/api/mobile/v1/bgg/search/route.ts`: Fehlerstatus/Retry-After und deutsches Fehlerobjekt. Die ältere `/api/bgg?query=`-Route behält ihren vorhandenen Fehlervertrag.
+- `src/app/(dashboard)/dashboard/bgg/page.tsx`, `src/app/(dashboard)/dashboard/games/import/page.tsx`, Reihen-Dialog/-Suche und Gruppen-Poll-Picker: sichtbare Zustände je Suchoberfläche.
 - `src/components/cover-scan-tab.tsx`, `src/components/barcode-results-panel.tsx`: bestehende Suche nicht mit Scan-/OCR-Leerzustand verwechseln; gezielt nur BGG-Suchergebniszustände vereinheitlichen.
-- `src/components/public-event/use-bgg-search.ts`, `src/components/public-event/bgg-game-search.tsx`: Regressionstest/kleine Abweichungskorrektur, falls FEAT-014-Vertrag noch gilt.
-- Neue shared Zustandskomponente/Hook nur, wenn UI-Verträge tatsächlich gleich sind: `src/components/bgg/bgg-search-state.tsx` und ggf. `use-authenticated-bgg-search.ts`.
-- Tests: `tests/unit/lib/bgg.test.ts`, `tests/unit/api/bgg-route.test.ts`, `tests/unit/api/bgg-search.test.ts` (neu), `tests/unit/api/public-bgg.test.ts`, `tests/unit/components/bgg-game-search.test.tsx`, `tests/unit/components/use-bgg-search.test.tsx`, `tests/unit/components/bgg-import-editions.test.tsx`, `tests/unit/components/series-bgg-search.test.tsx` (neu), `tests/unit/components/game-option-picker.test.tsx` (neu), `tests/unit/components/event-voting-page-client.test.tsx` und bestehende Cover-/Barcode-Tests erweitern.
+- `src/components/public-event/use-bgg-search.ts`, `src/components/public-event/bgg-game-search.tsx`: geprüft, FEAT-014-Vertrag bleibt unverändert.
+- Tests: `tests/unit/lib/bgg.test.ts`, `tests/unit/api/bgg-search-route.test.ts` (neu), `tests/unit/components/series-bulk-add.test.tsx`, `tests/unit/components/cover-scan-tab.test.tsx`, `tests/unit/components/barcode-results-panel.test.tsx`.
 - `docs/openapi.yaml`, `docs/FEATURES.md`, `src/lib/faq.ts`, Backlog und Changelog.
 
 ## Aufgabe 1 – Providervertrag RED/GREEN/REFACTOR
 
-- [ ] **RED:** Tests schreiben, die echte leere XML-Suche von HTTP-500, Netzwerkfehler, 202 nach ausgeschöpften Wiederholungen und 429 unterscheiden.
-- [ ] **RED prüfen:** `npx vitest run tests/unit/lib/bgg.test.ts` schlägt bei bisherigem Verhalten fehl, das Fehler als `[]` oder synthetische Catan-Treffer liefert.
-- [ ] **GREEN:** Erfolgreiches XML mit null Items ergibt `[]`; Provider-/Transportfehler werfen einen typisierten Fehler mit sicherem Status und optionalem RetryAfter. Keine API-Antwort behauptet Ergebnisse, die BGG nicht geliefert hat.
-- [ ] **GREEN prüfen:** Bibliothekstest besteht; Logs enthalten keine Tokens oder unnötigen vollständigen URLs/Nutzereingaben.
-- [ ] **REFACTOR:** XML-Parser bleibt getrennt vom Transportfehler; vorhandene Verzögerungen/Warteschleifen und BGG-Lastschutz behalten.
+- [x] **RED:** Tests für erfolgreiche leere XML-Antwort, HTTP-503, Transportfehler, ausgeschöpfte 202-Wiederholungen und 429-Retry geschrieben.
+- [x] **RED prüfen:** Vor dem Fix reproduzierten 503 den synthetischen Catan-Fallback und Transportfehler `[]`.
+- [x] **GREEN:** Erfolgreiches XML mit null Items ergibt `[]`; Provider-/Transportfehler werfen `BggSearchError` mit sicherem Status und optionalem RetryAfter. Keine synthetischen Ergebnisse.
+- [x] **GREEN prüfen:** Provider-Tests bestehen; Logs enthalten keine BGG-Credentials.
+- [x] **REFACTOR:** Parser und Transportfehler bleiben getrennt; vorhandene Verzögerungen/Warteschleifen und Lastschutz bleiben erhalten.
 
 ## Aufgabe 2 – Routeverträge RED/GREEN/REFACTOR
 
-- [ ] **RED:** API-Tests für erfolgreiche `[]` (200), echte Treffer (200), ungültige/minimale/maximale Query, Providerfehler (5xx/503), Rate-Limit (429 + Retry-After) und Auth schreiben.
-- [ ] **RED prüfen:** `npx vitest run tests/unit/api/bgg-route.test.ts tests/unit/api/public-bgg.test.ts` muss die fehlende Fehlerunterscheidung reproduzieren.
-- [ ] **GREEN:** Bestehendes Arrayformat bei erfolgreicher Suche erhalten; Fehler immer `{ error: string }` und passende HTTP-Statuscodes. Öffentliche Event-Route gibt keine privaten Kontodaten zurück; Limits und Rate-Limits bleiben aktiv.
-- [ ] **GREEN prüfen:** Routen- und öffentliche BGG-Vertragstests bestehen; `docs/openapi.yaml` passt zum echten Antwortvertrag.
-- [ ] **REFACTOR:** Gemeinsame Fehlerabbildung verwenden, ohne öffentliche und authentifizierte Rechte zu vermischen.
+- [x] **RED/GREEN:** `tests/unit/api/bgg-search-route.test.ts` prüft erfolgreiche leere Arrays, Providerfehler und `Retry-After`. Authentifizierung und bestehende öffentliche/geschützte Routentests laufen weiter.
+- [x] Erfolgsformat bleibt ein Array; Fehler antworten mit `{ error }` und passendem HTTP-Status. Öffentliche Event-Route, Token-Grenze und Rate-Limit bleiben unverändert.
+- [x] OpenAPI-Sucheintrag um Nulltreffer- und Fehlerantworten ergänzt.
 
 ## Aufgabe 3 – Oberflächenzustände RED/GREEN/REFACTOR
 
-- [ ] **RED:** Für jede inventorierte Oberfläche gezielt Tests für „noch nicht gesucht“, Mindestlänge, Laden, echte 0 Treffer, Treffer, Providerfehler, Wiederholen und neue Suche während alter Anfrage ergänzen. Gemeinsame Zustände werden in drei Paketen getestet: Import/Reihe/Gruppe, Event/Öffentlich und Cover/Barcode.
-- [ ] **RED prüfen:** `npx vitest run tests/unit/components/bgg-game-search.test.tsx tests/unit/components/use-bgg-search.test.tsx tests/unit/components/bgg-import-editions.test.tsx tests/unit/components/series-bgg-search.test.tsx tests/unit/components/game-option-picker.test.tsx tests/unit/components/event-voting-page-client.test.tsx tests/unit/components/cover-scan-tab.test.tsx tests/unit/components/barcode-results-panel.test.tsx` zeigt die fehlenden Zustände pro betroffener Oberfläche.
-- [ ] **GREEN:** Text „Keine passenden Spiele gefunden. Ändere den Suchbegriff oder prüfe die Schreibweise.“ erst nach erfolgreichem HTTP-200-Leerresultat zeigen. Fehler erscheint mit erneutem Versuch; Loading und Resultatzahl mit `role=status`/`aria-live`, Fehler mit `role=alert`.
-- [ ] Responses anhand Request-ID/AbortController abgrenzen; Ergebnisse einer alten Query dürfen neuere Treffer oder Leermeldung nicht überschreiben.
-- [ ] **GREEN prüfen:** derselbe gezielte Komponentenbefehl besteht, FEAT-014-Ergebnis-/Fehler-/Retry-Verträge bleiben unverändert.
-- [ ] **REFACTOR:** Zustandskomponente nur dann teilen, wenn Beschriftung/Interaktionen in authentifizierten und öffentlichen Flächen übereinstimmen; keine Änderung der jeweiligen Berechtigungslogik.
+- [x] **RED/GREEN:** Reihen-Dialog-, Cover-OCR- und Barcode-Regressionstests prüfen echten Leerzustand, Providerfehler, Retry und das Ignorieren veralteter Reihenantworten.
+- [x] Dashboard-BGG, Import, Reihe, Gruppe, Cover und Barcode unterscheiden „noch nicht gesucht“, Laden, erfolgreiche Nulltreffer und Providerfehler. Wiederholen bleibt möglich; Status/Fehler sind assistiv angekündigt.
+- [x] Ergebnisse veralteter Requests werden in Dashboard-/Import-/Reihen-/Gruppen-/Cover-/Barcode-Suche ignoriert. Öffentliche FEAT-014-Requests hatten bereits Abort-/Request-ID-Schutz.
+- [x] Gezielte Suite und bestehende öffentliche Suchtests bestehen; FEAT-014-Oberfläche und API-Vertrag unverändert.
+- [x] Keine gemeinsame Zustandskomponente eingeführt: die Oberflächen haben unterschiedliche Formular- und Auswahlaktionen.
 
 ## Aufgabe 4 – Impeccable, Sicherheit und Abschluss
 
-- [ ] Impeccable: lokale Webvorschau für Import, Reihen, Gruppe, Voting und öffentliche Eventseite; 390/1440 px, 200 % Zoom, Hell/Dunkel, Tastaturfokus, Screenreader-Status und Fehler/Leerzustände prüfen.
-- [ ] Security: Auth auf geschützten Endpunkten, öffentliche Share-Token-Grenze, query length/encoding, Rate-Limits, Response-Größen und keine BGG-Credentials in Clientantworten testen.
-- [ ] Doku: OpenAPI, FAQ, FEATURES und Backlog aktualisieren; fehlende Treffer und Providerfehler verständlich voneinander erklären.
-- [ ] Abnahme: gezielte Tests, `npm run typecheck`, `npm run lint`, `npm run security-check:fast`, `npm run build`, `npm run review-evaluate:regression`; gerenderte Impeccable-Prüfung pro betroffenem Layout.
-- [ ] Commit mit regulären Hooks; Review-Score, behobene Findings und Regressionsstatus in `docs/code-reviews/` nachführen.
+- [x] Impeccable: reale Reihenkomponente lokal mit synthetischen Daten bei 390 px und 1440 px gerendert. Leer-/Fehlerzustände, Browserkonsole und Detector geprüft; 0 Findings. Screenshots liegen lokal unter `.impeccable/critique/feat027-*`.
+- [x] Security: geschützte Endpunkte/Auth, öffentliche Share-Token-Grenze und Rate-Limit unverändert; Fehlermeldungen geben keine Credentials aus; `npm audit --omit=dev` meldet 0 Befunde.
+- [x] Doku: OpenAPI, FAQ, FEATURES, Backlog, Plan und Changelog aktualisiert.
+- [x] Abnahme: 1.110 Unit-Tests, TypeScript, ESLint (0 Fehler), Security-Schnellprüfung, Produktionsbuild und Review-Regressionscheck bestanden; Impeccable gerendert geprüft.
+- [ ] Commit mit regulären Hooks; Review-Score, Findings und Regressionsstatus in `docs/code-reviews/` nachführen.
 
-**Freigabe:** Nicht erteilt. Inventar und Endpunktfehlervertrag vor Umsetzung aktualisieren und Umfang ausdrücklich freigeben lassen.
+**Aktualitätsprüfung vor Umsetzung:** 03.11.2026, HEAD `37faabf`, Version `0.50.69`; Ergebnis: Plan angepasst wie oben, keine wesentliche Umfangsänderung.
+**Freigabe:** 03.11.2026 durch Nutzeranweisung „implementiere FEAT-027“.

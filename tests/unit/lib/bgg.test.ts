@@ -21,6 +21,63 @@ describe("BGG API", () => {
   });
 
   describe("searchBGGGames", () => {
+    it("returns an empty list only when BGG successfully confirms there are no matches", async () => {
+      vi.spyOn(global, "setTimeout").mockImplementation(((cb: (...args: any[]) => void) => {
+        cb();
+        return 0 as unknown as ReturnType<typeof setTimeout>;
+      }) as any);
+      const mockFetch = vi.fn().mockResolvedValue({ ok: true, status: 200, text: () => Promise.resolve("<items></items>") });
+      global.fetch = mockFetch;
+      const { searchBGGGames } = await loadBGGLib();
+      await expect(searchBGGGames("does-not-exist")).resolves.toEqual([]);
+      vi.restoreAllMocks();
+    });
+
+    it("throws a provider error instead of returning fabricated fallback games", async () => {
+      vi.spyOn(global, "setTimeout").mockImplementation(((cb: (...args: any[]) => void) => {
+        cb();
+        return 0 as unknown as ReturnType<typeof setTimeout>;
+      }) as any);
+      const mockFetch = vi.fn().mockResolvedValue({ ok: false, status: 503, text: async () => "" });
+      global.fetch = mockFetch;
+      const { searchBGGGames } = await loadBGGLib();
+      await expect(searchBGGGames("Catan")).rejects.toMatchObject({ name: "BggSearchError", statusCode: 503 });
+      vi.restoreAllMocks();
+    });
+
+    it("throws a provider error instead of converting transport failures to no matches", async () => {
+      vi.spyOn(global, "setTimeout").mockImplementation(((cb: (...args: any[]) => void) => {
+        cb();
+        return 0 as unknown as ReturnType<typeof setTimeout>;
+      }) as any);
+      global.fetch = vi.fn().mockRejectedValue(new Error("offline"));
+      const { searchBGGGames } = await loadBGGLib();
+      await expect(searchBGGGames("Catan")).rejects.toMatchObject({ name: "BggSearchError" });
+      vi.restoreAllMocks();
+    });
+
+    it("reports BGG 202 responses as a timeout after retries instead of an empty search", async () => {
+      vi.spyOn(global, "setTimeout").mockImplementation(((cb: (...args: any[]) => void) => {
+        cb();
+        return 0 as unknown as ReturnType<typeof setTimeout>;
+      }) as any);
+      global.fetch = vi.fn().mockResolvedValue({ ok: false, status: 202, text: async () => "" });
+      const { searchBGGGames } = await loadBGGLib();
+      await expect(searchBGGGames("Catan")).rejects.toMatchObject({ name: "BggSearchError", statusCode: 504 });
+      vi.restoreAllMocks();
+    });
+
+    it("preserves the rate-limit status and retry delay after BGG rejects the retry", async () => {
+      vi.spyOn(global, "setTimeout").mockImplementation(((cb: (...args: any[]) => void) => {
+        cb();
+        return 0 as unknown as ReturnType<typeof setTimeout>;
+      }) as any);
+      global.fetch = vi.fn().mockResolvedValue({ ok: false, status: 429, text: async () => "" });
+      const { searchBGGGames } = await loadBGGLib();
+      await expect(searchBGGGames("Catan")).rejects.toMatchObject({ name: "BggSearchError", statusCode: 429, retryAfterSeconds: 10 });
+      vi.restoreAllMocks();
+    });
+
     it("includes BGG_AUTH_TOKEN in headers when available", async () => {
       process.env.BGG_AUTH_TOKEN = "test-token-123";
 

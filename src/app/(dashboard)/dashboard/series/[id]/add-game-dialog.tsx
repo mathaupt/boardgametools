@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import {
   Dialog,
   DialogContent,
@@ -45,6 +45,9 @@ export function AddGameDialog({
   const [bggSearch, setBggSearch] = useState("");
   const [bggResults, setBggResults] = useState<BGGSearchResult[]>([]);
   const [bggSearching, setBggSearching] = useState(false);
+  const [bggSearchError, setBggSearchError] = useState<string | null>(null);
+  const [bggHasSearched, setBggHasSearched] = useState(false);
+  const bggRequestId = useRef(0);
   const presence = useBggCollectionPresence(bggResults.map(result => result.bggId));
   const [selections, setSelections] = useState<SeriesGameSelection[]>([]);
   const { adding, error, batchProgress, batchResults, clearError, addGame, addGames } = useSeriesGameAdd(seriesId, onGamesAdded);
@@ -66,7 +69,10 @@ export function AddGameDialog({
       clearError();
       setSearch("");
       setBggSearch("");
+      bggRequestId.current += 1;
       setBggResults([]);
+      setBggSearchError(null);
+      setBggHasSearched(false);
       setTab("collection");
       setSelections([]);
     }
@@ -75,15 +81,22 @@ export function AddGameDialog({
   async function handleSearchBGG() {
     if (bggSearch.length < 2) return;
     setBggSearching(true);
+    setBggSearchError(null);
+    setBggResults([]);
+    setBggHasSearched(false);
+    const requestId = ++bggRequestId.current;
     try {
       const res = await fetch(`/api/bgg/search?q=${encodeURIComponent(bggSearch)}`);
-      if (res.ok) {
-        setBggResults(await res.json());
+      if (!res.ok) throw new Error("BoardGameGeek ist gerade nicht erreichbar. Bitte versuche es erneut.");
+      const results = await res.json();
+      if (requestId === bggRequestId.current) {
+        setBggResults(results);
+        setBggHasSearched(true);
       }
     } catch {
-      // ignore
+      if (requestId === bggRequestId.current) setBggSearchError("BoardGameGeek ist gerade nicht erreichbar. Bitte versuche es erneut.");
     }
-    setBggSearching(false);
+    if (requestId === bggRequestId.current) setBggSearching(false);
   }
 
   const handleAddFromCollection = (gameId: string) => addGame({ gameId });
@@ -241,7 +254,7 @@ export function AddGameDialog({
               )}
             </div>
           ) : (
-            <SeriesBggSearch bggSearch={bggSearch} setBggSearch={setBggSearch} bggResults={bggResults} bggSearching={bggSearching} handleSearchBGG={handleSearchBGG} handleAddFromBGG={handleAddFromBGG} adding={adding} presenceStatus={presence.status} matches={presence.matches} retryPresence={presence.retry} existingGameIds={existingGameIds} existingBggIds={existingBggIds} selectedKeys={selections.map((item) => item.key)} canSelectMore={selections.length < 20} disabled={batchProgress !== null} onToggle={toggleBggSelection} />
+            <SeriesBggSearch bggSearch={bggSearch} setBggSearch={(value) => { bggRequestId.current += 1; setBggSearching(false); setBggSearch(value); setBggResults([]); setBggSearchError(null); setBggHasSearched(false); }} bggResults={bggResults} bggSearching={bggSearching} hasSearched={bggHasSearched} searchError={bggSearchError} handleSearchBGG={handleSearchBGG} handleAddFromBGG={handleAddFromBGG} adding={adding} presenceStatus={presence.status} matches={presence.matches} retryPresence={presence.retry} existingGameIds={existingGameIds} existingBggIds={existingBggIds} selectedKeys={selections.map((item) => item.key)} canSelectMore={selections.length < 20} disabled={batchProgress !== null} onToggle={toggleBggSelection} />
           )}
         </div>
       </DialogContent>

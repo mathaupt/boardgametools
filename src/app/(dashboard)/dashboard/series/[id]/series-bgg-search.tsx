@@ -18,6 +18,8 @@ interface SeriesBggSearchProps {
   setBggSearch: (value: string) => void;
   bggResults: BGGSearchResult[];
   bggSearching: boolean;
+  hasSearched: boolean;
+  searchError: string | null;
   handleSearchBGG: () => Promise<void>;
   handleAddFromBGG: (id: string) => Promise<void>;
   adding: string | null;
@@ -31,7 +33,7 @@ interface SeriesBggSearchProps {
   disabled: boolean;
   onToggle: (bggId: string) => void;
 }
-export function SeriesBggSearch({ bggSearch, setBggSearch, bggResults, bggSearching, handleSearchBGG, handleAddFromBGG, adding, presenceStatus, matches, retryPresence, existingGameIds, existingBggIds, selectedKeys, canSelectMore, disabled, onToggle }: SeriesBggSearchProps) {
+export function SeriesBggSearch({ bggSearch, setBggSearch, bggResults, bggSearching, hasSearched, searchError, handleSearchBGG, handleAddFromBGG, adding, presenceStatus, matches, retryPresence, existingGameIds, existingBggIds, selectedKeys, canSelectMore, disabled, onToggle }: SeriesBggSearchProps) {
   return (
 <div className="space-y-3">
               <form
@@ -58,13 +60,20 @@ export function SeriesBggSearch({ bggSearch, setBggSearch, bggResults, bggSearch
                   <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" aria-hidden="true" />
                   <p className="text-sm text-muted-foreground">Suche auf BoardGameGeek…</p>
                 </div>
+              ) : searchError ? (
+                <div role="alert" className="space-y-2 text-center text-sm">
+                  <p className="text-destructive">{searchError}</p>
+                  <Button type="button" variant="outline" onClick={() => void handleSearchBGG()}>Erneut versuchen</Button>
+                </div>
               ) : bggResults.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-10 gap-2">
                   <ExternalLink className="h-8 w-8 text-muted-foreground/50" aria-hidden="true" />
                   <p className="text-sm text-muted-foreground text-center">
-                    {bggSearch.length >= 2
-                      ? "Keine Ergebnisse. Versuche einen anderen Suchbegriff."
-                      : "Gib einen Suchbegriff ein, um auf BoardGameGeek zu suchen."}
+                    {hasSearched
+                      ? "Keine passenden Spiele gefunden. Ändere den Suchbegriff oder prüfe die Schreibweise."
+                      : bggSearch.length >= 2
+                        ? "Starte die Suche, um passende Spiele zu finden."
+                        : "Gib einen Suchbegriff ein, um auf BoardGameGeek zu suchen."}
                   </p>
                 </div>
               ) : (

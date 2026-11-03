@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/require-auth";
-import { searchBGGGames } from "@/lib/bgg";
+import { BggSearchError, searchBGGGames } from "@/lib/bgg";
 import { withApiLogging } from "@/lib/api-logger";
 import logger from "@/lib/logger";
 import { Errors } from "@/lib/error-messages";
@@ -19,6 +19,9 @@ export const GET = withApiLogging(async function GET(request: NextRequest) {
     const results = await searchBGGGames(query);
     return NextResponse.json(results);
   } catch (error) {
+    if (error instanceof BggSearchError) {
+      return NextResponse.json({ error: error.message }, { status: error.statusCode, headers: error.retryAfterSeconds ? { "Retry-After": String(error.retryAfterSeconds) } : undefined });
+    }
     logger.error({ err: error }, "BGG search error");
     return NextResponse.json({ error: Errors.SEARCH_FAILED }, { status: 500 });
   }

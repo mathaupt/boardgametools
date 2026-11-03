@@ -3,6 +3,10 @@
 Geplante Erweiterungen stehen separat im [nummerierten Feature-Backlog](FEATURE-BACKLOG.md).
 Dort erfasste TODOs sind noch nicht implementiert oder zur Umsetzung freigegeben.
 
+## BGG-Suche: eindeutige Leer- und Fehlerzustände (FEAT-027)
+
+Nach einer erfolgreichen BGG-Suche ohne Treffer erscheint eine klare Meldung. Lade- und Providerfehler werden getrennt angezeigt und können erneut versucht werden. Ein Ausfall des BGG-Dienstes wird nicht als leere Trefferliste oder mit Beispieldaten ausgegeben. Die öffentliche Eventsuche behält ihren bestehenden Lade-, Leer- und Fehlervertrag.
+
 > **Version 0.50.67** | 42 Seiten | 96 API-Endpunkte | 29 Datenbank-Modelle
 >
 > Vollstaendige Dokumentation aller Nutzer-sichtbaren Features,

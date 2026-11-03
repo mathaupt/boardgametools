@@ -617,7 +617,12 @@ paths:
           required: true
           schema: { type: string, minLength: 2 }
       responses:
-        '200': { description: Suchergebnisse }
+        '200': { description: Suchergebnisse (leeres Array bei erfolgreicher Suche ohne Treffer), content: { application/json: { schema: { type: array, items: { type: object, required: [bggId, name], properties: { bggId: { type: string }, name: { type: string }, yearPublished: { type: [integer, 'null'] } } } } } }
+        '400': { description: Ungültiger oder zu kurzer Suchbegriff, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+        '429': { description: BGG begrenzt die Suchanfragen; Retry-After wird gesetzt, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+        '502': { description: BGG lieferte eine ungültige Antwort, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+        '503': { description: BGG ist vorübergehend nicht erreichbar, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+        '504': { description: BGG-Suche blieb nach Wiederholungen ausstehend, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
 
   /api/bgg/collection:
     get:
