@@ -12,6 +12,16 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.68",
+    date: "2026-11-03",
+    title: "Nächste Reihen- und BGG-Verbesserungen geplant",
+    description: "Vier neue Implementierungspläne legen Umfang, Tests, Barrierefreiheit und Sicherheitsprüfungen fest.",
+    changes: [
+      { type: "internal", text: "FEAT-024 bis FEAT-027 sind mit verlinkten Plänen dokumentiert. Die Reihenfolge berücksichtigt das neue Besitzmodell für temporäre Reihenspiele; keine Umsetzung ist damit freigegeben." },
+      { type: "internal", text: "FEAT-023 ist im Feature-Backlog als umgesetzt vermerkt und mit seinem Abnahmeplan verknüpft." },
+    ],
+  },
+  {
     version: "0.50.67",
     date: "2026-11-03",
     title: "Vor BGG-Importen die eigene Sammlung prüfen",
