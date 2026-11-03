@@ -59,7 +59,8 @@ Der Nutzer hat am 03.11.2026 mit „implementiere FEAT-027“ die Umsetzung frei
 - [x] Security: geschützte Endpunkte/Auth, öffentliche Share-Token-Grenze und Rate-Limit unverändert; Fehlermeldungen geben keine Credentials aus; `npm audit --omit=dev` meldet 0 Befunde.
 - [x] Doku: OpenAPI, FAQ, FEATURES, Backlog, Plan und Changelog aktualisiert.
 - [x] Abnahme: 1.110 Unit-Tests, TypeScript, ESLint (0 Fehler), Security-Schnellprüfung, Produktionsbuild und Review-Regressionscheck bestanden; Impeccable gerendert geprüft.
-- [ ] Commit mit regulären Hooks; Review-Score, Findings und Regressionsstatus in `docs/code-reviews/` nachführen.
+- [x] Commit `84a3ba1` mit regulären Hooks; lint-staged/ESLint, verwandte Tests, OWASP Security, Produktions-Audit (0 Befunde) und Review-Regression (10/10, 0 Regressionen) bestanden.
 
 **Aktualitätsprüfung vor Umsetzung:** 03.11.2026, HEAD `37faabf`, Version `0.50.69`; Ergebnis: Plan angepasst wie oben, keine wesentliche Umfangsänderung.
 **Freigabe:** 03.11.2026 durch Nutzeranweisung „implementiere FEAT-027“.
+**Abschluss:** 03.11.2026, Version `0.50.70`, Commit `84a3ba1`; 1.110 Tests bestanden, Arbeitsbaum nach Commit sauber.
