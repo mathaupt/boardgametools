@@ -1,7 +1,7 @@
 # FEAT-028 – Gamification-Konzept
 
 **Status:** Konzeptentwurf zur Nutzerprüfung; keine Umsetzungsfreigabe.
-**Datum:** 03.11.2026
+**Stand:** 03.11.2026 – um öffentliche Profile und Badge-Vitrine ergänzt.
 **Produktgrundlage:** `PRODUCT.md`, private Spielrunden als Hauptzielgruppe.
 
 ## Ziel
@@ -22,6 +22,12 @@ Spielstärke noch soziale Aktivität.
   teilnehmender Mitglieder tragen zum Gruppenfortschritt bei.
 - Die erste Umsetzung soll schrittweise geplant werden; dieses Konzept gibt
   keine Implementierung frei.
+- Nutzer können ein öffentliches Profil über einen teilbaren Link freigeben.
+  Gäste können den Link ohne Anmeldung öffnen; es gibt kein öffentliches
+  Nutzerverzeichnis und keine Suchfunktion.
+- In öffentlichen Profilen erscheinen der Anzeigename, schöne gestaltete
+  Abzeichen und eine begrenzte Aktivitätsübersicht. E-Mail und private
+  Profilaktivitäten bleiben geschützt.
 
 ## Gestaltungsprinzipien
 
@@ -97,7 +103,23 @@ Sessionkorrekturen und den Austritt aus einer Gruppe sicher abbilden.
 ## Sichtbarkeit und Bedienung
 
 - Persönliche Erfolge und Entdeckerziele erscheinen in einem eigenen Bereich
-  im angemeldeten Webprodukt; Profilfreigaben sind nicht vorausgesetzt.
+  im angemeldeten Webprodukt.
+- Das Profil bietet eine gestaltete Badge-Vitrine: Nutzer wählen aus ihren
+  freigeschalteten Abzeichen aus, welche sie hervorheben möchten. Die Motive
+  sind eigenständige, gut unterscheidbare Illustrationen mit verständlichen
+  Titeln und Textalternativen; Seltenheitsstufen und Rangabzeichen gibt es
+  nicht.
+- Wer die öffentliche Profilansicht aktiviert, erhält einen teilbaren Link.
+  Öffentliche Eventseiten verlinken den Anzeigenamen registrierter
+  Teilnehmender nur, wenn diese ihr Profil freigegeben haben. Es gibt kein
+  öffentliches Nutzerverzeichnis und keine Suche nach Personen. Die Freigabe
+  lässt sich abschalten und der Link widerrufen.
+- Das öffentliche Profil zeigt Anzeigename, ausgewählte Abzeichen sowie
+  aggregierte Aktivität wie dokumentierte Sessions, gespielte verschiedene
+  Spiele und abgeschlossene Spielreihen. Gästen werden keine E-Mail-Adresse,
+  Einladungen, Gruppenmitgliedschaften, private Eventnamen, Kommentare,
+  Sessionnotizen, Einzelsessions, Ergebnisse oder persönlichen Beiträge zu
+  Gruppen-Challenges angezeigt.
 - Gruppen-Challenges sind nur für aktuelle Mitglieder der jeweiligen Gruppe
   sichtbar. Teilnehmende Mitglieder sehen den gemeinsamen Gesamtfortschritt;
   einzelne Beiträge werden nicht angezeigt. Eine Aggregation in kleinen Gruppen
@@ -116,6 +138,10 @@ Sessionkorrekturen und den Austritt aus einer Gruppe sicher abbilden.
 - Berechtigungen für persönliche Daten bleiben eigentümergeprüft. Gruppen-APIs
   prüfen die aktuelle Mitgliedschaft und geben nur den Challenge-Gesamtstand
   aus.
+- Öffentliche Profilantworten verwenden eine schmale, explizite Datenprojektion.
+  Ein ausreichend zufälliger Freigabelink ist widerrufbar und nicht aus einer
+  Nutzer-ID ableitbar. Deaktivierte oder widerrufene Links geben keine
+  Profildaten zurück.
 - Die Teilnahme-Einwilligung benennt klar, dass Sessions der Person während
   der Teilnahme in den Gruppen-Gesamtstand einfließen. Sessionnamen,
   Mitspielernamen, Ergebnisse und persönliche Beiträge werden dort nicht
@@ -143,6 +169,9 @@ Sessionkorrekturen und den Austritt aus einer Gruppe sicher abbilden.
   beeinflussen, ohne doppelt gezählt zu werden.
 - Gruppenmitglieder können nicht auf private Sessiondetails oder individuelle
   Beiträge anderer zugreifen.
+- Gäste können ein freigegebenes Profil über den Link und sichtbare Eventlinks
+  öffnen. Nach Widerruf des Links sind Abzeichen und Aktivitätsübersicht nicht
+  mehr öffentlich erreichbar.
 - Fortschritt stimmt nach Sessionkorrektur, Soft-Delete, Challenge-Austritt und
   Änderung der Gruppenmitgliedschaft mit den sichtbaren Quelldaten überein.
 - Die Funktionen bleiben vollständig nutzbar, wenn Nutzer keine Challenge

@@ -41,7 +41,7 @@ Bedarf zu aktualisieren. Ergebnis am jeweiligen Plan dokumentieren:
 | FEAT-025 | Reihenspiele unabhängig von dauerhaftem Sammlungsbesitz | Plan erstellt; Schema-/Umsetzung nicht freigegeben | [Temporäre Reihenspiele](superpowers/plans/2026-11-03-FEAT-025-temporaere-reihenspiele.md) | Keine |
 | FEAT-026 | Seitennavigation in der Spielesammlung | Plan erstellt; Umsetzung nicht freigegeben | [Pager der Spielesammlung](superpowers/plans/2026-11-03-FEAT-026-spielesammlung-pager.md) | Keine |
 | FEAT-027 | Eindeutige Leermeldung in allen BGG-Suchansichten | Umgesetzt (Web, 0.50.70) | [BGG-Leerzustände](superpowers/plans/2026-11-03-FEAT-027-bgg-leerzustand.md) | 03.11.2026 freigegeben und umgesetzt; öffentliche FEAT-014-Zustände erhalten |
-| FEAT-028 | Gamification: persönliche und gemeinsame Ziele | Konzeptentwurf erstellt; Implementierungsplan und Umsetzung offen | [Gamification-Konzept](superpowers/specs/2026-11-03-FEAT-028-gamification-design.md) | Konzept am 03.11.2026 bestätigt; keine Umsetzungsfreigabe |
+| FEAT-028 | Gamification: persönliche und gemeinsame Ziele | Konzept zur Nutzerprüfung aktualisiert; Plan und Umsetzung offen | [Gamification-Konzept](superpowers/specs/2026-11-03-FEAT-028-gamification-design.md) | Konzept am 03.11.2026 abgestimmt; keine Umsetzungsfreigabe |
 
 Am 30.10.2026 aufgenommen. Bei der Planung sind Web, iOS sowie angemeldete und
 öffentliche Voting-Ansichten auf Relevanz und bereits vorhandene Teilfunktionen
@@ -918,8 +918,9 @@ danach können FEAT-026 und FEAT-027 unabhängig geplant umgesetzt werden.
 
 ## FEAT-028 – Gamification: persönliche und gemeinsame Ziele
 
-**Status:** Konzept erstellt und vom Nutzer bestätigt; Implementierungsplan steht zur Prüfung des Konzeptdokuments noch aus. Keine Umsetzung freigegeben.
+**Status:** Konzept zur Nutzerprüfung aktualisiert; Implementierungsplan und Umsetzung nicht freigegeben.
 **Ziel:** Sessions dokumentieren, die eigene Spielesammlung entdecken und mit Gruppen gemeinsame Spielziele erreichen – ohne Druck oder Ranglisten.
 **Bestätigte Entscheidungen:** Persönliche Meilensteine, Entdeckerziele und kooperative Gruppen-Challenges; keine Ranglisten. Der Gruppenfortschritt zählt die Sessions teilnehmender Gruppenmitglieder zusammen, auch wenn diese nicht gemeinsam gespielt haben.
-**Abnahmekriterien für die spätere Umsetzung:** Persönliche Erfolge bleiben privat; Teilnahme an Gruppen-Challenges ist freiwillig und wird nur aggregiert sichtbar. Sessiondaten werden eigentümergeprüft, Soft-Deletes und Korrekturen aktualisieren den Fortschritt. Gäste werden nicht über Events hinweg profiliert. Keine Pflichtfelder, täglichen Streaks, Strafen oder Siege als Erfolgsvoraussetzung. Web und iOS werden separat abgeglichen.
+**Profilentscheidung:** Öffentliches Profil über teilbaren, widerrufbaren Link; für Gäste ohne Konto erreichbar und von öffentlichen Events verlinkt, wenn freigegeben. Kein Nutzerverzeichnis. Anzeigename, Badge-Vitrine und Aktivitätsaggregate sind sichtbar; E-Mail, Gruppen-/Eventdetails, Kommentare, Notizen, Einzelsessions, Ergebnisse und individuelle Gruppenbeiträge bleiben privat.
+**Abnahmekriterien für die spätere Umsetzung:** Persönliche Erfolge bleiben privat, außer Abzeichen und Aktivitätsaggregate, die der Nutzer über sein öffentliches Profil freigibt. Teilnahme an Gruppen-Challenges ist freiwillig und wird nur aggregiert sichtbar. Sessiondaten werden eigentümergeprüft, Soft-Deletes und Korrekturen aktualisieren den Fortschritt. Gäste werden nicht über Events hinweg profiliert. Keine Pflichtfelder, täglichen Streaks, Strafen oder Siege als Erfolgsvoraussetzung. Web und iOS werden separat abgeglichen.
 **Konzept:** [Gamification-Konzept](superpowers/specs/2026-11-03-FEAT-028-gamification-design.md). Exakte Meilenstein-Schwellen, Challenge-Katalog und Daten-/Berechtigungsverträge im Implementierungsplan festlegen.

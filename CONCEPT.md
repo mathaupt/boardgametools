@@ -131,7 +131,9 @@ Die Weboberfläche verwendet seit 0.50.20 die bestätigte Gestaltung „Club Pro
 ### 17. Gamification (FEAT-028 – Konzept, nicht umgesetzt)
 
 - Persönliche Abzeichen für dokumentierte Sessions, gespielte Vielfalt und
-  Fortschritt in Spielereihen; Erfolge sind standardmäßig privat.
+  Fortschritt in Spielereihen; Erfolge sind standardmäßig privat und können
+  über eine gestaltete Badge-Vitrine im freigegebenen Profil hervorgehoben
+  werden.
 - Persönliche Entdeckerziele regen dazu an, Spiele aus der eigenen Sammlung
   auszuprobieren.
 - Freiwillige Gruppen-Challenges zählen Sessions teilnehmender Gruppenmitglieder
@@ -143,6 +145,11 @@ Die Weboberfläche verwendet seit 0.50.20 die bestätigte Gestaltung „Club Pro
 - Die Produktentscheidungen und Datenschutzregeln stehen in
   `docs/superpowers/specs/2026-11-03-FEAT-028-gamification-design.md`.
   Implementierungsplan und Umsetzungsfreigabe sind offen.
+- Freigegebene Profile sind für Gäste per teilbarem Link erreichbar und können
+  von öffentlichen Events verlinkt werden. Sie zeigen Anzeigename, ausgewählte
+  Abzeichen und begrenzte Aktivitätsaggregate; E-Mail, Gruppen-/Eventdetails,
+  Kommentare, Notizen und Einzelsessions bleiben privat. Es gibt kein
+  öffentliches Nutzerverzeichnis.
 
 ---
 

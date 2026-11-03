@@ -12,6 +12,15 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.75",
+    date: "2026-11-03",
+    title: "Öffentliche Badge-Profile planen",
+    description: "FEAT-028 beschreibt jetzt gestaltete Abzeichenprofile, die Nutzer per Link auch Gästen freigeben können.",
+    changes: [
+      { type: "internal", text: "Profilfreigabe, Eventlinks, Badge-Vitrine und Grenzen für private Profilaktivitäten im Gamification-Konzept ergänzt; keine Umsetzung freigegeben." },
+    ],
+  },
+  {
     version: "0.50.74",
     date: "2026-11-03",
     title: "Gamification-Konzept festhalten",
