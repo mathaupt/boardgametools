@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import Image from "next/image";
 import {
   Dialog,
   DialogContent,
@@ -11,23 +10,15 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ImageIcon, Search, Plus, Loader2, Users, Clock, ExternalLink, ScanBarcode } from "lucide-react";
+import { ImageIcon, Search, Loader2, ExternalLink, ScanBarcode } from "lucide-react";
 import { BarcodeScanner } from "@/components/barcode-scanner";
 import { SeriesBggSearch, type BGGSearchResult } from "./series-bgg-search";
-import type { AddSeriesGameInput } from "./types";
+import type { AddSeriesGameInput, SeriesGameSelection } from "./types";
 import { useSeriesGameAdd } from "./use-series-game-add";
-import { gameTextForRead } from "@/lib/game-text";
 import { useBggCollectionPresence, fetchBggCollectionPresence } from "@/components/bgg/use-bgg-collection-presence";
-
-interface CollectionGame {
-  id: string;
-  name: string;
-  imageUrl: string | null;
-  minPlayers: number;
-  maxPlayers: number;
-  playTimeMinutes: number | null;
-  bggId: string | null;
-}
+import { getSeriesGameSelectionKey } from "@/lib/series/bulk-add-entries";
+import { SeriesGameSelectionSummary } from "./series-game-selection-summary";
+import { SeriesCollectionGameList, type CollectionGame } from "./series-collection-game-list";
 
 
 interface AddGameDialogProps {
@@ -35,7 +26,8 @@ interface AddGameDialogProps {
   onOpenChange: (open: boolean) => void;
   seriesId: string;
   existingGameIds: string[];
-  onGameAdded: (input: AddSeriesGameInput) => void | Promise<void>;
+  existingBggIds?: string[];
+  onGamesAdded: (inputs: AddSeriesGameInput[], closeDialog: boolean) => void | Promise<void>;
 }
 
 export function AddGameDialog({
@@ -43,7 +35,8 @@ export function AddGameDialog({
   onOpenChange,
   seriesId,
   existingGameIds,
-  onGameAdded,
+  existingBggIds = [],
+  onGamesAdded,
 }: AddGameDialogProps) {
   const [tab, setTab] = useState<"collection" | "bgg">("collection");
   const [games, setGames] = useState<CollectionGame[]>([]);
@@ -53,7 +46,8 @@ export function AddGameDialog({
   const [bggResults, setBggResults] = useState<BGGSearchResult[]>([]);
   const [bggSearching, setBggSearching] = useState(false);
   const presence = useBggCollectionPresence(bggResults.map(result => result.bggId));
-  const { adding, error, clearError, addGame } = useSeriesGameAdd(seriesId, onGameAdded);
+  const [selections, setSelections] = useState<SeriesGameSelection[]>([]);
+  const { adding, error, batchProgress, batchResults, clearError, addGame, addGames } = useSeriesGameAdd(seriesId, onGamesAdded);
   const [barcodeScannerOpen, setBarcodeScannerOpen] = useState(false);
   const [presenceError, setPresenceError] = useState<string | null>(null);
 
@@ -74,6 +68,7 @@ export function AddGameDialog({
       setBggSearch("");
       setBggResults([]);
       setTab("collection");
+      setSelections([]);
     }
   }, [open, loadGames, clearError]);
 
@@ -120,13 +115,44 @@ export function AddGameDialog({
       g.name.toLowerCase().includes(search.toLowerCase())
   );
 
+  function toggleSelection(selection: SeriesGameSelection) {
+    setSelections((current) => {
+      if (current.some((item) => item.key === selection.key)) return current.filter((item) => item.key !== selection.key);
+      if (current.length >= 20) return current;
+      return [...current, selection];
+    });
+  }
+
+  function collectionSelection(game: CollectionGame): SeriesGameSelection {
+    const input = { gameId: game.id } as const;
+    return { key: getSeriesGameSelectionKey(input), input, name: game.name, imageUrl: game.imageUrl, source: "collection" };
+  }
+
+  function toggleBggSelection(bggId: string) {
+    const match = presence.matches[bggId];
+    const input = match ? { gameId: match.id } as const : { bggId } as const;
+    const result = bggResults.find((game) => game.bggId === bggId);
+    if (!result) return;
+    toggleSelection({ key: getSeriesGameSelectionKey(input), input, name: result.name, imageUrl: null, source: "bgg" });
+  }
+
+  function handleBatchSubmit() {
+    const pending = selections.filter((selection) => !batchResults[selection.key]);
+    void addGames(pending);
+  }
+
+  function handleRetryFailed() {
+    const failedKeys = new Set(Object.values(batchResults).filter((result) => result.status === "failed").map((result) => result.key));
+    void addGames(selections.filter((selection) => failedKeys.has(selection.key)));
+  }
+
   return (
     <>
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="block w-[calc(100%_-_2rem)] min-w-0 max-w-lg max-h-[85dvh] space-y-4 overflow-y-auto p-4 sm:p-6">
         <DialogHeader>
           <DialogTitle className="pr-6 [overflow-wrap:anywhere]">Spiel hinzufügen</DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="text-pretty">
             Wähle ein Spiel aus deiner Sammlung oder importiere eins von BoardGameGeek.
           </DialogDescription>
           <Button
@@ -142,6 +168,7 @@ export function AddGameDialog({
 
         {presenceError && <p role="alert" className="rounded-md border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">{presenceError}</p>}
         {error && <p role="alert" className="rounded-md border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">{error}</p>}
+        <SeriesGameSelectionSummary selections={selections} results={batchResults} progress={batchProgress} onSubmit={handleBatchSubmit} onRetry={handleRetryFailed} onRemove={(key) => setSelections((current) => current.filter((item) => item.key !== key))} />
 
         {/* Tab navigation */}
         <div className="flex flex-wrap border-b -mx-1" role="tablist">
@@ -210,60 +237,11 @@ export function AddGameDialog({
                   </p>
                 </div>
               ) : (
-                <div className="space-y-1">
-                  {filteredGames.map((game) => (
-                    <div
-                      key={game.id}
-                      className="flex items-center gap-3 p-2 rounded-lg hover:bg-accent transition-colors"
-                    >
-                      <div className="relative w-10 h-10 rounded-lg bg-muted flex-shrink-0 overflow-hidden">
-                        {game.imageUrl ? (
-                          <Image src={game.imageUrl} alt="" className="object-cover" fill sizes="40px" />
-                        ) : (
-                          <div className="h-full w-full flex items-center justify-center text-muted-foreground">
-                            <ImageIcon className="h-4 w-4" aria-hidden="true" />
-                          </div>
-                        )}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium truncate">{gameTextForRead(game.name)}</p>
-                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                          <span className="flex items-center gap-0.5">
-                            <Users className="h-3 w-3" aria-hidden="true" />
-                            {game.minPlayers}-{game.maxPlayers}
-                          </span>
-                          {game.playTimeMinutes && (
-                            <span className="flex items-center gap-0.5">
-                              <Clock className="h-3 w-3" aria-hidden="true" />
-                              {game.playTimeMinutes} Min.
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handleAddFromCollection(game.id)}
-                        disabled={adding !== null}
-                        className="shrink-0"
-                        aria-label={adding === game.id ? "Wird hinzugefügt" : "Hinzufügen"}
-                      >
-                        {adding === game.id ? (
-                          <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
-                        ) : (
-                          <>
-                            <Plus className="h-4 w-4 mr-1" aria-hidden="true" />
-                            <span className="hidden sm:inline">Hinzufügen</span>
-                          </>
-                        )}
-                      </Button>
-                    </div>
-                  ))}
-                </div>
+                <SeriesCollectionGameList games={filteredGames} selections={selections} disabled={batchProgress !== null || adding !== null} adding={adding} onToggle={(game) => toggleSelection(collectionSelection(game))} onAdd={(gameId) => { void handleAddFromCollection(gameId); }} />
               )}
             </div>
           ) : (
-            <SeriesBggSearch bggSearch={bggSearch} setBggSearch={setBggSearch} bggResults={bggResults} bggSearching={bggSearching} handleSearchBGG={handleSearchBGG} handleAddFromBGG={handleAddFromBGG} adding={adding} presenceStatus={presence.status} matches={presence.matches} retryPresence={presence.retry} existingGameIds={existingGameIds} />
+            <SeriesBggSearch bggSearch={bggSearch} setBggSearch={setBggSearch} bggResults={bggResults} bggSearching={bggSearching} handleSearchBGG={handleSearchBGG} handleAddFromBGG={handleAddFromBGG} adding={adding} presenceStatus={presence.status} matches={presence.matches} retryPresence={presence.retry} existingGameIds={existingGameIds} existingBggIds={existingBggIds} selectedKeys={selections.map((item) => item.key)} canSelectMore={selections.length < 20} disabled={batchProgress !== null} onToggle={toggleBggSelection} />
           )}
         </div>
       </DialogContent>

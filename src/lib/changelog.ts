@@ -12,6 +12,17 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.69",
+    date: "2026-11-03",
+    title: "Mehrere Spiele zu einer Reihe hinzufügen",
+    description: "Spiele lassen sich aus der Sammlung oder BGG gesammelt für eine Reihe auswählen und mit nachvollziehbarem Einzelergebnis hinzufügen.",
+    changes: [
+      { type: "feature", text: "FEAT-024: Bis zu 20 Spiele aus Sammlung und BGG auswählen; vorhandene Sammlungsspiele werden wiederverwendet." },
+      { type: "improvement", text: "Mehrfachimporte laufen einzeln nacheinander. Teilergebnisse bleiben sichtbar und fehlgeschlagene Spiele lassen sich gezielt erneut versuchen." },
+      { type: "internal", text: "Die vorhandene geschützte Reihen-API bleibt für jeden Eintrag zuständig; Datenbankschema und API-Vertrag bleiben unverändert." },
+    ],
+  },
+  {
     version: "0.50.68",
     date: "2026-11-03",
     title: "Nächste Reihen- und BGG-Verbesserungen geplant",

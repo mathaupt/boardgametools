@@ -56,8 +56,8 @@ export default function SeriesDetailClient({ initialSeries, seriesId }: SeriesDe
     deleteEntryTarget,
   });
 
-  async function handleGameAdded(input: AddSeriesGameInput) {
-    await refreshAfterGameAdded(input);
+  async function handleGameAdded(inputs: AddSeriesGameInput[], closeDialog: boolean) {
+    await refreshAfterGameAdded(inputs, closeDialog);
     setListRevision(revision => revision + 1);
   }
 
@@ -79,7 +79,7 @@ export default function SeriesDetailClient({ initialSeries, seriesId }: SeriesDe
         onPlayDetailChange={handlePlayDetailChange}
         onDeleteEntry={setDeleteEntryTarget}
       />
-      <AddGameDialog open={addDialogOpen} onOpenChange={setAddDialogOpen} seriesId={seriesId} existingGameIds={series.entries.map((e) => e.gameId)} onGameAdded={handleGameAdded} />
+      <AddGameDialog open={addDialogOpen} onOpenChange={setAddDialogOpen} seriesId={seriesId} existingGameIds={series.entries.map((e) => e.gameId)} existingBggIds={series.entries.map((e) => e.game.bggId).filter((id): id is string => Boolean(id))} onGamesAdded={handleGameAdded} />
       <SeriesDeleteDialogs deleteSeriesOpen={deleteSeriesOpen} onDeleteSeriesOpenChange={setDeleteSeriesOpen} deleteEntryTarget={deleteEntryTarget} onDeleteEntryTargetChange={setDeleteEntryTarget} onDeleteSeries={handleDeleteSeries} onDeleteEntry={handleDeleteEntry} deleting={deleting} seriesName={series.name} />
     </div>
   );

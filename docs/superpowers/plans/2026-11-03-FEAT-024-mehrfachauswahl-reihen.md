@@ -1,69 +1,77 @@
 # FEAT-024 – Mehrere Spiele zu einer Reihe hinzufügen – Implementierungsplan
 
-> **Für ausführende Agenten:** REQUIRED SUB-SKILLS: `test-driven-development` und `skills/testing/SKILL.md`; für Next.js/React `.agents/skills/next-best-practices/SKILL.md` sowie `.agents/skills/vercel-react-best-practices/SKILL.md` lesen. Schritte einzeln abarbeiten. Den Webumfang erst nach Umsetzung und Aktualitätsprüfung von FEAT-025 beginnen; native iOS-Oberflächen sind separat zu planen.
+> **Für ausführende Agenten:** REQUIRED SUB-SKILLS: `test-driven-development` und `skills/testing/SKILL.md`; für Next.js/React `.agents/skills/next-best-practices/SKILL.md` sowie `.agents/skills/vercel-react-best-practices/SKILL.md` lesen. Schritte einzeln abarbeiten. Native iOS-Oberflächen sind separat zu planen.
 
 **Ziel:** Mehrere Sammlungs- oder BGG-Spiele in einem Durchgang einer Spielreihe hinzufügen und Teilergebnisse verständlich verwalten.
 
-**Architektur:** Die Auswahl bleibt im Dialog als geordnete Liste stabil, auch wenn Suchbegriff oder Quelle wechseln. Ein begrenzter Sammel-Endpunkt verarbeitet jeden Eintrag unabhängig und liefert pro Position einen eindeutigen Status; ein Fehler eines BGG-Eintrags rollt erfolgreiche Sammlungseinträge nicht zurück. Die endgültige Eintragsidentität muss aus FEAT-025 übernommen werden.
+**Architektur:** Die Auswahl bleibt im Dialog als geordnete Liste stabil, auch wenn Suchbegriff oder Quelle wechseln. Zum Hinzufügen ruft der Client den bestehenden Einzelendpunkt nacheinander auf; dadurch bleiben Eigentümerprüfung, Konfliktvertrag und die pro Spiel sichtbaren Teilergebnisse erhalten, ohne FEAT-025 oder einen neuen Bulk-Endpunkt vorauszusetzen. BGG-Spiele ohne Sammlungsfund behalten in FEAT-024 das heutige Verhalten und werden beim Reihenimport dauerhaft in die Sammlung übernommen; FEAT-025 ändert diese Semantik später separat.
 
-**Technik:** Next.js 16 Route Handler, Prisma, React, TypeScript, Vitest/Testing Library, Playwright für nicht schreibende Darstellung; vorhandene BGG-Ratenlimits.
+**Technik:** Next.js 16, vorhandene Series-POST-Route, React, TypeScript, Vitest/Testing Library, Playwright für die lokale Darstellung; BGG-Anfragen seriell und begrenzt.
 
-**Planungsstand:** 03.11.2026, HEAD `23cd674`, Version 0.50.67, Arbeitsbaum vor dieser Dokuänderung sauber. FEAT-023 ist umgesetzt; der aktuelle Add-Dialog fügt je einen Eintrag hinzu und erwartet `gameId` oder `bggId`. `GameSeriesEntry` verlangt derzeit ein `gameId`; deshalb muss FEAT-025 vor der Mehrfachauswahl umgesetzt werden.
+## Aktualitätsprüfung unmittelbar vor Umsetzung
+
+**Geprüft:** 03.11.2026, HEAD `6cf2032`, Version 0.50.68, Arbeitsbaum sauber.
+FEAT-023 ist umgesetzt; FEAT-025 ist geplant, aber nicht umgesetzt. `GameSeriesEntry.gameId` bleibt erforderlich und die Series-POST-Route validiert Eigentum und BGG-ID für jeden Eintrag. Der Add-Dialog fügt aktuell ein Spiel hinzu, und sein erfolgreicher Callback lädt die Reihe neu und schließt den Dialog.
+
+**Ergebnis: innerhalb des freigegebenen Umfangs angepasst.** Der Nutzer hat am 03.11.2026 ausdrücklich den Start von FEAT-024 vor FEAT-025 angewiesen. Die Auswahl-/Sammel-API kann ohne Datenmodelländerung umgesetzt werden, indem maximal 20 Einträge seriell über die vorhandene POST-Route verarbeitet werden. Damit bleiben pro Eintrag Auth, Eigentümerprüfung, Fehlerstatus und Konfliktschutz erhalten. Es wird kein neuer API-Endpunkt eingeführt. BGG-Treffer, die nicht in der Sammlung vorhanden sind, werden weiterhin wie bisher als permanente Sammlungsspiele importiert. Temporäre Reihenspiele, Schemaänderungen und iOS bleiben FEAT-025 beziehungsweise separaten Plänen vorbehalten.
 
 ---
 
+## Umsetzungsnachweis
+
+**Abgeschlossen:** 03.11.2026, Version 0.50.69. Plan vor Arbeitsbeginn anhand
+HEAD `6cf2032`, Schema, Series-POST und FEAT-023-Verhalten geprüft. Die einzige
+Plananpassung war die ausdrückliche Reihenfolge vor FEAT-025; keine API- oder
+Schemaänderung erforderlich.
+
+- [x] Serielle Verarbeitung mit stabilen IDs, 201/409/Fehlerbehandlung und Netzwerkfehler-Fortsetzung.
+- [x] Mehrfachauswahl für Sammlung und BGG, gemeinsame ID für bereits vorhandene Sammlungsspiele, max. 20.
+- [x] Auswahl bleibt beim Such- und Quellenwechsel im geöffneten Dialog bestehen.
+- [x] Einzelauswahl bleibt verfügbar; Teilergebnisse und Retry nur für fehlgeschlagene Einträge umgesetzt.
+- [x] Erfolgreiche und bereits vorhandene Einträge werden nach einmaligem Neuladen der Reihe bestätigt.
+- [x] Security: kein neuer Endpunkt; jeder Eintrag durchläuft weiter die bestehende authentifizierte und eigentumsgeprüfte Route.
+- [x] Backlog, FEATURES, FAQ, Changelog und Paketversion aktualisiert. OpenAPI/Schema unverändert.
+
 ## Aktualitätsprüfung vor Umsetzung
 
-- [ ] HEAD, Arbeitsbaum, Schema, API-Verträge und zwischenzeitliche Änderungen seit 03.11.2026 prüfen.
-- [ ] FEAT-025 ist umgesetzt oder sein Datenvertrag wurde ausdrücklich freigegeben. Andernfalls Mehrfachauswahl nicht implementieren.
-- [ ] Bestätigte Obergrenze von 20 Einträgen pro Anfrage, Reihenfolge der Auswahl und maximal zwei gleichzeitige BGG-Abrufe erneut prüfen. Bei höherer BGG-Last sequenziell verarbeiten.
-- [ ] Umfang bleibt Web. Mobile-API-DTOs auf Kompatibilität prüfen und iOS-UI unverändert separat planen.
-- [ ] Prüfen, ob ein Bulk-Endpunkt weiterhin vorteilhafter ist als begrenzte Einzelrequests. Die Empfehlung gilt nur, wenn partielle Ergebnisse stabil/idempotent zurückgegeben werden.
+- [x] HEAD, Arbeitsbaum, Schema, API-Vertrag und zwischenzeitliche FEAT-023-Implementierung geprüft.
+- [x] FEAT-025-Abhängigkeit entfernt, weil der freigegebene FEAT-024-Umfang über die vorhandene Einzelroute erfüllbar ist; die Besitzsemantik bleibt unverändert.
+- [x] Maximal 20 Einträge pro Durchgang; Requests seriell, in Auswahlreihenfolge und ohne parallele BGG-Abfragen.
+- [x] Webumfang bestätigt. Es gibt keinen neuen API-Vertrag; iOS bleibt separat.
 
 ## Betroffene Dateien
 
-- `src/app/(dashboard)/dashboard/series/[id]/add-game-dialog.tsx`: Auswahl über Sammlung/BGG und sichtbare Anzahl.
-- `src/app/(dashboard)/dashboard/series/[id]/series-bgg-search.tsx`: Trefferzustand und Hinzufügen-zur-Auswahl-Aktion.
-- `src/app/(dashboard)/dashboard/series/[id]/use-series-game-add.ts`: Sammelrequest, Ergebniszuordnung, Wiederholen.
-- `src/app/api/series/[id]/entries/bulk/route.ts` (neu): Auth, Eigentümerprüfung, Begrenzung, individuelle Ergebnisse.
-- `src/lib/series/bulk-add-entries.ts` (neu): deterministische, unabhängig testbare Verarbeitung je Eintrag.
-- `src/lib/series/entry-identity.ts` (FEAT-025-Vertrag): Eingabe-/Identitätsnormalisierung wiederverwenden, nicht duplizieren.
-- `tests/unit/lib/series/bulk-add-entries.test.ts` (neu), `tests/unit/api/series-bulk-entries.test.ts` (neu), `tests/unit/components/series-bulk-add.test.tsx` (neu).
-- `docs/openapi.yaml`, `docs/FEATURES.md`, `src/lib/faq.ts`, `src/lib/changelog.ts`, `docs/FEATURE-BACKLOG.md`.
+- `src/app/(dashboard)/dashboard/series/[id]/add-game-dialog.tsx`: Auswahl über Sammlung/BGG und bestehende Einzelauswahl.
+- `src/app/(dashboard)/dashboard/series/[id]/series-bgg-search.tsx`: BGG-Treffer auswählen, Duplikate sperren und Einzelauswahl erhalten.
+- `src/app/(dashboard)/dashboard/series/[id]/series-game-selection-summary.tsx`: Auswahlanzahl, Status und Retry-Interaktion.
+- `src/app/(dashboard)/dashboard/series/[id]/use-series-game-add.ts`: vorhandene Einzelroute seriell aufrufen, Fortschritt/Resultate melden.
+- `src/app/(dashboard)/dashboard/series/[id]/SeriesDetailClient.tsx`, `use-series-handlers.ts`: nach dem Durchgang einmal aktualisieren und alle erfolgreichen Eingaben bestätigen, ohne bei Teilergebnissen den Dialog zu schließen.
+- `src/lib/series/bulk-add-entries.ts` (neu): kleine, deterministische Sequenzverarbeitung mit injizierbarem Request.
+- `tests/unit/lib/series/bulk-add-entries.test.ts` (neu), `tests/unit/components/series-bulk-add.test.tsx` (neu), `tests/unit/components/series-entry-conflict.test.tsx` erweitern.
+- `docs/FEATURE-BACKLOG.md`, `docs/FEATURES.md`, `src/lib/faq.ts`, `src/lib/changelog.ts`; OpenAPI bleibt unverändert, da kein Endpunkt/Schema hinzukommt.
 
-## Aufgabe 1 – Sammelvertrag RED/GREEN/REFACTOR
+## Aufgabe 1 – Serielle Verarbeitung RED/GREEN/REFACTOR
 
-- [ ] **RED:** Verarbeitungstest für drei Positionen schreiben: zwei erfolgreich, eine bereits vorhanden; Reihenfolge und drei unterschiedliche Resultate müssen der Eingabe entsprechen.
-- [ ] **RED prüfen:** `npx vitest run tests/unit/lib/series/bulk-add-entries.test.ts` muss wegen des fehlenden Helpers scheitern.
-- [ ] **GREEN:** Jedes Element unabhängig validieren; maximal 20 akzeptieren; Collection-IDs gegen angemeldeten Eigentümer und aktive Spiele prüfen; BGG-IDs validieren; Duplikate im Request und bereits vorhandene Einträge als `already_present` zurückgeben. Response-Vertrag: `{ results: Array<{ index: number; status: "added" | "already_present" | "failed"; entry?: SeriesEntryDto; error?: string }> }`.
-- [ ] BGG-Abrufe begrenzen, nur für gültige nicht vorhandene BGG-IDs ausführen und keine Netzwerkoperation innerhalb einer Prisma-Transaktion starten. Fehlertexte dürfen keine fremden Datensätze offenlegen.
-- [ ] **GREEN prüfen:** gezielter Lib-Test besteht für Reihenfolge, Teilfehler, doppelte Auswahl, Maximalgröße und Abbruch/Rate-Limit.
-- [ ] **REFACTOR:** gemeinsame Einzelanlage aus `POST /api/series/[id]/entries` wiederverwenden, ohne den bestehenden Einzelvertrag zu ändern.
+- [x] **RED:** Verarbeitungstest für drei Positionen geschrieben; fehlender Helper ließ ihn zuerst scheitern.
+- [x] **RED prüfen:** `npx vitest run tests/unit/lib/series/bulk-add-entries.test.ts` scheiterte vor der Helper-Implementierung.
+- [x] **GREEN:** `addSeriesGamesSequentially(items, request)` gibt `added`, `already_present` (HTTP 409) oder `failed` zurück und fährt nach Einzelfehlern fort.
+- [x] **GREEN prüfen:** Helpertests bestanden für Reihenfolge, 201, 409, 5xx und Netzwerkfehler.
+- [x] **REFACTOR:** Requestgrenze klein typisiert; kein neuer API- oder DB-Abstraktionslayer.
 
-## Aufgabe 2 – Geschützten API-Endpunkt RED/GREEN/REFACTOR
+## Aufgabe 2 – Auswahl und Statusoberfläche RED/GREEN/REFACTOR
 
-- [ ] **RED:** Route-Tests für unauthentifizierte Anfrage (401), fremde/gelöschte Reihe (404), >20 Einträge (400), fremde Sammlungsspiel-ID (404/400 gemäß bestehendem API-Vertrag) und Teilresultate ergänzen.
-- [ ] **RED prüfen:** `npx vitest run tests/unit/api/series-bulk-entries.test.ts` schlägt zunächst bei fehlendem Endpunkt fehl.
-- [ ] **GREEN:** `POST /api/series/[id]/entries/bulk` verlangt Auth, prüft Reihenbesitz einmal und Berechtigung je Sammlungsspiel, validiert Body strikt, begrenzt Rate und Payload. Der Endpunkt gibt HTTP 200 mit einzelnem Resultatstatus für fachliche Teilerfolge zurück; ungültiger Gesamtbody gibt 400.
-- [ ] Gleichzeitige Requests dürfen keine doppelten Einträge erzeugen; DB-Unique-Konflikt wird als `already_present` normalisiert. Cache der Reihe nach Änderungen invalidieren.
-- [ ] **GREEN prüfen:** `npx vitest run tests/unit/api/series-bulk-entries.test.ts tests/unit/api/series-entry-conflict.test.ts` besteht.
-- [ ] **REFACTOR:** sichere DTO-Projektion verwenden; keine ungefilterten `user`-/`createdBy`-Relations zurückgeben.
+- [x] **RED:** Komponententests scheiterten an der fehlenden Mehrfachauswahl und am bestehenden Einzelpfad-Vertrag.
+- [x] **GREEN:** Sammlung und BGG teilen Auswahl über stabile gameId-/BGG-ID-Schlüssel; Such- und Quellenwechsel lassen Auswahl bestehen; Batchlimit 20; leere Aktion deaktiviert.
+- [x] Einzelergebnisse, 409-Konflikt, getrennte Fehler, Retry nur für fehlgeschlagene Spiele sowie Refresh ohne Dialogschluss bei Batch umgesetzt.
+- [x] **GREEN prüfen:** `npx vitest run tests/unit/components/series-bulk-add.test.tsx tests/unit/lib/series/bulk-add-entries.test.ts tests/unit/components/series-entry-conflict.test.tsx` bestanden nach Erhalt des Einzelpfads.
+- [x] **REFACTOR:** Ergebnisbereich in eigene Komponente ausgelagert; betroffene Komponenten unter 300 Zeilen.
 
-## Aufgabe 3 – Mehrfachauswahl und Nutzerfeedback RED/GREEN/REFACTOR
+## Aufgabe 3 – Impeccable, Sicherheit und Abnahme
 
-- [ ] **RED:** Komponententests schreiben für Auswahl aus beiden Tabs, Auswahl erhalten nach Suchbegriffwechsel, Anzahl/Entfernen, Reihenfolge, laufende Anfrage, Teilerfolg und gezieltes Wiederholen fehlgeschlagener Zeilen.
-- [ ] **RED prüfen:** `npx vitest run tests/unit/components/series-bulk-add.test.tsx` muss am bisherigen Einzel-Auswahlvertrag scheitern.
-- [ ] **GREEN:** Zeilen per stabiler FEAT-025-Identität auswählen; Button zeigt Anzahl, bei 0 Auswahl deaktiviert. Je Zeile Status „Hinzugefügt“, „Bereits enthalten“ oder verständlicher Fehler; nur fehlgeschlagene Elemente sind wiederholbar.
-- [ ] Erfolgreiche Einträge nicht erneut senden, auch wenn andere Einträge fehlschlagen. Während des Requests Mehrfachabsendung verhindern; Dialog bei Teilfehlern offen lassen.
-- [ ] **GREEN prüfen:** `npx vitest run tests/unit/components/series-bulk-add.test.tsx tests/unit/components/series-entry-conflict.test.tsx` besteht.
-- [ ] **REFACTOR:** Zustände in fokussierte Auswahl-/Ergebnis-Komponenten aufteilen; jede Datei möglichst unter 300 Zeilen.
+- [x] Impeccable: lokaler Browserlauf mit synthetischen Antworten auf 390 px, 1280 px und effektiv 195 px (200-%-Viewport); Titelsichtbarkeit, Suche, Sammelaktion und Ergebnisstatus geprüft. Detector: 0 Anti-Patterns.
+- [x] Security: bestehende Route bleibt für Auth, Reihen-/Spielbesitz und BGG-ID zuständig; kein neuer API-Zugriff.
+- [x] FEATURES, FAQ, Backlog und Changelog aktualisiert.
+- [x] Abnahme: 1.098/1.098 Unit-Tests, gezielte 18/18 Tests, TypeScript, ESLint geänderte Dateien, Security-Schnellprüfung, Produktionsbuild und Regressionsevaluator mit gültigen Registry-Auditdaten bestanden.
+- [x] Commit erstellt. Pre-Commit: lint-staged (ESLint + zugehörige Tests), OWASP Security-Check und Review-Regressionscheck mit 10/10, 0 Regressionen; alle Hooks bestanden.
 
-## Aufgabe 4 – Impeccable, Sicherheit und Abnahme
-
-- [ ] Impeccable: lokale Vorschau mit synthetischen API-Antworten. Prüfen 390 px, Desktop, 200 % Zoom, Tastaturfokus, Screenreader-Ankündigung der Anzahl/Teilergebnisse und Touch-Ziele mindestens 44 px; keine DB-Schreibtests im Browser ohne isolierte Testdatenbank.
-- [ ] Security: Auth vor Schreibzugriff, Reihen- und Spielbesitz, Größen-/Ratenbegrenzung, BGG-ID-Validierung, URL-/Providerfehler, keine Datenlecks und idempotente Konfliktbehandlung testen.
-- [ ] API-Vertrag in `docs/openapi.yaml`; Bedienung in FEATURES/FAQ; Backlog auf „Plan erstellt; Umsetzung nicht freigegeben“ verlinken; Changelog bei späterer Umsetzung.
-- [ ] Abnahme: gezielte Lib/API/UI-Tests, `npm run typecheck`, `npm run lint`, `npm run security-check:fast`, `npm run build`, `npm run review-evaluate:regression`; lokaler gerenderter Impeccable-Nachweis.
-- [ ] Commit mit regulären Hooks; Review-Evaluator-Score, Finding-Status und Regressionscheck in `docs/code-reviews/` dokumentieren.
-
-**Freigabe:** Nicht erteilt. Vor Umsetzung Planaktualität erneut protokollieren und Umfang ausdrücklich freigeben lassen.
+**Freigabe:** FEAT-024 Web wurde am 03.11.2026 mit „Räume das Feature Backlog auf und danach fange mit FEAT-024 an“ zur Umsetzung freigegeben. Freigegeben sind Mehrfachauswahl und einzeln nachvollziehbare Ergebnisse auf dem vorhandenen Eigentums-/Importvertrag. FEAT-025, Migration, temporäre Besitzart, neue Endpunkte und iOS bleiben außerhalb dieses Umfangs.

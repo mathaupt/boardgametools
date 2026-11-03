@@ -37,7 +37,7 @@ Bedarf zu aktualisieren. Ergebnis am jeweiligen Plan dokumentieren:
 | FEAT-021 | Deutsche BGG-Ausgabe beim Import auswählen | Umgesetzt (0.50.63) | [Deutsche BGG-Ausgabe](superpowers/plans/2026-11-02-FEAT-021-bgg-deutsche-ausgabe.md) | 02.11.2026, Web |
 | FEAT-022 | BGG-Quellenkennzeichnung auf Loginseite und Website-Footer | Umgesetzt (0.50.64) | [BGG-Attribution](superpowers/plans/2026-11-02-FEAT-022-bgg-attribution.md) | 02.11.2026, Web |
 | FEAT-023 | Sammlung vor einem Import prüfen | Umgesetzt (Web, 0.50.67) | [Bestandsprüfung vor BGG-Importen](superpowers/plans/2026-11-03-FEAT-023-import-bestandspruefung.md) | Am 03.11.2026 umgesetzt; Web, iOS separat |
-| FEAT-024 | Mehrfachauswahl beim Hinzufügen zu Reihen, auch aus BGG | Plan erstellt; Umsetzung nicht freigegeben | [Mehrfachauswahl bei Reihen](superpowers/plans/2026-11-03-FEAT-024-mehrfachauswahl-reihen.md) | Keine |
+| FEAT-024 | Mehrfachauswahl beim Hinzufügen zu Reihen, auch aus BGG | Umgesetzt (Web, 0.50.69) | [Mehrfachauswahl bei Reihen](superpowers/plans/2026-11-03-FEAT-024-mehrfachauswahl-reihen.md) | Am 03.11.2026 freigegeben und umgesetzt; iOS separat |
 | FEAT-025 | Reihenspiele unabhängig von dauerhaftem Sammlungsbesitz | Plan erstellt; Schema-/Umsetzung nicht freigegeben | [Temporäre Reihenspiele](superpowers/plans/2026-11-03-FEAT-025-temporaere-reihenspiele.md) | Keine |
 | FEAT-026 | Seitennavigation in der Spielesammlung | Plan erstellt; Umsetzung nicht freigegeben | [Pager der Spielesammlung](superpowers/plans/2026-11-03-FEAT-026-spielesammlung-pager.md) | Keine |
 | FEAT-027 | Eindeutige Leermeldung in allen BGG-Suchansichten | Plan erstellt; Umsetzung nicht freigegeben | [BGG-Leerzustände](superpowers/plans/2026-11-03-FEAT-027-bgg-leerzustand.md) | Keine |
@@ -49,8 +49,10 @@ zur Umsetzung freigegeben.
 
 ## Offene Abarbeitung
 
-Die Abschnitte A bis E spiegeln den Abarbeitungsstand vom 01.11.2026 wider.
-Neue offene Feature-Anforderungen werden nachfolgend ergänzt. „Offen“ bedeutet
+Die Abschnitte A bis I dokumentieren Betriebs-, Abnahme- und Feature-Restarbeiten
+mit ihrem jeweiligen Prüfdatum. Der aktuelle Featurestatus steht in der
+Übersicht; neue Anforderungen FEAT-023 bis FEAT-027 sind darunter verlinkt.
+„Offen“ bedeutet
 hier entweder eine ausdrücklich ausstehende Abnahme, eine gesonderte
 Produkt-/Betriebsfreigabe oder einen separat zu planenden Sicherheitsumfang.
 Diese Übersicht erteilt keine neue Umsetzungsfreigabe.
@@ -239,14 +241,14 @@ keine Umsetzungsfreigabe vor. Die konkrete Browsererkennung und ein möglicher
 KI-Anbieter sind vor der jeweiligen Planung anhand der dann aktuellen
 Plattformunterstützung und Datenschutzbedingungen zu entscheiden.
 
-### Vorgeschlagene Reihenfolge
+### Abarbeitungsreihenfolge
 
-1. Öffentliche Eventseite (A), weil die Implementierung vorhanden ist und die
-   offenen Browser-/Assistive-Abnahmen die Restbugs entscheiden.
-2. FEAT-006 nach Bestätigung der Liveness-/Readiness-Verträge.
-3. FEAT-009 Produktionsbereinigung nach Manifest- und Backupprüfung.
-4. FEAT-007 und FEAT-008 nach Klärung von Monitor- und Budgetparametern.
-5. BUG-053 als eigener Sicherheitsplan; iOS-Oberflächen nach Plattformpriorität.
+Die Betriebsarbeiten A bis E behalten ihre jeweils erforderlichen externen
+Abnahmen und Freigaben. Für die neuen Webfeatures gilt ab 03.11.2026 die vom
+Nutzer bestätigte Reihenfolge: FEAT-024 ist umgesetzt; FEAT-025 bleibt als
+separates Besitzmodell geplant und wartet auf eigene Freigabe. FEAT-026 und
+FEAT-027 stehen danach zur Planung/Umsetzung an. Diese Reihenfolge ändert
+nichts an der Freigabepflicht der jeweils folgenden Features.
 
 FEAT-005 bis FEAT-008 am 30.10.2026 aus einer Betrachtung zur Absicherbarkeit
 des Health-Endpoints aufgenommen (Hochlast- und DDoS-Szenario). Die Features
@@ -872,8 +874,9 @@ Impeccable einschließlich gerenderter Prüfung sowie Dokumentationsaufgaben
 verpflichtend. Vor jeder späteren Implementierung den Plan erneut auf Aktualität
 prüfen und die ausdrückliche Umsetzungsfreigabe festhalten. Die Aufnahme hier ist
 keine Freigabe. Web zunächst prüfen; iOS-Auswirkungen gesondert ausweisen.
-Empfohlene Planungsreihenfolge: FEAT-023 → FEAT-025 → FEAT-024, anschließend
-FEAT-026 und FEAT-027; das Besitzmodell beeinflusst Mehrfachimporte.
+Empfohlene Abarbeitungsreihenfolge: FEAT-024 ist umgesetzt. FEAT-025 bleibt
+separat, weil es das Besitzmodell und die dauerhafte Sammlungskopplung ändert;
+danach können FEAT-026 und FEAT-027 unabhängig geplant umgesetzt werden.
 
 ## FEAT-023 – Sammlung vor einem Import prüfen
 
@@ -885,10 +888,10 @@ FEAT-026 und FEAT-027; das Besitzmodell beeinflusst Mehrfachimporte.
 
 ## FEAT-024 – Mehrere Spiele zu einer Reihe hinzufügen
 
-**Status:** Erfasst; Planung und Umsetzung nicht freigegeben.
+**Status:** Umgesetzt (Web, Version 0.50.69) am 03.11.2026; iOS separat planen.
 **Ziel:** Mehrere Spiele in einem Durchgang auswählen und zu einer Reihe hinzufügen, sowohl aus der Sammlung als auch über die BGG-Suche.
-**Abnahmekriterien:** Auswahl über Suchanfragen hinweg behalten, gewählte Anzahl zeigen, vor dem Absenden entfernen können. Vorhandene Einträge, Erfolge und Fehler pro Spiel erklären; Teilerfolge und gezieltes Wiederholen ohne Duplikate ermöglichen. Reihenfolge und Anzahl begrenzen, BGG-Ratenlimits berücksichtigen und Eigentümerrechte für jede Auswahl prüfen. Zustände für Laden, Teilfehler und Abschluss zugänglich gestalten; temporäre Einträge nach FEAT-025 berücksichtigen.
-**Implementierungsplan:** [Mehrfachauswahl bei Reihen](superpowers/plans/2026-11-03-FEAT-024-mehrfachauswahl-reihen.md). Umsetzungsreihenfolge nach FEAT-025; vor Umsetzung auf den dann gültigen Identitätsvertrag aktualisieren.
+**Abnahmekriterien:** Auswahl über Sammlung und BGG, max. 20 Spiele, Auswahl bleibt bei Such-/Quellenwechsel erhalten, Einzelauswahl bleibt verfügbar, serielles Hinzufügen, Status pro Spiel, Konfliktbehandlung und Retry nur für fehlgeschlagene Einträge.
+**Implementierungsplan:** [Mehrfachauswahl bei Reihen](superpowers/plans/2026-11-03-FEAT-024-mehrfachauswahl-reihen.md). Aktualitätsprüfung 03.11.2026, HEAD `6cf2032`: FEAT-025 bleibt offen; Serien-POST bleibt maßgeblicher Eigentums- und Duplikatsschutz. BGG-Neuimporte behalten bis FEAT-025 die bestehende dauerhafte Sammlungssemantik.
 
 ## FEAT-025 – Reihenspiele ohne dauerhaften Sammlungsbesitz
 

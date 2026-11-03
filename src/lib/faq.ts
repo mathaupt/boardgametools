@@ -23,6 +23,10 @@ export const faqSections: FaqSection[] = [
         answer: "Das Spiel ist auf dem Server bereits mit dieser Reihe verknüpft. Es wird kein zweiter Eintrag angelegt. Die App lädt die Reihe neu und setzt aktive Filter zurück, damit du den vorhandenen Eintrag sehen kannst. Kann die Liste nicht geladen oder das Spiel darin nicht gefunden werden, bleibt der Dialog mit einer Fehlermeldung offen. Du kannst es dann erneut versuchen oder die Seite neu laden.",
       },
       {
+        question: "Kann ich mehrere Spiele auf einmal zu einer Reihe hinzufügen?",
+        answer: "Ja. Wähle bis zu 20 Spiele aus deiner Sammlung oder den BGG-Suchergebnissen aus. Deine Auswahl bleibt erhalten, wenn du die Suche oder Quelle wechselst. Die Spiele werden einzeln nacheinander hinzugefügt; bei Teilerfolgen siehst du den Status pro Spiel und kannst fehlgeschlagene Einträge erneut versuchen.",
+      },
+      {
         question: "Warum zeigt das Qualitätsmonitoring unterschiedliche Werte für die Testabdeckung?",
         answer: "Der gesamte Messumfang und die Bibliotheken unter src/lib werden getrennt gemessen. Das Ziel sind jeweils 80 % pro Kennzahl; ein erreichter Bibliothekswert bedeutet noch keine 80 % für die gesamte Anwendung. Messzeitpunkt und Version stehen direkt bei den Werten. Coverage und Testzahlen stammen aus einem vollständigen erfolgreichen Testlauf und werden mit dem Deployment veröffentlicht. Weitere Review-Kennzahlen sind als historisch gekennzeichnet.",
       },

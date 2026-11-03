@@ -189,16 +189,16 @@ export function useSeriesHandlers({
     setDeleting(false);
   }
 
-  async function handleGameAdded(input: AddSeriesGameInput) {
+  async function handleGameAdded(inputs: AddSeriesGameInput[], closeDialog: boolean) {
     const current = await loadSeries();
     if (!current) {
       throw new Error("Die Reihe konnte nicht aktualisiert werden. Bitte versuche es erneut.");
     }
-    const found = current.entries.some(entry => "gameId" in input ? entry.gameId === input.gameId : entry.game.bggId === input.bggId);
-    if (!found) {
-      throw new Error("Das Spiel konnte in der aktualisierten Reihe nicht gefunden werden. Bitte lade die Seite neu.");
+    const missing = inputs.some((input) => !current.entries.some(entry => "gameId" in input ? entry.gameId === input.gameId : entry.game.bggId === input.bggId));
+    if (missing) {
+      throw new Error(`${inputs.length === 1 ? "Das Spiel konnte" : "Ein Spiel konnte"} in der aktualisierten Reihe nicht gefunden werden. Bitte lade die Seite neu.`);
     }
-    setAddDialogOpen(false);
+    if (closeDialog) setAddDialogOpen(false);
   }
 
   return {

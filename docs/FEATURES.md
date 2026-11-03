@@ -253,6 +253,7 @@ Zeigt alle Eintraege der Reihe mit erweiterten Erfassungsmoeglichkeiten:
 
 **Aktionen:**
 - Spiel hinzufuegen (aus Sammlung oder per BGG-Import)
+- Mehrere Spiele aus Sammlung oder BGG auswählen und seriell hinzufügen (maximal 20 je Durchgang); BGG-Treffer aus der eigenen Sammlung verwenden vorhandene Spiele. Einzelergebnisse, Konflikte und gezielte Wiederholungen bleiben im Dialog sichtbar.
 - Reihenfolge per Drag & Drop aendern
 - Eintrag bearbeiten / loeschen
 - Reihe loeschen
@@ -268,6 +269,14 @@ Erst danach schließt der Dialog. Bei Nachladefehlern oder weiterhin fehlendem
 Zielspiel bleibt er mit einer deutschen Fehlermeldung offen. Pro Dialog ist nur
 eine Hinzufügen-Anfrage gleichzeitig möglich; der Abgleich sendet kein zweites
 POST. Das gilt für Sammlung, BGG und die gemeinsamen Barcode-Einstiegspunkte.
+
+**FEAT-024 umgesetzt (0.50.69):** Die Reihenansicht unterstützt zusätzlich
+eine Mehrfachauswahl aus Sammlung und BGG mit maximal 20 Spielen. Ausgewählte
+Spiele bleiben bei Such- und Quellenwechseln erhalten. Die vorhandene
+Einzelauswahl bleibt verfügbar; Sammelaktionen nutzen nacheinander denselben
+geschützten Einzelendpunkt. Teilergebnisse werden pro Spiel gezeigt, und ein
+erneuter Versuch umfasst nur fehlgeschlagene Einträge. BGG-Neuimporte werden
+bis FEAT-025 weiterhin dauerhaft in die Sammlung übernommen.
 
 
 ### Uebersicht

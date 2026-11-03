@@ -41,3 +41,11 @@ export type EntrySortOption = "sortOrder" | "name_asc" | "name_desc" | "rating_d
 export const DIFFICULTY_ORDER: Record<string, number> = { einsteiger: 1, fortgeschritten: 2, profi: 3 };
 
 export type AddSeriesGameInput = { gameId: string } | { bggId: string };
+
+export interface SeriesGameSelection {
+  key: string;
+  input: AddSeriesGameInput;
+  name: string;
+  imageUrl: string | null;
+  source: "collection" | "bgg";
+}
