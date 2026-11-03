@@ -10,6 +10,7 @@ import { Errors } from "@/lib/error-messages";
 import { ApiError, handleApiError } from "@/lib/require-auth";
 import { withEventMutation } from "@/lib/services/event-mutation.service";
 import { resolveProposalAuthor } from "@/lib/events/public-actor";
+import { assertGuestMutationOrigin, requireGuestIdentity } from "@/lib/events/guest-credentials";
 
 type RouteContext = { params: Promise<{ token: string }> };
 
@@ -30,6 +31,7 @@ export const POST = withApiLogging(async function POST(
   }
 
   try {
+    assertGuestMutationOrigin(request);
     const body = await request.json();
     const { bggId, guestId } = body ?? {};
 
@@ -58,8 +60,9 @@ export const POST = withApiLogging(async function POST(
     const eventId = await resolveEventIdFromToken(token);
     if (!eventId) throw new ApiError(404, Errors.EVENT_NOT_FOUND);
     if (author.guestId) {
-      const guest = await prisma.guestParticipant.findFirst({ where: { id: author.guestId, eventId }, select: { id: true } });
-      if (!guest) throw new ApiError(404, Errors.GUEST_NOT_FOUND_FOR_EVENT);
+      await requireGuestIdentity(request, eventId, () => prisma.guestParticipant.findFirst({
+        where: { id: author.guestId!, eventId }, select: { id: true, credentialHash: true },
+      }));
     }
 
     // Fetch game data from BGG using the robust library function (handles 202, retries, auth token)
@@ -74,8 +77,9 @@ export const POST = withApiLogging(async function POST(
       "proposeGame",
       async ({ tx, eventId: lockedEventId }) => {
         if (author.guestId) {
-          const guest = await tx.guestParticipant.findFirst({ where: { id: author.guestId, eventId: lockedEventId }, select: { id: true } });
-          if (!guest) throw new ApiError(404, Errors.GUEST_NOT_FOUND_FOR_EVENT);
+          await requireGuestIdentity(request, lockedEventId, () => tx.guestParticipant.findFirst({
+            where: { id: author.guestId!, eventId: lockedEventId }, select: { id: true, credentialHash: true },
+          }));
         }
         const duplicate = await tx.gameProposal.findFirst({
           where: { eventId: lockedEventId, OR: [{ bggId: String(bggId) }, { game: { bggId: String(bggId) } }] },

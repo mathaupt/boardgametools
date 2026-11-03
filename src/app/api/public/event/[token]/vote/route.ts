@@ -5,6 +5,7 @@ import { checkRateLimit, rateLimitResponse } from "@/lib/rate-limit";
 import { Errors } from "@/lib/error-messages";
 import { ApiError, handleApiError } from "@/lib/require-auth";
 import { withEventMutation } from "@/lib/services/event-mutation.service";
+import { requireGuestIdentity } from "@/lib/events/guest-credentials";
 
 type RouteContext = { params: Promise<{ token: string }> };
 
@@ -38,8 +39,9 @@ export const POST = withApiLogging(async function POST(
       { kind: "public", token, guestId },
       "voteGame",
       async ({ tx, eventId }) => {
-        const participant = await tx.guestParticipant.findFirst({ where: { id: guestId, eventId }, select: { id: true } });
-        if (!participant) throw new ApiError(404, Errors.GUEST_NOT_FOUND_FOR_EVENT);
+        await requireGuestIdentity(request, eventId, () => tx.guestParticipant.findFirst({
+          where: { id: guestId, eventId }, select: { id: true, credentialHash: true },
+        }));
         const proposal = await tx.gameProposal.findFirst({ where: { id: proposalId, eventId }, select: { id: true } });
         if (!proposal) throw new ApiError(404, Errors.PROPOSAL_NOT_FOUND);
         const existingVote = await tx.guestVote.findFirst({ where: { guestId, proposalId }, select: { id: true } });
@@ -85,8 +87,9 @@ export const DELETE = withApiLogging(async function DELETE(
       { kind: "public", token, guestId },
       "voteGame",
       async ({ tx, eventId }) => {
-        const participant = await tx.guestParticipant.findFirst({ where: { id: guestId, eventId }, select: { id: true } });
-        if (!participant) throw new ApiError(404, Errors.GUEST_NOT_FOUND_FOR_EVENT);
+        await requireGuestIdentity(request, eventId, () => tx.guestParticipant.findFirst({
+          where: { id: guestId, eventId }, select: { id: true, credentialHash: true },
+        }));
         const proposal = await tx.gameProposal.findFirst({ where: { id: proposalId, eventId }, select: { id: true } });
         if (!proposal) throw new ApiError(404, Errors.PROPOSAL_NOT_FOUND);
         const deleted = await tx.guestVote.deleteMany({ where: { guestId, proposalId } });

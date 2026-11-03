@@ -1635,10 +1635,12 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 ### [BUG-053] Gastzugang besitzt keinen serverseitigen Besitznachweis
 
-**Status:** `open`
+**Status:** `fixed`
 **Schweregrad:** `high`
 **Entdeckt:** 2026-10-31
-**Test geschrieben:** Nein; eigenständige Sicherheitskorrektur erforderlich.
+**Behoben:** 2026-11-03
+**Behoben in Version:** 0.50.73
+**Test geschrieben:** Ja – `tests/unit/api/public-voting-flow.test.ts`, `tests/unit/api/propose-bgg-validation.test.ts`, `tests/unit/lib/guest-credentials.test.ts`.
 
 **Beschreibung:** Der Gastbeitritt führt per eventId/nickname ein upsert aus und gibt einen bestehenden Gastdatensatz erneut zurück. Gastaktionen vertrauen anschließend einer übermittelten, zum Event passenden Gast-ID, ohne den Besitz dieses Zugangs nachzuweisen.
 
@@ -1646,17 +1648,17 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 **Erwartetes Verhalten:** Die Wiederaufnahme einer bestehenden Gastidentität verlangt einen vom Server überprüfbaren Besitznachweis; Kenntnis des Namens oder der öffentlichen ID reicht dafür nicht.
 
-**Tatsächliches Verhalten laut Quellprüfung:** join verwendet eventId_nickname als upsert-Schlüssel. Eine Session oder ein signierter Gastnachweis ist nicht erforderlich; lokale Speicherung allein beweist keinen Besitz.
+**Tatsächliches Verhalten vor Fix:** join verwendete eventId_nickname als upsert-Schlüssel. Eine Session oder ein serverseitig überprüfbarer Gastnachweis war nicht erforderlich; lokale Speicherung allein bewies keinen Besitz.
 
 **Ursache:** Teilnahmebezeichnung und Authentifizierung des Gastzugangs werden nicht getrennt.
 
-**Lösung:** Offen, außerhalb des bestätigten FEAT-013-Umfangs „ohne Gastwechsel“. Ein eigener Korrekturschritt muss einen serverseitigen Besitznachweis, sichere Wiederaufnahme und eine Migration bestehender Gastzugänge definieren. Bis dahin keine neue Gastwechsel-/Übernahmefunktion anbieten.
+**Lösung:** Neue Gastzugänge erhalten ein zufälliges, ereignisgebundenes HttpOnly-Cookie; serverseitig wird ausschließlich dessen SHA-256-Hash gespeichert. Stimmen, Terminantworten und BGG-Vorschläge prüfen den Besitznachweis bei jeder Änderung. Alte Gastzugänge ohne Nachweis können nicht übernommen werden: Betroffene registrieren sich mit einem neuen Spitznamen, während ihre bisherigen Stimmen erhalten bleiben. Der Nachweis wird nicht in API-Antworten oder Teilnehmerabfragen offengelegt.
 
-**Entscheidung am 03.11.2026:** Bestehende Gastzugänge sollen weiter funktionieren. Da ein Nickname und eine öffentliche Gast-ID keinen sicheren Besitznachweis liefern, bleibt der Befund offen; eine Änderung, die bestehende Gäste zur Neuregistrierung zwingt, wurde nicht übernommen.
+**Entscheidung am 03.11.2026:** Zur sicheren Wiederaufnahme wählen Gäste ohne bisherigen Besitznachweis einen neuen Spitznamen. Ihre bisherigen Stimmen bleiben erhalten.
 
-**Prüfnachweis:** Öffentliche join-/vote-Routen und clientseitiger StoredGuestState am 31.10.2026 geprüft. Keine produktive Identität übernommen.
+**Prüfnachweis:** Vorher rot und danach grün: 85 fokussierte Unit-Tests über Gastbeitritt, Vote-/Terminänderungen, BGG-Vorschlag, Client-Wiederaufnahme und datensparsame Teilnehmerabfragen. Kein produktiver Gastzugang verwendet. Datenbankmigration lokal erstellt, nicht auf Produktion angewendet.
 
-**Referenz im Changelog:** Version 0.50.30 – Öffentliche Teilnahme weiter geplant.
+**Referenz im Changelog:** Version 0.50.73 – Gastzugänge sicher wiederaufnehmen.
 
 ---
 
@@ -1705,6 +1707,8 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 **Ursache:** Interne Diagnose und öffentliche Erreichbarkeitsprüfung verwenden denselben Vertrag.
 
 **Lösung:** Code in Version 0.50.42 umgesetzt; Monitorumstellung, Deploy und Staging-Abnahme noch offen. Siehe [FEAT-006-Plan](superpowers/plans/2026-10-31-FEAT-006-health-liveness-readiness.md).
+
+**Aktualitätsprüfung am 03.11.2026:** Der konfigurierte Produktions-Livenesscheck lief erfolgreich und bestätigte HTTP 200 mit gültigem Liveness-JSON. Der Provider `health-readiness` ist nicht konfiguriert. Offen bleiben geschützter Readiness-Monitor, Monitorinventar/-umstellung und Staging-Abnahme; keine Produktionskonfiguration oder Secrets geändert.
 
 **Prüfnachweis:** src/app/api/health/route.ts und öffentliche Proxyfreigabe am 31.10.2026 geprüft. Keine produktiven Fehler oder Daten abgefragt; keine Behauptung über tatsächlich offengelegte Zugangsdaten.
 
@@ -2045,8 +2049,8 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 ## Statistik
 
-- **Offene Bugs:** 1
+- **Offene Bugs:** 0
 - **In Bearbeitung:** 4
-- **Behoben:** 66
+- **Behoben:** 67
 - **Wontfix:** 0
 - **Gesamt:** 71

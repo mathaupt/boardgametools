@@ -33,7 +33,7 @@ export function PublicEventClient({ token, event }: PublicEventClientProps) {
   const [voting, setVoting] = useState<string | null>(null);
   const [sessionExpired, setSessionExpired] = useState(false);
   const { eventState, proposals, setProposals, dateProposals, guestParticipants, setGuestParticipants, refreshError, refreshEventState } = usePublicEventLifecycle(token, event);
-  const { actor, guestVotes, registerGuest, persistGuestVotes } = usePublicActor({
+  const { actor, guestVotes, reauthRequired, registerGuest, persistGuestVotes } = usePublicActor({
     token,
     user: event.currentUser,
     guests: guestParticipants,
@@ -148,6 +148,7 @@ export function PublicEventClient({ token, event }: PublicEventClientProps) {
         token={token}
         actor={visibleActor}
         onGuestJoined={handleGuestJoined}
+        reauthRequired={reauthRequired}
         canJoin={canJoin && !sessionExpired}
         blockedReason={eventState.blockedReason}
         onStateConflict={refreshEventState}

@@ -19,6 +19,14 @@ interface GuestStorage {
   votes: string[];
 }
 
+interface ActorStorage {
+  key: string;
+  hydrated: boolean;
+  guest: GuestStorage | null;
+  guestVerified: boolean;
+  reauthRequired: boolean;
+}
+
 function parseGuestStorage(raw: string | null): GuestStorage | null {
   if (!raw || raw.length > 16_384) return null;
   try {
@@ -39,20 +47,24 @@ function parseGuestStorage(raw: string | null): GuestStorage | null {
 export function usePublicActor({ token, user, guests, proposalIds }: PublicActorInput): {
   actor: PublicActor;
   guestVotes: Set<string>;
+  reauthRequired: boolean;
   registerGuest: (guest: Pick<StoredGuestState, "id" | "nickname">) => void;
   persistGuestVotes: (votes: Set<string>) => void;
 } {
   const storageKey = `${STORAGE_PREFIX}${token}`;
-  const [storage, setStorage] = useState<{ key: string; hydrated: boolean; guest: GuestStorage | null }>({
+  const [storage, setStorage] = useState<ActorStorage>({
     key: storageKey,
     hydrated: false,
     guest: null,
+    guestVerified: false,
+    reauthRequired: false,
   });
 
   useEffect(() => {
+    let active = true;
     if (user?.id) {
-      setStorage({ key: storageKey, hydrated: true, guest: null });
-      return;
+      setStorage({ key: storageKey, hydrated: true, guest: null, guestVerified: false, reauthRequired: false });
+      return () => { active = false; };
     }
 
     let guest: GuestStorage | null = null;
@@ -61,21 +73,48 @@ export function usePublicActor({ token, user, guests, proposalIds }: PublicActor
     } catch {
       // Storage is optional; public participation still works in memory.
     }
-    setStorage({ key: storageKey, hydrated: true, guest });
-  }, [storageKey, user?.id]);
+    if (!guest) {
+      setStorage({ key: storageKey, hydrated: true, guest: null, guestVerified: false, reauthRequired: false });
+      return () => { active = false; };
+    }
 
-  const currentStorage = storage.key === storageKey ? storage : { key: storageKey, hydrated: false, guest: null };
+    setStorage({ key: storageKey, hydrated: false, guest: null, guestVerified: false, reauthRequired: false });
+    void fetch(`/api/public/event/${encodeURIComponent(token)}/join?guestId=${encodeURIComponent(guest.id)}`, {
+      cache: "no-store",
+    }).then(async (response) => {
+      if (!response.ok) throw new Error("Gastidentität konnte nicht geprüft werden.");
+      const result = await response.json() as { authorized?: boolean };
+      if (!active) return;
+      if (result.authorized) {
+        setStorage({ key: storageKey, hydrated: true, guest, guestVerified: true, reauthRequired: false });
+        return;
+      }
+      try {
+        window.localStorage.removeItem(storageKey);
+      } catch {
+        // Removing stale local identity is best-effort; API writes still require proof.
+      }
+      setStorage({ key: storageKey, hydrated: true, guest: null, guestVerified: false, reauthRequired: true });
+    }).catch(() => {
+      if (active) setStorage({ key: storageKey, hydrated: true, guest: null, guestVerified: false, reauthRequired: true });
+    });
+    return () => { active = false; };
+  }, [storageKey, token, user?.id]);
+
+  const currentStorage = storage.key === storageKey ? storage : {
+    key: storageKey, hydrated: false, guest: null, guestVerified: false, reauthRequired: false,
+  };
   const actor = useMemo(() => resolvePublicActor({
     user,
     hydrated: currentStorage.hydrated,
-    storedGuest: currentStorage.guest,
+    storedGuest: currentStorage.guestVerified ? currentStorage.guest : null,
     guests,
-  }), [currentStorage.guest, currentStorage.hydrated, guests, user]);
+  }), [currentStorage.guest, currentStorage.guestVerified, currentStorage.hydrated, guests, user]);
 
   const proposalSet = useMemo(() => new Set(proposalIds), [proposalIds]);
-  const guestVotes = useMemo(() => actor.kind === "guest"
+  const guestVotes = useMemo(() => actor.kind === "guest" && currentStorage.guestVerified
     ? new Set((currentStorage.guest?.votes ?? []).filter((id) => proposalSet.has(id)))
-    : new Set<string>(), [actor.kind, currentStorage.guest?.votes, proposalSet]);
+    : new Set<string>(), [actor.kind, currentStorage.guest?.votes, currentStorage.guestVerified, proposalSet]);
 
   const writeStorage = useCallback((guest: GuestStorage) => {
     try {
@@ -87,16 +126,16 @@ export function usePublicActor({ token, user, guests, proposalIds }: PublicActor
 
   const registerGuest = useCallback((guest: Pick<StoredGuestState, "id" | "nickname">) => {
     const next = { ...guest, votes: [] };
-    setStorage({ key: storageKey, hydrated: true, guest: next });
+    setStorage({ key: storageKey, hydrated: true, guest: next, guestVerified: true, reauthRequired: false });
     writeStorage(next);
   }, [storageKey, writeStorage]);
 
   const persistGuestVotes = useCallback((votes: Set<string>) => {
-    if (actor.kind !== "guest" || !currentStorage.guest || currentStorage.guest.id !== actor.guestId) return;
+    if (actor.kind !== "guest" || !currentStorage.guestVerified || !currentStorage.guest || currentStorage.guest.id !== actor.guestId) return;
     const next = { ...currentStorage.guest, votes: Array.from(votes).filter((id) => proposalSet.has(id)) };
-    setStorage({ key: storageKey, hydrated: true, guest: next });
+    setStorage({ key: storageKey, hydrated: true, guest: next, guestVerified: true, reauthRequired: false });
     writeStorage(next);
-  }, [actor, currentStorage.guest, proposalSet, storageKey, writeStorage]);
+  }, [actor, currentStorage.guest, currentStorage.guestVerified, proposalSet, storageKey, writeStorage]);
 
-  return { actor, guestVotes, registerGuest, persistGuestVotes };
+  return { actor, guestVotes, reauthRequired: currentStorage.reauthRequired, registerGuest, persistGuestVotes };
 }

@@ -617,7 +617,19 @@ paths:
           required: true
           schema: { type: string, minLength: 2 }
       responses:
-        '200': { description: Suchergebnisse (leeres Array bei erfolgreicher Suche ohne Treffer), content: { application/json: { schema: { type: array, items: { type: object, required: [bggId, name], properties: { bggId: { type: string }, name: { type: string }, yearPublished: { type: [integer, 'null'] } } } } } }
+        '200':
+          description: "Suchergebnisse (leeres Array bei erfolgreicher Suche ohne Treffer)"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  required: [bggId, name]
+                  properties:
+                    bggId: { type: string }
+                    name: { type: string }
+                    yearPublished: { type: [integer, 'null'] }
         '400': { description: Ungültiger oder zu kurzer Suchbegriff, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
         '429': { description: BGG begrenzt die Suchanfragen; Retry-After wird gesetzt, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
         '502': { description: BGG lieferte eine ungültige Antwort, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
@@ -1779,9 +1791,38 @@ paths:
               schema: { $ref: '#/components/schemas/Error' }
 
   /api/public/event/{token}/join:
+    get:
+      tags: [Public]
+      summary: Gespeicherten Gastzugang prüfen
+      description: Prüft den ereignisgebundenen HttpOnly-Besitznachweis. Die Antwort enthält keine Gastdaten.
+      security: []
+      parameters:
+        - name: token
+          in: path
+          required: true
+          schema: { type: string }
+        - name: guestId
+          in: query
+          required: true
+          schema: { type: string, maxLength: 100 }
+      responses:
+        '200':
+          description: Besitznachweis vorhanden oder nicht vorhanden
+          headers:
+            Cache-Control:
+              schema: { type: string, example: 'private, no-store' }
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [authorized]
+                properties:
+                  authorized: { type: boolean }
+        '404': { $ref: '#/components/responses/NotFound' }
     post:
       tags: [Public]
       summary: Als Gast an Event teilnehmen
+      description: Setzt für neue Teilnahmen einen ereignisgebundenen HttpOnly-Cookie. Bestehende Namen können nur mit passendem Cookie wieder aufgenommen werden.
       security: []
       parameters:
         - name: token
@@ -1799,10 +1840,20 @@ paths:
                 nickname: { type: string, minLength: 1, maxLength: 80 }
       responses:
         '201':
-          description: Öffentlicher Teilnehmerdatensatz mit serverseitigem Stimmenzähler
+          description: Neuer öffentlicher Teilnehmerdatensatz; der Besitznachweis wird als HttpOnly-Cookie gesetzt.
+          headers:
+            Set-Cookie:
+              schema: { type: string, description: Ereignisgebundener Cookie mit zufälligem Geheimnis, nicht mit der Gast-ID. }
           content:
             application/json:
               schema: { $ref: '#/components/schemas/PublicGuest' }
+        '200': { description: Vorhandener Gastzugang mit passendem Cookie wieder aufgenommen }
+        '400':
+          description: Spitzname bereits vergeben; bitte einen neuen Spitznamen wählen. Alte Stimmen bleiben erhalten.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '403': { description: Anfragequelle nicht erlaubt, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
         '409': { description: Event nimmt keine Änderungen mehr an, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
 
   /api/public/event/{token}/propose:
@@ -1852,6 +1903,8 @@ paths:
                 guestId: { type: string, description: Optionale Legacy-Gast-ID; wird bei vorhandener Session ignoriert. }
       responses:
         '201': { description: BGG-Vorschlag erstellt }
+        '401': { description: Gast-Besitznachweis fehlt oder ist ungültig, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+        '403': { description: Anfragequelle nicht erlaubt, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
         '409': { description: Spielvorschläge sind gesperrt, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
 
   /api/public/event/{token}/vote:
@@ -1876,6 +1929,8 @@ paths:
                 guestId: { type: string }
       responses:
         '201': { description: Stimme abgegeben }
+        '401': { description: Gast-Besitznachweis fehlt oder ist ungültig, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+        '403': { description: Anfragequelle nicht erlaubt, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
         '409': { description: Spielabstimmung ist geschlossen, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
     delete:
       tags: [Public]
@@ -1895,6 +1950,8 @@ paths:
           schema: { type: string }
       responses:
         '200': { description: Stimme entfernt }
+        '401': { description: Gast-Besitznachweis fehlt oder ist ungültig, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+        '403': { description: Anfragequelle nicht erlaubt, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
         '409': { description: Spielabstimmung ist geschlossen, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
 
   /api/public/event/{token}/date-vote:
@@ -1926,6 +1983,8 @@ paths:
                       availability: { type: string, enum: [yes, maybe, no] }
       responses:
         '200': { description: Termin-Stimmen aktualisiert }
+        '401': { description: Gast-Besitznachweis fehlt oder ist ungültig, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+        '403': { description: Anfragequelle nicht erlaubt, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
         '409': { description: Terminabstimmung ist geschlossen, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
 
   /api/public/group/{token}:
@@ -3079,6 +3138,22 @@ paths:
         '404': { $ref: '#/components/responses/NotFound' }
 
   /api/mobile/v1/public/event/{token}/join:
+    get:
+      tags: [Mobile]
+      summary: Gast-Besitznachweis prüfen
+      security: []
+      parameters:
+        - name: token
+          in: path
+          required: true
+          schema: { type: string }
+        - name: guestId
+          in: query
+          required: true
+          schema: { type: string, maxLength: 100 }
+      responses:
+        '200': { description: Besitznachweis vorhanden oder nicht vorhanden; keine Gastdaten, Cache-Control private, no-store }
+        '404': { $ref: '#/components/responses/NotFound' }
     post:
       tags: [Mobile]
       summary: Als Gast teilnehmen
@@ -3097,8 +3172,11 @@ paths:
               properties:
                 nickname: { type: string }
       responses:
-        '201': { description: Gast-Teilnehmer }
+        '201': { description: Neuer Gast-Teilnehmer; ereignisgebundener HttpOnly-Cookie wird gesetzt }
+        '200': { description: Vorhandener Gastzugang mit passendem Cookie wieder aufgenommen }
         '400': { $ref: '#/components/responses/BadRequest' }
+        '403': { description: Anfragequelle nicht erlaubt }
+        '409': { description: Event nimmt keine Änderungen mehr an }
         '404': { $ref: '#/components/responses/NotFound' }
 
   /api/mobile/v1/public/event/{token}/vote:
@@ -3122,5 +3200,7 @@ paths:
                 proposalId: { type: string }
       responses:
         '200': { description: Stimme gespeichert }
+        '401': { description: Gast-Besitznachweis fehlt oder ist ungültig }
+        '403': { description: Anfragequelle nicht erlaubt }
         '400': { $ref: '#/components/responses/BadRequest' }
         '404': { $ref: '#/components/responses/NotFound' }

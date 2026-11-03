@@ -162,6 +162,10 @@ export const faqSections: FaqSection[] = [
         answer: "Ergebnisse erscheinen erst, nachdem du eine Suche mit mindestens zwei Zeichen abgesendet hast. Eine leere Trefferliste bedeutet, dass BoardGameGeek keine passenden Spiele gefunden hat. Bei einem Verbindungsfehler kannst du die letzte Suche erneut starten; das Vorschlagen erfordert weiterhin eine aktive Identität im offenen Event.",
       },
       {
+        question: "Warum muss ich einen neuen Gastnamen wählen?",
+        answer: "Gastaktionen werden jetzt mit einem sicheren, nur in diesem Browser gespeicherten Nachweis geschützt. Ein älterer Gastzugang ohne diesen Nachweis kann nicht sicher übernommen werden. Wähle einen neuen Spitznamen; deine bisherigen Stimmen bleiben erhalten.",
+      },
+      {
         question: "Warum kann ich bei einem Event nicht mehr abstimmen?",
         answer: "Die Eventseite zeigt den aktuellen Planungsstatus. Nach dem Abstimmungsende oder einem vergangenen bestätigten Termin sind Änderungen gesperrt. Wird die Seite währenddessen geöffnet gelassen, lädt sie den aktuellen Stand nach und erklärt, warum die Änderung nicht gespeichert wurde.",
       },

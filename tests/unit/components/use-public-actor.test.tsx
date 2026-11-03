@@ -2,8 +2,14 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { act, renderHook, waitFor } from "@testing-library/react";
 import { usePublicActor } from "@/components/public-event/use-public-actor";
 
+const mockFetch = vi.fn();
+
 describe("usePublicActor", () => {
-  beforeEach(() => window.localStorage.clear());
+  beforeEach(() => {
+    window.localStorage.clear();
+    mockFetch.mockReset().mockResolvedValue({ ok: true, json: async () => ({ authorized: true }) });
+    vi.stubGlobal("fetch", mockFetch);
+  });
 
   it("does not expose or use a stored guest when a user session exists", async () => {
     window.localStorage.setItem("bgt-public-guest:event-token", JSON.stringify({
@@ -34,7 +40,27 @@ describe("usePublicActor", () => {
     await waitFor(() => expect(result.current.actor).toEqual({
       kind: "guest", guestId: "guest-1", nickname: "Current Name",
     }));
+    expect(mockFetch).toHaveBeenCalledWith(
+      "/api/public/event/event-token/join?guestId=guest-1",
+      { cache: "no-store" },
+    );
     expect([...result.current.guestVotes]).toEqual(["proposal-1"]);
+  });
+
+  it("requires a new nickname when a legacy guest has no matching possession credential", async () => {
+    window.localStorage.setItem("bgt-public-guest:event-token", JSON.stringify({
+      id: "guest-legacy", nickname: "Alex", votes: ["proposal-1"],
+    }));
+    mockFetch.mockResolvedValue({ ok: true, json: async () => ({ authorized: false }) });
+    const { result } = renderHook(() => usePublicActor({
+      token: "event-token", user: null, guests: [{ id: "guest-legacy", nickname: "Alex" }], proposalIds: ["proposal-1"],
+    }));
+
+    await waitFor(() => expect(result.current.actor.kind).toBe("observer"));
+
+    expect(result.current.reauthRequired).toBe(true);
+    expect(result.current.guestVotes.size).toBe(0);
+    expect(window.localStorage.getItem("bgt-public-guest:event-token")).toBeNull();
   });
 
   it("persists a guest only after the caller confirms a successful join", async () => {
@@ -46,6 +72,7 @@ describe("usePublicActor", () => {
     act(() => result.current.registerGuest({ id: "guest-2", nickname: "Mia" }));
     rerender({ guests: [{ id: "guest-2", nickname: "Mia" }] });
     expect(result.current.actor).toEqual({ kind: "guest", guestId: "guest-2", nickname: "Mia" });
+    expect(result.current.reauthRequired).toBe(false);
     expect(JSON.parse(window.localStorage.getItem("bgt-public-guest:event-token") ?? "{}").id)
       .toBe("guest-2");
   });

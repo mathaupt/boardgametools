@@ -12,6 +12,17 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.73",
+    date: "2026-11-03",
+    title: "Gastzugänge sicher wiederaufnehmen",
+    description: "Gastaktionen erfordern jetzt einen ereignisgebundenen Besitznachweis. Bestehende Stimmen bleiben erhalten.",
+    changes: [
+      { type: "fix", text: "BUG-053: Neue Gastzugänge erhalten einen sicheren HttpOnly-Nachweis; bestehende Zugänge ohne Nachweis müssen sich mit einem neuen Spitznamen registrieren.", bugRef: "BUG-053" },
+      { type: "internal", text: "Der Nachweis wird nur gehasht gespeichert und aus öffentlichen Teilnehmerdaten ausgeschlossen." },
+      { type: "internal", text: "BUG-055: Produktions-Liveness per GET bestätigt; Readiness-Provider und Monitorumstellung bleiben offen.", bugRef: "BUG-055" },
+    ],
+  },
+  {
     version: "0.50.72",
     date: "2026-11-03",
     title: "Entwicklungsabhängigkeiten absichern",

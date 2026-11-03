@@ -99,11 +99,13 @@ export const EventService = {
           },
         },
         selectedGame: true,
-        guestParticipants: true,
+        guestParticipants: {
+          select: { id: true, eventId: true, nickname: true, createdAt: true },
+        },
         dateProposals: {
           include: {
             votes: { include: { user: { select: SAFE_USER_SELECT } } },
-            guestVotes: { include: { guest: true } },
+            guestVotes: { include: { guest: { select: { id: true, nickname: true } } } },
           },
         },
       },

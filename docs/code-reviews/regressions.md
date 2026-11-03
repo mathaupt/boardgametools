@@ -446,3 +446,17 @@ Jeder Eintrag enthält Felder für Root-Cause-Analyse und Gegenmaßnahmen (manue
 **Auflösung 2026-11-03:** `npm audit --json` mit Registryzugriff ergab 22 moderate und 2 niedrige Entwicklungsbefunde, 0 hohe/kritische; `npm audit --omit=dev --json` ergab 0. Finaler Regressionsevaluator mit Registryzugriff: Exitcode 0, 10/10, keine Regression. Snapshot `history/2026-11-03_1808.json`.
 
 ---
+
+## 2026-11-03 19:13:54
+
+| Finding | Priorität | Vorher | Jetzt | Detail |
+|---------|-----------|--------|-------|--------|
+| SEC-45: npm audit: Bekannte Vulnerabilities | P2 | resolved | open | npm audit lieferte keine gültigen Prüfdaten |
+
+**Root-Cause:** Der Evaluatorlauf im Sandboxmodus konnte die npm-Registry nicht erreichen und erhielt kein valides Audit-JSON. SEC-45 wurde fail-closed als Regression markiert; es gab keine Dependencyänderung und keinen neuen Vulnerability-Befund.
+**Gegenmaßnahme:** Bei fehlenden Auditdaten den Evaluator mit freigegebenem Registryzugriff erneut ausführen und nur den validen Lauf als Abschluss werten.
+**Verantwortlich:** BoardGameTools-Wartung.
+
+**Auflösung 2026-11-03:** Regressionsevaluator mit Registryzugriff erfolgreich: 10/10, 0 offene Findings, keine Regression; finaler Snapshot `history/2026-11-03_2037.json`.
+
+---

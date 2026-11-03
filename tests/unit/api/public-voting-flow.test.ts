@@ -1,10 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
+import { hashGuestCredential, guestCredentialCookieName } from "@/lib/events/guest-credentials";
 
 vi.mock("next/server", () => ({
   NextRequest: class {},
   NextResponse: {
     json: vi.fn((body: unknown, init?: { status?: number; headers?: Record<string, string> }) => ({
-      body, status: init?.status ?? 200, headers: init?.headers ?? {},
+      body, status: init?.status ?? 200, headers: new Headers(init?.headers),
     })),
   },
 }));
@@ -19,7 +20,7 @@ vi.mock("@/lib/services/event-mutation.service", () => ({ withEventMutation: vi.
 
 vi.mock("@/lib/db", () => {
   return { default: {
-    guestParticipant: { upsert: vi.fn(), findFirst: vi.fn() },
+    guestParticipant: { upsert: vi.fn(), create: vi.fn(), findFirst: vi.fn() },
     gameProposal: { findFirst: vi.fn(), findUnique: vi.fn() },
     guestVote: { findFirst: vi.fn(), create: vi.fn(), deleteMany: vi.fn() },
     guestDateVote: { upsert: vi.fn() },
@@ -50,7 +51,7 @@ import { resolveEventIdFromToken, findPublicEventByToken } from "@/lib/event-sha
 import { withEventMutation } from "@/lib/services/event-mutation.service";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { validateString } from "@/lib/validation";
-import { POST as JoinPOST } from "@/app/api/public/event/[token]/join/route";
+import { GET as JoinGET, POST as JoinPOST } from "@/app/api/public/event/[token]/join/route";
 import { POST as VotePOST, DELETE as VoteDELETE } from "@/app/api/public/event/[token]/vote/route";
 import { POST as DateVotePOST } from "@/app/api/public/event/[token]/date-vote/route";
 import { createMockRequest, createRouteContext, parseResponse } from "./helpers";
@@ -58,6 +59,12 @@ import { createMockRequest, createRouteContext, parseResponse } from "./helpers"
 const EVENT_ID = "event-123";
 const GUEST_ID = "guest-456";
 const PROPOSAL_ID = "proposal-789";
+const GUEST_CREDENTIAL = "_".repeat(43);
+const GUEST_CREDENTIAL_HASH = hashGuestCredential(GUEST_CREDENTIAL)!;
+
+function guestCredentialHeaders() {
+  return { cookie: `${guestCredentialCookieName(EVENT_ID)}=${GUEST_CREDENTIAL}` };
+}
 
 describe("Public Voting Flow", () => {
   beforeEach(() => {
@@ -81,9 +88,46 @@ describe("Public Voting Flow", () => {
   });
 
   describe("POST /join", () => {
+    it("reports whether the browser can prove guest ownership without exposing the guest", async () => {
+      vi.mocked(prisma.guestParticipant.findFirst).mockResolvedValue({
+        id: GUEST_ID, credentialHash: GUEST_CREDENTIAL_HASH,
+      } as never);
+      const req = createMockRequest("GET", `http://localhost:3000/api/public/event/abc/join?guestId=${GUEST_ID}`, {
+        headers: guestCredentialHeaders(),
+      });
+
+      const res = await (JoinGET as Function)(req, createRouteContext({ token: "abc" }));
+
+      expect(parseResponse(res)).toMatchObject({ status: 200, body: { authorized: true } });
+      expect(res.headers.get("cache-control")).toBe("private, no-store");
+      expect(JSON.stringify(res.body)).not.toContain(GUEST_ID);
+    });
+
+    it("reports legacy guest identities as unauthorized without disclosing them", async () => {
+      const req = createMockRequest("GET", `http://localhost:3000/api/public/event/abc/join?guestId=${GUEST_ID}`);
+
+      const res = await (JoinGET as Function)(req, createRouteContext({ token: "abc" }));
+
+      expect(parseResponse(res)).toMatchObject({ status: 200, body: { authorized: false } });
+      expect(prisma.guestParticipant.findFirst).not.toHaveBeenCalled();
+    });
+
+    it("does not let a nickname claim an existing guest without possession proof", async () => {
+      vi.mocked(prisma.guestParticipant.findFirst).mockResolvedValue({
+        id: GUEST_ID, eventId: EVENT_ID, nickname: "Alice", credentialHash: "f".repeat(64), createdAt: new Date("2026-11-01T10:00:00Z"), _count: { votes: 3 },
+      } as never);
+      const req = createMockRequest("POST", "http://localhost:3000/api/public/event/abc/join", { body: { nickname: "Alice" } });
+
+      const res = await (JoinPOST as Function)(req, createRouteContext({ token: "abc" }));
+
+      expect(parseResponse(res).status).toBe(400);
+      expect(prisma.guestParticipant.create).not.toHaveBeenCalled();
+    });
+
     it("creates guest and returns 201", async () => {
-      vi.mocked(prisma.guestParticipant.upsert).mockResolvedValue({
-        id: GUEST_ID, eventId: EVENT_ID, nickname: "Alice", createdAt: new Date("2026-11-01T10:00:00Z"), _count: { votes: 3 },
+      vi.mocked(prisma.guestParticipant.findFirst).mockResolvedValue(null as never);
+      vi.mocked(prisma.guestParticipant.create).mockResolvedValue({
+        id: GUEST_ID, eventId: EVENT_ID, nickname: "Alice", credentialHash: GUEST_CREDENTIAL_HASH, createdAt: new Date("2026-11-01T10:00:00Z"), _count: { votes: 3 },
       } as never);
       const req = createMockRequest("POST", "http://localhost:3000/api/public/event/abc/join", { body: { nickname: "Alice" } });
       const res = await (JoinPOST as Function)(req, createRouteContext({ token: "abc" }));
@@ -91,6 +135,25 @@ describe("Public Voting Flow", () => {
         status: 201,
         body: { id: GUEST_ID, nickname: "Alice", createdAt: "2026-11-01T10:00:00.000Z", votesCount: 3 },
       });
+      expect(res.headers.get("set-cookie")).toContain("HttpOnly");
+      expect(res.headers.get("set-cookie")).toContain("SameSite=Lax");
+      expect(res.headers.get("set-cookie")).toContain(guestCredentialCookieName(EVENT_ID));
+      expect(JSON.stringify(res.body)).not.toContain(GUEST_CREDENTIAL);
+    });
+
+    it("resumes an existing guest only with its matching credential", async () => {
+      vi.mocked(prisma.guestParticipant.findFirst).mockResolvedValue({
+        id: GUEST_ID, eventId: EVENT_ID, nickname: "Alice", credentialHash: GUEST_CREDENTIAL_HASH,
+        createdAt: new Date("2026-11-01T10:00:00Z"), _count: { votes: 3 },
+      } as never);
+      const req = createMockRequest("POST", "http://localhost:3000/api/public/event/abc/join", {
+        body: { nickname: "Alice" }, headers: guestCredentialHeaders(),
+      });
+
+      const res = await (JoinPOST as Function)(req, createRouteContext({ token: "abc" }));
+
+      expect(parseResponse(res).status).toBe(200);
+      expect(prisma.guestParticipant.create).not.toHaveBeenCalled();
     });
 
     it("returns 404 for invalid token", async () => {
@@ -109,64 +172,105 @@ describe("Public Voting Flow", () => {
   });
 
   describe("POST /vote", () => {
+    it("rejects a guest ID without the matching possession credential", async () => {
+      vi.mocked(prisma.guestParticipant.findFirst).mockResolvedValue({ id: GUEST_ID, credentialHash: GUEST_CREDENTIAL_HASH } as never);
+      vi.mocked(prisma.gameProposal.findFirst).mockResolvedValue({ id: PROPOSAL_ID } as never);
+      vi.mocked(prisma.guestVote.findFirst).mockResolvedValue(null as never);
+      const req = createMockRequest("POST", "http://localhost:3000/api/public/event/abc/vote", {
+        body: { guestId: GUEST_ID, proposalId: PROPOSAL_ID },
+      });
+
+      const res = await (VotePOST as Function)(req, createRouteContext({ token: "abc" }));
+
+      expect(parseResponse(res).status).toBe(401);
+      expect(prisma.guestVote.create).not.toHaveBeenCalled();
+    });
+
     it("records vote and returns counts", async () => {
-      vi.mocked(prisma.guestParticipant.findFirst).mockResolvedValue({ id: GUEST_ID } as never);
+      vi.mocked(prisma.guestParticipant.findFirst).mockResolvedValue({ id: GUEST_ID, credentialHash: GUEST_CREDENTIAL_HASH } as never);
       vi.mocked(prisma.gameProposal.findFirst).mockResolvedValue({ id: PROPOSAL_ID } as never);
       vi.mocked(prisma.guestVote.findFirst).mockResolvedValue(null as never);
       vi.mocked(prisma.guestVote.create).mockResolvedValue({} as never);
       vi.mocked(prisma.gameProposal.findUnique).mockResolvedValue({ _count: { votes: 2, guestVotes: 3 } } as never);
-      const req = createMockRequest("POST", "http://localhost:3000/api/public/event/abc/vote", { body: { guestId: GUEST_ID, proposalId: PROPOSAL_ID } });
+      const req = createMockRequest("POST", "http://localhost:3000/api/public/event/abc/vote", { body: { guestId: GUEST_ID, proposalId: PROPOSAL_ID }, headers: guestCredentialHeaders() });
       const res = await (VotePOST as Function)(req, createRouteContext({ token: "abc" }));
       const { status, body } = parseResponse(res);
       expect(status).toBe(200);
       expect(body.totalVotes).toBe(5);
     });
 
-    it("returns 404 when guest not found", async () => {
+    it("returns 401 when the guest credential does not match a participant", async () => {
       vi.mocked(prisma.guestParticipant.findFirst).mockResolvedValue(null as never);
       const req = createMockRequest("POST", "http://localhost:3000/api/public/event/abc/vote", { body: { guestId: "bad", proposalId: PROPOSAL_ID } });
       const res = await (VotePOST as Function)(req, createRouteContext({ token: "abc" }));
-      expect(parseResponse(res).status).toBe(404);
+      expect(parseResponse(res).status).toBe(401);
     });
 
     it("returns 400 when already voted", async () => {
-      vi.mocked(prisma.guestParticipant.findFirst).mockResolvedValue({ id: GUEST_ID } as never);
+      vi.mocked(prisma.guestParticipant.findFirst).mockResolvedValue({ id: GUEST_ID, credentialHash: GUEST_CREDENTIAL_HASH } as never);
       vi.mocked(prisma.gameProposal.findFirst).mockResolvedValue({ id: PROPOSAL_ID } as never);
       vi.mocked(prisma.guestVote.findFirst).mockResolvedValue({ id: "existing" } as never);
-      const req = createMockRequest("POST", "http://localhost:3000/api/public/event/abc/vote", { body: { guestId: GUEST_ID, proposalId: PROPOSAL_ID } });
+      const req = createMockRequest("POST", "http://localhost:3000/api/public/event/abc/vote", { body: { guestId: GUEST_ID, proposalId: PROPOSAL_ID }, headers: guestCredentialHeaders() });
       const res = await (VotePOST as Function)(req, createRouteContext({ token: "abc" }));
       expect(parseResponse(res).status).toBe(400);
     });
   });
 
   describe("DELETE /vote", () => {
+    it("rejects removal when the guest possession credential is missing", async () => {
+      vi.mocked(prisma.guestParticipant.findFirst).mockResolvedValue({ id: GUEST_ID, credentialHash: GUEST_CREDENTIAL_HASH } as never);
+      vi.mocked(prisma.gameProposal.findFirst).mockResolvedValue({ id: PROPOSAL_ID } as never);
+      vi.mocked(prisma.guestVote.deleteMany).mockResolvedValue({ count: 1 } as never);
+      const req = createMockRequest("DELETE", "http://localhost:3000/api/public/event/abc/vote", {
+        searchParams: { guestId: GUEST_ID, proposalId: PROPOSAL_ID },
+      });
+
+      const res = await (VoteDELETE as Function)(req, createRouteContext({ token: "abc" }));
+
+      expect(parseResponse(res).status).toBe(401);
+      expect(prisma.guestVote.deleteMany).not.toHaveBeenCalled();
+    });
+
     it("removes vote", async () => {
-      vi.mocked(prisma.guestParticipant.findFirst).mockResolvedValue({ id: GUEST_ID } as never);
+      vi.mocked(prisma.guestParticipant.findFirst).mockResolvedValue({ id: GUEST_ID, credentialHash: GUEST_CREDENTIAL_HASH } as never);
       vi.mocked(prisma.gameProposal.findFirst).mockResolvedValue({ id: PROPOSAL_ID } as never);
       vi.mocked(prisma.guestVote.deleteMany).mockResolvedValue({ count: 1 } as never);
       vi.mocked(prisma.gameProposal.findUnique).mockResolvedValue({ _count: { votes: 1, guestVotes: 1 } } as never);
-      const req = createMockRequest("DELETE", "http://localhost:3000/api/public/event/abc/vote", { searchParams: { guestId: GUEST_ID, proposalId: PROPOSAL_ID } });
+      const req = createMockRequest("DELETE", "http://localhost:3000/api/public/event/abc/vote", { searchParams: { guestId: GUEST_ID, proposalId: PROPOSAL_ID }, headers: guestCredentialHeaders() });
       const res = await (VoteDELETE as Function)(req, createRouteContext({ token: "abc" }));
       expect(parseResponse(res).status).toBe(200);
     });
 
     it("returns 404 when vote not found", async () => {
-      vi.mocked(prisma.guestParticipant.findFirst).mockResolvedValue({ id: GUEST_ID } as never);
+      vi.mocked(prisma.guestParticipant.findFirst).mockResolvedValue({ id: GUEST_ID, credentialHash: GUEST_CREDENTIAL_HASH } as never);
       vi.mocked(prisma.gameProposal.findFirst).mockResolvedValue({ id: PROPOSAL_ID } as never);
       vi.mocked(prisma.guestVote.deleteMany).mockResolvedValue({ count: 0 } as never);
-      const req = createMockRequest("DELETE", "http://localhost:3000/api/public/event/abc/vote", { searchParams: { guestId: GUEST_ID, proposalId: PROPOSAL_ID } });
+      const req = createMockRequest("DELETE", "http://localhost:3000/api/public/event/abc/vote", { searchParams: { guestId: GUEST_ID, proposalId: PROPOSAL_ID }, headers: guestCredentialHeaders() });
       const res = await (VoteDELETE as Function)(req, createRouteContext({ token: "abc" }));
       expect(parseResponse(res).status).toBe(404);
     });
   });
 
   describe("POST /date-vote", () => {
-    it("records date votes", async () => {
+    it("rejects date votes when the guest possession credential is missing", async () => {
       vi.mocked(findPublicEventByToken).mockResolvedValue({ id: EVENT_ID } as never);
-      vi.mocked(prisma.guestParticipant.findFirst).mockResolvedValue({ id: GUEST_ID } as never);
-      vi.mocked(prisma.$transaction).mockResolvedValue([{ availability: "yes" }] as never);
+      vi.mocked(prisma.guestParticipant.findFirst).mockResolvedValue({ id: GUEST_ID, credentialHash: GUEST_CREDENTIAL_HASH } as never);
       const req = createMockRequest("POST", "http://localhost:3000/api/public/event/abc/date-vote", {
         body: { guestId: GUEST_ID, votes: [{ dateProposalId: "dp-1", availability: "yes" }] },
+      });
+
+      const res = await (DateVotePOST as Function)(req, createRouteContext({ token: "abc" }));
+
+      expect(parseResponse(res).status).toBe(401);
+      expect(prisma.$transaction).not.toHaveBeenCalled();
+    });
+
+    it("records date votes", async () => {
+      vi.mocked(findPublicEventByToken).mockResolvedValue({ id: EVENT_ID } as never);
+      vi.mocked(prisma.guestParticipant.findFirst).mockResolvedValue({ id: GUEST_ID, credentialHash: GUEST_CREDENTIAL_HASH } as never);
+      vi.mocked(prisma.$transaction).mockResolvedValue([{ availability: "yes" }] as never);
+      const req = createMockRequest("POST", "http://localhost:3000/api/public/event/abc/date-vote", {
+        body: { guestId: GUEST_ID, votes: [{ dateProposalId: "dp-1", availability: "yes" }] }, headers: guestCredentialHeaders(),
       });
       const res = await (DateVotePOST as Function)(req, createRouteContext({ token: "abc" }));
       expect(parseResponse(res).status).toBe(200);

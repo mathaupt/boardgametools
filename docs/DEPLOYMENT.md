@@ -72,6 +72,7 @@ In Vercel unter **Project Settings → Environment Variables** eintragen (Bereic
 - Bei Vercel Postgres: `SQL_DATABASE_URL` entspricht dem Vercel-Postgres-String.
 - Bei externem Postgres: Stelle sicher, dass die Datenbank erreichbar ist und SSL aktiviert ist (Vercel erfordert SSL).
 - Vor einem Release den Zustand und die Wiederherstellbarkeit des Backups prüfen und Migrationen zuerst an einer separaten Testdatenbank erproben.
+- Die Migration `20261103193000_guest_participant_credentials` ergänzt den Hash des Gast-Besitznachweises. Bestehende Datensätze und Stimmen bleiben erhalten; alte Browserzugänge ohne Nachweis müssen nach dem Release einen neuen Spitznamen registrieren. Diese Migration wurde im Rahmen der BUG-053-Änderung nicht auf Produktion angewendet.
 - Freigegebene Migrationen gezielt mit `npm run prisma:deploy` ausführen. Der Befehl bricht beim ersten Fehler ab; es gibt kein automatisches Baseline und kein `prisma db push`.
 - Erst nach erfolgreicher Migration den vorbereiteten Build veröffentlichen. Vercel verwendet weiterhin `npm run build`; neue Migrationen werden dadurch nicht stillschweigend ausgeführt.
 - Für ausdrücklich freigegebene Release-Umgebungen kombiniert `npm run release:build` Migration und anschließenden Build. Das ist kein Prüf- oder Preview-Befehl.

@@ -7,7 +7,7 @@ Dort erfasste TODOs sind noch nicht implementiert oder zur Umsetzung freigegeben
 
 Nach einer erfolgreichen BGG-Suche ohne Treffer erscheint eine klare Meldung. Lade- und Providerfehler werden getrennt angezeigt und können erneut versucht werden. Ein Ausfall des BGG-Dienstes wird nicht als leere Trefferliste oder mit Beispieldaten ausgegeben. Die öffentliche Eventsuche behält ihren bestehenden Lade-, Leer- und Fehlervertrag.
 
-> **Version 0.50.67** | 42 Seiten | 96 API-Endpunkte | 29 Datenbank-Modelle
+> **Version 0.50.73** | 42 Seiten | 96 API-Endpunkte | 29 Datenbank-Modelle
 >
 > Vollstaendige Dokumentation aller Nutzer-sichtbaren Features,
 > organisiert nach Bereichen mit Screenshots-Beschreibungen,
@@ -408,6 +408,8 @@ Gaeste koennen:
 - An der Terminabstimmung teilnehmen (Ja/Vielleicht/Nein)
 
 Die Teilnahme wird nach Eventkopf und Termin-/Ortsdaten angezeigt. Eine angemeldete Person sieht nur den Konto-Teilnahmeweg; ein gespeicherter Gastzugang wird dabei nicht automatisch verwendet. Gäste und Einladungen erscheinen gemeinsam in einer Teilnehmerübersicht. „Deine Auswahl“ fasst eigene Spielstimmen und Terminantworten mit Rücksprüngen zu den jeweiligen Aktionen zusammen.
+
+Neue Gastzugänge erhalten einen ereignisgebundenen HttpOnly-Besitznachweis. Bestehende Gastzugänge ohne diesen Nachweis können nicht übernommen werden; Betroffene wählen einen neuen Spitznamen. Frühere Stimmen bleiben erhalten.
 
 Die BGG-Suche kann ohne Anmeldung verwendet werden, solange das Event neue
 Vorschläge annimmt. Sucheingabe, Ladezustand, Treffer, leere Trefferliste und

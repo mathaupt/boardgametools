@@ -44,7 +44,7 @@ export default async function EventDetailPage({
       selectedGame: true,
       winningProposal: true,
       guestParticipants: {
-        include: { _count: { select: { votes: true } } },
+        select: { id: true, nickname: true, createdAt: true, _count: { select: { votes: true } } },
         orderBy: { createdAt: "asc" }
       },
       dateProposals: {

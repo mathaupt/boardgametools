@@ -378,10 +378,11 @@ model Vote {
 }
 
 model GuestParticipant {
-  id        String   @id @default(cuid())
-  eventId   String
-  nickname  String
-  createdAt DateTime @default(now())
+  id             String   @id @default(cuid())
+  eventId        String
+  nickname       String
+  credentialHash String?  @unique
+  createdAt      DateTime @default(now())
 
   event     Event       @relation(fields: [eventId], references: [id], onDelete: Cascade)
   votes     GuestVote[]

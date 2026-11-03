@@ -34,6 +34,13 @@ describe("GuestRegistrationPanel", () => {
     expect(screen.getByTestId("guest-join-button")).toBeInTheDocument();
   });
 
+  it("explains secure recovery and retained votes for legacy guests", () => {
+    render(<GuestRegistrationPanel {...defaultProps} reauthRequired />);
+
+    expect(screen.getByRole("status")).toHaveTextContent("neuen Spitznamen");
+    expect(screen.getByRole("status")).toHaveTextContent("Stimmen bleiben erhalten");
+  });
+
   it("lets the guest registration grid and long nickname input shrink at narrow zoom widths", () => {
     render(<GuestRegistrationPanel {...defaultProps} />);
 

@@ -208,6 +208,10 @@ automatischem Build und Unit-Test-Ziel:
   einen gemeinsamen Teilnahmebereich und eine gemeinsame Teilnehmendenliste.
   Bei einer Session hat das Konto Vorrang; bestehende Gaststimmen bleiben
   getrennt und werden nicht übertragen. Ein Gastwechsel ist nicht vorgesehen.
+  Neue Gastzugänge weisen ihren Besitz mit einem ereignisgebundenen HttpOnly-
+  Cookie nach; serverseitig liegt nur dessen Hash. Alte Zugänge ohne Nachweis
+  können nicht übernommen werden. Eine Neuregistrierung mit anderem Spitznamen
+  lässt frühere Stimmen bestehen.
 - `NetworkMonitor` zeigt den Online-/Offline-Status und triggert keinen Sync,
   wenn keine Verbindung besteht.
 

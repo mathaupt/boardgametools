@@ -37,7 +37,11 @@ export const GET = withApiLogging(async function GET(
         },
         selectedGame: true,
         guestParticipants: {
-          include: {
+          select: {
+            id: true,
+            eventId: true,
+            nickname: true,
+            createdAt: true,
             _count: { select: { votes: true } }
           },
           orderBy: { createdAt: "asc" }

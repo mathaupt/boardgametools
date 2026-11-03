@@ -147,7 +147,10 @@ export const buildPublicEventInclude = (userId?: string | null) => ({
     orderBy: { createdAt: "asc" as const },
   },
   guestParticipants: {
-    include: {
+    select: {
+      id: true,
+      nickname: true,
+      createdAt: true,
       _count: { select: { votes: true } },
     },
     orderBy: { createdAt: "asc" as const },

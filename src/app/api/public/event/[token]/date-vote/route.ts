@@ -5,6 +5,7 @@ import { checkRateLimit, rateLimitResponse } from "@/lib/rate-limit";
 import { Errors } from "@/lib/error-messages";
 import { ApiError, handleApiError } from "@/lib/require-auth";
 import { withEventMutation } from "@/lib/services/event-mutation.service";
+import { requireGuestIdentity } from "@/lib/events/guest-credentials";
 
 type RouteContext = { params: Promise<{ token: string }> };
 
@@ -50,8 +51,9 @@ export const POST = withApiLogging(async function POST(
       { kind: "public", token, guestId },
       "voteDate",
       async ({ tx, eventId }) => {
-        const guest = await tx.guestParticipant.findFirst({ where: { id: guestId, eventId }, select: { id: true } });
-        if (!guest) throw new ApiError(404, Errors.GUEST_NOT_FOUND_FOR_EVENT);
+        await requireGuestIdentity(request, eventId, () => tx.guestParticipant.findFirst({
+          where: { id: guestId, eventId }, select: { id: true, credentialHash: true },
+        }));
         const found = await tx.dateProposal.findMany({
           where: { id: { in: proposalIds as string[] }, eventId },
           select: { id: true },

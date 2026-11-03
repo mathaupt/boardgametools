@@ -36,6 +36,7 @@ import { auth } from "@/lib/auth";
 import { fetchBGGGame } from "@/lib/bgg";
 import { withEventMutation } from "@/lib/services/event-mutation.service";
 import { POST } from "@/app/api/public/event/[token]/propose-bgg/route";
+import { guestCredentialCookieName, hashGuestCredential } from "@/lib/events/guest-credentials";
 
 describe("POST public BGG proposal validation", () => {
   beforeEach(() => {
@@ -77,6 +78,40 @@ describe("POST public BGG proposal validation", () => {
     const response = await (POST as Function)(request, { params: Promise.resolve({ token: "token" }) });
     expect(response.status).toBe(401);
     expect(fetchBGGGame).not.toHaveBeenCalled();
+  });
+
+  it("rejects a legacy guest ID without the possession credential before contacting BGG", async () => {
+    mocks.guestFindFirst.mockResolvedValue({ id: "guest-1", credentialHash: null });
+    const request = new Request("http://localhost/api/public/event/token/propose-bgg", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ bggId: "13", guestId: "guest-1" }),
+    });
+
+    const response = await (POST as Function)(request, { params: Promise.resolve({ token: "token" }) });
+
+    expect(response.status).toBe(401);
+    expect(fetchBGGGame).not.toHaveBeenCalled();
+  });
+
+  it("allows a guest with the matching possession credential to propose a BGG game", async () => {
+    const credential = "C".repeat(43);
+    mocks.guestFindFirst.mockResolvedValue({ id: "guest-1", credentialHash: hashGuestCredential(credential) });
+    const request = new Request("http://localhost/api/public/event/token/propose-bgg", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        cookie: `${guestCredentialCookieName("event-1")}=${credential}`,
+      },
+      body: JSON.stringify({ bggId: "13", guestId: "guest-1" }),
+    });
+
+    const response = await (POST as Function)(request, { params: Promise.resolve({ token: "token" }) });
+
+    expect(response.status).toBe(201);
+    expect(fetchBGGGame).toHaveBeenCalledOnce();
+    expect(mocks.proposalCreate).toHaveBeenCalledWith(expect.objectContaining({
+      data: expect.objectContaining({ guestId: "guest-1", proposedById: null }),
+    }));
   });
 
   it.each(["13&query=collection", "not-a-number", "1234567890123"])("rejects unsafe BGG id %s before upstream access", async (bggId) => {

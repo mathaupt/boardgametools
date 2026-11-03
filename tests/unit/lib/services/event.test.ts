@@ -151,6 +151,15 @@ describe("EventService", () => {
           where: { id: EVENT_ID, deletedAt: null },
         })
       );
+      const query = vi.mocked(prisma.event.findFirst).mock.calls[0][0] as {
+        include?: { guestParticipants?: unknown; dateProposals?: { include?: { guestVotes?: unknown } } };
+      };
+      expect(query.include?.guestParticipants).toEqual({
+        select: { id: true, eventId: true, nickname: true, createdAt: true },
+      });
+      expect(query.include?.dateProposals?.include?.guestVotes).toEqual({
+        include: { guest: { select: { id: true, nickname: true } } },
+      });
       expect(result).toEqual(fakeEvent);
     });
 

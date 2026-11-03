@@ -18,6 +18,7 @@ interface GuestRegistrationPanelProps {
   blockedReason?: string | null;
   onStateConflict?: () => void | Promise<void>;
   sessionExpired?: boolean;
+  reauthRequired?: boolean;
 }
 
 export function GuestRegistrationPanel({
@@ -28,6 +29,7 @@ export function GuestRegistrationPanel({
   blockedReason = null,
   onStateConflict,
   sessionExpired = false,
+  reauthRequired = false,
 }: GuestRegistrationPanelProps) {
   const { toast } = useToast();
   const [nickname, setNickname] = useState("");
@@ -76,6 +78,12 @@ export function GuestRegistrationPanel({
         </CardHeader>
         <CardContent className="space-y-4">
           <PublicIdentityNotice actor={actor} sessionExpired={sessionExpired} />
+          {reauthRequired && (
+            <div className="border-s-4 border-warning py-1 ps-3 text-sm text-foreground" role="status">
+              <p className="font-semibold">Sichere Gastteilnahme erforderlich</p>
+              <p className="mt-1">Dein bisheriger Gastzugang konnte nicht bestätigt werden. Lade die Seite neu oder wähle einen neuen Spitznamen. Deine bisherigen Stimmen bleiben erhalten.</p>
+            </div>
+          )}
           {actor.kind === "observer" && canJoin && (
             <div className="grid min-w-0 gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
               <div className="min-w-0 space-y-2">

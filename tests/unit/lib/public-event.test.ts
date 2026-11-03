@@ -59,6 +59,15 @@ describe("buildPublicEventInclude", () => {
     expect(include).toHaveProperty("proposals");
     expect(include).toHaveProperty("guestParticipants");
     expect(include).toHaveProperty("dateProposals");
+    expect(include.guestParticipants).toEqual({
+      select: {
+        id: true,
+        nickname: true,
+        createdAt: true,
+        _count: { select: { votes: true } },
+      },
+      orderBy: { createdAt: "asc" },
+    });
   });
 
   it("includes userId-scoped votes when userId is provided", () => {

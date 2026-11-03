@@ -1,5 +1,7 @@
 # FEAT-006 – Health in Liveness und geschützte Readiness trennen
 
+**Aktualitätsprüfung (2026-11-03):** Implementierter Code und bestehender Plan stimmen weiterhin überein. `npm run pipeline:check -- --list` zeigt `health` und `vercel` als konfiguriert, `health-readiness` als nicht konfiguriert. Der nicht schreibende Produktionscheck `npm run pipeline:check -- --health` bestätigte HTTP 200 und den gültigen Liveness-Vertrag. Monitorinventar, Readiness-Secret/-Provider und Umstellung bleiben offen; keine Produktionsänderung vorgenommen.
+
 **Status (2026-11-01):** Web-Code gemäß ausgewähltem Arbeitspaket B zur Umsetzung freigegeben („dann weiter mit B“). Produktions-Monitorumstellung und Veröffentlichung des geänderten `/api/health`-Vertrags bleiben separat offen.
 
 **Ziel:** Öffentliche Health-Anfragen erzeugen keine Datenbanklast; die Datenbankbereitschaft wird separat geschützt und bei Ausfällen zuverlässig als 503 gemeldet.
