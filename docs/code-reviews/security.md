@@ -1,5 +1,13 @@
 # Sicherheitsstand – 28.10.2026, Version 0.50.16
 
+## BUG-050 behoben – 03.11.2026, Version 0.50.72
+
+- Vor Änderung: 22 moderate und 2 niedrige Dev-Befunde in `minimatch`, `glob` sowie der ungenutzten shadcn-CLI-/`deepmerge`-Kette; Runtime-Audit bereits 0.
+- Entfernte ausschließlich die nicht referenzierte shadcn-CLI. Eingecheckte shadcn/ui-Komponenten und Laufzeitpakete bleiben erhalten.
+- Gezielte npm-Overrides setzen `glob@14.0.3` und `minimatch@11.0.4`; die Elternpakete lagen mit ihren deklarierten Bereichen vor den gepatchten Hauptversionen.
+- Nachweis: Voll- und Produktionsaudit 0; `npm ls` sauber; CodeceptJS 4.2.2 CLI-Smoke-Test, 1.114 Unit-Tests, TypeScript und ESLint (0 Fehler) bestanden.
+- Betriebshinweis: Dependency-Overrides bei Upgrades von CodeceptJS, ESLint und deren Elternpaketen erneut auf Kompatibilität prüfen.
+
 ## Paketprüfung
 
 - Ausgang: 40 Paketbefunde insgesamt, davon 10 im Produktionsbaum (1 kritisch, 8 hoch, 1 mittel).
@@ -82,3 +90,11 @@ BUG-051 ist behoben: SEC-45 verlangt ein gültiges Audit-v2-Ergebnis mit
 vollständigen, konsistenten Metadaten sowohl für den Gesamt- als auch den
 Produktionsaudit. Netzwerkfehler oder unvollständige JSON-Antworten bleiben
 offen und können keinen sauberen Status mehr erzeugen.
+
+## BUG-050 – Entwicklungsabhängigkeiten (0.50.72)
+
+`glob` wurde auf 14.0.3 und `minimatch` auf 11.0.4 überschrieben; CodeceptJS
+wurde auf 4.2.2 aktualisiert. Produktionsaudit: 0 Befunde. Vollständiger Audit:
+0 moderate/hohe/kritische Befunde, 3 niedrige Einträge aus der shadcn-CLI-
+Abhängigkeitskette (`deepmerge` und davon abhängige Pakete). shadcn bleibt als
+Build-Abhängigkeit für `shadcn/tailwind.css` erhalten.

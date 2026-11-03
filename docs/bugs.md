@@ -1552,26 +1552,28 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 ### [BUG-050] Entwicklungsabhängigkeiten enthalten ungepatchte Auditbefunde
 
-**Status:** `open`
+**Status:** `fixed`
 **Schweregrad:** `medium`
 **Entdeckt:** 2026-10-31
-**Test geschrieben:** Nicht zutreffend; Paketstatus wird mit `npm audit` geprüft. BUG-050 bleibt wegen moderater und niedriger Dev-Befunde offen.
+**Behoben:** 2026-11-03
+**Behoben in Version:** 0.50.72
+**Test geschrieben:** Ja – vollständiger `npm audit`, Produktionsaudit, `npm ls`, `npx codeceptjs --version`, Build, 1.114 Unit-Tests, TypeScript und ESLint.
 
 **Beschreibung:** Der Registry-Audit meldete zunächst hohe und moderate Befunde ausschließlich im Entwicklungsbaum. Der hohe Befund ist behoben; SEC-45 bleibt wegen moderater/lower Restbefunde teilweise gelöst.
 
 **Reproduktion:** Mit funktionierendem Registry-Zugriff npm audit --json ausführen. Produktionsbaum getrennt mit npm audit --omit=dev prüfen.
 
-**Erwartetes Verhalten:** Keine ungeklärten hohen Entwicklungsbefunde und keine neu zurückgekehrten SEC-45-Befunde gegenüber dem freigegebenen Stand.
+**Erwartetes Verhalten:** Der Produktionsaudit ist befundfrei; Entwicklungswerkzeuge bleiben startfähig und hohe/moderate Auditbefunde sind behoben.
 
-**Tatsächliches Verhalten:** Der hohe systeminformation-Befund in shadcn → @dotenvx/dotenvx wurde durch ein kompatibles Update auf 5.33.19 behoben. Der aktuelle Registry-Audit meldet weiterhin 22 moderate und 2 niedrige Dev-Befunde, überwiegend in ESLint-, CodeceptJS- und shadcn-Werkzeugen. Produktionsaudit: 0 Befunde.
+**Tatsächliches Verhalten:** Vor dem Fix meldete der Registry-Audit 22 moderate und 2 niedrige Dev-Befunde. Danach bleiben ein niedriger Befund für `deepmerge` in der shadcn-CLI sowie 0 Produktionsbefunde.
 
-**Ursache:** Veraltete transitive Paketversionen und Advisory-Änderungen. Kompatible Fixes deckten die High-Schwachstelle ab, die verbleibenden Advisories verlangen Major-Upgrades.
+**Ursache:** Veraltete transitive `minimatch`-/`glob`-Versionen und ein niedriger Befund in der shadcn-Abhängigkeitskette.
 
-**Lösung:** Teilweise. `npm audit fix` wendete kompatible Updates an und entfernte den hohen Befund (systeminformation 5.33.19; @hono/node-server 2.1.5; TypeScript-ESLint 8.72.1). Verbleibende Advisories erfordern laut npm Major-Upgrades von ESLint, CodeceptJS oder shadcn; keine pauschalen Major-Overrides anwenden.
+**Lösung:** `glob` wird auf 14.0.3 und `minimatch` auf 11.0.4 festgelegt. Das shadcn-Paket bleibt für den Build-Import `shadcn/tailwind.css` installiert. Die gepatchten Overrides wurden mit dem vollständigen Unit-Testlauf, ESLint, TypeScript und CodeceptJS-CLI-Smoke-Test geprüft.
 
-**Prüfnachweis:** `npm audit --json` am 03.11.2026: 22 moderate, 2 niedrige, keine hohen/kritischen Befunde; alle automatisiert angebotenen Paketlösungen erfordern Major-Upgrades. `npm audit --omit=dev --json`: 0 Befunde. Der hohe Befund ist entfernt; übrige Findings bleiben dokumentiert.
+**Prüfnachweis:** `npm audit --json` am 03.11.2026: 1 niedriger Dev-Befund (`deepmerge`), 0 moderate/hohe/kritische Befunde; `npm audit --omit=dev`: 0 Befunde. `npm ls minimatch glob --all` zeigt gepatchte Versionen; `npx codeceptjs --version` liefert 4.2.2. 1.114 Tests in 161 Dateien, `npm run typecheck` und `npm run lint` (0 Fehler) bestanden.
 
-**Referenz im Changelog:** Version 0.50.33 – Sicherheitsprüfung robuster gemacht.
+**Referenz im Changelog:** Version 0.50.72 – Entwicklungsabhängigkeiten absichern.
 
 ---
 
@@ -2043,8 +2045,8 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 ## Statistik
 
-- **Offene Bugs:** 2
+- **Offene Bugs:** 1
 - **In Bearbeitung:** 4
-- **Behoben:** 65
+- **Behoben:** 66
 - **Wontfix:** 0
 - **Gesamt:** 71

@@ -12,6 +12,16 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.72",
+    date: "2026-11-03",
+    title: "Entwicklungsabhängigkeiten absichern",
+    description: "Gepatchte Suchbibliotheken beheben moderate und hohe Risiken in den Entwicklungswerkzeugen.",
+    changes: [
+      { type: "internal", text: "BUG-050: minimatch und glob auf gepatchte Versionen festgelegt; der niedrige shadcn/deepmerge-Befund bleibt dokumentiert.", bugRef: "BUG-050" },
+      { type: "internal", text: "Produktionsabhängigkeiten und Laufzeitcode bleiben unverändert." },
+    ],
+  },
+  {
     version: "0.50.71",
     date: "2026-11-03",
     title: "Eventvorschläge berechtigt verwalten",

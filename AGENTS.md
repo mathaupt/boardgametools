@@ -53,7 +53,7 @@ Die Impeccable-Design-Hooks sind für das Projekt aktiviert. Sie melden nach Än
 - **Datenbank**: PostgreSQL (Prisma Postgres) + Prisma ORM 7.10.1
 - **Styling**: Tailwind CSS 4.3.3 + `@tailwindcss/postcss` 4.3.3 + shadcn/ui Komponenten
 - **Auth**: NextAuth.js v5 beta.32 mit Credentials Provider
-- **Testing**: Vitest 4.1.12 (Unit), CodeceptJS 4.1.0 + Playwright 1.62.1 (E2E)
+- **Testing**: Vitest 4.1.12 (Unit), CodeceptJS 4.2.2 + Playwright 1.62.1 (E2E)
 - **Lint**: ESLint 9.39.5 (Flat Config `eslint.config.mjs`)
 - **CI/Hooks**: Husky 9.1.7 (pre-commit: Tests + Security + Review, pre-push: DB-Backup)
 - **Node**: `>=24.0.0` (siehe `package.json` engines)
@@ -65,9 +65,10 @@ Die Impeccable-Design-Hooks sind für das Projekt aktiviert. Sie melden nach Än
 - `.npmrc` setzt `legacy-peer-deps=true`, um Breaking-Changes bei Peer-Dependencies zu vermeiden.
 - `package.json` enthält `overrides` zur sofortigen Behebung von CVEs in transitiven Abhängigkeiten:
   - `mocha`: `diff ^8.0.4`, `serialize-javascript ^7.0.5`
-  - `minimatch@3.1.5`: `brace-expansion ^1.1.18`
+  - `glob`: `^14.0.3` (gepatchte Version; verifizierter CodeceptJS-/Mocha-Vertrag)
+  - `minimatch`: `^11.0.4` (gepatchte Version für ESLint-/CodeceptJS-Werkzeuge)
   - `codeceptjs`: `uuid ^11.1.1`, `axios ^1.19.0`
-- Sicherheitsstand 0.50.16: `npm audit --omit=dev` meldet 0 Befunde; Gesamtaudit enthält drei niedrige Befunde in der shadcn/deepmerge-Entwicklungskette. Details: `docs/code-reviews/security.md`.
+- Sicherheitsstand 0.50.72: Produktionsaudit meldet 0 Befunde; Entwicklungs-Audit enthält nur den bekannten niedrigen `deepmerge`-Befund aus shadcn. Gepatchte glob/minimatch-Overrides: Details in `docs/code-reviews/security.md`.
 - Gezielte Overrides: `undici@>=6 <7` → `^6.29.1`, `zod@>=4 <4.6.6` → `^4.6.7`, `js-yaml@>=4 <5` → `^4.3.2`.
 - GitHub CI benötigt schon für `npm ci` eine global definierte künstliche `SQL_DATABASE_URL`, da postinstall `prisma generate` startet. Niemals Produktionszugangsdaten für Codegenerierung verwenden; Regression: `tests/unit/scripts/ci-install.test.ts`.
 - `npm run build` verändert keine Datenbank. Migrationen nur explizit über `npm run prisma:deploy`; bei Fehlern abbrechen, kein automatisches Baseline oder `db push`.

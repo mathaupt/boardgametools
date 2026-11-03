@@ -32,7 +32,7 @@ BoardGameTools folgt der klassischen Test-Pyramide. Die Basis bilden schnelle, i
 |-------------|-----------------------|---------|------------------|---------------------|
 | Unit        | Vitest 4.1.12         | 500+    | < 15 Sekunden    | `tests/unit/lib/`   |
 | Integration | Vitest 4.1.12         | 20+     | --               | `tests/unit/api/`   |
-| E2E         | CodeceptJS 4.1.0 + Playwright 1.62.1 | wenige | 30-60 Sekunden   | `tests/e2e/`        |
+| E2E         | CodeceptJS 4.2.2 + Playwright 1.62.1 | wenige | 30-60 Sekunden   | `tests/e2e/`        |
 
 ### Kernprinzipien
 

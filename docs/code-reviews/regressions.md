@@ -1,5 +1,16 @@
 # Regressions-Log
 
+## 2026-11-03 18:06 – BUG-050 Dependency-Fix
+
+| Finding | Priorität | Vorher | Jetzt | Detail |
+|---------|-----------|--------|-------|--------|
+| Keine | – | – | keine Regression | Review-Evaluator 10/10, 0 offene Findings; Snapshot `history/2026-11-03_1906.json` |
+
+`glob` und `minimatch` sind auf gepatchte Versionen aktualisiert; CodeceptJS ist
+4.2.2. Der Produktionsaudit meldet 0 Befunde. Im Gesamt-Audit bleiben 3 niedrige
+Einträge der shadcn/deepmerge-Entwicklungskette. shadcn ist Build-relevant und
+wurde nicht entfernt. Build, Tests, TypeScript und Lint bestanden.
+
 Chronologisches Protokoll aller erkannten Regressions im Review-Prozess.
 Jeder Eintrag enthält Felder für Root-Cause-Analyse und Gegenmaßnahmen (manuell auszufüllen).
 
