@@ -59,7 +59,9 @@ Bis dahin legt ein Reihenimport weiterhin ein dauerhaftes Sammlungsspiel an.
   `npm run typecheck`, `npm run lint`, `npm run build`; Coverage-Gates müssen
   bestehen. Erledigt: 1.089 Tests bestanden, TypeScript und Build erfolgreich,
   Lint 0 Fehler/651 Warnungen, Review-Regressionscheck 10/10 ohne neue Findings.
-  Commit mit regulären Hooks und dessen Ergebnis noch ausstehend.
+  Commit `9de1a5c` mit regulären Hooks erfolgreich; lint-staged, zugehörige
+  Tests, OWASP-Check (0 Fehler, 2 bekannte Warnungen) und Review-Regressionscheck
+  (10/10, keine Regression) bestanden.
 
 ## Abnahme und Nachweise
 
