@@ -1227,11 +1227,11 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 **Ursache:** Feste Tabellenanordnung und fehlende Min-Width-/Umbruchregeln in einer Einladungskarte; zusätzlich kleine Iconbuttons und rein visuelle Auswahl in der früheren Terminabstimmung.
 
-**Lösung:** Öffentliche und geschützte Terminzeilen verwenden beschriftete native Radiogruppen. Teilnehmerkarten und Einladungstexte umbrechen; die gesamte Seite wurde bei 195 px (200-%-Äquivalent zu 390 px), 320, 390, 640, 768 und 1440 px ohne horizontalen Überlauf geprüft. Die Terminfläche selbst bleibt auch bei 98 px sichtbar. Manuelle VoiceOver-Abnahme steht noch aus.
+**Lösung:** Öffentliche und geschützte Terminzeilen verwenden beschriftete native Radiogruppen mit sichtbarer, programmatischer Auswahl. Teilnehmerkarten und Einladungstexte umbrechen. Der aktuelle Quellstand setzt Terminwahl, Eingabefelder und Hauptaktionen auf mindestens 44 px. Manuelle VoiceOver-Abnahme und gerenderte Prüfung des aktuellen Quellstands stehen noch aus.
 
-**Prüfnachweis:** date-mobile.png und observations.json aus A; Browsermessungen aus B. Weitere Hauptbuttons und Eingaben messen nur 36 Pixel Höhe und sind im selben Planungsschritt zu berücksichtigen. Belege: `.impeccable/critique/evidence/public-event-A/` und `public-event-B/`.
+**Prüfnachweis:** Aktuelle Komponenten-/Unit-Tests sichern Radios, Tastaturwahl und 44-px-Ziele. Die archivierten Bilder und Browsermessungen in `public-event-A/` und `public-event-B/` stammen aus einem älteren Layout und gelten nicht als aktuelle gerenderte Abnahme.
 
-**Test-Status:** Unit- und Chromium-E2E prüfen Tastaturwahl mit gespeicherter Antwort, zehn Termine, 50 Gäste, 44-px-Ziele und schmale Layouts. Manuelle VoiceOver-Abnahme ausstehend; deshalb bleibt der Befund in Bearbeitung.
+**Test-Status:** Unit- und Chromium-E2E prüfen Tastaturwahl mit gespeicherter Antwort, zehn Termine, 50 Gäste, 44-px-Ziele und schmale Layouts. Aktuelle Browsermessung und manuelle VoiceOver-Abnahme ausstehend; deshalb bleibt der Befund in Bearbeitung.
 
 **Referenz im Changelog:** Version 0.50.35 – Terminabstimmung barrierefrei bedienen.
 
@@ -1312,9 +1312,9 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 **Ursache:** lg:grid-cols-[2fr,1fr] in page.tsx erzeugt keine wirksame gültige Zweispaltenaufteilung.
 
-**Lösung:** Gültiges `lg:grid-cols-[minmax(0,2fr)_minmax(16rem,1fr)]` in der öffentlichen Eventseite umgesetzt; die Teilnehmerübersicht steht nach den Hauptaktionen im DOM und wird bei Desktopbreite als Seitenbereich angeordnet. Finale Browsermessung bei 1440 px steht aus.
+**Lösung:** Gültiges `lg:grid-cols-[minmax(0,2fr)_minmax(16rem,1fr)]` in der öffentlichen Eventseite umgesetzt; die Teilnehmerübersicht wird bei Desktopbreite als Seitenbereich angeordnet. Die aktuellen Screenshots in `public-event-A/` und `public-event-B/` stammen aus einem älteren Layout; die finale Browsermessung bei 1440 px muss mit dem aktuellen Quellstand erfolgen.
 
-**Prüfnachweis:** anonymous-1440.png und Layoutbeobachtungen aus A. Belege: `.impeccable/critique/evidence/public-event-A/` und `public-event-B/`.
+**Prüfnachweis:** Unit-Test prüft die aktuelle Rasterklasse. Archivierte `anonymous-1440.png`-Belege und Layoutbeobachtungen sind wegen älteren Layouts nicht als aktuelle Abnahme gewertet.
 
 **Test-Status:** Unit-Abdeckung vorhanden; Browser-Viewport-Abnahme offen.
 
@@ -1382,10 +1382,12 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 ### [BUG-044] Löschaktion für Eventersteller widerspricht der API-Berechtigung
 
-**Status:** `open`
+**Status:** `fixed`
 **Schweregrad:** `medium`
 **Entdeckt:** 2026-10-30
-**Test geschrieben:** Nein
+**Behoben:** 2026-11-03
+**Behoben in Version:** 0.50.71
+**Test geschrieben:** Ja – `tests/unit/lib/event-proposal-permissions.test.ts` und Mobile-API-Regression in `tests/unit/app/api/mobile/v1/events.test.ts`.
 
 **Beschreibung:** Die geschützte Rankingliste zeigt Erstellern das Löschen fremder Vorschläge an, während beide DELETE-Routen nur eigene Nutzervorschläge zulassen.
 
@@ -1397,22 +1399,24 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 **Ursache:** Getrennte Berechtigungslogik in voting/proposal-ranking-list.tsx sowie den Web-/Mobile-Proposal-DELETE-Routen.
 
-**Lösung:** Noch nicht umgesetzt. Im FEAT-004-Plan gemeinsame Capability und serverseitigen Löschservice mit Rollen-/Statusmatrix vorgesehen.
+**Lösung:** Web- und Mobile-DELETE prüfen innerhalb der gesperrten Eventmutation dieselbe Rollenregel: Ersteller dürfen alle Vorschläge löschen, Vorschlagende ihre eigenen; andere Teilnehmende erhalten weiterhin 404.
 
-**Prüfnachweis:** Quellvergleich bei der Planung von FEAT-001 bis FEAT-004; kein produktiver Schreibtest durchgeführt.
+**Prüfnachweis:** Rollenhelper und Mobile-Route mit fremdem Vorschlag getestet; gezielte Voting-/Mobile-Tests bestanden. Kein produktiver Schreibtest durchgeführt.
 
-**Test-Status:** Regressionstest im Implementierungsplan vorgesehen; erst bei freigegebener Umsetzung zu schreiben.
+**Test-Status:** Rollen- und Mobile-API-Regressionstests bestanden.
 
-**Referenz im Changelog:** Version 0.50.25 – Voting-Implementierungsplan vorbereitet.
+**Referenz im Changelog:** Version 0.50.71 – Eventvorschläge berechtigt verwalten.
 
 ---
 
 ### [BUG-045] Geschütztes Web-Voting berücksichtigt Gaststimmen nicht vollständig
 
-**Status:** `open`
+**Status:** `fixed`
 **Schweregrad:** `medium`
 **Entdeckt:** 2026-10-30
-**Test geschrieben:** Nein
+**Behoben:** 2026-11-03
+**Behoben in Version:** 0.50.71
+**Test geschrieben:** Ja – `tests/unit/lib/voting-sort.test.ts` und `tests/unit/components/proposal-ranking-list.test.tsx` prüfen gemischte Nutzer- und Gaststimmen.
 
 **Beschreibung:** Die geschützten Web-Votingclients verwenden für sichtbare Stimmen und Rangfolge überwiegend nur Nutzerstimmen, obwohl Gaststimmen ebenfalls vorhanden sind.
 
@@ -1420,17 +1424,17 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 **Erwartetes Verhalten:** Gesamtstimmen und Standardsortierung berücksichtigen beide Stimmenarten konsistent.
 
-**Tatsächliches Verhalten:** Die geschützten Clients sortieren und zeigen _count.votes; öffentliche Ansicht und Abschlussauswahl rechnen Nutzer- und Gaststimmen zusammen.
+**Tatsächliches Verhalten:** Vor FEAT-002 wurden in den geschützten Ansichten nur Nutzerstimmen gezählt; die aktuelle Implementierung addiert Nutzer- und Gaststimmen.
 
 **Ursache:** Unterschiedliche Darstellungsmodelle und lokale Sortierungen in beiden geschützten voting-client.tsx und proposal-ranking-list.tsx.
 
-**Lösung:** Noch nicht umgesetzt. Im FEAT-002-Plan gemeinsames Modell, Gesamtstimmenadapter und Regressionstests für gemischte Stimmen vorgesehen.
+**Lösung:** Die geschützten Voting-Ansichten verwenden ein gemeinsames Sortiermodell mit `totalVotes`; beide Zähler werden addiert und für angezeigte Stimmen, Standardrangfolge und Ranggleichstände verwendet. FEAT-002 hat die Abweichung bereits behoben; die erneute Prüfung bestätigt den Vertrag.
 
-**Prüfnachweis:** Quellvergleich bei der Planung von FEAT-001 bis FEAT-004; kein produktiver Schreibtest durchgeführt.
+**Prüfnachweis:** Die gezielten Unit- und Komponentenprüfungen für gemischte Stimmen und Standardsortierung bestanden. Kein produktiver Schreibtest durchgeführt.
 
-**Test-Status:** Regressionstest im Implementierungsplan vorgesehen; erst bei freigegebener Umsetzung zu schreiben.
+**Test-Status:** Unit- und Komponentenregressionstests für kombinierte Stimmzahlen, Sortierung und Ranggleichstände bestanden.
 
-**Referenz im Changelog:** Version 0.50.25 – Voting-Implementierungsplan vorbereitet.
+**Referenz im Changelog:** Version 0.50.71 – Eventvorschläge berechtigt verwalten.
 
 ---
 
@@ -1551,7 +1555,7 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 **Status:** `open`
 **Schweregrad:** `medium`
 **Entdeckt:** 2026-10-31
-**Test geschrieben:** Nicht zutreffend; Paketstatus wird mit npm audit geprüft. BUG-050 bleibt wegen moderater/lower Dev-Befunde offen.
+**Test geschrieben:** Nicht zutreffend; Paketstatus wird mit `npm audit` geprüft. BUG-050 bleibt wegen moderater und niedriger Dev-Befunde offen.
 
 **Beschreibung:** Der Registry-Audit meldete zunächst hohe und moderate Befunde ausschließlich im Entwicklungsbaum. Der hohe Befund ist behoben; SEC-45 bleibt wegen moderater/lower Restbefunde teilweise gelöst.
 
@@ -1565,7 +1569,7 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 **Lösung:** Teilweise. `npm audit fix` wendete kompatible Updates an und entfernte den hohen Befund (systeminformation 5.33.19; @hono/node-server 2.1.5; TypeScript-ESLint 8.72.1). Verbleibende Advisories erfordern laut npm Major-Upgrades von ESLint, CodeceptJS oder shadcn; keine pauschalen Major-Overrides anwenden.
 
-**Prüfnachweis:** Registry-Audit vor/nach `npm audit fix`, `npm audit --omit=dev` sowie [Sicherheitsstand](code-reviews/security.md). Der hohe Befund ist entfernt; moderate/low Findings bleiben dokumentiert.
+**Prüfnachweis:** `npm audit --json` am 03.11.2026: 22 moderate, 2 niedrige, keine hohen/kritischen Befunde; alle automatisiert angebotenen Paketlösungen erfordern Major-Upgrades. `npm audit --omit=dev --json`: 0 Befunde. Der hohe Befund ist entfernt; übrige Findings bleiben dokumentiert.
 
 **Referenz im Changelog:** Version 0.50.33 – Sicherheitsprüfung robuster gemacht.
 
@@ -1645,6 +1649,8 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 **Ursache:** Teilnahmebezeichnung und Authentifizierung des Gastzugangs werden nicht getrennt.
 
 **Lösung:** Offen, außerhalb des bestätigten FEAT-013-Umfangs „ohne Gastwechsel“. Ein eigener Korrekturschritt muss einen serverseitigen Besitznachweis, sichere Wiederaufnahme und eine Migration bestehender Gastzugänge definieren. Bis dahin keine neue Gastwechsel-/Übernahmefunktion anbieten.
+
+**Entscheidung am 03.11.2026:** Bestehende Gastzugänge sollen weiter funktionieren. Da ein Nickname und eine öffentliche Gast-ID keinen sicheren Besitznachweis liefern, bleibt der Befund offen; eine Änderung, die bestehende Gäste zur Neuregistrierung zwingt, wurde nicht übernommen.
 
 **Prüfnachweis:** Öffentliche join-/vote-Routen und clientseitiger StoredGuestState am 31.10.2026 geprüft. Keine produktive Identität übernommen.
 
@@ -2037,8 +2043,8 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 ## Statistik
 
-- **Offene Bugs:** 4
+- **Offene Bugs:** 2
 - **In Bearbeitung:** 4
-- **Behoben:** 63
+- **Behoben:** 65
 - **Wontfix:** 0
 - **Gesamt:** 71

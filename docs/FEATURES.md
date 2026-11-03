@@ -330,6 +330,7 @@ Uebersicht der Gaeste (per oeffentlichem Link beigetreten) mit Stimmenanzahl.
 - Gesamtstimmen und bei öffentlichen Events die Aufschlüsselung für Nutzer und Gäste
 - Vorschläge nach Gesamtstimmen (Standard), Name A–Z oder neuestem Vorschlag sortieren; Nutzer- und Gaststimmen zählen gemeinsam
 - Sichtbare Abstimmungsaktionen und berechtigte Löschaktionen ohne horizontales Scrollen
+- Ersteller dürfen alle Spielvorschläge löschen; andere Teilnehmende nur ihre eigenen Vorschläge
 - Abstimmen / Stimme zurueckziehen
 - Gewinnerspiel hervorgehoben
 - Schreibaktionen prüfen den aktuellen Eventstatus und die Zugehörigkeit von Spiel- und Terminvorschlägen; abgewiesene veraltete Änderungen liefern HTTP 409.

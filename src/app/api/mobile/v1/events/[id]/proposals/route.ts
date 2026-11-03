@@ -7,6 +7,7 @@ import { Errors } from "@/lib/error-messages";
 import { NOT_DELETED } from "@/lib/services/shared";
 import { hasEventAccess, mapProposal, proposalInclude } from "../_helpers";
 import { withEventMutation } from "@/lib/services/event-mutation.service";
+import { canDeleteEventProposal } from "@/lib/events/event-proposal-permissions";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -102,12 +103,14 @@ export const DELETE = withApiLogging(async function DELETE(
     await withEventMutation(
       { kind: "user", eventId: id, userId: session.user.id },
       "proposeGame",
-      async ({ tx }) => {
+      async ({ tx, event }) => {
         const proposal = await tx.gameProposal.findFirst({
-          where: { id: proposalId, eventId: id, proposedById: session.user.id },
-          select: { id: true },
+          where: { id: proposalId, eventId: id },
+          select: { id: true, proposedById: true },
         });
-        if (!proposal) throw new ApiError(404, Errors.PROPOSAL_NOT_FOUND);
+        if (!proposal || !canDeleteEventProposal({ createdById: event.createdById, userId: session.user.id, proposedById: proposal.proposedById })) {
+          throw new ApiError(404, Errors.PROPOSAL_NOT_FOUND);
+        }
         await tx.gameProposal.delete({ where: { id: proposalId } });
       }
     );

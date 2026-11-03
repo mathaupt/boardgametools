@@ -6,6 +6,7 @@ import { Errors } from "@/lib/error-messages";
 import * as PushService from "@/lib/services/push.service";
 import logger from "@/lib/logger";
 import { withEventMutation } from "@/lib/services/event-mutation.service";
+import { canDeleteEventProposal } from "@/lib/events/event-proposal-permissions";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -91,12 +92,14 @@ export const DELETE = withApiLogging(async function DELETE(
     await withEventMutation(
       { kind: "user", eventId: id, userId },
       "proposeGame",
-      async ({ tx }) => {
+      async ({ tx, event }) => {
         const proposal = await tx.gameProposal.findFirst({
-          where: { id: proposalId, eventId: id, proposedById: userId },
-          select: { id: true },
+          where: { id: proposalId, eventId: id },
+          select: { id: true, proposedById: true },
         });
-        if (!proposal) throw new ApiError(404, Errors.PROPOSAL_NOT_FOUND);
+        if (!proposal || !canDeleteEventProposal({ createdById: event.createdById, userId, proposedById: proposal.proposedById })) {
+          throw new ApiError(404, Errors.PROPOSAL_NOT_FOUND);
+        }
         await tx.gameProposal.delete({ where: { id: proposalId } });
       }
     );

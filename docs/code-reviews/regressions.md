@@ -421,3 +421,17 @@ Jeder Eintrag enthält Felder für Root-Cause-Analyse und Gegenmaßnahmen (manue
 **Auflösung 2026-11-03:** `npm audit --omit=dev` meldete 0 Vulnerabilities. Der Regressionsevaluator mit Registryzugriff endete mit Exitcode 0, Gesamt 10/10, Sicherheit 9,9/10, 0 offenen Findings und 0 Regressionen. Finaler Snapshot `history/2026-11-03_1604.json`.
 
 ---
+
+## 2026-11-03 16:40:03
+
+| Finding | Priorität | Vorher | Jetzt | Detail |
+|---------|-----------|--------|-------|--------|
+| SEC-45: npm audit: Bekannte Vulnerabilities | P2 | partially_resolved | open | npm audit lieferte keine gültigen Prüfdaten |
+
+**Root-Cause:** Der erste Lauf im Sandboxmodus konnte `registry.npmjs.org` nicht auflösen (`ENOTFOUND`). Der Evaluator behandelt fehlende Auditmetadaten korrekt fail-closed und meldete SEC-45 deshalb vorübergehend als offen. Dies war kein neuer Paketbefund und es gab keine Dependency-Änderung.
+**Gegenmaßnahme:** Registry-Audit und Regressionsevaluator mit freigegebenem Registryzugriff wiederholen, wenn der Sandboxlauf keine gültigen Auditdaten liefern kann.
+**Verantwortlich:** BoardGameTools-Wartung.
+
+**Auflösung 2026-11-03:** `npm audit --json` mit Registryzugriff ergab 22 moderate und 2 niedrige Entwicklungsbefunde, 0 hohe/kritische; `npm audit --omit=dev --json` ergab 0. Finaler Regressionsevaluator mit Registryzugriff: Exitcode 0, 10/10, keine Regression. Snapshot `history/2026-11-03_1808.json`.
+
+---

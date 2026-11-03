@@ -610,6 +610,27 @@ describe("Mobile Event Routes", () => {
       expect(body.message).toBe("Vorschlag gelöscht");
     });
 
+    it("allows the event creator to delete another participant's proposal", async () => {
+      mockedApiAuth.mockResolvedValue(authUser() as never);
+      mockedLockedEventFindFirst.mockResolvedValue({
+        id: "e1", ...baseEventFields, createdById: "u1", selectedDate: null, invites: [],
+      } as never);
+      mockedGameProposalFindFirst.mockResolvedValue({ id: "gp1", proposedById: "u2" } as never);
+      mockedGameProposalDelete.mockResolvedValue({} as never);
+
+      const res = await deleteProposal(
+        new NextRequest("http://localhost:3000/api/mobile/v1/events/e1/proposals?proposalId=gp1", { method: "DELETE" }),
+        routeContext()
+      );
+
+      expect(res.status).toBe(200);
+      expect(mockedGameProposalFindFirst).toHaveBeenCalledWith({
+        where: { id: "gp1", eventId: "e1" },
+        select: { id: true, proposedById: true },
+      });
+      expect(mockedGameProposalDelete).toHaveBeenCalledWith({ where: { id: "gp1" } });
+    });
+
     it("returns 400 when proposalId is missing", async () => {
       mockedApiAuth.mockResolvedValue(authUser() as never);
 

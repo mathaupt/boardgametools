@@ -12,6 +12,16 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.71",
+    date: "2026-11-03",
+    title: "Eventvorschläge berechtigt verwalten",
+    description: "Eventersteller können fremde Vorschläge wie vorgesehen verwalten; geschützte Ranglisten stimmen Nutzer- und Gaststimmen zusammen.",
+    changes: [
+      { type: "fix", text: "BUG-044: Löschrechte für Vorschläge stimmen in Web- und Mobile-API mit der Erstelleransicht überein.", bugRef: "BUG-044" },
+      { type: "fix", text: "BUG-045: Geschützte Voting-Ansichten sortieren und zählen Gast- und Nutzerstimmen gemeinsam.", bugRef: "BUG-045" },
+    ],
+  },
+  {
     version: "0.50.70",
     date: "2026-11-03",
     title: "BGG-Suchergebnisse klar unterscheiden",
