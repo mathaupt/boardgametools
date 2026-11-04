@@ -1,5 +1,7 @@
 # FEAT-006 – Health in Liveness und geschützte Readiness trennen
 
+**Status:** Abgeschlossen am 05.11.2026. DB-freie Liveness und tokengebundene Readiness sind implementiert und mit Unit-Tests geprüft. Da aktuell kein Monitoring-System eingesetzt wird, ist dessen spätere Auswahl, Konfiguration und Betriebsabnahme in [FEAT-030](../../FEATURE-BACKLOG.md#feat-030--liveness--und-readiness-monitoring-einrichten) aufgenommen.
+
 **Aktualitätsprüfung (2026-11-03):** Implementierter Code und bestehender Plan stimmen weiterhin überein. `npm run pipeline:check -- --list` zeigt `health` und `vercel` als konfiguriert, `health-readiness` als nicht konfiguriert. Der nicht schreibende Produktionscheck `npm run pipeline:check -- --health` bestätigte HTTP 200 und den gültigen Liveness-Vertrag. Monitorinventar, Readiness-Secret/-Provider und Umstellung bleiben offen; keine Produktionsänderung vorgenommen.
 
 **Status (2026-11-01):** Web-Code gemäß ausgewähltem Arbeitspaket B zur Umsetzung freigegeben („dann weiter mit B“). Produktions-Monitorumstellung und Veröffentlichung des geänderten `/api/health`-Vertrags bleiben separat offen.

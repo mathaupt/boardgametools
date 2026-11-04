@@ -22,6 +22,8 @@ Web-/API-Umfang.
 | FEAT-002 | Voting-Vorschläge sortieren | Web umgesetzt; [Plan 001–004](superpowers/plans/2026-10-30-FEAT-001-004-voting.md) |
 | FEAT-003 | Kompakte Voting-Liste | Web umgesetzt und responsiv abgenommen; [Plan 001–004](superpowers/plans/2026-10-30-FEAT-001-004-voting.md) |
 | FEAT-010 | Eventstatus und Ergebnis eindeutig darstellen | Web/Mobile-API abgenommen; [Plan](superpowers/plans/2026-10-31-FEAT-010-eventstatus-ergebnis.md) |
+| FEAT-005 | ApiLog-Schreiblast bei Health begrenzen | Umsetzung abgeschlossen; künftigen Monitorbetrieb siehe FEAT-030; [Plan](superpowers/plans/2026-10-31-FEAT-005-health-apilog.md) |
+| FEAT-006 | Liveness und Readiness trennen | Umsetzung abgeschlossen; künftigen Monitorbetrieb siehe FEAT-030; [Plan](superpowers/plans/2026-10-31-FEAT-006-health-liveness-readiness.md) |
 | FEAT-020 | Kontrast öffentlicher Spielvorschläge | Web lokal gerendert geprüft; [Plan](superpowers/plans/2026-11-02-FEAT-020-public-event-proposal-contrast.md) |
 | FEAT-021 | Deutsche BGG-Ausgabe beim Import auswählen | Web umgesetzt, Version 0.50.63; [Plan](superpowers/plans/2026-11-02-FEAT-021-bgg-deutsche-ausgabe.md) |
 | FEAT-022 | BGG-Quellenkennzeichnung | Web umgesetzt, Version 0.50.64; [Plan](superpowers/plans/2026-11-02-FEAT-022-bgg-attribution.md) |
@@ -40,8 +42,6 @@ nicht begonnener Umsetzung. Die offenen Punkte sind keine Umsetzungsfreigabe.
 | ID | Feature | Offener Punkt | Plan / Konzept |
 |---|---|---|---|
 | FEAT-004 | Voting-Vorschläge löschen | Manuelle VoiceOver-Abnahme | [Plan 001–004](superpowers/plans/2026-10-30-FEAT-001-004-voting.md) |
-| FEAT-005 | ApiLog-Schreiblast bei Health begrenzen | Produktionsrollout und Verbraucherprüfung; Code in FEAT-006 enthalten | [Plan](superpowers/plans/2026-10-31-FEAT-005-health-apilog.md) |
-| FEAT-006 | Health-Deep-Checks cachen oder splitten | Readiness-Rollout und isolierte DB-Abnahme | [Plan](superpowers/plans/2026-10-31-FEAT-006-health-liveness-readiness.md) |
 | FEAT-007 | Vercel-Firewall für `/api/health` | Konto-/Monitorinventar und Regelentscheidung | [Plan](superpowers/plans/2026-10-31-FEAT-007-health-firewall.md) |
 | FEAT-008 | Spend-Management-Obergrenze | Billingdaten, Grenzwert und Betreiberentscheidung | [Plan](superpowers/plans/2026-10-31-FEAT-008-spend-management.md) |
 | FEAT-009 | HTML-Entities in Spieldaten | Produktionsmanifest, Backup und Datenbereinigung | [Plan](superpowers/plans/2026-10-31-FEAT-009-spieldaten-entities.md) |
@@ -55,20 +55,20 @@ nicht begonnener Umsetzung. Die offenen Punkte sind keine Umsetzungsfreigabe.
 | FEAT-018 | Testabdeckung schrittweise auf 80 % erhöhen | Globale Coverage-Gates und weitere Pakete offen | [Plan](superpowers/plans/2026-11-02-FEAT-018-coverage-80.md) |
 | FEAT-019 | Spracheingabe für Suche und Sessions | Konzept vorhanden; Plan und Umsetzung offen | [Konzept](superpowers/specs/2026-11-02-spracheingabe-design.md) |
 | FEAT-029 | Gespielte Eventspiele als Sessions erfassen | Webcode und isolierter Test abgeschlossen; Produktionsmigration/Rollout offen, iOS separat | [Spec](superpowers/specs/2026-11-04-FEAT-029-event-sessions-design.md), [Plan](superpowers/plans/2026-11-04-FEAT-029-event-sessions.md) |
+| FEAT-030 | Liveness- und Readiness-Monitoring einrichten | Erst bei Auswahl eines Monitoring-Systems: Verbraucher inventarisieren, Secret und getrennte Checks konfigurieren, Staging-Abnahme durchführen | Noch zu planen |
 
 ## Offene Bugs
 
-Vier Bugs sind derzeit in Bearbeitung. Die vollständigen Beschreibungen,
+Zwei Bugs sind derzeit in Bearbeitung. Die vollständigen Beschreibungen,
 Reproduktionsschritte und Prüfnachweise stehen in der [Bug-Tracking-Liste](bugs.md).
 
 | ID | Schweregrad | Bug | Status |
 |---|---|---|---|
 | BUG-038 | Mittel | Mobile Terminantworten teilweise verborgen und zu klein | In Bearbeitung |
 | BUG-041 | Niedrig | Desktop-Raster der öffentlichen Eventseite unwirksam | In Bearbeitung |
-| BUG-055 | Mittel | Öffentlicher Health-Endpoint liefert interne Diagnosedetails | In Bearbeitung |
-| BUG-056 | Mittel | Öffentliche Health-Anfragen verursachen skalierende DB-Last | In Bearbeitung |
 
-**Stand:** 04.11.2026. Die vollständigen Feature-Spezifikationen,
+**Stand:** 05.11.2026. BUG-055 und BUG-056 sind geschlossen; eine spätere
+Monitoring-Einrichtung ist als FEAT-030 erfasst. Die vollständigen Feature-Spezifikationen,
 Implementierungsnachweise und historischen Abschnitte A bis I folgen unterhalb
 als Detailarchiv. Statusänderungen werden in dieser Übersicht und im jeweiligen
 Feature-/Bug-Eintrag nachgeführt. Datumsgebundene Restpunkte in A bis I sind
@@ -384,6 +384,7 @@ Gemeint ist der Vorschlag im Voting, nicht das Spiel in der Sammlung.
 
 ## FEAT-005 – ApiLog-Schreiblast für `/api/health` begrenzen
 
+**Status:** Abgeschlossen am 05.11.2026. Health-Pfade werden zentral von ApiLog ausgeschlossen; künftige Einrichtung eines Monitorings ist in FEAT-030 erfasst.
 **Implementierungsplan:** [FEAT-005](superpowers/plans/2026-10-31-FEAT-005-health-apilog.md), erstellt am 31.10.2026.
 **Umsetzungsfreigabe:** Erteilt am 01.11.2026 durch „implementiere FEAT-011“; Web-Implementierung abgeschlossen.
 **Planentscheidung:** Vollständiger Ausschluss statt Stichprobe; normale API-Logs und historische Rohlogs erhalten.
@@ -407,6 +408,7 @@ Stichprobe gewählt wird, legt der Implementierungsplan fest.
 
 ## FEAT-006 – Health-Deep-Checks cachen oder splitten
 
+**Status:** Abgeschlossen am 05.11.2026. DB-freie öffentliche Liveness und tokengebundene Readiness sind umgesetzt; die spätere Monitoring-Einrichtung ist in FEAT-030 erfasst.
 **Implementierungsplan:** [FEAT-006](superpowers/plans/2026-10-31-FEAT-006-health-liveness-readiness.md), erstellt am 31.10.2026.
 **Umsetzungsfreigabe:** Codeumfang am 01.11.2026 mit „dann weiter mit B“ freigegeben; Betrieb/Rollout separat offen.
 **Planentscheidung:** Öffentliche DB-freie Liveness und geschützte DB-Readiness, einschließlich Monitorumstellung. FEAT-005 wiederverwenden.
@@ -964,3 +966,10 @@ danach können FEAT-026 und FEAT-027 unabhängig geplant umgesetzt werden.
 **Im Implementierungsplan festgelegt:** Retry derselben Operations-ID liefert dieselbe Session; eine bewusst neue Partie erhält eine neue ID. Event-/Vorschlagslöschung entfernt nur den Eventlink, Sessions bleiben erhalten. Session-Soft-Delete blendet die Partie im Event aus und erhält den Retry-Link. Snapshots tragen BGG-only- und fremde Sammlungsspiele ohne Sammlungspflicht; mobile Session-DTOs bleiben rückwärtskompatibel.
 **Plattform:** Web zuerst; native iOS-Oberflächen separat planen.
 **Design-Spec:** [Eventspiele als Sessions](superpowers/specs/2026-11-04-FEAT-029-event-sessions-design.md). Produktumfang am 04.11.2026 bestätigt. **Implementierungsplan:** [Sessions aus Eventspielen](superpowers/plans/2026-11-04-FEAT-029-event-sessions.md); am 04.11.2026 freigegeben und umgesetzt. Produktionsmigration und Rollout bleiben offen; keine iOS-Änderungen.
+
+## FEAT-030 – Liveness- und Readiness-Monitoring einrichten
+
+**Status:** Offen; derzeit ist laut Nutzer kein Monitoring-System im Einsatz. Dies ist ein späterer Betriebspunkt und keine aktuelle Bugbehebung oder Umsetzungsfreigabe.
+**Ziel:** Sobald ein Monitoring-System ausgewählt wird, die Prozess-Liveness und Datenbank-Readiness getrennt überwachen.
+**Abnahmekriterien:** Verbraucher und gewünschte Verfügbarkeit inventarisieren; `/api/health` als DB-freie Liveness und `/api/health/ready` mit einem separaten Secret konfigurieren; Secret sicher bereitstellen; Verhalten bei DB-Ausfall und Erholung in isoliertem Staging prüfen; Alarmierung und Betrieb dokumentieren.
+**Implementierungsplan:** Noch nicht erstellt. Vor einer Einrichtung gemäß verbindlichem Feature-Ablauf planen und Umfang freigeben lassen.

@@ -1,6 +1,6 @@
 # FEAT-005 – ApiLog-Schreiblast des Health-Endpoints begrenzen
 
-**Status:** Implementierungsplan zur Prüfung; keine Umsetzungsfreigabe.
+**Status:** Abgeschlossen am 05.11.2026. Umsetzung in Version 0.50.42; Health-Pfade sind von persistiertem ApiLog ausgeschlossen. Der spätere Betrieb mit einem Monitoring-System ist in [FEAT-030](../../FEATURE-BACKLOG.md#feat-030--liveness--und-readiness-monitoring-einrichten) gebündelt.
 
 **Ziel:** Health-Anfragen erzeugen keine Datenbank-Logwrites; die API-Monitoringauswertungen bleiben fachlich konsistent.
 

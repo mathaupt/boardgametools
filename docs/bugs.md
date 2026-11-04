@@ -1691,10 +1691,12 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 ### [BUG-055] Öffentlicher Health-Endpoint liefert interne Diagnosedetails
 
-**Status:** `in_progress`
+**Status:** `fixed`
 **Schweregrad:** `medium`
 **Entdeckt:** 2026-10-31
-**Test geschrieben:** Ja – `tests/unit/api/health.test.ts` und `tests/unit/api/health-readiness.test.ts`; am 04.11.2026 zusammen mit den Proxy-, Logger- und Probe-Tests erfolgreich ausgeführt (26 Tests). Isolierte DB-Integration und Rollout-Abnahme offen.
+**Behoben:** 2026-11-05
+**Behoben in Version:** 0.50.83
+**Test geschrieben:** Ja – `tests/unit/api/health.test.ts` und `tests/unit/api/health-readiness.test.ts`; zusammen mit den Proxy-, Logger- und Probe-Tests am 04.11.2026 erfolgreich ausgeführt (26 Tests). Keine aktiven Monitoring-Verbraucher laut Nutzer; spätere Betriebsabnahme ist FEAT-030.
 
 **Beschreibung:** Der öffentlich freigegebene Health-Handler liefert Tabellenzähler, Migrationsnamen, Speicher-/Umgebungsdiagnosen und im Fehlerfall die rohe message einer DB-Exception.
 
@@ -1706,24 +1708,26 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 **Ursache:** Interne Diagnose und öffentliche Erreichbarkeitsprüfung verwenden denselben Vertrag.
 
-**Lösung:** Code in Version 0.50.42 umgesetzt; Monitorumstellung, Deploy und Staging-Abnahme noch offen. Siehe [FEAT-006-Plan](superpowers/plans/2026-10-31-FEAT-006-health-liveness-readiness.md).
+**Lösung:** Code in Version 0.50.42 umgesetzt. Der Nutzer bestätigte am 05.11.2026, dass derzeit keine Monitoring-Systeme existieren; es gibt daher keine vorhandenen Verbraucher umzustellen. Eine künftige Einrichtung mit Readiness-Secret und Staging-Abnahme ist in FEAT-030 erfasst. Siehe [FEAT-006-Plan](superpowers/plans/2026-10-31-FEAT-006-health-liveness-readiness.md).
 
-**Aktualitätsprüfung am 03.11.2026:** Der konfigurierte Produktions-Livenesscheck lief erfolgreich und bestätigte HTTP 200 mit gültigem Liveness-JSON. Der Provider `health-readiness` ist nicht konfiguriert. Offen bleiben geschützter Readiness-Monitor, Monitorinventar/-umstellung und Staging-Abnahme; keine Produktionskonfiguration oder Secrets geändert.
+**Historischer Prüfstand 03.11.2026:** Der konfigurierte Produktions-Livenesscheck lief erfolgreich und bestätigte HTTP 200 mit gültigem Liveness-JSON. Der Provider `health-readiness` war nicht konfiguriert; es wurden keine Produktionskonfigurationen oder Secrets geändert.
 
-**Bearbeitung am 04.11.2026:** Aktuelle Handler und Regressionstests erneut geprüft. Der Code gibt keine internen Diagnosedetails aus; die Codekorrektur ist vorhanden. BUG-055 bleibt bis Deployment und Verbraucher-/Monitorumstellung offen, weil der Produktionspfad sonst weiterhin den alten Vertrag ausliefern kann.
+**Abschluss am 05.11.2026:** Nutzerbestätigung: Es gibt aktuell keine Monitoring-Systeme. Der Liveness-Handler liefert nur den minimalen Status; Readiness ist separat tokengebunden und gibt keine rohen DB-Fehler aus. Künftiger Monitoring-Rollout wird über FEAT-030 geplant. Ein erneuter Produktionsdeploy wurde in diesem Arbeitsschritt nicht ausgelöst.
 
 **Prüfnachweis:** src/app/api/health/route.ts und öffentliche Proxyfreigabe am 31.10.2026 geprüft. Keine produktiven Fehler oder Daten abgefragt; keine Behauptung über tatsächlich offengelegte Zugangsdaten.
 
-**Referenz im Changelog:** Version 0.50.31 – Betriebsschutz und Planprüfung vorbereitet.
+**Referenz im Changelog:** Version 0.50.83 – BUG-055/056 geschlossen; Monitoring als FEAT-030 aufgenommen.
 
 ---
 
 ### [BUG-056] Öffentliche Health-Anfragen verursachen skalierende DB-Last
 
-**Status:** `in_progress`
+**Status:** `fixed`
 **Schweregrad:** `medium`
 **Entdeckt:** 2026-10-31
-**Test geschrieben:** Ja – Mock-Unit-Tests decken Proxy-Bypass, Logausschluss und begrenzte Readiness-Probe ab; der zugehörige Testsatz lief am 04.11.2026 mit 26 erfolgreichen Tests. Last-/Treiber-/Erholungstests benötigen isoliertes Staging.
+**Behoben:** 2026-11-05
+**Behoben in Version:** 0.50.83
+**Test geschrieben:** Ja – Mock-Unit-Tests decken Proxy-Bypass, Logausschluss und begrenzte Readiness-Probe ab; der zugehörige Testsatz lief am 04.11.2026 mit 26 erfolgreichen Tests. Weitere Last-/Treiber-/Erholungstests werden vor einer späteren Monitorintegration im Rahmen von FEAT-030 geplant.
 
 **Beschreibung:** Jede erfolgreiche Health-Anfrage erzeugt fünf DB-Leseprüfungen und einen asynchronen ApiLog-Write. Bei vorhandenem Sessioncookie kann zusätzlich die Sessionauflösung im auth-umschlossenen Proxy eine User-Abfrage auslösen.
 
@@ -1731,17 +1735,17 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 **Erwartetes Verhalten:** Öffentliche Lebenszeichenprüfung ohne DB-Last; echte DB-Readiness nur geschützt und begrenzt. Health-Anfragen dürfen keine anfrageproportionale Log-Schreiblast erzeugen.
 
-**Tatsächliches Verhalten:** Die neue öffentliche Liveness führt keine DB-, Session-, Redis- oder ApiLog-Operation aus. Readiness verwendet einen einzelnen Poolslot, eine kurze Probe, Tokenprüfung und ein prozesslokales Rate-Limit. Produktionsmonitoren sind noch nicht umgestellt.
+**Tatsächliches Verhalten:** Die neue öffentliche Liveness führt keine DB-, Session-, Redis- oder ApiLog-Operation aus. Readiness verwendet einen einzelnen Poolslot, eine kurze Probe, Tokenprüfung und ein prozesslokales Rate-Limit. Laut Nutzer gibt es derzeit keine Monitoring-Systeme.
 
 **Ursache:** Tiefe Betriebsdiagnose, Sessionmiddleware und persistiertes Requestlogging sind an den öffentlichen Probeaufruf gekoppelt.
 
-**Lösung:** Code für Liveness, Proxy und zentrale Logpolicy in Version 0.50.42 umgesetzt. Verbleibende Abnahme: Deployment, Verbraucher-/Monitorumstellung und isolierte DB-Last-/Ausfalltests. Siehe [FEAT-006-Plan](superpowers/plans/2026-10-31-FEAT-006-health-liveness-readiness.md).
+**Lösung:** Code für DB-freie Liveness, Proxy-Bypass, zentrale Logpolicy und begrenzte tokengebundene Readiness in Version 0.50.42 umgesetzt. Der Nutzer bestätigte am 05.11.2026, dass es derzeit keine Monitoring-Systeme gibt. Ein späterer Monitoring-Rollout samt isolierter Betriebsabnahme ist in FEAT-030 erfasst. Siehe [FEAT-006-Plan](superpowers/plans/2026-10-31-FEAT-006-health-liveness-readiness.md).
 
 **Prüfnachweis:** Health-Handler, src/lib/api-logger.ts, src/proxy.ts, src/lib/auth.ts und Rate-Limiter am 31.10.2026 gelesen. Kein Lasttest gegen Produktion und kein tatsächlicher Produktionsausfall behauptet.
 
-**Bearbeitung am 04.11.2026:** Aktuellen Code und Tests erneut geprüft. Öffentliche Liveness umgeht Sessionauflösung, Datenbank und ApiLog; Readiness ist tokengebunden, begrenzt und teilt parallele Probes. BUG-056 bleibt bis Deployment, Monitorumstellung und isolierten DB-Last-/Timeout-/Erholungstests offen. Es wurde keine Produktionslast erzeugt.
+**Abschluss am 05.11.2026:** Aktuellen Code und Tests erneut geprüft. Öffentliche Liveness umgeht Sessionauflösung, Datenbank und ApiLog; Readiness ist tokengebunden, begrenzt und teilt parallele Probes. Die noch nicht vorhandene Monitorintegration und ihre isolierte DB-Last-/Timeout-/Erholungsabnahme sind als zukünftiger Umfang FEAT-030 erfasst; es wurde keine Produktionslast erzeugt.
 
-**Referenz im Changelog:** Version 0.50.31 – Betriebsschutz und Planprüfung vorbereitet.
+**Referenz im Changelog:** Version 0.50.83 – BUG-055/056 geschlossen; Monitoring als FEAT-030 aufgenommen.
 
 ---
 
@@ -2073,7 +2077,7 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 ## Statistik
 
 - **Offene Bugs:** 0
-- **In Bearbeitung:** 4
-- **Behoben:** 68
+- **In Bearbeitung:** 2
+- **Behoben:** 70
 - **Wontfix:** 0
 - **Gesamt:** 72

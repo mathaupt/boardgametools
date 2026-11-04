@@ -12,6 +12,18 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.83",
+    date: "2026-11-05",
+    title: "Health-Bugs abgeschlossen und Monitoring vorgemerkt",
+    description: "Die abgesicherten Health-Endpunkte sind dokumentiert; die spätere Einrichtung eines Monitoring-Systems ist als offenes Feature vorgemerkt.",
+    changes: [
+      { type: "fix", text: "BUG-055: Health-Antworten geben keine internen Diagnosedetails oder rohen Datenbankfehler aus.", bugRef: "BUG-055" },
+      { type: "fix", text: "BUG-056: Öffentliche Liveness verursacht keine Datenbank-, Session- oder ApiLog-Last; Readiness bleibt tokengebunden und begrenzt.", bugRef: "BUG-056" },
+      { type: "internal", text: "FEAT-005 und FEAT-006 abgeschlossen; die spätere Einrichtung eines Monitorings ist als FEAT-030 gebündelt." },
+      { type: "internal", text: "FEAT-030 vorgemerkt: Liveness-/Readiness-Monitoring einrichten, sobald ein Monitoring-System ausgewählt wird." },
+    ],
+  },
+  {
     version: "0.50.82",
     date: "2026-11-04",
     title: "Health-Bugs und Restabnahme präzisiert",
