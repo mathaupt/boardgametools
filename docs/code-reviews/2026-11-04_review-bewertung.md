@@ -56,3 +56,8 @@ Commit-Hook: Gesamt 10/10, Sicherheit 10/10, keine offenen Findings und keine Re
 | Migration | ausschließlich auf isolierter lokaler Testdatenbank angewendet |
 
 Öffentliche Profile zeigen nur explizit ausgewählte Abzeichen und Spielaggregate. Der Link-Token verbleibt im URL-Fragment und wird nicht als Pfad oder Query an den Server gesendet. FEAT-025-Bestandseinträge bleiben unverändert. iOS ist nicht Teil dieses Web-Umfangs.
+
+
+## Produktionsnachgang – BUG-072
+
+Nach dem Produktionsfehler wurden die fehlenden Datenbankschritte mit ausdrücklicher Freigabe nach Backup ausgeführt. Alle drei offenen Migrationen sind angewendet; Prisma meldet keinen Migrationsrückstand, und die für FEAT-028 benötigten Schemaobjekte sind vorhanden. Die 25 vorhandenen Reiheneinträge sind weiterhin mit Sammlungsspielen verknüpft; keine Umwandlung in temporäre Einträge wurde gezählt. Der Codebuild und die App wurden dabei nicht verändert. Ein echter Login mit einem Nutzerkonto wurde nicht simuliert.

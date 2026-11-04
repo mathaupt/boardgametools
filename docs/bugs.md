@@ -2045,12 +2045,31 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 **Prüfnachweis:** Safari lokal mit synthetischem BGG-Bestand bei 390 px und 200 % Schrift: Dokumentbreite 384 px, überlaufende Felder/Schaltflächen keine; Sammlungstreffer verlinkt, Import deaktiviert.
 **Referenz im Changelog:** Version 0.50.67 – FEAT-023 / BUG-071.
 
+
+### [BUG-072] Produktionsmigration nach FEAT-028-Deployment fehlte
+
+**Status:** `fixed`
+**Schweregrad:** `high`
+**Entdeckt:** 2026-11-04
+**Behoben:** 2026-11-04
+**Behoben in Version:** 0.50.79
+**Test geschrieben:** Ja – `tests/integration/gamification-migration.test.ts`; zusätzlich Produktionsschema und Prisma-Migrationsstatus nach dem Apply read-only geprüft.
+
+**Beschreibung:** Nach dem FEAT-028-Deployment schlugen Credentials-Anmeldung und `prisma.user.findUnique()` fehl, weil die Produktionsdatenbank die Spalte `User.publicProfileEnabled` noch nicht enthielt.
+**Reproduktion:** FEAT-028-App gegen eine Datenbank ohne Migration `20261104130000_gamification_profiles_and_challenges` starten und anmelden.
+**Erwartetes Verhalten:** App-Code und Datenbankschema sind vor dem Produktionsstart synchronisiert.
+**Tatsächliches Verhalten:** Prisma meldete `The column User.publicProfileEnabled does not exist`; Anmeldung brach vor der Authentifizierung ab.
+**Ursache:** Vercels Build-Befehl `npm run build` führt absichtlich keine Datenbankmigrationen aus. Drei ausdrücklich getrennte Migrationen waren noch offen.
+**Lösung:** Vorher ein Produktionsbackup erstellen und anschließend die drei ausstehenden Migrationen in Reihenfolge mit `npm run prisma:deploy` anwenden. Prisma meldet nun „Database schema is up to date“; vier Profilspalten, drei neue Tabellen und alle drei Migrationseinträge wurden bestätigt. Read-only gezählt: 25 bestehende Reiheneinträge mit `source=COLLECTION`, keine zu temporären Einträgen umgewandelten Bestandsreihen.
+**Prüfnachweis:** Produktionsbackup vom 04.11.2026 ist lesbar; Migrationsstatus und Schemaobjekte nach Apply geprüft. Der Migrationstest läuft außerdem ausschließlich auf `bgt_test_feat028`.
+**Referenz im Changelog:** Version 0.50.79 – BUG-072.
+
 ---
 
 ## Statistik
 
 - **Offene Bugs:** 0
 - **In Bearbeitung:** 4
-- **Behoben:** 67
+- **Behoben:** 68
 - **Wontfix:** 0
-- **Gesamt:** 71
+- **Gesamt:** 72

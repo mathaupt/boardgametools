@@ -39,3 +39,12 @@ Die generierte Migration vor einem Deployment auf einer isolierten PostgreSQL-Ko
 - [ ] Commit mit regulären Hooks.
 
 Native iOS-Oberflächen und iOS-Deep-Links bleiben separat zu planen.
+
+
+## BUG-072 – Produktionsmigrationen
+
+- [x] Vor dem Schreibzugriff konsistenten Produktionsdatenexport erstellt und gzip-Lesbarkeit geprüft; vorhandene Backups nicht gelöscht.
+- [x] Tatsächlichen Prisma-Produktionsstatus gelesen: drei offene Migrationen aus BUG-053, FEAT-025 und FEAT-028.
+- [x] Nach ausdrücklicher Nutzerfreigabe alle drei mit `npm run prisma:deploy` angewendet.
+- [x] Read-only bestätigt: keine Migrationen offen, vier Profilspalten, drei neue Tabellen, drei erfolgreiche Migrationseinträge.
+- [ ] Echten Login-Smoke-Test durch Nutzer oder freigegebenen synthetischen Produktionsaccount durchführen; keine Nutzer-Zugangsdaten automatisiert verwendet.

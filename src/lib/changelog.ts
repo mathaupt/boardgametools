@@ -20,7 +20,8 @@ export const changelog: ChangelogEntry[] = [
       { type: "feature", text: "FEAT-028: Eigene Abzeichen und Vorschläge zum Entdecken ungespielter Sammlungsspiele." },
       { type: "feature", text: "Öffentliche Abzeichenprofile sind standardmäßig privat, widerrufbar und zeigen nur ausgewählte Erfolge sowie zusammengefasste Zahlen." },
       { type: "feature", text: "Gruppen können freiwillige Session- und Spieleziele verfolgen; sichtbar ist nur der gemeinsame Fortschritt." },
-      { type: "internal", text: "Isolierte lokale PostgreSQL-Testdatenbank bgt_test_feat028 mit Migrationstest eingerichtet; Produktionsdatenbank unverändert." },
+      { type: "fix", text: "BUG-072: Fehlende Produktionsmigrationen nach geprüftem Backup angewendet; der Prisma-Spaltenfehler beim Anmelden ist behoben.", bugRef: "BUG-072" },
+      { type: "internal", text: "Isolierte lokale PostgreSQL-Testdatenbank bgt_test_feat028 mit Migrationstest eingerichtet." },
     ],
   },
   {

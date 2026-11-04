@@ -102,7 +102,7 @@ Files: `prisma/schema.prisma`, group challenge service/routes/components, migrat
 
 ## Umsetzungsstand – 04.11.2026
 
-Die Umsetzung läuft ausschließlich lokal gegen `bgt_test_feat028`; es wurden keine Produktionsdaten verwendet und keine Produktionsmigration ausgeführt. Persönliche Erfolge, Profilfreigabe und Gruppen-Challenges sind implementiert. Die Migration ergänzt das Schema und erhält bestehende FEAT-025-Reiheneinträge. Das Profil verwendet einen Fragment-Link; der Token wird per POST-Body übertragen. Verifikation, Review-Dokumentation und Commit werden nach den abschließenden Prüfungen ergänzt.
+Die Umsetzung wurde lokal gegen `bgt_test_feat028` getestet; die FEAT-028-Implementierung verwendete keine Produktionsdaten. Nach gemeldetem Produktionsfehler wurde am 04.11.2026 vor dem Migrationseinsatz ein lesbares Backup erstellt. Der Produktionsstatus zeigte drei offene Migrationen: BUG-053-Gastnachweis, FEAT-025-Reihensnapshots und FEAT-028-Gamification. Alle drei wurden mit `npm run prisma:deploy` angewendet. Anschließend meldeten `prisma migrate status` „Database schema is up to date“; die vier FEAT-028-Profilspalten, drei neuen Tabellen und drei abgeschlossenen Migrationseinträge wurden read-only bestätigt. Der FEAT-025-Migrationsschritt backfillt Snapshots und entkoppelt bereits gelöschte Sammlungsspiele; aktive bestehende Spielverknüpfungen bleiben erhalten. Eine read-only Produktionszählung bestätigte alle 25 vorhandenen Reiheneinträge weiterhin als `COLLECTION` und keine temporären Bestandsumwandlungen.
 
 ## Freigabestatus
 

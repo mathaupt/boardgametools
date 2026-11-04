@@ -25,4 +25,13 @@
 - Produktionsabhängigkeits-Audit `npm audit --omit=dev`: 0 Vulnerabilities. Review-Evaluator mit Registryzugriff: 9,9/10, Regressionsevaluator Exitcode 0; bestehendes SEC-45 wurde nach gültigem Audit aufgelöst. Eine neue Reviewer-Notiz zu Magic Numbers (11 Treffer, Schwellwert 10) ist nicht blockierend.
 - Security-Check: 0 Fehler und 2 bestehende Hinweise zu Raw-SQL und Debug-Routen. Geänderte Dateien: ESLint ohne Befunde.
 - Lokale gerenderte Prüfung der öffentlichen Profilseite mit synthetischen Daten bei 390, 195 und 1440 px: kein horizontaler Überlauf, keine private E-Mail im DOM, keine Browserfehler. Token wird im Fragment gelesen und per POST übertragen; keine Token in Request-Pfaden.
-- Migration ausschließlich auf der lokalen Testdatenbank angewendet. Keine Produktionsdaten verwendet; keine Produktionsmigration ausgeführt.
+- Während der FEAT-028-Implementierung wurde die Migration ausschließlich lokal getestet; der separate Produktionsrollout erfolgte später nach ausdrücklicher Freigabe und Backup (siehe BUG-072).
+
+
+## BUG-072 – Produktionsmigrationen (04.11.2026)
+
+- Vor dem Produktionsmigrationseinsatz wurde ein konsistenter Datenexport mit `REPEATABLE READ READ ONLY` erstellt und als gzip-Archiv geprüft: 28 Tabellen, 978 Zeilen. Vorhandene Backups blieben unangetastet.
+- Produktionsstatus: drei Migrationen offen (`20261103193000_guest_participant_credentials`, `20261104080000_series_entry_game_snapshot`, `20261104130000_gamification_profiles_and_challenges`).
+- Alle drei mit `npm run prisma:deploy` angewendet. Anschließender `prisma migrate status`: „Database schema is up to date“.
+- Read-only Schemaprüfung: vier neue Profilspalten, drei neue Tabellen und drei abgeschlossene Migrationseinträge vorhanden. Alle 25 vorhandenen Reiheneinträge blieben `COLLECTION`; kein Eintrag wurde als temporär markiert.
+- Der veröffentlichte App-Code wurde nicht verändert. Ein Login mit realem Nutzerkonto wurde nicht automatisiert, da dafür Zugangsdaten erforderlich wären.
