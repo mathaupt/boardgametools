@@ -12,6 +12,15 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.82",
+    date: "2026-11-04",
+    title: "Health-Bugs und Restabnahme präzisiert",
+    description: "Die bereits abgesicherten Health-Endpunkte und noch ausstehenden Betriebsprüfungen sind in Bugliste und Backlog klar getrennt dokumentiert.",
+    changes: [
+      { type: "internal", text: "BUG-055 und BUG-056 mit aktuellem Unit-Testnachweis aktualisiert; Deployment, Monitorumstellung und isolierte Last-/Ausfallabnahme bleiben offen." },
+    ],
+  },
+  {
     version: "0.50.81",
     date: "2026-11-04",
     title: "Feature-Backlog neu geordnet",

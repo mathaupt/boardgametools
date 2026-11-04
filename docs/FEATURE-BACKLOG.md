@@ -113,7 +113,8 @@ schließt inzwischen beide exakten Healthpfade an der zentralen Loggergrenze aus
 Die öffentliche Liveness ist DB-, Session- und Redis-frei. Readiness verlangt
 ein separates Token, begrenzt den Prozesszugriff und führt eine einzelne
 zeitbegrenzte Probe aus. Gezielte Unit-Tests decken Verträge, Middleware,
-Logging, Tokenprüfung und Probe-Mocks ab. Nicht ausgeführt wurden echte
+Logging, Tokenprüfung und Probe-Mocks ab; am 04.11.2026 liefen die fünf
+betroffenen Testdateien mit 26 erfolgreichen Tests. Nicht ausgeführt wurden echte
 DB-Last-/Timeout-/Erholungstests und die Browser-/Produktionsmonitor-Abnahme.
 Deployment, Secretbereitstellung und Monitorumstellung bleiben offen; der
 geänderte `/api/health`-Vertrag darf erst nach Verbraucherabgleich ausgerollt

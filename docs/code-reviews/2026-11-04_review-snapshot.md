@@ -45,3 +45,9 @@
 - Lokale synthetische Vorschau per Playwright bei 390 px und 1440 px gerendert; Impeccable-Detektor 0 Befunde. Gewinnerlabel und Kontrast korrigiert; statischer Typografiehinweis behoben.
 - Keine Produktionsdatenbank verwendet; Migration nicht deployed. iOS bleibt separat.
 - Commit `3bf2d1b` mit regulären Hooks erfolgreich. Die danach erneut ausgeführte vollständige Vitest-Suite bestand mit 1.216/1.216 Tests.
+
+## BUG-055 / BUG-056 – Health-Endpunkte (04.11.2026)
+
+- Fünf gezielte Unit-Testdateien bestanden: 26/26 Tests für Liveness, Readiness, DB-Probe, Proxy und ApiLog.
+- `npm audit --omit=dev`: 0 Vulnerabilities. Review-Regressionscheck: Exitcode 0, 9,9/10, keine Regression; eine nicht blockierende Magic-Numbers-Notiz bleibt offen.
+- Keine Produktionsänderung oder Produktionslast ausgeführt. Monitorumstellung und isolierte DB-Last-/Timeout-/Erholungsabnahme bleiben offen.

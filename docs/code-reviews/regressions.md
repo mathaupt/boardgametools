@@ -481,9 +481,11 @@ Jeder Eintrag enthält Felder für Root-Cause-Analyse und Gegenmaßnahmen (manue
 |---------|-----------|--------|-------|--------|
 | SEC-45: npm audit: Bekannte Vulnerabilities | P2 | resolved | open | npm audit lieferte keine gültigen Prüfdaten |
 
-**Root-Cause:** <!-- Manuell ausfüllen: Warum ist das Finding zurückgekehrt? -->
-**Gegenmaßnahme:** <!-- Manuell ausfüllen: Wie wird verhindert, dass es erneut passiert? -->
-**Verantwortlich:** <!-- Manuell ausfüllen -->
+**Root-Cause:** Der erste Evaluatorlauf lief in der Sandbox ohne Registryzugriff. `npm audit` konnte deshalb keine gültigen Prüfdaten abrufen; es gab keine Dependencyänderung.
+**Gegenmaßnahme:** Den Audit und den Regressionsevaluator nach fehlgeschlagenem Registryzugriff mit freigegebenem Netzwerkzugriff wiederholen.
+**Verantwortlich:** BoardGameTools-Wartung.
+
+**Auflösung 2026-11-04:** `npm audit --omit=dev` meldete 0 Vulnerabilities. Der Regressionsevaluator lief anschließend mit Exitcode 0, 9,9/10 und ohne Regression. Eine nicht blockierende Reviewer-Notiz zu Magic Numbers bleibt neu. Snapshot: `history/2026-11-04_2348.json`.
 
 **Auflösung 2026-11-04:** Der erste Evaluatorlauf lief ohne Registryzugriff und erhielt deshalb ungültige Auditdaten; das war kein Dependency-Befund. `npm audit --omit=dev` mit Registryzugriff meldete 0 Vulnerabilities. `npm run review-evaluate:regression` mit Registryzugriff endete mit Exitcode 0, 10/10, 0 offenen Findings und ohne Regression. Snapshot: `history/2026-11-04_0942.json`.
 
@@ -512,5 +514,17 @@ Jeder Eintrag enthält Felder für Root-Cause-Analyse und Gegenmaßnahmen (manue
 **Verantwortlich:** BoardGameTools-Wartung.
 
 **Auflösung 2026-11-04:** `npm audit --omit=dev` meldete 0 Vulnerabilities; das vollständige Audit zeigte nur 3 niedrige Befunde in Entwicklungsabhängigkeiten. `npm run review-evaluate:regression` mit Registryzugriff endete mit Exitcode 0, 10/10, 0 offenen Findings und ohne Regression. Snapshot: `history/2026-11-04_1951.json`.
+
+---
+
+## 2026-11-04 22:47:33
+
+| Finding | Priorität | Vorher | Jetzt | Detail |
+|---------|-----------|--------|-------|--------|
+| SEC-45: npm audit: Bekannte Vulnerabilities | P2 | resolved | open | npm audit lieferte keine gültigen Prüfdaten |
+
+**Root-Cause:** <!-- Manuell ausfüllen: Warum ist das Finding zurückgekehrt? -->
+**Gegenmaßnahme:** <!-- Manuell ausfüllen: Wie wird verhindert, dass es erneut passiert? -->
+**Verantwortlich:** <!-- Manuell ausfüllen -->
 
 ---

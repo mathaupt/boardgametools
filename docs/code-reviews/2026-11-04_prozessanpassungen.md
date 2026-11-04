@@ -64,3 +64,9 @@ Native iOS-Oberflächen und iOS-Deep-Links bleiben separat zu planen.
 - [ ] Commit mit regulären Hooks.
 
 Die Produktionsmigration ist nicht Teil dieser lokalen Umsetzung.
+
+## BUG-055 / BUG-056 – Health-Endpunkte
+
+- [x] Gezielte Regressionstests ausgeführt: 26/26 bestanden.
+- [x] Produktionsabhängigkeits-Audit und Regressionsevaluator nach Registryfehler wiederholt; 0 Produktionsbefunde, keine Regression.
+- [ ] Deployment, Monitorinventar/-umstellung und isolierte echte DB-Last-/Timeout-/Erholungsabnahme nachholen, bevor die Bugs geschlossen werden.

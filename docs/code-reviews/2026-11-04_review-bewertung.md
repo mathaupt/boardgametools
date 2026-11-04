@@ -76,3 +76,14 @@ Nach dem Produktionsfehler wurden die fehlenden Datenbankschritte mit ausdrückl
 
 FEAT-029 ist im Webcode umgesetzt. Die Migration ist nicht in Produktion ausgerollt. Der lokale PostgreSQL-Dienst wurde nach dem Test gestoppt.
 Commit `3bf2d1b` wurde mit regulären Hooks erstellt; die abschließende Gesamtsuite bestand danach mit 1.216/1.216 Tests.
+
+## BUG-055 / BUG-056 – Health-Endpunkte
+
+| Prüffeld | Ergebnis |
+|---|---|
+| Gezielte Unit-Tests | 26/26 bestanden (Health, Readiness, Probe, Proxy, ApiLog) |
+| Produktionsabhängigkeits-Audit | `npm audit --omit=dev`: 0 Vulnerabilities |
+| Review-Regressionscheck | Exitcode 0, 9,9/10, keine Regression |
+| Restabnahme | Deployment, Monitorumstellung und isolierte DB-Last-/Timeout-/Erholungstests offen |
+
+Die vorhandene Codekorrektur ist lokal bestätigt. BUG-055 und BUG-056 bleiben bis zur Betriebsabnahme in Bearbeitung.
