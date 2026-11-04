@@ -75,3 +75,4 @@ Nach dem Produktionsfehler wurden die fehlenden Datenbankschritte mit ausdrückl
 | Gerenderte UI | Playwright 390 px/1440 px; Impeccable-Detektor ohne Befund |
 
 FEAT-029 ist im Webcode umgesetzt. Die Migration ist nicht in Produktion ausgerollt. Der lokale PostgreSQL-Dienst wurde nach dem Test gestoppt.
+Commit `3bf2d1b` wurde mit regulären Hooks erstellt; die abschließende Gesamtsuite bestand danach mit 1.216/1.216 Tests.

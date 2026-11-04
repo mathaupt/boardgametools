@@ -931,7 +931,7 @@ danach können FEAT-026 und FEAT-027 unabhängig geplant umgesetzt werden.
 
 ## FEAT-029 – Gespielte Eventspiele direkt als Sessions erfassen
 
-**Status:** Umsetzung freigegeben am 04.11.2026; Web-Implementierung in Abnahme. Isolierter Migrationstest und gerenderte Browserprüfung stehen noch aus.
+**Status:** Web-Umsetzung in Version 0.50.80 abgeschlossen und am 04.11.2026 committed. Migration wurde isoliert getestet, aber nicht in Produktion ausgerollt. iOS bleibt separat.
 **Ziel:** Im Event festhalten, welche vorgeschlagenen Spiele tatsächlich gespielt wurden, und die Partien direkt von dort als Sessions erfassen und mit dem Event verknüpfen.
 **Bestätigter Umfang:** Je tatsächlich gespielter Partie eine eigene Session. Eventteilnehmer werden vorausgewählt. Mitspieler, Dauer, Gewinner/Platzierungen und Notizen können erfasst werden. Gäste werden namentlich als Session-Mitspieler übernommen. Reine BGG-Vorschläge können ohne dauerhaften Sammlungsimport als Session erfasst werden. Nur der Event-Ersteller darf Sessions im Event speichern und nachträglich ändern. Angemeldete Eventberechtigte sehen die Sessiondetails im Event; Gäste mit öffentlichem Event-Link sehen nur die gespielten Spiele.
 **Abnahmekriterien für die spätere Planung:** Gespielte Partien sind im Event erkennbar und mit Sessions verknüpft; Sessiondaten fließen in bestehende Historie und Statistiken ein; wiederholtes Absenden erzeugt keine ungewollten Duplikate; nicht gespielte Vorschläge bleiben ungetrackt; Zugriffsrechte und Korrekturen sind abgesichert.

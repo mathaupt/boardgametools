@@ -9,7 +9,7 @@
 - [x] Dokumentation, FAQ, OpenAPI, Changelog und Backlog aktualisiert.
 - [x] TypeScript, Produktionsbuild, Security-Check und Review-Regressionscheck bestanden; 10/10 und keine offenen Findings.
 - [x] Produktionsaudit mit Registryzugriff: 0 Vulnerabilities. Ungültiger Offline-Auditlauf als Prozessartefakt dokumentiert und mit gültigem Lauf aufgelöst.
-- [ ] Commit mit regulären Hooks.
+- [x] Commit `3bf2d1b` mit regulären Hooks; lint-staged, Security-Check und Review-Regressionscheck bestanden.
 
 - [x] Vor Umsetzung Planaktualität gegen Schema, Serien-APIs, FEAT-024 und mobile Verträge geprüft; Umfang und Freigabe im Plan festgehalten.
 - [x] Laufzeitänderungen testgetrieben umgesetzt: neue API-, Service-, DTO-, Snapshot- und UI-Verträge; RED/GREEN für die wesentlichen Regressionen beobachtet.

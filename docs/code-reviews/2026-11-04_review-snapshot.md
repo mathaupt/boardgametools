@@ -44,3 +44,4 @@
 - ESLint: 0 Fehler, 652 Warnungen in vorhandenen Prüf-/Hilfsskripten.
 - Lokale synthetische Vorschau per Playwright bei 390 px und 1440 px gerendert; Impeccable-Detektor 0 Befunde. Gewinnerlabel und Kontrast korrigiert; statischer Typografiehinweis behoben.
 - Keine Produktionsdatenbank verwendet; Migration nicht deployed. iOS bleibt separat.
+- Commit `3bf2d1b` mit regulären Hooks erfolgreich. Die danach erneut ausgeführte vollständige Vitest-Suite bestand mit 1.216/1.216 Tests.
