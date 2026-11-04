@@ -58,6 +58,6 @@
 - [x] OpenAPI, FEATURES, FAQ, CONCEPT, AGENTS, Changelog und Backlog aktualisiert.
 - [x] Abnahme: 1.151 Tests in 167 Dateien, TypeScript, Produktionsbuild, Security-Check und `npm audit --omit=dev` (0 Vulnerabilities) bestanden. ESLint: 0 Fehler, 652 vorhandene Warnungen aus Prüfscripts. Browsernachweise mit synthetischen 24er-/60er Fixtures bei 1440/768/390/320/195 CSS px.
 - [x] Review-Regressionscheck mit Registryzugriff: Exitcode 0, 10/10 gesamt und Sicherheit, 0 offene Findings, keine Regression; Snapshot `history/2026-11-04_0942.json`.
-- [ ] Commit mit regulären Hooks.
+- [x] Commit `0298dfc` mit regulären Hooks: lint-staged ESLint und abhängige Tests bestanden; Security-Check mit 0 Fehlern/0 Produktionsvulnerabilities; Regressionsevaluator 10/10, 0 offene Findings.
 
 **Freigabe:** Erteilt am 04.11.2026 durch „setze FEAT-026 um“ für den oben aktualisierten Webumfang.
