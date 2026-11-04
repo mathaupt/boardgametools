@@ -1,5 +1,6 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { buildPublicEventInclude, serializePublicEvent } from "@/lib/public-event";
+import { createProfileNonce, deriveProfileToken, hashProfileToken } from "@/lib/gamification/profile-token";
 
 function makeEvent(overrides = {}) {
   return {
@@ -87,6 +88,23 @@ describe("buildPublicEventInclude", () => {
 });
 
 describe("serializePublicEvent", () => {
+  it("links only registered participants who enabled profile sharing", () => {
+    vi.stubEnv("NEXTAUTH_SECRET", "public-event-profile-test-secret");
+    const nonce = createProfileNonce();
+    const token = deriveProfileToken("user-shared", nonce);
+    const event = makeEvent({ invites: [
+      { id: "invite-shared", status: "accepted", email: "private@example.invalid", user: { id: "user-shared", name: "Anna", publicProfileEnabled: true, publicProfileTokenNonce: nonce, publicProfileTokenHash: hashProfileToken(token) } },
+      { id: "invite-private", status: "accepted", email: "private2@example.invalid", user: { id: "user-private", name: "Ben", publicProfileEnabled: false, publicProfileTokenNonce: null, publicProfileTokenHash: null } },
+      { id: "invite-guest", status: "accepted", email: null, user: null },
+    ] });
+
+    const result = serializePublicEvent(event, null);
+
+    expect(result.invites.map(({ profileUrl }) => profileUrl)).toEqual([`/public/profile#${token}`, null, null]);
+    expect(JSON.stringify(result)).not.toContain(nonce);
+    vi.unstubAllEnvs();
+  });
+
   it("serializes event dates to ISO strings", () => {
     const result = serializePublicEvent(makeEvent(), null);
     expect(result.eventDate).toBe("2026-04-01T18:00:00.000Z");

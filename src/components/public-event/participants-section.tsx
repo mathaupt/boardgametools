@@ -26,7 +26,7 @@ export function ParticipantsSection({ invites, guests, activeGuestId }: {
             <ul className="space-y-2">
               {invites.map((invite, index) => (
                 <li key={`${invite.name}-${index}`} className="flex min-w-0 flex-wrap items-center justify-between gap-2 rounded-lg border border-border/60 bg-muted/20 px-3 py-2">
-                  <span className="min-w-0 [overflow-wrap:anywhere] text-sm font-medium">{invite.name}</span>
+                  {invite.profileUrl ? <a href={invite.profileUrl} className="min-w-0 [overflow-wrap:anywhere] text-sm font-medium text-primary underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">{invite.name}<span className="sr-only"> – öffentliches Profil</span></a> : <span className="min-w-0 [overflow-wrap:anywhere] text-sm font-medium">{invite.name}</span>}
                   <Badge variant={invite.status === "accepted" ? "default" : invite.status === "declined" ? "destructive" : "secondary"} className="shrink-0">
                     {invite.status === "accepted" ? <><Check className="mr-1 h-3 w-3" aria-hidden="true" />Dabei</> : invite.status === "declined" ? <><X className="mr-1 h-3 w-3" aria-hidden="true" />Abgesagt</> : <><Clock className="mr-1 h-3 w-3" aria-hidden="true" />Ausstehend</>}
                   </Badge>

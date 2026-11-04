@@ -12,6 +12,7 @@ import { getClientBaseUrl } from "@/lib/public-link";
 import { GroupMembersSection } from "./group-members-section";
 import { GroupPollsSection } from "./group-polls-section";
 import { GroupCommentsSection } from "./group-comments-section";
+import { GroupChallengesSection } from "./group-challenges-section";
 
 interface GroupDetailClientProps {
   group: SerializedGroup;
@@ -250,6 +251,8 @@ export function GroupDetailClient({ group, userId, isOwner, initialPublicUrl }: 
           loading={loading}
         />
       </div>
+
+      <GroupChallengesSection groupId={group.id} canCreate={isOwner || group.members.some((member) => member.userId === userId && member.role === "admin")} />
 
       <GroupPollsSection
         group={group}

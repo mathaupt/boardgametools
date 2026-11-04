@@ -488,3 +488,15 @@ Jeder Eintrag enthält Felder für Root-Cause-Analyse und Gegenmaßnahmen (manue
 **Auflösung 2026-11-04:** Der erste Evaluatorlauf lief ohne Registryzugriff und erhielt deshalb ungültige Auditdaten; das war kein Dependency-Befund. `npm audit --omit=dev` mit Registryzugriff meldete 0 Vulnerabilities. `npm run review-evaluate:regression` mit Registryzugriff endete mit Exitcode 0, 10/10, 0 offenen Findings und ohne Regression. Snapshot: `history/2026-11-04_0942.json`.
 
 ---
+
+## 2026-11-04 13:25:54
+
+| Finding | Priorität | Vorher | Jetzt | Detail |
+|---------|-----------|--------|-------|--------|
+| SEC-45: npm audit: Bekannte Vulnerabilities | P2 | resolved | open | npm audit lieferte keine gültigen Prüfdaten |
+
+**Root-Cause:** <!-- Manuell ausfüllen: Warum ist das Finding zurückgekehrt? -->
+**Gegenmaßnahme:** <!-- Manuell ausfüllen: Wie wird verhindert, dass es erneut passiert? -->
+**Verantwortlich:** <!-- Manuell ausfüllen -->
+
+---

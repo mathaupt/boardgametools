@@ -73,6 +73,7 @@ Die Impeccable-Design-Hooks sind für das Projekt aktiviert. Sie melden nach Än
 - GitHub CI benötigt schon für `npm ci` eine global definierte künstliche `SQL_DATABASE_URL`, da postinstall `prisma generate` startet. Niemals Produktionszugangsdaten für Codegenerierung verwenden; Regression: `tests/unit/scripts/ci-install.test.ts`.
 - `npm run build` verändert keine Datenbank. Migrationen nur explizit über `npm run prisma:deploy`; bei Fehlern abbrechen, kein automatisches Baseline oder `db push`.
 - iOS-Vertragstests auf macOS: `npm run test:ios:contracts`. Lokale Cache-Zuordnung und vollständige Bereinigung: `LocalAccountStore` in `Data/PersistenceController.swift`.
+- Lokale PostgreSQL-Integrationstests verwenden ausschließlich `bgt_test_*`-Datenbanken auf `localhost`. `.env.test.local` ist ignoriert und kann `BGT_TEST_DATABASE_URL` für `tests/integration/setup.ts` enthalten. Niemals Produktionsdatenbanken für Integrationstests oder Migrationstests verwenden.
 
 ## PFLICHT-Regeln
 

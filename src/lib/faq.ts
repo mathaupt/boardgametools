@@ -385,6 +385,18 @@ export const faqSections: FaqSection[] = [
         answer:
           "Neben den Bearbeitungsformularen zeigt die Profilseite deine Aktivitaeten: erhaltene Event-Einladungen, Events an denen du teilnimmst, Gruppen-Mitgliedschaften sowie Kommentare und Nachrichten aus Gruppen und Umfragen.",
       },
+      {
+        question: "Wo finde ich meine persönlichen Abzeichen und Entdeckerziele?",
+        answer: "Öffne im Hauptmenü den Bereich „Abzeichen“. Dort findest du deine verdienten Meilensteine und Spiele aus deiner Sammlung, die du noch nicht oder länger nicht mitgespielt hast. Diese Übersicht ist privat.",
+      },
+      {
+        question: "Was wird in meinem öffentlichen Abzeichenprofil angezeigt?",
+        answer: "Nur wenn du die Freigabe einschaltest: dein Anzeigename, die von dir ausgewählten verdienten Abzeichen und zusammengefasste Zahlen zu Sessions, gespielten Spielen und abgeschlossenen Reihen. Deine E-Mail-Adresse, Gruppen, Events, Kommentare, Notizen und einzelnen Sessions bleiben privat. Den Link kannst du jederzeit erneuern oder widerrufen.",
+      },
+      {
+        question: "Wie funktionieren gemeinsame Gruppenziele?",
+        answer: "Owner und Admins können ein gemeinsames Ziel für dokumentierte Sessions oder verschiedene Spiele festlegen. Du entscheidest selbst, ob du mitmachst. Sessions, die du während deiner Teilnahme erstellst oder mitspielst, zählen zur gemeinsamen Summe. Andere Mitglieder sehen keine Einzelbeiträge. Wenn du deine Teilnahme beendest, zählen spätere Sessions nicht mehr.",
+      },
     ],
   },
   {

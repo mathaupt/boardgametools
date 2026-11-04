@@ -99,7 +99,13 @@ export const DELETE = withApiLogging(async function DELETE(
       return NextResponse.json({ error: Errors.CANNOT_REMOVE_OWNER }, { status: 400 });
     }
 
-    await prisma.groupMember.delete({ where: { id: targetMember.id } });
+    await prisma.$transaction(async (tx) => {
+      await tx.groupChallengeParticipant.updateMany({
+        where: { userId: targetUserId, leftAt: null, challenge: { groupId: id, status: "active" } },
+        data: { leftAt: new Date() },
+      });
+      await tx.groupMember.delete({ where: { id: targetMember.id } });
+    });
     return NextResponse.json({ message: Errors.MEMBER_REMOVED });
   } catch (error) {
     return handleApiError(error);

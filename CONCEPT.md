@@ -131,7 +131,7 @@ Die Weboberfläche verwendet seit 0.50.20 die bestätigte Gestaltung „Club Pro
 - **Zentrales Error-Messages-Modul**: Alle API-Fehlermeldungen auf Deutsch in `src/lib/error-messages.ts`
 - **Security Headers**: CSP, HSTS, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy
 
-### 17. Gamification (FEAT-028 – Konzept, nicht umgesetzt)
+### 17. Gamification (FEAT-028 – Web-Umsetzung)
 
 - Persönliche Abzeichen für dokumentierte Sessions, gespielte Vielfalt und
   Fortschritt in Spielereihen; Erfolge sind standardmäßig privat und können
@@ -147,7 +147,8 @@ Die Weboberfläche verwendet seit 0.50.20 die bestätigte Gestaltung „Club Pro
   profiliert.
 - Die Produktentscheidungen und Datenschutzregeln stehen in
   `docs/superpowers/specs/2026-11-03-FEAT-028-gamification-design.md`.
-  Implementierungsplan und Umsetzungsfreigabe sind offen.
+  Der Web-Implementierungsplan ist am 04.11.2026 freigegeben; native iOS-
+  Ansichten sind separat zu planen.
 - Freigegebene Profile sind für Gäste per teilbarem Link erreichbar und können
   von öffentlichen Events verlinkt werden. Sie zeigen Anzeigename, ausgewählte
   Abzeichen und begrenzte Aktivitätsaggregate; E-Mail, Gruppen-/Eventdetails,

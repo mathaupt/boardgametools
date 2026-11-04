@@ -46,8 +46,15 @@ model User {
   uploads         Upload[]
   apiTokens       ApiToken[]
   pushDevices     PushDevice[]
+  discoveryDismissals DiscoveryDismissal[]
+  createdGroupChallenges GroupChallenge[] @relation("CreatedGroupChallenges")
+  challengeParticipations GroupChallengeParticipant[]
 
   appleSub        String?   @unique
+  publicProfileEnabled          Boolean  @default(false)
+  publicProfileTokenHash        String?  @unique
+  publicProfileTokenNonce        String?
+  publicProfileFeaturedBadgeIds String[] @default([])
 }
 
 model ApiToken {
@@ -109,10 +116,24 @@ model Game {
   proposals       GameProposal[]
   selectedEvents  Event[]         @relation("SelectedGame")
   seriesEntries   GameSeriesEntry[]
+  discoveryDismissals DiscoveryDismissal[]
   tags            GameTag[]
 
   @@index([ownerId])
   @@index([deletedAt])
+}
+
+model DiscoveryDismissal {
+  id        String   @id @default(cuid())
+  userId    String
+  gameId    String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  game Game @relation(fields: [gameId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, gameId])
+  @@index([userId])
 }
 
 // ============================================
@@ -193,6 +214,7 @@ model Group {
   events      Event[]
   polls       GroupPoll[]
   comments    GroupComment[]
+  challenges  GroupChallenge[]
 
   @@index([deletedAt])
   @@index([ownerId])
@@ -211,6 +233,39 @@ model GroupMember {
 
   @@unique([groupId, userId])
   @@index([userId])
+}
+
+model GroupChallenge {
+  id          String    @id @default(cuid())
+  groupId     String
+  createdById String
+  title       String
+  kind        String
+  target      Int
+  startsAt    DateTime  @default(now())
+  endsAt      DateTime?
+  status      String    @default("active")
+  createdAt   DateTime  @default(now())
+
+  group       Group     @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  createdBy   User      @relation("CreatedGroupChallenges", fields: [createdById], references: [id], onDelete: Cascade)
+  participants GroupChallengeParticipant[]
+
+  @@index([groupId, status])
+}
+
+model GroupChallengeParticipant {
+  id          String    @id @default(cuid())
+  challengeId String
+  userId      String
+  joinedAt    DateTime  @default(now())
+  leftAt      DateTime?
+
+  challenge GroupChallenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([challengeId, userId])
+  @@index([userId, leftAt])
 }
 
 // ============================================

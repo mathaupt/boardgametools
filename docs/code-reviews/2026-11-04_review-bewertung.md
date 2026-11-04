@@ -40,3 +40,19 @@ Vor Deployment muss die Migration mit einer isolierten PostgreSQL-Datenbank und 
 ## Review-Evaluator
 
 Commit-Hook: Gesamt 10/10, Sicherheit 10/10, keine offenen Findings und keine Regression. `npm audit --omit=dev` meldete 0 produktive Vulnerabilities. Snapshot: `history/2026-11-04_0902.json`. Commit: `523360d`.
+
+## FEAT-028 – Gamification (0.50.79)
+
+| Bereich | Ergebnis |
+|---|---|
+| Unit-Tests | 1.199/1.199 bestanden (181 Dateien) |
+| PostgreSQL-Integration | 2/2 bestanden auf isolierter lokaler `bgt_test_feat028`-Datenbank |
+| TypeScript und Produktionsbuild | bestanden |
+| Geänderte Dateien ESLint | bestanden, keine Befunde |
+| Security-Check | bestanden; 2 vorhandene Hinweise zu Raw-SQL und Debug-Routen |
+| Produktionsabhängigkeits-Audit | 0 Vulnerabilities |
+| Review-Regressionscheck | Exitcode 0, 9,9/10, keine Regression |
+| Gerenderte öffentliche Profilseite | 390/195/1440 px, kein Überlauf oder E-Mail-Leak; keine Browserfehler |
+| Migration | ausschließlich auf isolierter lokaler Testdatenbank angewendet |
+
+Öffentliche Profile zeigen nur explizit ausgewählte Abzeichen und Spielaggregate. Der Link-Token verbleibt im URL-Fragment und wird nicht als Pfad oder Query an den Server gesendet. FEAT-025-Bestandseinträge bleiben unverändert. iOS ist nicht Teil dieses Web-Umfangs.

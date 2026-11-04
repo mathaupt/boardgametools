@@ -195,6 +195,28 @@ xcodebuild -project BoardGameTools.xcodeproj -scheme BoardGameTools -destination
 
 Alle GitHub-CI-Jobs erhalten für `npm ci` eine künstliche `SQL_DATABASE_URL` auf `127.0.0.1:1`. Der automatische `postinstall`-Schritt führt `prisma generate` aus; dafür ist eine syntaktisch gültige URL erforderlich, aber keine laufende Datenbank. Dieser Wert ist ausschließlich Testkonfiguration und wird nicht in Vercel-Umgebungsvariablen übernommen. Migrationen dürfen damit nicht ausgeführt werden.
 
+### Lokale PostgreSQL-Integrationstests
+
+Integrationstests und Migrationen laufen ausschließlich gegen eine eigene lokale
+Datenbank mit dem Präfix `bgt_test_`. Beispiel für eine lokale PostgreSQL-Instanz:
+
+```bash
+createdb -h 127.0.0.1 -p 5432 bgt_test_local
+```
+
+In der ignorierten Datei `.env.test.local` die Umgebungsvariable
+`BGT_TEST_DATABASE_URL` auf diese Datenbank setzen, beispielsweise
+`postgresql://<lokaler-benutzer>@127.0.0.1:5432/bgt_test_local`. Der
+Integrationstest-Setup prüft Host und Datenbankpräfix, bevor eine Verbindung
+geöffnet wird. Tests starten mit:
+
+```bash
+npx vitest run --config vitest.integration.config.ts
+```
+
+Niemals Produktions-Zugangsdaten in `.env.test.local` eintragen oder Tests auf
+Produktionsdatenbanken richten.
+
 ## Optionale Pipeline-Prüfungen
 
 ### Kontrollierte Bereinigung von Spieltexten (FEAT-009)

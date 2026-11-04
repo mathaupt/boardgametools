@@ -4,7 +4,7 @@ import { useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
-import { Dice6, LayoutDashboard, Gamepad2, CalendarDays, Users, BarChart3, Vote, Shield, Library, LogOut, HelpCircle, Activity, FileCode, Menu, X } from "lucide-react";
+import { Dice6, LayoutDashboard, Gamepad2, CalendarDays, Users, BarChart3, Vote, Shield, Library, LogOut, HelpCircle, Activity, FileCode, Menu, X, Award } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { currentVersion } from "@/lib/changelog";
 
@@ -16,6 +16,7 @@ const navigation = [
   { name: "Events", href: "/dashboard/events", icon: Vote },
   { name: "Gruppen", href: "/dashboard/groups", icon: Users },
   { name: "Statistiken", href: "/dashboard/statistics", icon: BarChart3 },
+  { name: "Abzeichen", href: "/dashboard/achievements", icon: Award },
 ];
 const adminNavigation = [
   { name: "Nutzerverwaltung", href: "/dashboard/admin/users", icon: Shield },

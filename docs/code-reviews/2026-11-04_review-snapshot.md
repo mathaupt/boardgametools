@@ -17,3 +17,12 @@
 - Schemaänderung und Migration sind erstellt; Prisma-Schema validiert. Kein lokaler PostgreSQL-Server/Docker verfügbar, daher keine isolierte Migrationstest-Ausführung und keine Anwendung der Migration.
 - Commit `523360d`: lint-staged ESLint und betroffene Tests, Security-Check (0 Fehler, 0 Produktionsvulnerabilities) sowie Regressionsevaluator bestanden.
 - Keine Produktionsdaten abgefragt oder geändert. Migration bleibt ein separater Deployschritt.
+
+## FEAT-028 – Gamification (0.50.79)
+
+- Vitest: 1.199/1.199 Tests in 181 Dateien bestanden; TypeScript und Produktionsbuild bestanden.
+- Isolierter PostgreSQL-Integrationstest auf `bgt_test_feat028`: 2/2 bestanden; FEAT-025-Reiheneinträge bleiben collection-backed und unverändert.
+- Produktionsabhängigkeits-Audit `npm audit --omit=dev`: 0 Vulnerabilities. Review-Evaluator mit Registryzugriff: 9,9/10, Regressionsevaluator Exitcode 0; bestehendes SEC-45 wurde nach gültigem Audit aufgelöst. Eine neue Reviewer-Notiz zu Magic Numbers (11 Treffer, Schwellwert 10) ist nicht blockierend.
+- Security-Check: 0 Fehler und 2 bestehende Hinweise zu Raw-SQL und Debug-Routen. Geänderte Dateien: ESLint ohne Befunde.
+- Lokale gerenderte Prüfung der öffentlichen Profilseite mit synthetischen Daten bei 390, 195 und 1440 px: kein horizontaler Überlauf, keine private E-Mail im DOM, keine Browserfehler. Token wird im Fragment gelesen und per POST übertragen; keine Token in Request-Pfaden.
+- Migration ausschließlich auf der lokalen Testdatenbank angewendet. Keine Produktionsdaten verwendet; keine Produktionsmigration ausgeführt.

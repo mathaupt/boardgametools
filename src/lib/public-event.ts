@@ -1,6 +1,7 @@
 import { Prisma } from "@/generated/prisma/client";
 import { gameTextForRead } from "@/lib/game-text";
 import { evaluateEventState, type EventState } from "@/lib/events/event-state";
+import { deriveProfileToken, hashProfileToken } from "@/lib/gamification/profile-token";
 
 interface PublicEventRaw {
   id: string;
@@ -17,7 +18,7 @@ interface PublicEventRaw {
     id: string;
     status: string;
     email: string | null;
-    user: { name: string | null } | null;
+    user: { id?: string; name: string | null; publicProfileEnabled?: boolean; publicProfileTokenHash?: string | null; publicProfileTokenNonce?: string | null } | null;
   }>;
   selectedGame: {
     id: string;
@@ -90,7 +91,7 @@ export const buildPublicEventInclude = (userId?: string | null) => ({
       id: true,
       status: true,
       email: true,
-      user: { select: { name: true } },
+      user: { select: { id: true, name: true, publicProfileEnabled: true, publicProfileTokenHash: true, publicProfileTokenNonce: true } },
     },
     orderBy: { invitedAt: "asc" as const },
   },
@@ -181,6 +182,7 @@ export interface SerializedPublicEvent {
   invites: Array<{
     name: string;
     status: string;
+    profileUrl?: string | null;
   }>;
   selectedGame: {
     id: string;
@@ -263,10 +265,18 @@ export function serializePublicEvent(
     shareToken: event.shareToken,
     isPublic: event.isPublic,
     createdBy: event.createdBy,
-    invites: (event.invites ?? []).map((invite: PublicEventRaw["invites"][number]) => ({
-      name: invite.user?.name || (invite.email ? invite.email.replace(/(.{2}).*(@.*)/, "$1***$2") : "Gast"),
-      status: invite.status,
-    })),
+    invites: (event.invites ?? []).map((invite: PublicEventRaw["invites"][number]) => {
+      let profileUrl: string | null = null;
+      if (invite.user?.id && invite.user.publicProfileEnabled && invite.user.publicProfileTokenNonce && invite.user.publicProfileTokenHash) {
+        const token = deriveProfileToken(invite.user.id, invite.user.publicProfileTokenNonce);
+        if (hashProfileToken(token) === invite.user.publicProfileTokenHash) profileUrl = `/public/profile#${token}`;
+      }
+      return {
+        name: invite.user?.name || (invite.email ? invite.email.replace(/(.{2}).*(@.*)/, "$1***$2") : "Gast"),
+        status: invite.status,
+        profileUrl,
+      };
+    }),
     selectedGame: event.selectedGame ? { ...event.selectedGame, name: gameTextForRead(event.selectedGame.name) } : null,
     winningProposal: event.winningProposal ? {
       id: event.winningProposal.id,

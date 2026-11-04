@@ -12,12 +12,24 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.79",
+    date: "2026-11-04",
+    title: "Abzeichen und gemeinsame Spielziele",
+    description: "Persönliche Erfolge, ein freiwillig teilbares Abzeichenprofil und kooperative Gruppenziele ergänzen die Spielübersicht.",
+    changes: [
+      { type: "feature", text: "FEAT-028: Eigene Abzeichen und Vorschläge zum Entdecken ungespielter Sammlungsspiele." },
+      { type: "feature", text: "Öffentliche Abzeichenprofile sind standardmäßig privat, widerrufbar und zeigen nur ausgewählte Erfolge sowie zusammengefasste Zahlen." },
+      { type: "feature", text: "Gruppen können freiwillige Session- und Spieleziele verfolgen; sichtbar ist nur der gemeinsame Fortschritt." },
+      { type: "internal", text: "Isolierte lokale PostgreSQL-Testdatenbank bgt_test_feat028 mit Migrationstest eingerichtet; Produktionsdatenbank unverändert." },
+    ],
+  },
+  {
     version: "0.50.78",
     date: "2026-11-04",
     title: "Gamification-Umsetzung geplant",
-    description: "Der Umsetzungsplan für persönliche Abzeichen, teilbare Profile und freiwillige Gruppen-Challenges liegt zur Freigabe vor.",
+    description: "Der Umsetzungsplan für persönliche Abzeichen, teilbare Profile und freiwillige Gruppen-Challenges wurde freigegeben.",
     changes: [
-      { type: "internal", text: "FEAT-028: Web-Umsetzungsplan erstellt; vor Laufzeitänderungen ist die Freigabe des konkreten Umfangs erforderlich." },
+      { type: "internal", text: "FEAT-028: Web-Umsetzungsplan erstellt und für drei Umsetzungsstufen freigegeben." },
       { type: "internal", text: "FEAT-025: Bestehende Spielereiheneinträge behalten ihre Sammlungsspiel-Verknüpfung; temporäre Einträge gelten für neue Einträge." },
     ],
   },

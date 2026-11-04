@@ -25,3 +25,17 @@
 ## Noch erforderliche Betriebsaktion
 
 Die generierte Migration vor einem Deployment auf einer isolierten PostgreSQL-Kopie mit repräsentativen Bestandsdaten testen. Produktionsmigration ist nicht Teil dieser Umsetzung.
+
+## FEAT-028 – Gamification (0.50.79)
+
+- [x] Freigegebenen Plan direkt vor der Umsetzung auf Aktualität geprüft; FEAT-025-Bestandsverhalten berücksichtigt.
+- [x] Laufzeitverträge testgetrieben umgesetzt; vollständige Suite 1.199/1.199 bestanden.
+- [x] Eigene lokale PostgreSQL-Testdatenbank `bgt_test_feat028` eingerichtet; Integrationstest 2/2 bestanden. Keine Produktionsdaten oder Produktionsmigration.
+- [x] Öffentliche Profilprojektion, Tokenrotation/Widerruf, Rate Limit, Gruppenmitgliedschaft und freiwilliges Opt-in geprüft.
+- [x] Öffentliche Profilseite lokal bei 390/195/1440 px gerendert; Überlauf, E-Mail-Leak und Browserfehler ausgeschlossen.
+- [x] Changelog, Backlog, FAQ, OpenAPI, FEATURES, CONCEPT, Deployment-Notizen und Plan aktualisiert.
+- [x] TypeScript, Produktionsbuild, geänderte ESLint-Dateien, Security-Check und Review-Regressionscheck bestanden.
+- [x] Produktionsaudit mit Registryzugriff: 0 Vulnerabilities. Ungültigen Sandbox-Auditlauf mit gültigem Audit und erneutem Evaluatorlauf aufgelöst.
+- [ ] Commit mit regulären Hooks.
+
+Native iOS-Oberflächen und iOS-Deep-Links bleiben separat zu planen.

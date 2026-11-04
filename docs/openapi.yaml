@@ -3242,3 +3242,129 @@ paths:
         '403': { description: Anfragequelle nicht erlaubt }
         '400': { $ref: '#/components/responses/BadRequest' }
         '404': { $ref: '#/components/responses/NotFound' }
+
+  /api/achievements/discovery-dismissals:
+    post:
+      tags: [Users]
+      summary: Sammlungsspiel aus persönlichen Entdeckungen ausblenden
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [gameId]
+              properties:
+                gameId: { type: string }
+      responses:
+        '200': { description: Spiel wurde für den angemeldeten Nutzer ausgeblendet }
+        '400': { description: Ungültige Eingabe }
+        '401': { description: Anmeldung erforderlich }
+        '404': { description: Ressource nicht gefunden }
+
+  /api/users/me/public-profile:
+    get:
+      tags: [Users]
+      summary: Einstellungen für das öffentliche Abzeichenprofil abrufen
+      responses:
+        '200': { description: Freigabestatus, verdiente Abzeichen und eigener teilbarer Link }
+        '401': { description: Anmeldung erforderlich }
+    patch:
+      tags: [Users]
+      summary: Abzeichenprofil aktivieren, anpassen, erneuern oder widerrufen
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [enabled, featuredBadgeIds]
+              properties:
+                enabled: { type: boolean }
+                featuredBadgeIds: { type: array, maxItems: 6, items: { type: string } }
+                rotate: { type: boolean }
+      responses:
+        '200': { description: Aktualisierte eigene Freigabeeinstellungen }
+        '400': { description: Ungültige Eingabe }
+        '401': { description: Anmeldung erforderlich }
+
+  /api/public/profile:
+    post:
+      tags: [Public]
+      summary: Freigegebenes Abzeichenprofil abrufen
+      security: []
+      description: Der Link-Token wird im Request-Body statt in URL-Pfad oder Query übertragen.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [token]
+              properties:
+                token: { type: string, minLength: 43, maxLength: 43 }
+      responses:
+        '200': { description: Anzeigename, ausgewählte verdiente Abzeichen und aggregierte Spielzahlen }
+        '404': { description: Ressource nicht gefunden }
+        '429': { description: Zu viele Anfragen }
+
+  /api/groups/{id}/challenges:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: { type: string }
+    get:
+      tags: [Groups]
+      summary: Gemeinsame Gruppenziele und aggregierten Fortschritt abrufen
+      responses:
+        '200': { description: Ziel, Zeitraum und ausschließlich gemeinsamer Fortschritt }
+        '401': { description: Anmeldung erforderlich }
+        '404': { description: Ressource nicht gefunden }
+    post:
+      tags: [Groups]
+      summary: Gemeinsames Ziel als Gruppenowner oder Admin anlegen
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title, kind, target]
+              properties:
+                title: { type: string, maxLength: 80 }
+                kind: { type: string, enum: [sessions, games] }
+                target: { type: integer, enum: [5, 10, 25] }
+                endsAt: { type: [string, 'null'], format: date-time }
+      responses:
+        '201': { description: Ziel angelegt; Teilnahme ist nicht automatisch aktiviert }
+        '400': { description: Ungültige Eingabe }
+        '401': { description: Anmeldung erforderlich }
+        '403': { description: Nur Owner und Admins können Ziele anlegen }
+        '404': { description: Ressource nicht gefunden }
+
+  /api/groups/{id}/challenges/{challengeId}/participation:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: { type: string }
+      - name: challengeId
+        in: path
+        required: true
+        schema: { type: string }
+    post:
+      tags: [Groups]
+      summary: Freiwillig an einem Gruppenziel teilnehmen
+      responses:
+        '200': { description: Opt-in-Zeitpunkt wurde festgehalten }
+        '401': { description: Anmeldung erforderlich }
+        '404': { description: Ressource nicht gefunden }
+        '409': { description: Eine beendete Teilnahme kann nicht erneut gestartet werden }
+    delete:
+      tags: [Groups]
+      summary: Teilnahme beenden
+      responses:
+        '200': { description: Opt-out-Zeitpunkt wurde gespeichert; vergangener Fortschritt bleibt erhalten }
+        '401': { description: Anmeldung erforderlich }
+        '404': { description: Ressource nicht gefunden }

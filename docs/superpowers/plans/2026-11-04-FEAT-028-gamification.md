@@ -14,7 +14,7 @@
 
 - Use the approved concept `docs/superpowers/specs/2026-11-03-FEAT-028-gamification-design.md` as the product contract. There are no public directories, rankings, streaks, penalties, push reminders, prizes, or individual challenge contributions.
 - Public profile visibility is off by default. A profile shows the display name, badges explicitly selected from earned badges, and only aggregate counts for sessions, distinct games played, and completed series. It never returns email, groups, events, comments, notes, individual sessions, scores, or challenge contributions.
-- Profile URLs use at least 256 bits of randomness. Persist a one-way token hash, allow rotation/revocation, avoid caching public responses, and do not log raw tokens.
+- Share URLs carry a 256-bit bearer token in the URL fragment (`/public/profile#…`), which browsers do not send in HTTP requests. The token is derived with HMAC-SHA256 from a random 256-bit nonce, user ID, and `NEXTAUTH_SECRET`; persist only the nonce and one-way token hash. Allow rotation/revocation, avoid caching public responses, and never log the token.
 - Initial badge catalogue: first/10th/50th created session; five distinct games played as a participant; first game from the user's collection played; one fully played series. Progress is private and based on the same documented source rules as earned badges.
 - Discovery starts with deterministic personal collection states: never played and not played in the last 365 days. It shows only games the user owns and can be dismissed from the discovery list without changing session history.
 - Initial group challenges: record 10/25 distinct sessions or play 5/10 distinct games. A participant opts in explicitly; only non-deleted sessions created by them or containing them as a player, created after their opt-in timestamp and within the challenge period, count. Each session counts once per challenge. Opt-out freezes the participant's eligible interval; deleting/correcting a source session recalculates the aggregate. Only current members can read a challenge.
@@ -25,7 +25,7 @@
 
 ## Aktualitätsprüfung vor Umsetzung – 04.11.2026
 
-- Geprüfter Stand: HEAD `9f7315a`, version `0.50.77`, Arbeitsbaum sauber.
+- Finaler Freshness-Check und Umsetzungsfreigabe: 04.11.2026, HEAD `ae3cdeb`, Version `0.50.78`, sauberer Arbeitsbaum. FEAT-026 ist seit der Planerstellung committed; es berührt keine Session-, Profil-, Gruppen- oder Serienverträge.
 - FEAT-025 schema source now has optional `GameSeriesEntry.gameId`, stored game snapshots, `played` state, and an additive migration that backfills existing entries while retaining their current `gameId`. Migration was not applied to production. No temporary conversion for existing entries is required by the user's clarification.
 - Existing profile page is `/dashboard/profile`; it currently loads email, invites, events, groups, comments, and notes for the owner. Public output must be a new, separate DTO and query, never a reuse of this data object.
 - `GameSession` has `createdById`, `createdAt`, `playedAt`, `deletedAt`, `gameId` and `SessionPlayer.userId`; group membership is represented by `GroupMember`. No direct session-to-group relation exists, so challenge totals must aggregate through explicit participant records.
@@ -34,19 +34,19 @@
 
 ## Files and responsibilities
 
-- `prisma/schema.prisma`: user share setting/token hash/featured badge IDs; challenge and participant models with group/user ownership, opt-in/out times and challenge interval.
+- `prisma/schema.prisma`: user share setting/token nonce and hash/featured badge IDs; challenge and participant models with group/user ownership, opt-in/out times and challenge interval.
 - New `src/lib/gamification/`: fixed badge catalogue, eligibility/progress calculators, profile-token generation/hash, and challenge aggregate query helpers. Keep pure rules independent from Prisma.
 - New `src/lib/services/achievement.service.ts`, `profile.service.ts`, `group-challenge.service.ts`: authenticated private data, public projection, and membership-checked challenge operations.
-- New APIs under `src/app/api/achievements/`, `src/app/api/users/me/public-profile/`, `src/app/api/public/profile/[token]/`, and `src/app/api/groups/[id]/challenges/` (plus challenge-specific participant route); new page at `src/app/public/profile/[token]/page.tsx`. Public pages are read-only.
+- New APIs under `src/app/api/achievements/`, `src/app/api/users/me/public-profile/`, `src/app/api/public/profile/` (POST body token), and `src/app/api/groups/[id]/challenges/` (plus challenge-specific participant route); public page at `src/app/public/profile/page.tsx` reads the fragment client-side and submits the token in the POST body. Public pages are read-only.
 - New `/dashboard/achievements` page and components for earned/locked badges, progress, and collection discovery; extend `/dashboard/profile` with badge selection, share toggle, copy-link and rotate/revoke controls.
-- New public profile page at `/public/profile/[token]`; update the public event data mapper to include a profile URL only for registered participants who explicitly enabled sharing. Guest participants remain unlinked.
+- New public profile page at `/public/profile#<token>`; update the public event data mapper to include a profile URL only for registered participants who explicitly enabled sharing. Guest participants remain unlinked.
 - New group challenge section under `/dashboard/groups/[id]`, with create/join/leave flows and group-only aggregate progress. No per-member progress endpoint.
 - Tests under `tests/unit/lib/gamification/`, `tests/unit/lib/services/`, `tests/unit/api/`, and `tests/unit/components/`; PostgreSQL integration test for migration, race safety, uniqueness and aggregate query semantics.
 - Update `docs/openapi.yaml`, `docs/FEATURES.md`, `src/lib/faq.ts`, `CONCEPT.md`, `src/lib/changelog.ts`, `docs/FEATURE-BACKLOG.md`, `AGENTS.md`, and the FEAT-028 plan. Add migration and deployment notes to `docs/DEPLOYMENT.md` only if the chosen migration needs a nonstandard rollout.
 
 ## Task 1 – Personal achievement rules (pure functions)
 
-Files: create `src/lib/gamification/badges.ts`, `src/lib/gamification/progress.ts`; tests: `tests/unit/lib/gamification/badges.test.ts`, `tests/unit/lib/gamification/progress.test.ts`.
+Files: `src/lib/gamification/badges.ts`, `src/lib/gamification/discovery.ts`, achievement service and unit tests under `tests/unit/lib/gamification/` and `tests/unit/lib/services/`.
 
 - [ ] **RED:** Add tests for the badge catalogue, exact threshold boundaries (0/1/9/10/49/50 sessions), distinct played games, a played collection game, fully played versus incomplete/empty series, and soft-deleted sessions excluded from every count.
 - [ ] **RED command:** `npx vitest run tests/unit/lib/gamification/badges.test.ts tests/unit/lib/gamification/progress.test.ts`; expected failure because the rules modules do not exist.
@@ -68,7 +68,7 @@ Files: `prisma/schema.prisma`, new achievement/profile services and routes, `/da
 
 ## Task 3 – Public shareable profiles and event links
 
-Files: new `/public/profile/[token]` page and public profile API; public event server DTO and participant component; tests for public route/event output.
+Files: `/public/profile` page with fragment token and POST API; public event server DTO and participant component; tests for public route/event output.
 
 - [ ] **RED:** Test invalid, disabled, rotated and revoked tokens return not-found without leaking whether a user exists; enabled token returns only display name, featured earned badges and aggregate counters.
 - [ ] **RED:** Test public event output includes an opaque profile URL only for registered invitees who enabled sharing; guest nicknames and non-sharing accounts have no profile URL.
@@ -96,10 +96,14 @@ Files: `prisma/schema.prisma`, group challenge service/routes/components, migrat
 - [ ] Run `BGT_TEST_DATABASE_URL="$BGT_TEST_DATABASE_URL" npx vitest run --config vitest.integration.config.ts tests/integration/gamification-migration.test.ts` against an isolated local `bgt_test_*` database, then run `npm run test`, `npm run typecheck`, `npm run lint`, `npm run security-check:fast`, `npm run build`, and `npm run review-evaluate:regression`.
 - [ ] Security review: IDOR and current membership checks; public profile token entropy/hash/revoke/cache/log redaction; explicit no-PII DTO; link only if sharing enabled; rate limiting; challenge opt-in, session correction, soft delete and participant exit; safe selects (never `user: true`).
 - [ ] Impeccable review plus local rendered browser check with synthetic accounts and sessions: achievements with zero/one/many badges, profile private/shared/revoked, long names, 390/768/1440 px, 200% zoom, light/dark, keyboard and reduced motion. Verify there are no public/private data leaks in DOM or network payloads. No production account/data.
-- [ ] Update API documentation, feature guide, FAQ, product concept, version/changelog, backlog status and this plan. Add relevant bug entries only if a regression is found.
-- [ ] Record migration limitation clearly if isolated PostgreSQL is unavailable; never substitute production. Update review snapshot, evaluation, process and regression docs after passing checks.
-- [ ] Commit code and docs with regular hooks only after tests, rendered review, security and regression checks pass.
+- [x] Updated OpenAPI, feature guide, FAQ, concept, version/changelog, backlog, deployment note and plan. No new bug was found.
+- [x] Used isolated local `bgt_test_feat028`; updated review snapshot, evaluation, process and regression docs. No production database was accessed.
+- [ ] Commit code and docs with regular hooks after all implementation checks pass.
+
+## Umsetzungsstand – 04.11.2026
+
+Die Umsetzung läuft ausschließlich lokal gegen `bgt_test_feat028`; es wurden keine Produktionsdaten verwendet und keine Produktionsmigration ausgeführt. Persönliche Erfolge, Profilfreigabe und Gruppen-Challenges sind implementiert. Die Migration ergänzt das Schema und erhält bestehende FEAT-025-Reiheneinträge. Das Profil verwendet einen Fragment-Link; der Token wird per POST-Body übertragen. Verifikation, Review-Dokumentation und Commit werden nach den abschließenden Prüfungen ergänzt.
 
 ## Freigabestatus
 
-The user asked on 04.11.2026 to implement FEAT-028 after clarifying FEAT-025 legacy behavior. The detailed plan must be presented for explicit scope approval under the repository's feature workflow before runtime changes begin. No FEAT-028 runtime code or migration has been started.
+The user requested implementation on 04.11.2026 and explicitly approved this exact plan after review. Approved: three Web stages described above; native iOS remains separate. The FEAT-025 clarification preserves every existing collection-backed series entry; only new entries may be temporary. Production migrations and production data are excluded.

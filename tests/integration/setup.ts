@@ -1,3 +1,7 @@
+import dotenv from "dotenv";
+
+dotenv.config({ path: ".env.test.local", quiet: true });
+
 const candidate = process.env.BGT_TEST_DATABASE_URL;
 if (!candidate) {
   throw new Error("BGT_TEST_DATABASE_URL is required for integration tests.");

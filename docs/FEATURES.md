@@ -556,6 +556,23 @@ Aktuelles Passwort + neues Passwort (2x). Laenge: 8–128 Zeichen.
 | Gruppen | Gruppen-Mitgliedschaften |
 | Nachrichten | Kommentare in Gruppen und Umfragen |
 
+### Gamification und öffentliches Abzeichenprofil (FEAT-028)
+
+Unter `/dashboard/achievements` erscheinen persönliche Meilensteine und Spiele
+aus der eigenen Sammlung, die noch nie oder länger nicht mitgespielt wurden.
+Abzeichen und Fortschritt bleiben privat, bis ein öffentliches Profil unter
+`/dashboard/profile` ausdrücklich aktiviert wird. Dort können nur bereits
+verdiente Abzeichen ausgewählt werden; der Link lässt sich erneuern oder
+widerrufen. Gäste sehen Anzeigename, ausgewählte Abzeichen und aggregierte
+Zähler für Sessions, gespielte Spiele und abgeschlossene Reihen. E-Mail,
+Gruppen, Events, Kommentare, Notizen und einzelne Sessions werden nicht geteilt.
+
+In Gruppen können Owner und Admins freiwillige gemeinsame Ziele anlegen: 10/25
+Sessions oder 5/10 verschiedene Spiele. Nur explizit Teilnehmende tragen bei;
+gezählt werden eigene oder mitgespielte, nicht gelöschte Sessions während der
+Teilnahme. Die Gruppe erhält nur den gemeinsamen Fortschritt. Eine Teilnahme
+kann beendet werden; spätere Sessions zählen dann nicht mehr.
+
 ### Passwort vergessen
 
 **Route:** `/passwort-vergessen` | **Zugriff:** Nicht angemeldet

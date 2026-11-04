@@ -13,6 +13,7 @@ import {
   Vote,
   Shield,
   Library,
+  Award,
 } from "lucide-react";
 import { useSession } from "next-auth/react";
 
@@ -24,6 +25,7 @@ const navigation = [
   { name: "Events", href: "/dashboard/events", icon: Vote },
   { name: "Gruppen", href: "/dashboard/groups", icon: Users },
   { name: "Statistiken", href: "/dashboard/statistics", icon: BarChart3 },
+  { name: "Abzeichen", href: "/dashboard/achievements", icon: Award },
 ];
 
 const adminNavigation = [

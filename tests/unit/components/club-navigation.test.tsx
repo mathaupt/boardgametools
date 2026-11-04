@@ -20,6 +20,11 @@ describe("Club navigation", () => {
     expect(screen.getByRole("link", { name: "Dashboard" })).not.toHaveAttribute("aria-current");
   });
 
+  it("offers the personal achievement area from the main navigation", () => {
+    render(<Navbar />);
+    expect(screen.getByRole("link", { name: "Abzeichen" })).toHaveAttribute("href", "/dashboard/achievements");
+  });
+
   it("opens a labelled mobile menu and closes it when a destination is chosen", async () => {
     const user = userEvent.setup();
     render(<Navbar />);

@@ -6,6 +6,7 @@ import { ProfileEditForm } from "./profile-edit-form";
 import { PasswordChangeForm } from "./password-change-form";
 import { ProfileActivityCards } from "./profile-activity-cards";
 import { ProfileMessagesCard } from "./profile-messages-card";
+import { PublicProfileSettings } from "./public-profile-settings";
 
 interface ProfileUser {
   id: string;
@@ -108,6 +109,8 @@ export function ProfileClient({ user, invites, events, groups, comments, session
           groups={groups}
         />
       </div>
+
+      <PublicProfileSettings />
 
       {/* Meine Nachrichten – ausklappbar */}
       <ProfileMessagesCard
