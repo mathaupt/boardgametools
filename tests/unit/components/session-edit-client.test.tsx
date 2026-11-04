@@ -16,7 +16,8 @@ vi.mock("@/components/ui/select", () => ({
 import SessionEditClient from "@/app/(dashboard)/dashboard/sessions/[id]/edit/session-edit-client";
 
 const session = {
-  id: "session-1", gameId: "game-1", playedAt: "2026-10-01T12:00:00.000Z", durationMinutes: 60, notes: "Notiz",
+  id: "session-1", gameId: "game-1", gameNameSnapshot: null, gameBggIdSnapshot: null, gameImageUrlSnapshot: null, gameMinPlayersSnapshot: null, gameMaxPlayersSnapshot: null, gamePlayTimeMinutesSnapshot: null, gameComplexitySnapshot: null, playedAt: "2026-10-01T12:00:00.000Z", durationMinutes: 60, notes: "Notiz",
+  guestPlayers: [],
   players: [
     { userId: "user-1", score: 10, isWinner: true, placement: 1 },
     { userId: "user-2", score: 0, isWinner: false, placement: 2 },
@@ -29,6 +30,24 @@ describe("SessionEditClient", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.stubGlobal("fetch", vi.fn());
+  });
+
+  it("edits a snapshot-only session and preserves named guest results", async () => {
+    const user = userEvent.setup();
+    vi.mocked(fetch).mockResolvedValueOnce({ ok: true } as Response);
+    render(<SessionEditClient session={{
+      ...session, gameId: null, gameNameSnapshot: "BGG-Abenteuer", players: [],
+      guestPlayers: [{ id: "guest-player-1", name: "Max", score: 8, isWinner: true, placement: 1 }],
+    }} games={games} users={users} />);
+
+    expect(screen.getByText(/BGG-Abenteuer/)).toBeInTheDocument();
+    expect(screen.getByLabelText("Gastname 1")).toHaveValue("Max");
+    await user.click(screen.getByRole("button", { name: "Änderungen speichern" }));
+
+    await waitFor(() => expect(fetch).toHaveBeenCalledWith("/api/sessions/session-1", expect.objectContaining({
+      method: "PUT",
+      body: expect.stringContaining('"guestPlayers":[{"name":"Max","score":8,"isWinner":true,"placement":1}]'),
+    })));
   });
 
   it("renders the session and lets the user update game and date", async () => {
@@ -75,6 +94,7 @@ describe("SessionEditClient", () => {
           { userId: "user-1", score: 10, isWinner: true, placement: 1 },
           { userId: "user-2", score: null, isWinner: false, placement: 2 },
         ],
+        guestPlayers: [],
       }),
     })));
     expect(push).toHaveBeenCalledWith("/dashboard/sessions/session-1");

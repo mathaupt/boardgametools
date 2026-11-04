@@ -19,6 +19,7 @@ interface ProposalCompactRowProps {
   rank?: number;
   voteSummary?: string;
   selected?: boolean;
+  played?: boolean;
   children: ReactNode;
 }
 
@@ -36,6 +37,7 @@ export function ProposalCompactRow({
   rank,
   voteSummary,
   selected = false,
+  played = false,
   children,
 }: ProposalCompactRowProps) {
   return (
@@ -47,7 +49,8 @@ export function ProposalCompactRow({
           ) : <Gamepad2 className="h-5 w-5 sm:h-6 sm:w-6" />}
         </div>
         <div className="min-w-0">
-          {selected && <span className="mb-1 inline-flex items-center gap-1 text-xs font-semibold text-warning"><Trophy className="h-3 w-3" aria-hidden="true" />Ausgewählt</span>}
+          {selected && <span className="mb-1 inline-flex items-center gap-1 rounded-full bg-warning/15 px-2 py-0.5 text-xs font-semibold text-warning-foreground"><Trophy className="h-3 w-3" aria-hidden="true" />Ausgewählt</span>}
+          {played && <span className="mb-1 inline-flex rounded-full bg-success/15 px-2 py-0.5 text-xs font-semibold text-foreground">Gespielt</span>}
           <ProposalGameDetails
             eventId={eventId}
             token={token}
@@ -66,7 +69,7 @@ export function ProposalCompactRow({
         <div className="min-w-0 text-right sm:min-w-[5rem] max-[240px]:col-start-2 max-[240px]:flex max-[240px]:flex-wrap max-[240px]:items-baseline max-[240px]:gap-x-1 max-[240px]:text-left">
           <strong className="block text-lg tabular-nums leading-5 max-[240px]:inline" data-testid={`vote-count-${proposalId}`}>{totalVotes}</strong>
           <span className="block text-xs leading-4 text-muted-foreground max-[240px]:inline">Stimmen{rank != null ? ` · Rang ${rank}` : ""}</span>
-          {voteSummary && <span className="block break-words text-[0.6875rem] leading-4 text-muted-foreground max-[240px]:inline">{voteSummary}</span>}
+          {voteSummary && <span className="block break-words text-xs leading-4 text-muted-foreground max-[240px]:inline">{voteSummary}</span>}
         </div>
       </div>
       <div className="flex min-w-0 flex-wrap items-center gap-2 pl-10 sm:shrink-0 sm:pl-0 max-[240px]:flex-col max-[240px]:items-stretch max-[240px]:pl-0 [&>button]:min-h-11 max-[240px]:[&>button]:w-full">

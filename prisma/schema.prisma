@@ -15,76 +15,76 @@ datasource db {
 // ============================================
 
 model User {
-  id            String    @id @default(cuid())
-  email         String    @unique
-  passwordHash  String
-  name          String
-  role          String    @default("USER")
-  isActive      Boolean   @default(true)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  role         String   @default("USER")
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   // Relations
-  ownedGames      Game[]
-  createdSessions GameSession[]
-  sessionPlayers  SessionPlayer[]
-  ownedGroups     Group[]
-  groupMembers    GroupMember[]
-  createdEvents   Event[]
-  eventInvites    EventInvite[]
-  gameProposals   GameProposal[]
-  votes           Vote[]
-  dateVotes       DateVote[]
-  passwordResetTokens PasswordResetToken[]
-  gameSeries      GameSeries[]
-  createdPolls    GroupPoll[]      @relation("CreatedPolls")
-  groupPollVotes  GroupPollVote[]  @relation("GroupPollVotes")
-  groupComments   GroupComment[]   @relation("GroupComments")
-  apiLogs         ApiLog[]         @relation("apiLogs")
-  sessionRatings  SessionRating[]  @relation("SessionRatings")
-  tags            Tag[]
-  uploads         Upload[]
-  apiTokens       ApiToken[]
-  pushDevices     PushDevice[]
-  discoveryDismissals DiscoveryDismissal[]
-  createdGroupChallenges GroupChallenge[] @relation("CreatedGroupChallenges")
+  ownedGames              Game[]
+  createdSessions         GameSession[]
+  sessionPlayers          SessionPlayer[]
+  ownedGroups             Group[]
+  groupMembers            GroupMember[]
+  createdEvents           Event[]
+  eventInvites            EventInvite[]
+  gameProposals           GameProposal[]
+  votes                   Vote[]
+  dateVotes               DateVote[]
+  passwordResetTokens     PasswordResetToken[]
+  gameSeries              GameSeries[]
+  createdPolls            GroupPoll[]                 @relation("CreatedPolls")
+  groupPollVotes          GroupPollVote[]             @relation("GroupPollVotes")
+  groupComments           GroupComment[]              @relation("GroupComments")
+  apiLogs                 ApiLog[]                    @relation("apiLogs")
+  sessionRatings          SessionRating[]             @relation("SessionRatings")
+  tags                    Tag[]
+  uploads                 Upload[]
+  apiTokens               ApiToken[]
+  pushDevices             PushDevice[]
+  discoveryDismissals     DiscoveryDismissal[]
+  createdGroupChallenges  GroupChallenge[]            @relation("CreatedGroupChallenges")
   challengeParticipations GroupChallengeParticipant[]
 
-  appleSub        String?   @unique
+  appleSub                      String?  @unique
   publicProfileEnabled          Boolean  @default(false)
   publicProfileTokenHash        String?  @unique
-  publicProfileTokenNonce        String?
+  publicProfileTokenNonce       String?
   publicProfileFeaturedBadgeIds String[] @default([])
 }
 
 model ApiToken {
-  id          String    @id @default(cuid())
-  userId      String
-  type        String    @default("access")
-  name        String    @default("iOS App")
-  tokenHash   String    @unique
-  lastUsedAt  DateTime?
-  expiresAt   DateTime?
-  revokedAt   DateTime?
-  createdAt   DateTime  @default(now())
+  id         String    @id @default(cuid())
+  userId     String
+  type       String    @default("access")
+  name       String    @default("iOS App")
+  tokenHash  String    @unique
+  lastUsedAt DateTime?
+  expiresAt  DateTime?
+  revokedAt  DateTime?
+  createdAt  DateTime  @default(now())
 
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([tokenHash])
 }
 
 model PushDevice {
-  id          String    @id @default(cuid())
+  id          String   @id @default(cuid())
   userId      String
   deviceToken String
-  platform    String    @default("ios")
+  platform    String   @default("ios")
   appVersion  String?
   locale      String?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, deviceToken])
   @@index([userId])
@@ -101,9 +101,9 @@ model Game {
   minPlayers      Int       @default(1)
   maxPlayers      Int       @default(4)
   playTimeMinutes Int?
-  complexity      Int?      // 1-5 scale
-  bggId           String?   // BoardGameGeek ID
-  ean             String?   // EAN/UPC barcode
+  complexity      Int? // 1-5 scale
+  bggId           String? // BoardGameGeek ID
+  ean             String? // EAN/UPC barcode
   imageUrl        String?
   ownerId         String
   createdAt       DateTime  @default(now())
@@ -111,13 +111,13 @@ model Game {
   deletedAt       DateTime? // Soft delete
 
   // Relations
-  owner           User            @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  sessions        GameSession[]
-  proposals       GameProposal[]
-  selectedEvents  Event[]         @relation("SelectedGame")
-  seriesEntries   GameSeriesEntry[]
+  owner               User                 @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  sessions            GameSession[]
+  proposals           GameProposal[]
+  selectedEvents      Event[]              @relation("SelectedGame")
+  seriesEntries       GameSeriesEntry[]
   discoveryDismissals DiscoveryDismissal[]
-  tags            GameTag[]
+  tags                GameTag[]
 
   @@index([ownerId])
   @@index([deletedAt])
@@ -141,20 +141,29 @@ model DiscoveryDismissal {
 // ============================================
 
 model GameSession {
-  id              String    @id @default(cuid())
-  gameId          String
-  playedAt        DateTime  @default(now())
-  durationMinutes Int?
-  notes           String?
-  createdById     String
-  createdAt       DateTime  @default(now())
-  deletedAt       DateTime? // Soft delete
+  id                          String    @id @default(cuid())
+  gameId                      String?
+  gameNameSnapshot            String?
+  gameBggIdSnapshot           String?
+  gameImageUrlSnapshot        String?
+  gameMinPlayersSnapshot      Int?
+  gameMaxPlayersSnapshot      Int?
+  gamePlayTimeMinutesSnapshot Int?
+  gameComplexitySnapshot      Float?
+  playedAt                    DateTime  @default(now())
+  durationMinutes             Int?
+  notes                       String?
+  createdById                 String
+  createdAt                   DateTime  @default(now())
+  deletedAt                   DateTime? // Soft delete
 
   // Relations
-  game            Game            @relation(fields: [gameId], references: [id], onDelete: Cascade)
-  createdBy       User            @relation(fields: [createdById], references: [id], onDelete: Cascade)
-  players         SessionPlayer[]
-  ratings         SessionRating[]
+  game               Game?                @relation(fields: [gameId], references: [id], onDelete: SetNull)
+  createdBy          User                 @relation(fields: [createdById], references: [id], onDelete: Cascade)
+  players            SessionPlayer[]
+  guestPlayers       SessionGuestPlayer[]
+  ratings            SessionRating[]
+  eventPlayedSession EventPlayedSession?
 
   @@index([createdById])
   @@index([deletedAt])
@@ -162,34 +171,47 @@ model GameSession {
 }
 
 model SessionRating {
-  id          String      @id @default(cuid())
-  sessionId   String
-  userId      String
-  rating      Int         // 1-5 stars
-  comment     String?
-  createdAt   DateTime    @default(now())
+  id        String   @id @default(cuid())
+  sessionId String
+  userId    String
+  rating    Int // 1-5 stars
+  comment   String?
+  createdAt DateTime @default(now())
 
-  session     GameSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
-  user        User        @relation("SessionRatings", fields: [userId], references: [id], onDelete: Cascade)
+  session GameSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  user    User        @relation("SessionRatings", fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([sessionId, userId])
   @@index([sessionId])
 }
 
 model SessionPlayer {
-  id          String    @id @default(cuid())
-  sessionId   String
-  userId      String
-  score       Int?
-  isWinner    Boolean   @default(false)
-  placement   Int?
+  id        String  @id @default(cuid())
+  sessionId String
+  userId    String
+  score     Int?
+  isWinner  Boolean @default(false)
+  placement Int?
 
   // Relations
-  session     GameSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
-  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  session GameSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  user    User        @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([sessionId, userId])
   @@index([userId])
+}
+
+model SessionGuestPlayer {
+  id        String  @id @default(cuid())
+  sessionId String
+  name      String
+  score     Int?
+  isWinner  Boolean @default(false)
+  placement Int?
+
+  session GameSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId])
 }
 
 // ============================================
@@ -203,33 +225,33 @@ model Group {
   ownerId     String
   isPublic    Boolean   @default(false)
   shareToken  String?   @unique
-  password    String?   // Optional simple page password for link-based access
+  password    String? // Optional simple page password for link-based access
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   deletedAt   DateTime? // Soft delete
 
   // Relations
-  owner       User          @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  members     GroupMember[]
-  events      Event[]
-  polls       GroupPoll[]
-  comments    GroupComment[]
-  challenges  GroupChallenge[]
+  owner      User             @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  members    GroupMember[]
+  events     Event[]
+  polls      GroupPoll[]
+  comments   GroupComment[]
+  challenges GroupChallenge[]
 
   @@index([deletedAt])
   @@index([ownerId])
 }
 
 model GroupMember {
-  id        String    @id @default(cuid())
-  groupId   String
-  userId    String
-  role      String    @default("member") // owner, admin, member
-  joinedAt  DateTime  @default(now())
+  id       String   @id @default(cuid())
+  groupId  String
+  userId   String
+  role     String   @default("member") // owner, admin, member
+  joinedAt DateTime @default(now())
 
   // Relations
-  group     Group     @relation(fields: [groupId], references: [id], onDelete: Cascade)
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  group Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([groupId, userId])
   @@index([userId])
@@ -247,8 +269,8 @@ model GroupChallenge {
   status      String    @default("active")
   createdAt   DateTime  @default(now())
 
-  group       Group     @relation(fields: [groupId], references: [id], onDelete: Cascade)
-  createdBy   User      @relation("CreatedGroupChallenges", fields: [createdById], references: [id], onDelete: Cascade)
+  group        Group                       @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  createdBy    User                        @relation("CreatedGroupChallenges", fields: [createdById], references: [id], onDelete: Cascade)
   participants GroupChallengeParticipant[]
 
   @@index([groupId, status])
@@ -278,60 +300,60 @@ model GroupPoll {
   title       String
   description String?
   type        String    @default("single") // single, multiple
-  status      String    @default("open")   // open, closed
+  status      String    @default("open") // open, closed
   createdById String
   createdAt   DateTime  @default(now())
   closedAt    DateTime?
 
   // Relations
-  group       Group             @relation(fields: [groupId], references: [id], onDelete: Cascade)
-  createdBy   User              @relation("CreatedPolls", fields: [createdById], references: [id], onDelete: Cascade)
-  options     GroupPollOption[]
-  comments    GroupComment[]
+  group     Group             @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  createdBy User              @relation("CreatedPolls", fields: [createdById], references: [id], onDelete: Cascade)
+  options   GroupPollOption[]
+  comments  GroupComment[]
 
   @@index([groupId])
 }
 
 model GroupPollOption {
-  id        String    @id @default(cuid())
+  id        String @id @default(cuid())
   pollId    String
   text      String
-  sortOrder Int       @default(0)
+  sortOrder Int    @default(0)
 
   // Relations
-  poll      GroupPoll       @relation(fields: [pollId], references: [id], onDelete: Cascade)
-  votes     GroupPollVote[]
+  poll  GroupPoll       @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  votes GroupPollVote[]
 
   @@index([pollId])
 }
 
 model GroupPollVote {
-  id         String    @id @default(cuid())
-  optionId   String
-  voterName  String    // Display name (for anonymous/public voting)
-  userId     String?   // Optional - linked user if logged in
-  createdAt  DateTime  @default(now())
+  id        String   @id @default(cuid())
+  optionId  String
+  voterName String // Display name (for anonymous/public voting)
+  userId    String? // Optional - linked user if logged in
+  createdAt DateTime @default(now())
 
   // Relations
-  option     GroupPollOption @relation(fields: [optionId], references: [id], onDelete: Cascade)
-  user       User?          @relation("GroupPollVotes", fields: [userId], references: [id], onDelete: SetNull)
+  option GroupPollOption @relation(fields: [optionId], references: [id], onDelete: Cascade)
+  user   User?           @relation("GroupPollVotes", fields: [userId], references: [id], onDelete: SetNull)
 
   @@unique([optionId, voterName])
 }
 
 model GroupComment {
-  id         String    @id @default(cuid())
+  id         String   @id @default(cuid())
   groupId    String
-  pollId     String?   // Optional - on a poll or on the group itself
-  authorName String    // Display name
-  userId     String?   // Optional - linked user if logged in
+  pollId     String? // Optional - on a poll or on the group itself
+  authorName String // Display name
+  userId     String? // Optional - linked user if logged in
   content    String
-  createdAt  DateTime  @default(now())
+  createdAt  DateTime @default(now())
 
   // Relations
-  group      Group      @relation(fields: [groupId], references: [id], onDelete: Cascade)
-  poll       GroupPoll? @relation(fields: [pollId], references: [id], onDelete: Cascade)
-  user       User?      @relation("GroupComments", fields: [userId], references: [id], onDelete: SetNull)
+  group Group      @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  poll  GroupPoll? @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  user  User?      @relation("GroupComments", fields: [userId], references: [id], onDelete: SetNull)
 
   @@index([groupId])
 }
@@ -341,32 +363,33 @@ model GroupComment {
 // ============================================
 
 model Event {
-  id              String    @id @default(cuid())
-  title           String
-  description     String?
-  eventDate       DateTime
-  location        String?
-  status          String    @default("draft") // draft, voting, closed
-  createdById     String
-  groupId         String?
-  selectedGameId  String?
+  id                String    @id @default(cuid())
+  title             String
+  description       String?
+  eventDate         DateTime
+  location          String?
+  status            String    @default("draft") // draft, voting, closed
+  createdById       String
+  groupId           String?
+  selectedGameId    String?
   winningProposalId String?   @unique
-  isPublic        Boolean   @default(false)
-  shareToken      String?   @unique
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-  deletedAt       DateTime? // Soft delete
+  isPublic          Boolean   @default(false)
+  shareToken        String?   @unique
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  deletedAt         DateTime? // Soft delete
 
   // Relations
-  createdBy       User            @relation(fields: [createdById], references: [id], onDelete: Cascade)
-  group           Group?          @relation(fields: [groupId], references: [id], onDelete: SetNull)
-  selectedGame    Game?           @relation("SelectedGame", fields: [selectedGameId], references: [id], onDelete: SetNull)
-  winningProposal GameProposal?   @relation("WinningProposal", fields: [winningProposalId], references: [id], onDelete: SetNull)
-  selectedDate    DateTime?
-  invites         EventInvite[]
-  proposals       GameProposal[]
+  createdBy         User                 @relation(fields: [createdById], references: [id], onDelete: Cascade)
+  group             Group?               @relation(fields: [groupId], references: [id], onDelete: SetNull)
+  selectedGame      Game?                @relation("SelectedGame", fields: [selectedGameId], references: [id], onDelete: SetNull)
+  winningProposal   GameProposal?        @relation("WinningProposal", fields: [winningProposalId], references: [id], onDelete: SetNull)
+  selectedDate      DateTime?
+  invites           EventInvite[]
+  proposals         GameProposal[]
   guestParticipants GuestParticipant[]
-  dateProposals   DateProposal[]
+  dateProposals     DateProposal[]
+  playedSessions    EventPlayedSession[]
 
   @@index([createdById])
   @@index([eventDate])
@@ -384,20 +407,20 @@ model EventInvite {
   respondedAt DateTime?
 
   // Relations
-  event       Event     @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  user        User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user  User? @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([eventId, userId])
   @@unique([eventId, email])
 }
 
 model GameProposal {
-  id          String    @id @default(cuid())
-  eventId     String
-  gameId      String?   // null for BGG-only proposals (not in any user's collection)
-  proposedById String?  // null for guest proposals
-  guestId     String?   // set when a guest proposed the game
-  createdAt   DateTime  @default(now())
+  id           String   @id @default(cuid())
+  eventId      String
+  gameId       String? // null for BGG-only proposals (not in any user's collection)
+  proposedById String? // null for guest proposals
+  guestId      String? // set when a guest proposed the game
+  createdAt    DateTime @default(now())
 
   // Inline BGG data (used when gameId is null – game not saved to collection)
   bggId              String?
@@ -408,26 +431,44 @@ model GameProposal {
   bggPlayTimeMinutes Int?
 
   // Relations
-  event       Event             @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  game        Game?             @relation(fields: [gameId], references: [id], onDelete: Cascade)
-  proposedBy  User?             @relation(fields: [proposedById], references: [id], onDelete: Cascade)
-  guest       GuestParticipant? @relation(fields: [guestId], references: [id], onDelete: Cascade)
-  votes       Vote[]
-  guestVotes  GuestVote[]
-  wonEvent    Event?          @relation("WinningProposal")
+  event          Event                @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  game           Game?                @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  proposedBy     User?                @relation(fields: [proposedById], references: [id], onDelete: Cascade)
+  guest          GuestParticipant?    @relation(fields: [guestId], references: [id], onDelete: Cascade)
+  votes          Vote[]
+  guestVotes     GuestVote[]
+  playedSessions EventPlayedSession[]
+  wonEvent       Event?               @relation("WinningProposal")
 
   @@unique([eventId, gameId])
 }
 
-model Vote {
-  id          String    @id @default(cuid())
+model EventPlayedSession {
+  id          String   @id @default(cuid())
+  eventId     String
   proposalId  String
-  userId      String
-  createdAt   DateTime  @default(now())
+  sessionId   String   @unique
+  operationId String
+  createdAt   DateTime @default(now())
+
+  event    Event        @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  proposal GameProposal @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+  session  GameSession  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, operationId])
+  @@index([eventId])
+  @@index([proposalId])
+}
+
+model Vote {
+  id         String   @id @default(cuid())
+  proposalId String
+  userId     String
+  createdAt  DateTime @default(now())
 
   // Relations
-  proposal    GameProposal @relation(fields: [proposalId], references: [id], onDelete: Cascade)
-  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  proposal GameProposal @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+  user     User         @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([proposalId, userId])
 }
@@ -439,7 +480,7 @@ model GuestParticipant {
   credentialHash String?  @unique
   createdAt      DateTime @default(now())
 
-  event     Event       @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  event     Event           @relation(fields: [eventId], references: [id], onDelete: Cascade)
   votes     GuestVote[]
   proposals GameProposal[]
   dateVotes GuestDateVote[]
@@ -448,13 +489,13 @@ model GuestParticipant {
 }
 
 model GuestVote {
-  id          String   @id @default(cuid())
-  guestId     String
-  proposalId  String
-  createdAt   DateTime @default(now())
+  id         String   @id @default(cuid())
+  guestId    String
+  proposalId String
+  createdAt  DateTime @default(now())
 
-  guest       GuestParticipant @relation(fields: [guestId], references: [id], onDelete: Cascade)
-  proposal    GameProposal     @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+  guest    GuestParticipant @relation(fields: [guestId], references: [id], onDelete: Cascade)
+  proposal GameProposal     @relation(fields: [proposalId], references: [id], onDelete: Cascade)
 
   @@unique([guestId, proposalId])
   @@index([proposalId])
@@ -465,40 +506,40 @@ model GuestVote {
 // ============================================
 
 model DateProposal {
-  id          String    @id @default(cuid())
-  eventId     String
-  date        DateTime  // the proposed date (date only, time 00:00)
-  createdAt   DateTime  @default(now())
+  id        String   @id @default(cuid())
+  eventId   String
+  date      DateTime // the proposed date (date only, time 00:00)
+  createdAt DateTime @default(now())
 
-  event       Event          @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  votes       DateVote[]
-  guestVotes  GuestDateVote[]
+  event      Event           @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  votes      DateVote[]
+  guestVotes GuestDateVote[]
 
   @@unique([eventId, date])
 }
 
 model DateVote {
-  id            String    @id @default(cuid())
+  id             String   @id @default(cuid())
   dateProposalId String
-  userId        String
-  availability  String    @default("yes") // yes, maybe, no
-  createdAt     DateTime  @default(now())
+  userId         String
+  availability   String   @default("yes") // yes, maybe, no
+  createdAt      DateTime @default(now())
 
-  dateProposal  DateProposal @relation(fields: [dateProposalId], references: [id], onDelete: Cascade)
-  user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  dateProposal DateProposal @relation(fields: [dateProposalId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([dateProposalId, userId])
 }
 
 model GuestDateVote {
-  id            String    @id @default(cuid())
+  id             String   @id @default(cuid())
   dateProposalId String
-  guestId       String
-  availability  String    @default("yes") // yes, maybe, no
-  createdAt     DateTime  @default(now())
+  guestId        String
+  availability   String   @default("yes") // yes, maybe, no
+  createdAt      DateTime @default(now())
 
-  dateProposal  DateProposal     @relation(fields: [dateProposalId], references: [id], onDelete: Cascade)
-  guest         GuestParticipant @relation(fields: [guestId], references: [id], onDelete: Cascade)
+  dateProposal DateProposal     @relation(fields: [dateProposalId], references: [id], onDelete: Cascade)
+  guest        GuestParticipant @relation(fields: [guestId], references: [id], onDelete: Cascade)
 
   @@unique([dateProposalId, guestId])
   @@index([guestId])
@@ -519,54 +560,54 @@ model GameSeries {
   deletedAt   DateTime? // Soft delete
 
   // Relations
-  owner       User              @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  entries     GameSeriesEntry[]
+  owner   User              @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  entries GameSeriesEntry[]
 
   @@index([deletedAt])
   @@index([ownerId])
 }
 
 model GameSeriesEntry {
-  id          String    @id @default(cuid())
-  seriesId    String
-  gameId      String?
-  gameName    String
-  gameDescription String?
-  gameImageUrl String?
-  minPlayers  Int       @default(1)
-  maxPlayers  Int       @default(4)
+  id                  String    @id @default(cuid())
+  seriesId            String
+  gameId              String?
+  gameName            String
+  gameDescription     String?
+  gameImageUrl        String?
+  minPlayers          Int       @default(1)
+  maxPlayers          Int       @default(4)
   gamePlayTimeMinutes Int?
-  complexity  Int?
-  bggId       String?
-  source      String    @default("COLLECTION")
-  temporaryReason String?
-  sortOrder   Int       @default(0)
-  played      Boolean   @default(false)
-  playedAt    DateTime?
-  rating      Int?      // 1-5 stars
-  difficulty  String?   // "einsteiger", "fortgeschritten", "profi"
-  playTimeMinutes Int?  // actual play time in minutes
-  successful  Boolean?  // was the game completed successfully (e.g. EXIT games)
-  playerCount Int?      // number of players
-  score       Int?      // points/score achieved
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  complexity          Int?
+  bggId               String?
+  source              String    @default("COLLECTION")
+  temporaryReason     String?
+  sortOrder           Int       @default(0)
+  played              Boolean   @default(false)
+  playedAt            DateTime?
+  rating              Int? // 1-5 stars
+  difficulty          String? // "einsteiger", "fortgeschritten", "profi"
+  playTimeMinutes     Int? // actual play time in minutes
+  successful          Boolean? // was the game completed successfully (e.g. EXIT games)
+  playerCount         Int? // number of players
+  score               Int? // points/score achieved
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
 
   // Relations
-  series      GameSeries @relation(fields: [seriesId], references: [id], onDelete: Cascade)
-  game        Game?      @relation(fields: [gameId], references: [id], onDelete: SetNull)
+  series GameSeries @relation(fields: [seriesId], references: [id], onDelete: Cascade)
+  game   Game?      @relation(fields: [gameId], references: [id], onDelete: SetNull)
 
   @@unique([seriesId, gameId])
   @@index([seriesId, bggId])
 }
 
 model PasswordResetToken {
-  id         String   @id @default(cuid())
-  userId     String
-  tokenHash  String   @unique
-  expiresAt  DateTime
-  usedAt     DateTime?
-  createdAt  DateTime @default(now())
+  id        String    @id @default(cuid())
+  userId    String
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -580,26 +621,26 @@ model PasswordResetToken {
 // ============================================
 
 model Tag {
-  id        String    @id @default(cuid())
+  id        String   @id @default(cuid())
   name      String
   ownerId   String
-  source    String    @default("manual") // manual, bgg
-  createdAt DateTime  @default(now())
+  source    String   @default("manual") // manual, bgg
+  createdAt DateTime @default(now())
 
-  owner     User      @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  games     GameTag[]
+  owner User      @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  games GameTag[]
 
   @@unique([name, ownerId])
   @@index([ownerId])
 }
 
 model GameTag {
-  id      String @id @default(cuid())
-  gameId  String
-  tagId   String
+  id     String @id @default(cuid())
+  gameId String
+  tagId  String
 
-  game    Game   @relation(fields: [gameId], references: [id], onDelete: Cascade)
-  tag     Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  game Game @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  tag  Tag  @relation(fields: [tagId], references: [id], onDelete: Cascade)
 
   @@unique([gameId, tagId])
   @@index([tagId])
@@ -612,25 +653,25 @@ model Upload {
   fileName    String
   mimeType    String
   sizeBytes   Int
-  storagePath String   // relative path under /public/uploads/
+  storagePath String // relative path under /public/uploads/
   ownerId     String
   createdAt   DateTime @default(now())
 
-  owner       User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  owner User @relation(fields: [ownerId], references: [id], onDelete: Cascade)
 
   @@index([ownerId])
 }
 
 model ApiLog {
   id           String   @id @default(cuid())
-  method       String   // GET, POST, PUT, DELETE, PATCH
-  path         String   // /api/games, /api/events/abc123 etc.
+  method       String // GET, POST, PUT, DELETE, PATCH
+  path         String // /api/games, /api/events/abc123 etc.
   statusCode   Int
-  durationMs   Int      // Response time in ms
-  userId       String?  // null for unauthenticated requests
+  durationMs   Int // Response time in ms
+  userId       String? // null for unauthenticated requests
   userAgent    String?
   ip           String?
-  errorMessage String?  // only set on 4xx/5xx
+  errorMessage String? // only set on 4xx/5xx
   createdAt    DateTime @default(now())
 
   user User? @relation("apiLogs", fields: [userId], references: [id], onDelete: SetNull)

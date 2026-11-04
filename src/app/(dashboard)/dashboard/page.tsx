@@ -130,7 +130,7 @@ export default async function DashboardPage() {
       votingClosed: event.status === "closed",
       proposals: event.id === featuredEvent?.id ? featuredProposals : [],
     }))}
-    recentSessions={recentSessions.map((item) => ({ id: item.id, gameName: gameTextForRead(item.game.name), playedAt: toDashboardISOString(item.playedAt) }))}
+    recentSessions={recentSessions.map((item) => ({ id: item.id, gameName: gameTextForRead(item.game?.name ?? item.gameNameSnapshot ?? "Unbekanntes Spiel"), playedAt: toDashboardISOString(item.playedAt) }))}
     invites={pendingInvites.map((invite) => ({ id: invite.id, eventId: invite.eventId, status: invite.status, event: { id: invite.event.id, title: invite.event.title, eventDate: invite.event.eventDate.toISOString(), location: invite.event.location, createdBy: invite.event.createdBy } }))}
   />;
 }

@@ -35,3 +35,12 @@
 - Alle drei mit `npm run prisma:deploy` angewendet. Anschließender `prisma migrate status`: „Database schema is up to date“.
 - Read-only Schemaprüfung: vier neue Profilspalten, drei neue Tabellen und drei abgeschlossene Migrationseinträge vorhanden. Alle 25 vorhandenen Reiheneinträge blieben `COLLECTION`; kein Eintrag wurde als temporär markiert.
 - Der veröffentlichte App-Code wurde nicht verändert. Ein Login mit realem Nutzerkonto wurde nicht automatisiert, da dafür Zugangsdaten erforderlich wären.
+
+## FEAT-029 – Gespielte Eventspiele als Sessions
+
+- Vollständige Vitest-Suite: 1.216/1.216 Tests in 185 Dateien bestanden; Typecheck und Produktionsbuild bestanden.
+- FEAT-029-Migration auf einer frischen, temporären lokalen PostgreSQL-14-Datenbank (`bgt_test_feat029`, Port 55429) mit allen 18 Migrationen erfolgreich angewendet; Schema-Integrationstest 1/1 bestanden. Instanz danach gestoppt.
+- `npm run security-check:fast`: 0 Fehler, 2 vorhandene Hinweise; `npm audit --omit=dev`: 0 Befunde. Review-Regressionscheck mit Registryzugriff: Exitcode 0, 9,9/10, keine Regression.
+- ESLint: 0 Fehler, 652 Warnungen in vorhandenen Prüf-/Hilfsskripten.
+- Lokale synthetische Vorschau per Playwright bei 390 px und 1440 px gerendert; Impeccable-Detektor 0 Befunde. Gewinnerlabel und Kontrast korrigiert; statischer Typografiehinweis behoben.
+- Keine Produktionsdatenbank verwendet; Migration nicht deployed. iOS bleibt separat.

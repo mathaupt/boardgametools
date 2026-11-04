@@ -1119,6 +1119,59 @@ paths:
         '403': { description: Kein Zugriff }
         '404': { description: Event nicht gefunden }
 
+  /api/events/{id}/played-sessions:
+    post:
+      tags: [Events, Sessions]
+      summary: Gespielte Eventpartie als Session erfassen
+      description: Nur der Event-Ersteller darf eine Session für einen Vorschlag dieses Events anlegen. Wiederholungen derselben operationId liefern dieselbe Session. Öffentliche Share-Links berechtigen nicht zum Schreiben.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [proposalId, operationId, playedAt, players, guestPlayers]
+              properties:
+                proposalId: { type: string }
+                operationId: { type: string, minLength: 8, maxLength: 100 }
+                playedAt: { type: string, format: date-time }
+                durationMinutes: { type: integer, minimum: 1, maximum: 1440, nullable: true }
+                notes: { type: string, maxLength: 2000, nullable: true }
+                players:
+                  type: array
+                  maxItems: 20
+                  items:
+                    type: object
+                    required: [userId]
+                    properties:
+                      userId: { type: string }
+                      score: { type: integer, nullable: true }
+                      placement: { type: integer, minimum: 1, nullable: true }
+                      isWinner: { type: boolean }
+                guestPlayers:
+                  type: array
+                  maxItems: 20
+                  items:
+                    type: object
+                    required: [guestId]
+                    properties:
+                      guestId: { type: string }
+                      score: { type: integer, nullable: true }
+                      placement: { type: integer, minimum: 1, nullable: true }
+                      isWinner: { type: boolean }
+      responses:
+        '201': { description: Session angelegt und mit Eventvorschlag verknüpft }
+        '200': { description: Idempotente Wiederholung; bestehende Session zurückgegeben }
+        '400': { description: Ungültige Daten oder nicht eingeladene Teilnehmende }
+        '403': { description: Nur der Event-Ersteller darf Sessions erfassen }
+        '404': { description: Event oder Vorschlag nicht gefunden }
+        '409': { description: Die zugehörige Session wurde bereits gelöscht }
+
   /api/events/{id}/proposals:
     parameters:
       - name: id

@@ -48,3 +48,19 @@ Native iOS-Oberflächen und iOS-Deep-Links bleiben separat zu planen.
 - [x] Nach ausdrücklicher Nutzerfreigabe alle drei mit `npm run prisma:deploy` angewendet.
 - [x] Read-only bestätigt: keine Migrationen offen, vier Profilspalten, drei neue Tabellen, drei erfolgreiche Migrationseinträge.
 - [ ] Echten Login-Smoke-Test durch Nutzer oder freigegebenen synthetischen Produktionsaccount durchführen; keine Nutzer-Zugangsdaten automatisiert verwendet.
+
+
+## FEAT-029 – Umsetzungsnachweis
+
+- [x] Freigegebenen Plan unmittelbar vor Runtimeänderungen auf Aktualität geprüft; Umfang blieb unverändert.
+- [x] Sessions, Gastspieler und Eventlink mit optionalen Spiel-Snapshots ergänzt; idempotente Anlage in einer Transaktion.
+- [x] Creator-Rechte, akzeptierte Eventteilnehmende, Eventvorschlagszugehörigkeit und öffentliche Datensparsamkeit geprüft und gezielt getestet.
+- [x] RED/GREEN für Snapshot-Mapping, Session-Erstellung, API, Eventdarstellung, öffentliche Statusanzeige und Gewinner-Label beobachtet.
+- [x] Vollständige Vitest-Suite 1.216/1.216, Typecheck, Produktionsbuild, Schema-Validierung und Security-Check bestanden.
+- [x] Alle 18 Prisma-Migrationen auf frischer temporärer PostgreSQL-Testdatenbank angewendet; FEAT-029-Schemavertrag 1/1 bestanden. Datenbankinstanz anschließend gestoppt.
+- [x] Lokale UI-Vorschau mit synthetischen Daten bei 390 px und 1440 px gerendert. Zwei unabhängige Impeccable-Prüfer: Gewinner-Checkbox eindeutig benannt; verschachtelte Oberfläche entfernt; Kontrast-/Typografiehinweise behoben. Detektor bei beiden Breiten ohne Befund.
+- [x] OpenAPI, FEATURES, FAQ, CONCEPT, Backlog, Changelog und Review-Dokumentation aktualisiert.
+- [x] Review-Regression mit Registryzugriff: Exitcode 0, 9,9/10, keine Regression; Produktionsaudit 0 Befunde.
+- [ ] Commit mit regulären Hooks.
+
+Die Produktionsmigration ist nicht Teil dieser lokalen Umsetzung.

@@ -316,6 +316,16 @@ Oben: **Offene Einladungen** mit Zusagen/Absagen-Buttons.
 
 Die zentrale Seite fuer Event-Management mit folgenden Bereichen:
 
+#### Gespielte Partien (FEAT-029)
+Der Event-Ersteller kann für einen Spielvorschlag eine oder mehrere Sessions
+erfassen. Eingeladene Teilnehmende sind vorausgewählt; Eventgäste können mit
+ihrem Namen sowie Punkten, Platzierung und Gewinnerstatus übernommen werden.
+Dauer und Notizen sind optional. BGG-Spiele und Spiele aus fremden Sammlungen
+werden als Spiel-Snapshot gespeichert und benötigen keinen Import in die eigene
+Sammlung. Idempotente Wiederholungen erzeugen keine doppelten Sessions. Gäste
+öffentlicher Eventlinks sehen nur, welche Vorschläge gespielt wurden; Session-
+details erscheinen nur für angemeldete Eventberechtigte.
+
 #### Event-Info
 Datum, Ort, serverseitig abgeleiteter Status (Planung / Abstimmung / geschlossen / abgesagt / vergangen), Beschreibung und gespeichertes Abstimmungsergebnis. Ein ausgewählter Termin wird als Datum ohne erfundene Uhrzeit angezeigt.
 

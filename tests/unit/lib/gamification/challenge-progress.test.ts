@@ -20,6 +20,14 @@ describe("aggregateChallengeProgress", () => {
     expect(aggregateChallengeProgress([...sessions, extra], members, new Date("2026-01-01"), null, "games")).toBe(1);
   });
 
+  it("groups collection-free snapshots by game name for game challenges", () => {
+    const snapshotSessions = [
+      { id: "snapshot-1", gameId: null, gameNameSnapshot: "BGG-Spiel", createdById: "a", createdAt: new Date("2026-02-01"), playerIds: [] },
+      { id: "snapshot-2", gameId: null, gameNameSnapshot: "BGG-Spiel", createdById: "b", createdAt: new Date("2026-02-02"), playerIds: [] },
+    ];
+    expect(aggregateChallengeProgress(snapshotSessions, members, new Date("2026-01-01"), null, "games")).toBe(1);
+  });
+
   it("honors challenge and opt-out intervals", () => {
     const left = [{ userId: "a", joinedAt: new Date("2026-01-01"), leftAt: new Date("2026-01-31") }];
     expect(aggregateChallengeProgress(sessions, left, new Date("2026-01-01"), new Date("2026-03-01"), "sessions")).toBe(0);

@@ -74,6 +74,11 @@ describe("SessionService", () => {
     );
   });
 
+  it("supports creating a snapshot session inside the event transaction", () => {
+    expect(SessionService).toHaveProperty("createFromEvent");
+    expect(typeof Reflect.get(SessionService, "createFromEvent")).toBe("function");
+  });
+
   // ── list ──────────────────────────────────────────────────────
 
   it("list - returns all sessions (non-paginated)", async () => {

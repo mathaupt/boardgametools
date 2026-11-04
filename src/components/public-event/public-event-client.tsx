@@ -205,6 +205,7 @@ export function PublicEventClient({ token, event }: PublicEventClientProps) {
                   totalVotes={proposal.totalVotes}
                   voteSummary={`${proposal.voteCounts.registered} Nutzer · ${proposal.voteCounts.guests} Gäste`}
                   selected={event.winningProposal?.id === proposal.id || event.selectedGame?.id === proposal.game.id}
+                  played={proposal.played}
                 >
                   <PublicProposalVoteActions
                     proposalId={proposal.id}

@@ -72,15 +72,17 @@ export default async function StatisticsPage() {
 
       const gameMap = new Map<string, { gameId: string; gameName: string; gameImageUrl: string | null; sessionCount: number; totalMinutes: number }>();
       for (const s of allSessions) {
-        const existing = gameMap.get(s.gameId);
+        const gameId = s.gameId ?? `snapshot:${s.gameNameSnapshot ?? "Unbekanntes Spiel"}`;
+        const gameName = s.game?.name ?? s.gameNameSnapshot ?? "Unbekanntes Spiel";
+        const existing = gameMap.get(gameId);
         if (existing) {
           existing.sessionCount += 1;
           existing.totalMinutes += s.durationMinutes ?? 0;
         } else {
-          gameMap.set(s.gameId, {
-            gameId: s.gameId,
-            gameName: gameTextForRead(s.game.name),
-            gameImageUrl: s.game.imageUrl,
+          gameMap.set(gameId, {
+            gameId,
+            gameName: gameTextForRead(gameName),
+            gameImageUrl: s.game?.imageUrl ?? s.gameImageUrlSnapshot ?? null,
             sessionCount: 1,
             totalMinutes: s.durationMinutes ?? 0,
           });

@@ -15,6 +15,7 @@ import { EventInfoCard } from "./event-info-card";
 import { EventGuestCard } from "./event-guest-card";
 import { EventProposalsCard } from "./event-proposals-card";
 import { evaluateEventState } from "@/lib/events/event-state";
+import { PlayedSessionsCard } from "./played-sessions-card";
 
 export default async function EventDetailPage({
   params,
@@ -38,7 +39,23 @@ export default async function EventDetailPage({
           game: true,
           proposedBy: { select: { id: true, name: true, email: true } },
           guest: { select: { id: true, nickname: true } },
-          _count: { select: { votes: true, guestVotes: true } }
+          _count: { select: { votes: true, guestVotes: true } },
+          playedSessions: {
+            where: { session: { deletedAt: null } },
+            select: {
+              id: true,
+              session: {
+                select: {
+                  id: true,
+                  playedAt: true,
+                  durationMinutes: true,
+                  notes: true,
+                  players: { select: { score: true, placement: true, isWinner: true, user: { select: { name: true } } } },
+                  guestPlayers: { select: { name: true, score: true, placement: true, isWinner: true } },
+                },
+              },
+            },
+          }
         }
       },
       selectedGame: true,
@@ -115,6 +132,22 @@ export default async function EventDetailPage({
       proposedBy,
     };
   });
+  const playedSessionProposals = normalizedProposals.map((proposal) => ({
+    id: proposal.id,
+    gameName: proposal.game.name,
+    imageUrl: proposal.game.imageUrl,
+    playedSessions: proposal.playedSessions.map((link) => ({
+      id: link.id,
+      session: { ...link.session, playedAt: link.session.playedAt.toISOString() },
+    })),
+  }));
+  const sessionParticipants = [
+    { id: event.createdBy.id, name: event.createdBy.name ?? "Organisator", kind: "user" as const },
+    ...event.invites
+      .filter((invite) => invite.status === "accepted" && invite.user !== null && invite.user.id !== event.createdBy.id)
+      .map((invite) => ({ id: invite.user!.id, name: invite.user!.name ?? "Teilnehmer", kind: "user" as const })),
+    ...event.guestParticipants.map((guest) => ({ id: guest.id, name: guest.nickname, kind: "guest" as const })),
+  ];
 
   return (
     <div className="space-y-6">
@@ -220,6 +253,14 @@ export default async function EventDetailPage({
         isCreator={isCreator}
         selectedGameId={event.selectedGame?.id}
         winningProposalId={event.winningProposalId ?? undefined}
+      />
+
+      <PlayedSessionsCard
+        eventId={event.id}
+        eventDate={event.eventDate.toISOString()}
+        proposals={playedSessionProposals}
+        participants={sessionParticipants}
+        isCreator={isCreator}
       />
     </div>
   );

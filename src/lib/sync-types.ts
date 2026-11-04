@@ -47,13 +47,29 @@ export interface SessionPlayerDTO {
   placement?: number | null;
 }
 
+export interface SessionGuestPlayerDTO {
+  id: string;
+  name: string;
+  score?: number | null;
+  isWinner: boolean;
+  placement?: number | null;
+}
+
 export interface SessionDTO {
   id: string;
-  gameId: string;
+  gameId: string | null;
+  gameNameSnapshot?: string | null;
+  gameBggIdSnapshot?: string | null;
+  gameImageUrlSnapshot?: string | null;
+  gameMinPlayersSnapshot?: number | null;
+  gameMaxPlayersSnapshot?: number | null;
+  gamePlayTimeMinutesSnapshot?: number | null;
+  gameComplexitySnapshot?: number | null;
   playedAt: string;
   durationMinutes?: number | null;
   notes?: string | null;
   players: SessionPlayerDTO[];
+  guestPlayers?: SessionGuestPlayerDTO[];
   createdAt: string;
   updatedAt: string;
   deletedAt?: string | null;

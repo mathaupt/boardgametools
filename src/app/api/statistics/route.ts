@@ -37,7 +37,7 @@ export const GET = withApiLogging(async function GET(_request: NextRequest) {
           prisma.game.count({ where: { ownerId: userId, deletedAt: null } }),
           prisma.gameSession.count({ where: sessionWhere }),
           prisma.gameSession.aggregate({
-            where: sessionWhere,
+            where: { ...sessionWhere, gameId: { not: null } },
             _sum: { durationMinutes: true },
           }),
           prisma.sessionPlayer.findMany({
@@ -47,7 +47,7 @@ export const GET = withApiLogging(async function GET(_request: NextRequest) {
           }),
           prisma.gameSession.groupBy({
             by: ["gameId"],
-            where: sessionWhere,
+            where: { ...sessionWhere, gameId: { not: null } },
             _count: { id: true },
             _sum: { durationMinutes: true },
             orderBy: { _count: { id: "desc" } },
@@ -58,6 +58,7 @@ export const GET = withApiLogging(async function GET(_request: NextRequest) {
             select: {
               id: true,
               playedAt: true,
+              gameNameSnapshot: true,
               game: { select: { name: true } },
               _count: { select: { players: true } },
             },
@@ -87,7 +88,7 @@ export const GET = withApiLogging(async function GET(_request: NextRequest) {
         };
 
         // --- Most Played (enrich grouped results with game details) ---
-        const gameIds = mostPlayedGrouped.map((g) => g.gameId);
+        const gameIds = mostPlayedGrouped.map((g) => g.gameId).filter((id): id is string => id !== null);
         const games =
           gameIds.length > 0
             ? await prisma.game.findMany({
@@ -97,8 +98,8 @@ export const GET = withApiLogging(async function GET(_request: NextRequest) {
             : [];
         const gameDetailsMap = new Map(games.map((g) => [g.id, g]));
 
-        const mostPlayed = mostPlayedGrouped.map((g) => {
-          const details = gameDetailsMap.get(g.gameId);
+        const mostPlayed = mostPlayedGrouped.filter((g) => g.gameId !== null).map((g) => {
+          const details = gameDetailsMap.get(g.gameId!);
           return {
             gameId: g.gameId,
             gameName: details?.name ?? "Unbekannt",
@@ -111,7 +112,7 @@ export const GET = withApiLogging(async function GET(_request: NextRequest) {
         // --- Recent Sessions ---
         const recentSessions = recentSessionsRaw.map((s) => ({
           id: s.id,
-          gameName: s.game.name,
+            gameName: s.game?.name ?? s.gameNameSnapshot ?? "Unbekanntes Spiel",
           playedAt: s.playedAt.toISOString(),
           playerCount: s._count.players,
         }));

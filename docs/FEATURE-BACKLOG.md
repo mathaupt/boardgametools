@@ -42,6 +42,7 @@ Bedarf zu aktualisieren. Ergebnis am jeweiligen Plan dokumentieren:
 | FEAT-026 | Seitennavigation in der Spielesammlung | Umgesetzt 0.50.77 | [Pager der Spielesammlung](superpowers/plans/2026-11-03-FEAT-026-spielesammlung-pager.md) | Keine |
 | FEAT-027 | Eindeutige Leermeldung in allen BGG-Suchansichten | Umgesetzt (Web, 0.50.70) | [BGG-Leerzustände](superpowers/plans/2026-11-03-FEAT-027-bgg-leerzustand.md) | 03.11.2026 freigegeben und umgesetzt; öffentliche FEAT-014-Zustände erhalten |
 | FEAT-028 | Gamification: persönliche und gemeinsame Ziele | Umgesetzt (Web) | [Gamification-Konzept](superpowers/specs/2026-11-03-FEAT-028-gamification-design.md), [Implementierungsplan](superpowers/plans/2026-11-04-FEAT-028-gamification.md) | Am 04.11.2026 für drei Web-Stufen freigegeben; iOS separat planen |
+| FEAT-029 | Gespielte Eventspiele direkt als Sessions erfassen | Implementierungsplan erstellt; wartet auf Umsetzungsfreigabe | [Design-Spec](superpowers/specs/2026-11-04-FEAT-029-event-sessions-design.md); [Implementierungsplan](superpowers/plans/2026-11-04-FEAT-029-event-sessions.md) | Noch nicht freigegeben |
 
 Am 30.10.2026 aufgenommen. Bei der Planung sind Web, iOS sowie angemeldete und
 öffentliche Voting-Ansichten auf Relevanz und bereits vorhandene Teilfunktionen
@@ -52,7 +53,7 @@ zur Umsetzung freigegeben.
 
 Die Abschnitte A bis I dokumentieren Betriebs-, Abnahme- und Feature-Restarbeiten
 mit ihrem jeweiligen Prüfdatum. Der aktuelle Featurestatus steht in der
-Übersicht; neue Anforderungen FEAT-023 bis FEAT-028 sind darunter verlinkt.
+Übersicht; neue Anforderungen FEAT-023 bis FEAT-029 sind darunter verlinkt.
 „Offen“ bedeutet
 hier entweder eine ausdrücklich ausstehende Abnahme, eine gesonderte
 Produkt-/Betriebsfreigabe oder einen separat zu planenden Sicherheitsumfang.
@@ -926,3 +927,14 @@ danach können FEAT-026 und FEAT-027 unabhängig geplant umgesetzt werden.
 **Abnahmekriterien:** Persönliche Erfolge bleiben privat, außer explizit ausgewählten Abzeichen und Aktivitätsaggregaten. Challenge-Teilnahme ist freiwillig; es erscheinen keine Einzelbeiträge. Sessiondaten sind auf Soft-Deletes und Korrekturen geprüft. Gäste werden nicht über Events hinweg profiliert.
 **Implementierungsplan:** [Gamification-Umsetzungsplan](superpowers/plans/2026-11-04-FEAT-028-gamification.md). Am 04.11.2026 für Web in drei Stufen freigegeben: persönliche Erfolge/Entdeckung, widerrufbare öffentliche Badge-Profile und freiwillige aggregierte Gruppen-Challenges. iOS separat planen.
 **Konzept:** [Gamification-Konzept](superpowers/specs/2026-11-03-FEAT-028-gamification-design.md). Exakte Meilenstein-Schwellen, Challenge-Katalog und Daten-/Berechtigungsverträge im Implementierungsplan festlegen.
+
+
+## FEAT-029 – Gespielte Eventspiele direkt als Sessions erfassen
+
+**Status:** Umsetzung freigegeben am 04.11.2026; Web-Implementierung in Abnahme. Isolierter Migrationstest und gerenderte Browserprüfung stehen noch aus.
+**Ziel:** Im Event festhalten, welche vorgeschlagenen Spiele tatsächlich gespielt wurden, und die Partien direkt von dort als Sessions erfassen und mit dem Event verknüpfen.
+**Bestätigter Umfang:** Je tatsächlich gespielter Partie eine eigene Session. Eventteilnehmer werden vorausgewählt. Mitspieler, Dauer, Gewinner/Platzierungen und Notizen können erfasst werden. Gäste werden namentlich als Session-Mitspieler übernommen. Reine BGG-Vorschläge können ohne dauerhaften Sammlungsimport als Session erfasst werden. Nur der Event-Ersteller darf Sessions im Event speichern und nachträglich ändern. Angemeldete Eventberechtigte sehen die Sessiondetails im Event; Gäste mit öffentlichem Event-Link sehen nur die gespielten Spiele.
+**Abnahmekriterien für die spätere Planung:** Gespielte Partien sind im Event erkennbar und mit Sessions verknüpft; Sessiondaten fließen in bestehende Historie und Statistiken ein; wiederholtes Absenden erzeugt keine ungewollten Duplikate; nicht gespielte Vorschläge bleiben ungetrackt; Zugriffsrechte und Korrekturen sind abgesichert.
+**Im Implementierungsplan festgelegt:** Retry derselben Operations-ID liefert dieselbe Session; eine bewusst neue Partie erhält eine neue ID. Event-/Vorschlagslöschung entfernt nur den Eventlink, Sessions bleiben erhalten. Session-Soft-Delete blendet die Partie im Event aus und erhält den Retry-Link. Snapshots tragen BGG-only- und fremde Sammlungsspiele ohne Sammlungspflicht; mobile Session-DTOs bleiben rückwärtskompatibel.
+**Plattform:** Web zuerst; native iOS-Oberflächen separat planen.
+**Design-Spec:** [Eventspiele als Sessions](superpowers/specs/2026-11-04-FEAT-029-event-sessions-design.md). Produktumfang am 04.11.2026 bestätigt. **Implementierungsplan:** [Sessions aus Eventspielen](superpowers/plans/2026-11-04-FEAT-029-event-sessions.md); am 04.11.2026 zur Umsetzung freigegeben. Webcode umgesetzt; Abnahme läuft. Keine iOS-Änderungen.

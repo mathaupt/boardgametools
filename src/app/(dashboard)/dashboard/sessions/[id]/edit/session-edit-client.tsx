@@ -19,13 +19,23 @@ interface Player {
   placement?: number | null;
 }
 
+interface GuestPlayer {
+  id?: string;
+  name: string;
+  score: number | null;
+  isWinner: boolean;
+  placement: number | null;
+}
+
 export interface SerializedSession {
   id: string;
-  gameId: string;
+  gameId: string | null;
+  gameNameSnapshot: string | null;
   playedAt: string;
   durationMinutes: number | null;
   notes: string | null;
   players: { userId: string; score: number | null; isWinner: boolean; placement: number | null }[];
+  guestPlayers: GuestPlayer[];
 }
 
 export interface SerializedSessionGame {
@@ -53,7 +63,7 @@ export default function SessionEditClient({ session, games, users }: SessionEdit
   const [saving, setSaving] = useState(false);
 
   const [formData, setFormData] = useState({
-    gameId: session.gameId,
+    gameId: session.gameId ?? "",
     playedAt: new Date(session.playedAt).toISOString().split("T")[0],
     durationMinutes: session.durationMinutes?.toString() || "",
     notes: session.notes || "",
@@ -62,6 +72,7 @@ export default function SessionEditClient({ session, games, users }: SessionEdit
   const [players, setPlayers] = useState<Player[]>(
     session.players.map((p) => ({ userId: p.userId, score: p.score, isWinner: p.isWinner, placement: p.placement }))
   );
+  const [guestPlayers, setGuestPlayers] = useState<GuestPlayer[]>(session.guestPlayers);
 
   const addPlayer = () => {
     const nextPlacement = Math.max(...players.map((p) => p.placement || 0), 0) + 1;
@@ -89,9 +100,12 @@ export default function SessionEditClient({ session, games, users }: SessionEdit
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          ...formData,
+          ...(formData.gameId ? { gameId: formData.gameId } : {}),
+          playedAt: formData.playedAt,
           durationMinutes: formData.durationMinutes ? parseInt(formData.durationMinutes) : null,
+          notes: formData.notes,
           players: players.map((p) => ({ userId: p.userId, score: p.score || null, isWinner: p.isWinner, placement: p.placement || null })),
+          guestPlayers: guestPlayers.map((p) => ({ name: p.name.trim(), score: p.score, isWinner: p.isWinner, placement: p.placement })),
         }),
       });
       if (!res.ok) { const d = await res.json(); throw new Error(d.error || "Fehler beim Speichern"); }
@@ -115,7 +129,7 @@ export default function SessionEditClient({ session, games, users }: SessionEdit
           <CardHeader><CardTitle as="h2">Session Details</CardTitle><CardDescription>Grundlegende Informationen</CardDescription></CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
+              {session.gameId ? <div>
                 <Label htmlFor="gameId">Spiel *</Label>
                 <Select value={formData.gameId} onValueChange={(value) => setFormData((p) => ({ ...p, gameId: value }))}>
                   <SelectTrigger id="gameId">
@@ -126,7 +140,10 @@ export default function SessionEditClient({ session, games, users }: SessionEdit
                   </SelectContent>
                 </Select>
                 <input type="hidden" name="gameId" value={formData.gameId} required />
-              </div>
+              </div> : <div className="space-y-1">
+                <Label>Spiel</Label>
+                <p className="min-h-11 rounded-md border border-border bg-muted/30 px-3 py-2 text-sm">{session.gameNameSnapshot ?? "Unbekanntes Spiel"} · nur für diese Session</p>
+              </div>}
               <div><Label htmlFor="playedAt">Gespielt am *</Label><Input id="playedAt" type="date" value={formData.playedAt} onChange={(e) => setFormData((p) => ({ ...p, playedAt: e.target.value }))} required /></div>
               <div><Label htmlFor="dur">Dauer (Min)</Label><Input id="dur" type="number" value={formData.durationMinutes} onChange={(e) => setFormData((p) => ({ ...p, durationMinutes: e.target.value }))} placeholder="90" min="1" /></div>
             </div>
@@ -159,6 +176,16 @@ export default function SessionEditClient({ session, games, users }: SessionEdit
               </div>
             ))}
             <Button type="button" variant="outline" onClick={addPlayer} className="w-full"><Plus className="h-4 w-4 mr-2" aria-hidden="true" />Spieler hinzufügen</Button>
+            {guestPlayers.map((player, index) => (
+              <div key={player.id ?? `guest-${index}`} className="grid grid-cols-1 gap-3 rounded-lg border border-border p-4 sm:grid-cols-[minmax(0,1fr)_6rem_6rem_auto_auto] sm:items-end">
+                <div><Label htmlFor={`guest-name-${index}`}>Gastname {index + 1}</Label><Input id={`guest-name-${index}`} value={player.name} maxLength={80} onChange={(event) => setGuestPlayers((current) => current.map((guest, i) => i === index ? { ...guest, name: event.target.value } : guest))} /></div>
+                <div><Label htmlFor={`guest-placement-${index}`}>Platz</Label><Input id={`guest-placement-${index}`} type="number" min="1" value={player.placement ?? ""} onChange={(event) => setGuestPlayers((current) => current.map((guest, i) => i === index ? { ...guest, placement: Number(event.target.value) || null } : guest))} /></div>
+                <div><Label htmlFor={`guest-score-${index}`}>Punkte</Label><Input id={`guest-score-${index}`} type="number" value={player.score ?? ""} onChange={(event) => setGuestPlayers((current) => current.map((guest, i) => i === index ? { ...guest, score: event.target.value === "" ? null : Number(event.target.value) } : guest))} /></div>
+                <label className="flex min-h-11 items-center gap-2 text-sm"><Checkbox checked={player.isWinner} onChange={(event) => setGuestPlayers((current) => current.map((guest, i) => i === index ? { ...guest, isWinner: event.target.checked } : guest))} />Gewinner</label>
+                <Button type="button" variant="outline" size="sm" onClick={() => setGuestPlayers((current) => current.filter((_, i) => i !== index))} aria-label={`Gast ${index + 1} entfernen`}><Trash2 className="h-4 w-4" aria-hidden="true" /></Button>
+              </div>
+            ))}
+            <Button type="button" variant="outline" onClick={() => setGuestPlayers((current) => [...current, { name: "", score: null, isWinner: false, placement: current.length + 1 }])} className="w-full"><Plus className="h-4 w-4 mr-2" aria-hidden="true" />Gastspieler hinzufügen</Button>
           </CardContent>
         </Card>
         <div className="flex gap-3">

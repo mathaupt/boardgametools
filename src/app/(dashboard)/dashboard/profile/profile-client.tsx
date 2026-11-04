@@ -58,7 +58,7 @@ interface SessionNote {
   id: string;
   notes: string;
   playedAt: string;
-  gameId: string;
+  gameId: string | null;
   gameName: string;
 }
 

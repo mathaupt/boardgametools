@@ -35,11 +35,11 @@ export const GroupChallengeService = {
     }));
     const sessions = participantIds.length ? await prisma.gameSession.findMany({
       where: { deletedAt: null, OR: clauses },
-      select: { id: true, gameId: true, createdById: true, createdAt: true, players: { select: { userId: true } } },
+      select: { id: true, gameId: true, gameNameSnapshot: true, createdById: true, createdAt: true, players: { select: { userId: true } } },
     }) : [];
     return challenges.map((challenge) => {
       const members: ChallengeParticipantInterval[] = challenge.participants.map(({ userId: participantId, joinedAt, leftAt }) => ({ userId: participantId, joinedAt, leftAt }));
-      const records: ChallengeSessionRecord[] = sessions.map(({ id, gameId, createdById, createdAt, players }) => ({ id, gameId, createdById, createdAt, playerIds: players.map(({ userId: id }) => id) }));
+      const records: ChallengeSessionRecord[] = sessions.map(({ id, gameId, gameNameSnapshot, createdById, createdAt, players }) => ({ id, gameId, gameNameSnapshot, createdById, createdAt, playerIds: players.map(({ userId: id }) => id) }));
       const current = aggregateChallengeProgress(records, members, challenge.startsAt, challenge.endsAt, challenge.kind === "games" ? "games" : "sessions");
       return { id: challenge.id, title: challenge.title, kind: challenge.kind, target: challenge.target, startsAt: challenge.startsAt.toISOString(), endsAt: challenge.endsAt?.toISOString() ?? null, current: Math.min(current, challenge.target), completed: current >= challenge.target, joined: challenge.participants.some(({ userId: id, leftAt }) => id === userId && !leftAt) };
     });

@@ -40,7 +40,8 @@ interface SessionRating {
 
 export interface SessionData {
   id: string;
-  gameId: string;
+  gameId: string | null;
+  gameNameSnapshot?: string | null;
   playedAt: string;
   durationMinutes: number | null;
   notes: string | null;
@@ -48,6 +49,7 @@ export interface SessionData {
   game: { id: string; name: string; imageUrl: string | null };
   createdBy: { id: string; name: string | null; email: string | null };
   players: SessionPlayer[];
+  guestPlayers: { id: string; name: string; score: number | null; isWinner: boolean; placement: number | null }[];
   ratings: SessionRating[];
 }
 
@@ -81,6 +83,10 @@ export default function SessionDetailClient({ session }: SessionDetailClientProp
   const sortedPlayers = [...session.players].sort(
     (a, b) => (a.placement || 999) - (b.placement || 999)
   );
+  const sortedResults = [
+    ...sortedPlayers.map((player) => ({ ...player, displayName: player.user.name || player.user.email })),
+    ...session.guestPlayers.map((player) => ({ ...player, displayName: `${player.name} (Gast)` })),
+  ].sort((a, b) => (a.placement || 999) - (b.placement || 999));
 
   return (
     <div className="space-y-6">
@@ -137,7 +143,7 @@ export default function SessionDetailClient({ session }: SessionDetailClientProp
                   )}
                   <div className="flex items-center gap-2">
                     <Users className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
-                    <span>{session.players.length} Spieler</span>
+                    <span>{session.players.length + session.guestPlayers.length} Spieler</span>
                   </div>
                 </div>
                 {session.notes && <p className="text-sm text-muted-foreground mt-2">{session.notes}</p>}
@@ -164,7 +170,7 @@ export default function SessionDetailClient({ session }: SessionDetailClientProp
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2" as="h2"><Users className="h-5 w-5" aria-hidden="true" />Spieler & Ergebnisse</CardTitle>
-          <CardDescription>{sortedPlayers.length} Spieler</CardDescription>
+          <CardDescription>{sortedPlayers.length} Nutzer · {session.guestPlayers.length} {session.guestPlayers.length === 1 ? "Gast" : "Gäste"}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
@@ -178,10 +184,10 @@ export default function SessionDetailClient({ session }: SessionDetailClientProp
                 </tr>
               </thead>
               <tbody>
-                {sortedPlayers.map((player) => (
+                {sortedResults.map((player) => (
                   <tr key={player.id} className="border-b last:border-0">
                     <td className="py-2 pr-4">{player.placement ? `#${player.placement}` : "-"}</td>
-                    <td className="py-2 pr-4 font-medium">{player.user.name || player.user.email}</td>
+                    <td className="py-2 pr-4 font-medium">{player.displayName}</td>
                     <td className="py-2 pr-4 text-right font-mono">{player.score !== null ? player.score : "-"}</td>
                     <td className="py-2 text-center">{player.isWinner && <Trophy className="h-4 w-4 text-warning mx-auto" aria-label="Gewinner" />}</td>
                   </tr>

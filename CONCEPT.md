@@ -50,6 +50,7 @@ Die Weboberfläche verwendet seit 0.50.20 die bestätigte Gestaltung „Club Pro
 - Öffentliche Event-BGG-Suche: Katalogsuche ohne Anmeldung im offenen öffentlichen Event; Spielvorschläge bleiben an eine aktive Identität und den Eventstatus gebunden.
 - BGG-Sammlungs-Import: Komplette BGG-Sammlung eines Nutzers importieren
 - BGG-Spiele direkt in Events vorschlagen (auch ohne Sammlung)
+- Tatsächlich gespielte Eventvorschläge direkt als Sessions erfassen; BGG- und fremde Sammlungsspiele bleiben als Snapshot ohne Sammlungsimport erhalten
 
 ### 6. Event-Voting System
 - **Event erstellen**: Datum, Ort, Beschreibung

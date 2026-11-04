@@ -20,6 +20,9 @@ export default async function EditSessionPage({
         players: {
           select: { userId: true, score: true, isWinner: true, placement: true },
         },
+        guestPlayers: {
+          select: { id: true, name: true, score: true, isWinner: true, placement: true },
+        },
       },
     }),
     prisma.game.findMany({
@@ -38,10 +41,12 @@ export default async function EditSessionPage({
   const serializedSession = {
     id: gameSession.id,
     gameId: gameSession.gameId,
+    gameNameSnapshot: gameSession.gameNameSnapshot,
     playedAt: gameSession.playedAt.toISOString(),
     durationMinutes: gameSession.durationMinutes,
     notes: gameSession.notes,
     players: gameSession.players,
+    guestPlayers: gameSession.guestPlayers,
   };
 
   return <SessionEditClient session={serializedSession} games={games} users={users} />;

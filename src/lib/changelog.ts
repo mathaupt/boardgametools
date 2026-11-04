@@ -12,6 +12,16 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.80",
+    date: "2026-11-04",
+    title: "Sessions direkt aus Spieleabenden erfassen",
+    description: "Tatsächlich gespielte Eventspiele lassen sich direkt als Sessions festhalten und in der Eventübersicht nachvollziehen.",
+    changes: [
+      { type: "feature", text: "FEAT-029: Gespielte Eventvorschläge können mit Mitspielern, Dauer, Ergebnissen und Notizen als Sessions erfasst werden; auch BGG-Spiele benötigen keinen Sammlungsimport." },
+      { type: "improvement", text: "Gäste öffentlicher Eventlinks sehen den Gespielt-Status, während Sessiondetails auf angemeldete Eventberechtigte beschränkt bleiben." },
+    ],
+  },
+  {
     version: "0.50.79",
     date: "2026-11-04",
     title: "Abzeichen und gemeinsame Spielziele",

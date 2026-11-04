@@ -60,6 +60,7 @@ interface PublicEventRaw {
     votes?: Array<{ id: string }>;
     _count: { votes: number; guestVotes: number };
   }>;
+  playedSessions?: Array<{ proposalId: string }>;
   guestParticipants: Array<{
     id: string;
     nickname: string;
@@ -147,6 +148,7 @@ export const buildPublicEventInclude = (userId?: string | null) => ({
     },
     orderBy: { createdAt: "asc" as const },
   },
+  playedSessions: { where: { session: { deletedAt: null } }, select: { proposalId: true } },
   guestParticipants: {
     select: {
       id: true,
@@ -212,6 +214,7 @@ export interface SerializedPublicEvent {
     totalVotes: number;
     voteCounts: { registered: number; guests: number };
     userHasVoted: boolean;
+    played: boolean;
   }>;
   guestParticipants: PublicGuest[];
   dateProposals: Array<{
@@ -247,6 +250,7 @@ export function serializePublicEvent(
   now = new Date(),
   currentUserName: string | null = null
 ): SerializedPublicEvent {
+  const playedProposalIds = new Set((event.playedSessions ?? []).map((link) => link.proposalId));
   return {
     id: event.id,
     title: event.title,
@@ -310,6 +314,7 @@ export function serializePublicEvent(
         game: gameData,
         proposedBy: proposedByData,
         totalVotes: registeredVotes + guestVotes,
+        played: playedProposalIds.has(proposal.id),
         voteCounts: {
           registered: registeredVotes,
           guests: guestVotes,

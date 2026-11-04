@@ -5,7 +5,7 @@ import type { SerializedPublicEvent } from "@/lib/public-event";
 const { mockLifecycle, mockSetGuests, mockToast } = vi.hoisted(() => ({ mockLifecycle: vi.fn(), mockSetGuests: vi.fn(), mockToast: vi.fn() }));
 vi.mock("@/components/ui/use-toast", () => ({ useToast: () => ({ toast: mockToast }) }));
 vi.mock("@/components/event-voting/proposal-compact-row", () => ({
-  ProposalCompactRow: ({ children, name }: { children: React.ReactNode; name: string }) => <li>{name}{children}</li>,
+  ProposalCompactRow: ({ children, name, played }: { children: React.ReactNode; name: string; played?: boolean }) => <li>{name}{played && <span>Gespielt</span>}{children}</li>,
 }));
 vi.mock("@/components/event-voting/proposal-sort-control", () => ({ ProposalSortControl: () => null }));
 vi.mock("@/components/public-event/use-public-event-lifecycle", () => ({ usePublicEventLifecycle: mockLifecycle }));
@@ -22,7 +22,7 @@ const event = {
   eventState: { available: { voteGame: true, voteDate: true, proposeGame: true, join: true }, blockedReason: null, label: "Offen" },
   currentUserId: "u1", currentUser: { id: "u1", name: "Anna" },
   guestParticipants: [{ id: "g1", nickname: "Alex", createdAt: "2026-11-01T10:00:00.000Z", votesCount: 2 }],
-  proposals: [{ id: "p1", createdAt: null, game: { id: "game-1", name: "Catan", imageUrl: null, minPlayers: 2, maxPlayers: 4, playTimeMinutes: 60 }, proposedBy: null, totalVotes: 1, voteCounts: { registered: 0, guests: 1 }, userHasVoted: false }],
+  proposals: [{ id: "p1", createdAt: null, game: { id: "game-1", name: "Catan", imageUrl: null, minPlayers: 2, maxPlayers: 4, playTimeMinutes: 60 }, proposedBy: null, totalVotes: 1, voteCounts: { registered: 0, guests: 1 }, userHasVoted: false, played: true }],
   dateProposals: [],
 } as unknown as SerializedPublicEvent;
 
@@ -51,6 +51,7 @@ describe("PublicEventClient identity and participation layout", () => {
     expect(screen.getAllByText("Alex")).toHaveLength(1);
     expect(screen.getAllByRole("link", { name: "Spiele wählen" }).every((link) => link.getAttribute("href") === "#event-games")).toBe(true);
     expect(screen.getByRole("heading", { name: "Teilnehmende (1)" })).toBeInTheDocument();
+    expect(screen.getByText("Gespielt")).toBeInTheDocument();
     expect(Array.from(document.querySelectorAll("div")).some((element) =>
       element.classList.contains("lg:grid-cols-[minmax(0,2fr)_minmax(16rem,1fr)]")
     )).toBe(true);

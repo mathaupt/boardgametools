@@ -60,6 +60,7 @@ describe("buildPublicEventInclude", () => {
     expect(include).toHaveProperty("proposals");
     expect(include).toHaveProperty("guestParticipants");
     expect(include).toHaveProperty("dateProposals");
+    expect(include.playedSessions).toEqual({ where: { session: { deletedAt: null } }, select: { proposalId: true } });
     expect(include.guestParticipants).toEqual({
       select: {
         id: true,
@@ -88,6 +89,30 @@ describe("buildPublicEventInclude", () => {
 });
 
 describe("serializePublicEvent", () => {
+  it("exposes only played game names and status, never session or player details", () => {
+    const event = makeEvent({
+      playedSessions: [{
+        proposalId: "prop-1",
+        session: {
+          id: "secret-session-id",
+          notes: "private note",
+          durationMinutes: 90,
+          players: [{ user: { name: "Private Player" } }],
+          guestPlayers: [{ name: "Private Guest", score: 20 }],
+        },
+      }],
+    }) as Parameters<typeof serializePublicEvent>[0];
+
+    const result = serializePublicEvent(event, null);
+
+    expect(result.proposals[0]).toHaveProperty("played", true);
+    const serialized = JSON.stringify(result);
+    expect(serialized).not.toContain("secret-session-id");
+    expect(serialized).not.toContain("private note");
+    expect(serialized).not.toContain("Private Player");
+    expect(serialized).not.toContain("Private Guest");
+  });
+
   it("links only registered participants who enabled profile sharing", () => {
     vi.stubEnv("NEXTAUTH_SECRET", "public-event-profile-test-secret");
     const nonce = createProfileNonce();

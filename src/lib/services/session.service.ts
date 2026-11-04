@@ -6,6 +6,7 @@ import { validateString } from "@/lib/validation";
 import { NOT_DELETED, SAFE_USER_SELECT, buildPagination, paginatedResponse } from "./shared";
 import * as PushService from "@/lib/services/push.service";
 import logger from "@/lib/logger";
+import type { Prisma } from "@/generated/prisma/client";
 
 // ── Types ────────────────────────────────────────────────────────
 
@@ -29,6 +30,30 @@ export interface UpdateSessionInput {
   durationMinutes?: number | string | null;
   notes?: string;
   players?: SessionPlayerInput[];
+  guestPlayers?: SessionGuestPlayerInput[];
+}
+
+export interface SessionGuestPlayerInput {
+  name: string;
+  score?: number | null;
+  isWinner?: boolean;
+  placement?: number | null;
+}
+
+export interface CreateEventSessionInput {
+  gameId: string | null;
+  gameNameSnapshot: string;
+  gameBggIdSnapshot?: string | null;
+  gameImageUrlSnapshot?: string | null;
+  gameMinPlayersSnapshot?: number | null;
+  gameMaxPlayersSnapshot?: number | null;
+  gamePlayTimeMinutesSnapshot?: number | null;
+  gameComplexitySnapshot?: number | null;
+  playedAt: string;
+  durationMinutes?: number | null;
+  notes?: string | null;
+  players: SessionPlayerInput[];
+  guestPlayers: SessionGuestPlayerInput[];
 }
 
 // ── Service ──────────────────────────────────────────────────────
@@ -38,6 +63,7 @@ const includeRelations = {
   players: {
     include: { user: { select: SAFE_USER_SELECT } },
   },
+  guestPlayers: true as const,
 };
 
 export const SessionService = {
@@ -105,6 +131,13 @@ export const SessionService = {
     const newSession = await prisma.gameSession.create({
       data: {
         gameId: input.gameId,
+        gameNameSnapshot: game.name,
+        gameBggIdSnapshot: game.bggId,
+        gameImageUrlSnapshot: game.imageUrl,
+        gameMinPlayersSnapshot: game.minPlayers,
+        gameMaxPlayersSnapshot: game.maxPlayers,
+        gamePlayTimeMinutesSnapshot: game.playTimeMinutes,
+        gameComplexitySnapshot: game.complexity,
         playedAt: new Date(input.playedAt),
         durationMinutes: input.durationMinutes ? parseInt(String(input.durationMinutes)) : null,
         notes: input.notes,
@@ -139,6 +172,43 @@ export const SessionService = {
     }
 
     return newSession;
+  },
+
+  /** Create a snapshot-capable session inside the caller's event transaction. */
+  async createFromEvent(tx: Prisma.TransactionClient, userId: string, input: CreateEventSessionInput) {
+    return tx.gameSession.create({
+      data: {
+        gameId: input.gameId,
+        gameNameSnapshot: input.gameNameSnapshot,
+        gameBggIdSnapshot: input.gameBggIdSnapshot ?? null,
+        gameImageUrlSnapshot: input.gameImageUrlSnapshot ?? null,
+        gameMinPlayersSnapshot: input.gameMinPlayersSnapshot ?? null,
+        gameMaxPlayersSnapshot: input.gameMaxPlayersSnapshot ?? null,
+        gamePlayTimeMinutesSnapshot: input.gamePlayTimeMinutesSnapshot ?? null,
+        gameComplexitySnapshot: input.gameComplexitySnapshot ?? null,
+        playedAt: new Date(input.playedAt),
+        durationMinutes: input.durationMinutes ?? null,
+        notes: input.notes ?? null,
+        createdById: userId,
+        players: {
+          create: input.players.map((player) => ({
+            userId: player.userId,
+            score: player.score ?? null,
+            isWinner: player.isWinner ?? false,
+            placement: player.placement ?? null,
+          })),
+        },
+        guestPlayers: {
+          create: input.guestPlayers.map((player) => ({
+            name: player.name,
+            score: player.score ?? null,
+            isWinner: player.isWinner ?? false,
+            placement: player.placement ?? null,
+          })),
+        },
+      },
+      include: includeRelations,
+    });
   },
 
   /** Update an existing session */
@@ -177,6 +247,21 @@ export const SessionService = {
             placement: p.placement ?? null,
           })),
         });
+      }
+
+      if (input.guestPlayers) {
+        await tx.sessionGuestPlayer.deleteMany({ where: { sessionId } });
+        if (input.guestPlayers.length > 0) {
+          await tx.sessionGuestPlayer.createMany({
+            data: input.guestPlayers.map((player) => ({
+              sessionId,
+              name: player.name,
+              score: player.score ?? null,
+              isWinner: player.isWinner ?? false,
+              placement: player.placement ?? null,
+            })),
+          });
+        }
       }
 
       return tx.gameSession.findUnique({

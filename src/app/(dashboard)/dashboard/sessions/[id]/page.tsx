@@ -22,6 +22,7 @@ export default async function SessionDetailPage({
       players: {
         include: { user: { select: { id: true, name: true, email: true } } },
       },
+      guestPlayers: true,
       ratings: {
         include: { user: { select: { id: true, name: true, email: true } } },
       },
@@ -34,6 +35,11 @@ export default async function SessionDetailPage({
 
   const serialized = {
     ...gameSession,
+    game: gameSession.game ?? {
+      id: `snapshot-${gameSession.id}`,
+      name: gameSession.gameNameSnapshot ?? "Unbekanntes Spiel",
+      imageUrl: gameSession.gameImageUrlSnapshot,
+    },
     playedAt: gameSession.playedAt.toISOString(),
     createdAt: gameSession.createdAt.toISOString(),
     ratings: gameSession.ratings.map((r) => ({

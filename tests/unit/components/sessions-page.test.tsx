@@ -94,4 +94,20 @@ describe("SessionsPage", () => {
     expect(screen.getByRole("heading", { name: "Noch keine Sessions" })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Erste Session eintragen" })).toHaveAttribute("href", "/dashboard/sessions/new");
   });
+
+  it("shows snapshot-only event sessions with their guest participants", async () => {
+    mocks.auth.mockResolvedValue({ user: { id: "owner-1" } });
+    mocks.findMany.mockResolvedValue([makeSession({
+      game: null,
+      gameNameSnapshot: "BGG-Abenteuer",
+      gameImageUrlSnapshot: null,
+      players: [],
+      guestPlayers: [{ name: "Max", score: 8, placement: 1, isWinner: true }],
+    })]);
+
+    render(await SessionsPage());
+
+    expect(screen.getByRole("heading", { name: "BGG-Abenteuer" })).toBeInTheDocument();
+    expect(screen.getByText(/Max \(Gast\)/)).toBeInTheDocument();
+  });
 });

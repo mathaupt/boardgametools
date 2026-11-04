@@ -6,7 +6,8 @@ export interface ChallengeParticipantInterval {
 
 export interface ChallengeSessionRecord {
   id: string;
-  gameId: string;
+  gameId: string | null;
+  gameNameSnapshot?: string | null;
   createdById: string;
   createdAt: Date;
   playerIds: string[];
@@ -25,7 +26,7 @@ export function aggregateChallengeProgress(
       const timestamp = session.createdAt.getTime();
       if (timestamp < startsAt.getTime() || (endsAt && timestamp > endsAt.getTime())) continue;
       if (timestamp < participant.joinedAt.getTime() || (participant.leftAt && timestamp > participant.leftAt.getTime())) continue;
-      if (session.createdById === participant.userId || session.playerIds.includes(participant.userId)) eligibleIds.add(kind === "sessions" ? session.id : session.gameId);
+      if (session.createdById === participant.userId || session.playerIds.includes(participant.userId)) eligibleIds.add(kind === "sessions" ? session.id : session.gameId ?? `snapshot:${session.gameNameSnapshot ?? session.id}`);
     }
   }
   return eligibleIds.size;

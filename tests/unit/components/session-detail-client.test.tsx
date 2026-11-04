@@ -19,6 +19,7 @@ const session: SessionData = {
     { id: "player-2", userId: "user-2", score: 7, isWinner: false, placement: 2, user: { id: "user-2", name: null, email: "alex@example.com" } },
     { id: "player-1", userId: "user-1", score: 10, isWinner: true, placement: 1, user: { id: "user-1", name: "Mara", email: null } },
   ],
+  guestPlayers: [],
   ratings: [{ id: "rating-1", rating: 4, comment: "Schön!", createdAt: "2026-10-02T12:00:00.000Z", user: { id: "user-2", name: null, email: "alex@example.com" } }],
 };
 
@@ -51,6 +52,21 @@ describe("SessionDetailClient", () => {
     expect(screen.queryByText("Spannende Partie")).not.toBeInTheDocument();
     expect(screen.queryByText("Bewertung(en)")).not.toBeInTheDocument();
     expect(screen.getAllByText("0 Spieler").length).toBeGreaterThan(0);
+  });
+
+  it("renders a snapshot game and named guest results when no collection game exists", () => {
+    render(<SessionDetailClient session={{
+      ...session,
+      gameId: null,
+      gameNameSnapshot: "BGG-Abenteuer",
+      game: { id: "snapshot", name: "BGG-Abenteuer", imageUrl: null },
+      players: [],
+      guestPlayers: [{ id: "guest-player-1", name: "Max", score: 8, isWinner: true, placement: 1 }],
+    }} />);
+
+    expect(screen.getByRole("heading", { name: "BGG-Abenteuer" })).toBeInTheDocument();
+    expect(screen.getByRole("row", { name: /Max/ })).toHaveTextContent("8");
+    expect(screen.getByText("0 Nutzer · 1 Gast")).toBeInTheDocument();
   });
 
   it("deletes after confirmation and navigates back to sessions", async () => {

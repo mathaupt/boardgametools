@@ -23,6 +23,10 @@ export const faqSections: FaqSection[] = [
         answer: "Das Spiel ist auf dem Server bereits mit dieser Reihe verknüpft. Es wird kein zweiter Eintrag angelegt. Die App lädt die Reihe neu und setzt aktive Filter zurück, damit du den vorhandenen Eintrag sehen kannst. Kann die Liste nicht geladen oder das Spiel darin nicht gefunden werden, bleibt der Dialog mit einer Fehlermeldung offen. Du kannst es dann erneut versuchen oder die Seite neu laden.",
       },
       {
+        question: "Wie erfasse ich ein tatsächlich gespieltes Eventspiel als Session?",
+        answer: "Öffne das Event und nutze den Bereich Gespielte Partien. Nur der Event-Ersteller kann eine Partie erfassen. Eingeladene Teilnehmende sind vorausgewählt; Gäste des Events werden namentlich übernommen. Auch ein BGG-Vorschlag lässt sich ohne Import in die eigene Sammlung als Session speichern.",
+      },
+      {
         question: "Kann ich mehrere Spiele auf einmal zu einer Reihe hinzufügen?",
         answer: "Ja. Wähle bis zu 20 Spiele aus deiner Sammlung oder den BGG-Suchergebnissen aus. Deine Auswahl bleibt erhalten, wenn du die Suche oder Quelle wechselst. Die Spiele werden einzeln nacheinander hinzugefügt; bei Teilerfolgen siehst du den Status pro Spiel und kannst fehlgeschlagene Einträge erneut versuchen.",
       },

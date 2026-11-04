@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { PersonalSelectionSummary } from "@/components/public-event/personal-selection-summary";
 
-const proposal = { id: "p1", createdAt: null, game: { id: "g1", name: "Catan", imageUrl: null, minPlayers: 2, maxPlayers: 4, playTimeMinutes: 60 }, proposedBy: null, totalVotes: 1, voteCounts: { registered: 1, guests: 0 }, userHasVoted: true };
+const proposal = { id: "p1", createdAt: null, game: { id: "g1", name: "Catan", imageUrl: null, minPlayers: 2, maxPlayers: 4, playTimeMinutes: 60 }, proposedBy: null, totalVotes: 1, voteCounts: { registered: 1, guests: 0 }, userHasVoted: true, played: false };
 const dateProposal = { id: "d1", date: "2026-12-01T18:00:00.000Z", votes: [{ id: "v1", availability: "yes", user: { id: "u1", name: "Anna" } }], guestVotes: [] };
 
 describe("PersonalSelectionSummary", () => {

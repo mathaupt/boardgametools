@@ -140,8 +140,8 @@ export default async function ProfilePage() {
           id: s.id,
           notes: s.notes!,
           playedAt: s.playedAt.toISOString(),
-          gameId: s.game.id,
-          gameName: gameTextForRead(s.game.name),
+          gameId: s.game?.id ?? null,
+          gameName: gameTextForRead(s.game?.name ?? s.gameNameSnapshot ?? "Unbekanntes Spiel"),
         }))}
     />
   );

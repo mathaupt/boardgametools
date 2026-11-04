@@ -61,3 +61,17 @@ Commit-Hook: Gesamt 10/10, Sicherheit 10/10, keine offenen Findings und keine Re
 ## Produktionsnachgang – BUG-072
 
 Nach dem Produktionsfehler wurden die fehlenden Datenbankschritte mit ausdrücklicher Freigabe nach Backup ausgeführt. Alle drei offenen Migrationen sind angewendet; Prisma meldet keinen Migrationsrückstand, und die für FEAT-028 benötigten Schemaobjekte sind vorhanden. Die 25 vorhandenen Reiheneinträge sind weiterhin mit Sammlungsspielen verknüpft; keine Umwandlung in temporäre Einträge wurde gezählt. Der Codebuild und die App wurden dabei nicht verändert. Ein echter Login mit einem Nutzerkonto wurde nicht simuliert.
+
+## FEAT-029 – Umsetzungsbewertung
+
+| Prüffeld | Ergebnis |
+|---|---|
+| Vitest | 1.216/1.216 in 185 Dateien bestanden |
+| TypeScript / Build | bestanden |
+| ESLint | 0 Fehler, 652 bestehende Warnungen aus Hilfsskripten |
+| Security | Fast-Check 0 Fehler, 2 bekannte Hinweise; Produktionsaudit 0 Befunde |
+| Review-Regressionscheck | Exitcode 0, 9,9/10, keine Regression |
+| Datenbankmigration | alle 18 Migrationen und FEAT-029-Schemacheck auf isolierter temporärer PostgreSQL-Testinstanz bestanden |
+| Gerenderte UI | Playwright 390 px/1440 px; Impeccable-Detektor ohne Befund |
+
+FEAT-029 ist im Webcode umgesetzt. Die Migration ist nicht in Produktion ausgerollt. Der lokale PostgreSQL-Dienst wurde nach dem Test gestoppt.

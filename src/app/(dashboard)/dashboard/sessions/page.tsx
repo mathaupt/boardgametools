@@ -25,6 +25,7 @@ export default async function SessionsPage() {
           players: {
             include: { user: { select: { id: true, name: true, email: true } } },
           },
+          guestPlayers: true,
         },
         orderBy: { playedAt: "desc" },
         take: 20,
@@ -72,10 +73,10 @@ export default async function SessionsPage() {
               <CardHeader>
                 <div className="flex flex-col sm:flex-row items-start sm:justify-between gap-2">
                   <div className="flex min-w-0 items-start gap-3">
-                    <SessionCover imageUrl={session.game.imageUrl} />
+                    <SessionCover imageUrl={session.game?.imageUrl ?? session.gameImageUrlSnapshot} />
                     <div className="min-w-0 flex-1">
                       <CardTitle as="h2" className="break-words">
-                        {gameTextForRead(session.game.name)}
+                        {gameTextForRead(session.game?.name ?? session.gameNameSnapshot ?? "Unbekanntes Spiel")}
                       </CardTitle>
                       <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
                         <span className="flex items-center gap-1">
@@ -90,7 +91,7 @@ export default async function SessionsPage() {
                         )}
                         <span className="flex items-center gap-1">
                           <Users className="h-4 w-4" aria-hidden="true" />
-                          {session.players.length} Spieler
+                          {session.players.length + (session.guestPlayers?.length ?? 0)} Spieler
                         </span>
                       </div>
                     </div>
@@ -116,7 +117,7 @@ export default async function SessionsPage() {
                 </CardContent>
               )}
 
-              {session.players.length > 0 && (
+              {(session.players.length > 0 || (session.guestPlayers?.length ?? 0) > 0) && (
                 <CardContent className="pt-0">
                   <div className="space-y-2">
                     <h4 className="font-medium text-sm">Spieler & Ergebnisse</h4>
@@ -137,6 +138,16 @@ export default async function SessionsPage() {
                             )}
                           </div>
                         ))}
+                      {session.guestPlayers?.map((player) => (
+                        <div key={player.id} className="flex items-center justify-between text-sm">
+                          <div className="flex items-center gap-2">
+                            {player.isWinner && <Trophy className="h-4 w-4 text-warning" aria-label="Gewinner" />}
+                            {player.placement && <span className="font-medium">#{player.placement}</span>}
+                            <span>{player.name} (Gast)</span>
+                          </div>
+                          {player.score !== null && <span className="font-mono">{player.score}</span>}
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </CardContent>
