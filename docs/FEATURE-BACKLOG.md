@@ -10,44 +10,69 @@ kurz mit dem aktuellen Stand nach vorherigen Umsetzungen abzugleichen und bei
 Bedarf zu aktualisieren. Ergebnis am jeweiligen Plan dokumentieren:
 [verbindliche Aktualitätsprüfung](DEVELOPMENT-PROCESS.md#aktualitätsprüfung-vor-jeder-implementierung).
 
-## Übersicht
+## Vollständig umgesetzt
 
-| ID | Feature | Status | Implementierungsplan | Umsetzungsfreigabe |
-|---|---|---|---|---|
-| FEAT-001 | Spieldetails aus dem Voting öffnen | Umgesetzt (Web) | [Gemeinsamer Plan](superpowers/plans/2026-10-30-FEAT-001-004-voting.md) | Freigegeben und umgesetzt am 30.10.2026 |
-| FEAT-002 | Voting-Vorschläge sortieren | Umgesetzt (Web) | [Gemeinsamer Plan](superpowers/plans/2026-10-30-FEAT-001-004-voting.md) | Freigegeben und umgesetzt am 30.10.2026 |
-| FEAT-003 | Kompakte Voting-Liste | Umgesetzt (Web) | [Gemeinsamer Plan](superpowers/plans/2026-10-30-FEAT-001-004-voting.md) | Kompakte Zeilenliste nach sichtbarem Vergleich ausdrücklich gewählt und zur Umsetzung freigegeben am 31.10.2026 |
-| FEAT-004 | Voting-Vorschläge löschen | Web umgesetzt; manuelle VoiceOver-Abnahme offen | [Gemeinsamer Plan](superpowers/plans/2026-10-30-FEAT-001-004-voting.md) | Web freigegeben und umgesetzt; iOS separat planen |
-| FEAT-005 | ApiLog-Schreiblast für `/api/health` begrenzen | Im FEAT-006-Code für beide Healthpfade umgesetzt; Rollout offen | [Health-Logpolicy](superpowers/plans/2026-10-31-FEAT-005-health-apilog.md) | In FEAT-006 zur Umsetzung freigegeben |
-| FEAT-006 | Health-Deep-Checks cachen oder splitten | Web-Code umgesetzt; Readiness-Rollout und isolierte DB-Abnahme offen | [Liveness und Readiness](superpowers/plans/2026-10-31-FEAT-006-health-liveness-readiness.md) | Codeumfang mit „dann weiter mit B“ am 01.11.2026 gestartet; Monitorumstellung separat |
-| FEAT-007 | Vercel-Firewall-Regel für `/api/health` | Lesende Vorprüfung abgeschlossen; Konto- und Monitorinventar offen | [Firewall und Monitorbetrieb](superpowers/plans/2026-10-31-FEAT-007-health-firewall.md) | Regeländerung ausstehend; 30/min-Wert noch nicht durch Trafficdaten bestätigt |
-| FEAT-008 | Spend-Management-Obergrenze (Billing-Schutz) | Lesende Vorprüfung abgeschlossen; Billingdaten und Betreiberentscheid offen | [Budget und Betriebsreaktion](superpowers/plans/2026-10-31-FEAT-008-spend-management.md) | Betrag, Empfänger und Teamwirkung vor Aktivierung festzulegen |
-| FEAT-009 | HTML-Entities in Spieldaten korrekt behandeln | Code umgesetzt; Produktionsdatenbereinigung offen | [Textnormalisierung und Datenbereinigung](superpowers/plans/2026-10-31-FEAT-009-spieldaten-entities.md) | Codeumsetzung am 31.10.2026 freigegeben; Produktionslauf separat freizugeben |
-| FEAT-010 | Event-Status und Ergebnis eindeutig darstellen | Umgesetzt und abgenommen (Web/Mobile-API) | [Zustandsregeln und Ergebnisdarstellung](superpowers/plans/2026-10-31-FEAT-010-eventstatus-ergebnis.md) | Am 31.10.2026 freigegeben und mit isolierter PostgreSQL- und Chromium-Abnahme abgeschlossen; native iOS-Oberfläche bleibt separat |
-| FEAT-011 | Mobile und assistive Bedienung der Terminabstimmung | Implementiert (Web; automatisierte Abnahme abgeschlossen, manuelle VoiceOver-Abnahme offen) | [Zugängliche Terminabstimmung](superpowers/plans/2026-10-31-FEAT-011-terminabstimmung-barrierefrei.md) | Automatisierte Web-Abnahme am 01.11.2026 abgeschlossen; VoiceOver manuell offen, iOS separat |
-| FEAT-012 | Teilnahme vor passive Listen rücken | Web umgesetzt; Browser-E2E/Viewport-Abnahme offen | [Teilnahmeweg und Teilnehmerdaten](superpowers/plans/2026-10-31-FEAT-012-oeffentliche-teilnahme.md) | Umgesetzt am 01.11.2026; Web zuerst, iOS separat |
-| FEAT-013 | Aktive Identität verständlich machen | Web umgesetzt; Browser-E2E/Viewport-Abnahme offen | [Eine aktive Identität](superpowers/plans/2026-10-31-FEAT-013-aktive-identitaet.md) | Umgesetzt am 01.11.2026; ohne Gastwechsel |
-| FEAT-014 | Suchzustände und Beschriftung der BGG-Suche | Implementiert (Web; Browser-E2E offen) | [Öffentliche BGG-Suche](superpowers/plans/2026-10-31-FEAT-014-bgg-suchzustaende.md) | Am 01.11.2026 freigegeben und umgesetzt; native iOS-Suche nicht Teil dieses öffentlichen Web-Umfangs |
-| FEAT-015 | Top-3-Spiele im Event-Kurzüberblick | Umgesetzt (Web; Browser-Viewportabnahme offen) | [Dashboard Top drei](superpowers/plans/2026-11-02-FEAT-015-dashboard-top-three.md) | Web-Umsetzung am 02.11.2026 freigegeben und umgesetzt; iOS separat |
-| FEAT-016 | Spielauswahl bei Session-Anlage per Eingabe filtern | Web umgesetzt; manuelle Browser-/VoiceOver-Abnahme offen | [Durchsuchbare Spielauswahl](superpowers/plans/2026-11-02-FEAT-016-session-spielsuche.md) | Web am 02.11.2026 durch „implementiere FEAT-016“ freigegeben und umgesetzt; iOS separat planen |
-| FEAT-017 | Spielcover in der Sessions-Übersicht anzeigen | Web umgesetzt; Browser-/Viewportabnahme offen | [Cover in Sessionkarten](superpowers/plans/2026-11-02-FEAT-017-session-cover.md) | Web-Umsetzung am 02.11.2026 freigegeben und umgesetzt; iOS separat |
-| FEAT-018 | Testabdeckung schrittweise auf 80 % erhöhen | In Umsetzung; globale Gates 55/55/61/56 und `src/lib` 80/80/80/80 erreicht; weitere Pakete offen | [Coverage-Ziel 80 %](superpowers/plans/2026-11-02-FEAT-018-coverage-80.md) | Durch „implementiere FEAT-018“ am 02.11.2026 freigegeben |
-| FEAT-019 | Spracheingabe für Suche und Session-Anlage | Konzept dokumentiert; Plan und Umsetzung offen | [Spracheingabe-Konzept](superpowers/specs/2026-11-02-spracheingabe-design.md) | Keine |
-| FEAT-020 | Lesbare Trefferflächen für öffentliche Spielvorschläge | Web nachgebessert; lokal gerendert geprüft (Hell/Dunkel, 390/1024 px, 200 % Schrift) | [Kontrast der Spielvorschläge](superpowers/plans/2026-11-02-FEAT-020-public-event-proposal-contrast.md) | Web am 02.11.2026 freigegeben und umgesetzt; iOS nicht betroffen |
-| FEAT-021 | Deutsche BGG-Ausgabe beim Import auswählen | Umgesetzt (0.50.63) | [Deutsche BGG-Ausgabe](superpowers/plans/2026-11-02-FEAT-021-bgg-deutsche-ausgabe.md) | 02.11.2026, Web |
-| FEAT-022 | BGG-Quellenkennzeichnung auf Loginseite und Website-Footer | Umgesetzt (0.50.64) | [BGG-Attribution](superpowers/plans/2026-11-02-FEAT-022-bgg-attribution.md) | 02.11.2026, Web |
-| FEAT-023 | Sammlung vor einem Import prüfen | Umgesetzt (Web, 0.50.67) | [Bestandsprüfung vor BGG-Importen](superpowers/plans/2026-11-03-FEAT-023-import-bestandspruefung.md) | Am 03.11.2026 umgesetzt; Web, iOS separat |
-| FEAT-024 | Mehrfachauswahl beim Hinzufügen zu Reihen, auch aus BGG | Umgesetzt (Web, 0.50.69) | [Mehrfachauswahl bei Reihen](superpowers/plans/2026-11-03-FEAT-024-mehrfachauswahl-reihen.md) | Am 03.11.2026 freigegeben und umgesetzt; iOS separat |
-| FEAT-025 | Reihenspiele unabhängig von dauerhaftem Sammlungsbesitz | Web/API/Schema umgesetzt; Produktionsmigration am 04.11.2026 angewendet | [Temporäre Reihenspiele](superpowers/plans/2026-11-03-FEAT-025-temporaere-reihenspiele.md) | 04.11.2026 freigegeben; Bestandsverknüpfungen bleiben erhalten |
-| FEAT-026 | Seitennavigation in der Spielesammlung | Umgesetzt 0.50.77 | [Pager der Spielesammlung](superpowers/plans/2026-11-03-FEAT-026-spielesammlung-pager.md) | Keine |
-| FEAT-027 | Eindeutige Leermeldung in allen BGG-Suchansichten | Umgesetzt (Web, 0.50.70) | [BGG-Leerzustände](superpowers/plans/2026-11-03-FEAT-027-bgg-leerzustand.md) | 03.11.2026 freigegeben und umgesetzt; öffentliche FEAT-014-Zustände erhalten |
-| FEAT-028 | Gamification: persönliche und gemeinsame Ziele | Umgesetzt (Web) | [Gamification-Konzept](superpowers/specs/2026-11-03-FEAT-028-gamification-design.md), [Implementierungsplan](superpowers/plans/2026-11-04-FEAT-028-gamification.md) | Am 04.11.2026 für drei Web-Stufen freigegeben; iOS separat planen |
-| FEAT-029 | Gespielte Eventspiele direkt als Sessions erfassen | Implementierungsplan erstellt; wartet auf Umsetzungsfreigabe | [Design-Spec](superpowers/specs/2026-11-04-FEAT-029-event-sessions-design.md); [Implementierungsplan](superpowers/plans/2026-11-04-FEAT-029-event-sessions.md) | Noch nicht freigegeben |
+Die folgenden Features sind innerhalb ihres dokumentierten Umfangs umgesetzt und
+abgenommen. Wo iOS separat geplant wird, zählt diese Liste nur den bestätigten
+Web-/API-Umfang.
 
-Am 30.10.2026 aufgenommen. Bei der Planung sind Web, iOS sowie angemeldete und
-öffentliche Voting-Ansichten auf Relevanz und bereits vorhandene Teilfunktionen
-zu prüfen. Der konkrete Plattformumfang wird im jeweiligen Plan festgelegt und
-zur Umsetzung freigegeben.
+| ID | Feature | Abnahme / Plan |
+|---|---|---|
+| FEAT-001 | Spieldetails aus dem Voting öffnen | Web geprüft; [Plan 001–004](superpowers/plans/2026-10-30-FEAT-001-004-voting.md) |
+| FEAT-002 | Voting-Vorschläge sortieren | Web umgesetzt; [Plan 001–004](superpowers/plans/2026-10-30-FEAT-001-004-voting.md) |
+| FEAT-003 | Kompakte Voting-Liste | Web umgesetzt und responsiv abgenommen; [Plan 001–004](superpowers/plans/2026-10-30-FEAT-001-004-voting.md) |
+| FEAT-010 | Eventstatus und Ergebnis eindeutig darstellen | Web/Mobile-API abgenommen; [Plan](superpowers/plans/2026-10-31-FEAT-010-eventstatus-ergebnis.md) |
+| FEAT-020 | Kontrast öffentlicher Spielvorschläge | Web lokal gerendert geprüft; [Plan](superpowers/plans/2026-11-02-FEAT-020-public-event-proposal-contrast.md) |
+| FEAT-021 | Deutsche BGG-Ausgabe beim Import auswählen | Web umgesetzt, Version 0.50.63; [Plan](superpowers/plans/2026-11-02-FEAT-021-bgg-deutsche-ausgabe.md) |
+| FEAT-022 | BGG-Quellenkennzeichnung | Web umgesetzt, Version 0.50.64; [Plan](superpowers/plans/2026-11-02-FEAT-022-bgg-attribution.md) |
+| FEAT-023 | Sammlung vor einem Import prüfen | Web umgesetzt, Version 0.50.67; [Plan](superpowers/plans/2026-11-03-FEAT-023-import-bestandspruefung.md) |
+| FEAT-024 | Mehrere Spiele zu einer Reihe hinzufügen | Web umgesetzt, Version 0.50.69; [Plan](superpowers/plans/2026-11-03-FEAT-024-mehrfachauswahl-reihen.md) |
+| FEAT-025 | Reihenspiele ohne dauerhaften Sammlungsbesitz | Web/API/Schema umgesetzt; Migration am 04.11.2026 ausgerollt; [Plan](superpowers/plans/2026-11-03-FEAT-025-temporaere-reihenspiele.md) |
+| FEAT-026 | Seitennavigation in der Spielesammlung | Web umgesetzt, Version 0.50.77; [Plan](superpowers/plans/2026-11-03-FEAT-026-spielesammlung-pager.md) |
+| FEAT-027 | Eindeutige Meldung bei leeren BGG-Suchen | Web umgesetzt, Version 0.50.70; [Plan](superpowers/plans/2026-11-03-FEAT-027-bgg-leerzustand.md) |
+| FEAT-028 | Persönliche Abzeichen und gemeinsame Ziele | Web-Umsetzung abgeschlossen; [Konzept](superpowers/specs/2026-11-03-FEAT-028-gamification-design.md), [Plan](superpowers/plans/2026-11-04-FEAT-028-gamification.md) |
+
+## Offene Features
+
+Hier stehen Features mit fehlender Abnahme, separater Betriebsaktion oder noch
+nicht begonnener Umsetzung. Die offenen Punkte sind keine Umsetzungsfreigabe.
+
+| ID | Feature | Offener Punkt | Plan / Konzept |
+|---|---|---|---|
+| FEAT-004 | Voting-Vorschläge löschen | Manuelle VoiceOver-Abnahme | [Plan 001–004](superpowers/plans/2026-10-30-FEAT-001-004-voting.md) |
+| FEAT-005 | ApiLog-Schreiblast bei Health begrenzen | Produktionsrollout und Verbraucherprüfung; Code in FEAT-006 enthalten | [Plan](superpowers/plans/2026-10-31-FEAT-005-health-apilog.md) |
+| FEAT-006 | Health-Deep-Checks cachen oder splitten | Readiness-Rollout und isolierte DB-Abnahme | [Plan](superpowers/plans/2026-10-31-FEAT-006-health-liveness-readiness.md) |
+| FEAT-007 | Vercel-Firewall für `/api/health` | Konto-/Monitorinventar und Regelentscheidung | [Plan](superpowers/plans/2026-10-31-FEAT-007-health-firewall.md) |
+| FEAT-008 | Spend-Management-Obergrenze | Billingdaten, Grenzwert und Betreiberentscheidung | [Plan](superpowers/plans/2026-10-31-FEAT-008-spend-management.md) |
+| FEAT-009 | HTML-Entities in Spieldaten | Produktionsmanifest, Backup und Datenbereinigung | [Plan](superpowers/plans/2026-10-31-FEAT-009-spieldaten-entities.md) |
+| FEAT-011 | Barrierefreie Terminabstimmung | Manuelle VoiceOver-Abnahme | [Plan](superpowers/plans/2026-10-31-FEAT-011-terminabstimmung-barrierefrei.md) |
+| FEAT-012 | Teilnahme vor passiven Listen | Browser-E2E und Viewport-Abnahme | [Plan](superpowers/plans/2026-10-31-FEAT-012-oeffentliche-teilnahme.md) |
+| FEAT-013 | Aktive Identität verständlich machen | Browser-E2E und Viewport-Abnahme | [Plan](superpowers/plans/2026-10-31-FEAT-013-aktive-identitaet.md) |
+| FEAT-014 | Zustände der öffentlichen BGG-Suche | Browser-E2E-Abnahme | [Plan](superpowers/plans/2026-10-31-FEAT-014-bgg-suchzustaende.md) |
+| FEAT-015 | Top-3-Spiele im Event-Kurzüberblick | Manuelle Browser-/Viewport-Abnahme | [Plan](superpowers/plans/2026-11-02-FEAT-015-dashboard-top-three.md) |
+| FEAT-016 | Spielauswahl bei Session-Anlage durchsuchen | Manuelle Browser-/VoiceOver-Abnahme | [Plan](superpowers/plans/2026-11-02-FEAT-016-session-spielsuche.md) |
+| FEAT-017 | Spielcover in der Sessions-Übersicht | Responsive Browser-/Viewport-Abnahme | [Plan](superpowers/plans/2026-11-02-FEAT-017-session-cover.md) |
+| FEAT-018 | Testabdeckung schrittweise auf 80 % erhöhen | Globale Coverage-Gates und weitere Pakete offen | [Plan](superpowers/plans/2026-11-02-FEAT-018-coverage-80.md) |
+| FEAT-019 | Spracheingabe für Suche und Sessions | Konzept vorhanden; Plan und Umsetzung offen | [Konzept](superpowers/specs/2026-11-02-spracheingabe-design.md) |
+| FEAT-029 | Gespielte Eventspiele als Sessions erfassen | Webcode und isolierter Test abgeschlossen; Produktionsmigration/Rollout offen, iOS separat | [Spec](superpowers/specs/2026-11-04-FEAT-029-event-sessions-design.md), [Plan](superpowers/plans/2026-11-04-FEAT-029-event-sessions.md) |
+
+## Offene Bugs
+
+Vier Bugs sind derzeit in Bearbeitung. Die vollständigen Beschreibungen,
+Reproduktionsschritte und Prüfnachweise stehen in der [Bug-Tracking-Liste](bugs.md).
+
+| ID | Schweregrad | Bug | Status |
+|---|---|---|---|
+| BUG-038 | Mittel | Mobile Terminantworten teilweise verborgen und zu klein | In Bearbeitung |
+| BUG-041 | Niedrig | Desktop-Raster der öffentlichen Eventseite unwirksam | In Bearbeitung |
+| BUG-055 | Mittel | Öffentlicher Health-Endpoint liefert interne Diagnosedetails | In Bearbeitung |
+| BUG-056 | Mittel | Öffentliche Health-Anfragen verursachen skalierende DB-Last | In Bearbeitung |
+
+**Stand:** 04.11.2026. Die vollständigen Feature-Spezifikationen,
+Implementierungsnachweise und historischen Abschnitte A bis I folgen unterhalb
+als Detailarchiv. Statusänderungen werden in dieser Übersicht und im jeweiligen
+Feature-/Bug-Eintrag nachgeführt. Datumsgebundene Restpunkte in A bis I sind
+Prüfprotokolle zum damaligen Stand; für den aktuellen Status gilt diese Übersicht.
 
 ## Offene Abarbeitung
 
@@ -897,7 +922,7 @@ danach können FEAT-026 und FEAT-027 unabhängig geplant umgesetzt werden.
 
 ## FEAT-025 – Reihenspiele ohne dauerhaften Sammlungsbesitz
 
-**Status:** Umgesetzt am 04.11.2026 in Version 0.50.76 (Web/API, Schemaquelle und mobile DTO-Kompatibilität). Migration erstellt und Prisma-validiert; nicht auf eine Datenbank angewendet.
+**Status:** Umgesetzt am 04.11.2026 in Version 0.50.76 (Web/API, Schemaquelle und mobile DTO-Kompatibilität). Migration nach Backup am 04.11.2026 in Produktion angewendet; bestehende Sammlungsverknüpfungen blieben erhalten.
 **Bestandsentscheidung 04.11.2026:** Bereits bestehende Reiheneinträge behalten ihre bisherigen Sammlungsspiel-Verknüpfungen und ihren Status. Die temporäre Anlage gilt für neue Einträge. Der additive Backfill ergänzt Spiel-Snapshots, wandelt bestehende Einträge aber nicht in temporäre um.
 **Ziel:** Ein Spiel für eine Reihe verwenden können, ohne es dauerhaft in die eigene Sammlung übernehmen zu müssen – etwa ausgeliehen, von jemandem mitgebracht oder später verkauft.
 **Abnahmekriterien:** Dauerhafter Besitz und Verwendung in einer Reihe getrennt behandeln. Temporären Import bewusst wählen und verständlich kennzeichnen. Verkauf/Entfernen aus der Sammlung darf Reihenfortschritt und Spielhistorie nicht unbeabsichtigt löschen. Übernahme in die Sammlung und Umgang mit vorhandenen Spielen/Duplikaten festlegen. Zugriffsrechte, Löschung, Aufbewahrung, Statistiken, APIs und iOS-Verträge berücksichtigen.
@@ -931,10 +956,10 @@ danach können FEAT-026 und FEAT-027 unabhängig geplant umgesetzt werden.
 
 ## FEAT-029 – Gespielte Eventspiele direkt als Sessions erfassen
 
-**Status:** Web-Umsetzung in Version 0.50.80 abgeschlossen und am 04.11.2026 committed. Migration wurde isoliert getestet, aber nicht in Produktion ausgerollt. iOS bleibt separat.
+**Status:** Webcode in Version 0.50.80 abgeschlossen und am 04.11.2026 committed. Die Migration ist isoliert getestet, aber noch nicht in Produktion ausgerollt; deshalb bleibt FEAT-029 bis zum Rollout offen. iOS separat.
 **Ziel:** Im Event festhalten, welche vorgeschlagenen Spiele tatsächlich gespielt wurden, und die Partien direkt von dort als Sessions erfassen und mit dem Event verknüpfen.
 **Bestätigter Umfang:** Je tatsächlich gespielter Partie eine eigene Session. Eventteilnehmer werden vorausgewählt. Mitspieler, Dauer, Gewinner/Platzierungen und Notizen können erfasst werden. Gäste werden namentlich als Session-Mitspieler übernommen. Reine BGG-Vorschläge können ohne dauerhaften Sammlungsimport als Session erfasst werden. Nur der Event-Ersteller darf Sessions im Event speichern und nachträglich ändern. Angemeldete Eventberechtigte sehen die Sessiondetails im Event; Gäste mit öffentlichem Event-Link sehen nur die gespielten Spiele.
-**Abnahmekriterien für die spätere Planung:** Gespielte Partien sind im Event erkennbar und mit Sessions verknüpft; Sessiondaten fließen in bestehende Historie und Statistiken ein; wiederholtes Absenden erzeugt keine ungewollten Duplikate; nicht gespielte Vorschläge bleiben ungetrackt; Zugriffsrechte und Korrekturen sind abgesichert.
+**Abnahmekriterien:** Gespielte Partien sind im Event erkennbar und mit Sessions verknüpft; Sessiondaten fließen in bestehende Historie und Statistiken ein; wiederholtes Absenden erzeugt keine ungewollten Duplikate; nicht gespielte Vorschläge bleiben ungetrackt; Zugriffsrechte und Korrekturen sind abgesichert. Code- und isolierte Testabnahme abgeschlossen; Produktionsmigration/Rollout offen.
 **Im Implementierungsplan festgelegt:** Retry derselben Operations-ID liefert dieselbe Session; eine bewusst neue Partie erhält eine neue ID. Event-/Vorschlagslöschung entfernt nur den Eventlink, Sessions bleiben erhalten. Session-Soft-Delete blendet die Partie im Event aus und erhält den Retry-Link. Snapshots tragen BGG-only- und fremde Sammlungsspiele ohne Sammlungspflicht; mobile Session-DTOs bleiben rückwärtskompatibel.
 **Plattform:** Web zuerst; native iOS-Oberflächen separat planen.
-**Design-Spec:** [Eventspiele als Sessions](superpowers/specs/2026-11-04-FEAT-029-event-sessions-design.md). Produktumfang am 04.11.2026 bestätigt. **Implementierungsplan:** [Sessions aus Eventspielen](superpowers/plans/2026-11-04-FEAT-029-event-sessions.md); am 04.11.2026 zur Umsetzung freigegeben. Webcode umgesetzt; Abnahme läuft. Keine iOS-Änderungen.
+**Design-Spec:** [Eventspiele als Sessions](superpowers/specs/2026-11-04-FEAT-029-event-sessions-design.md). Produktumfang am 04.11.2026 bestätigt. **Implementierungsplan:** [Sessions aus Eventspielen](superpowers/plans/2026-11-04-FEAT-029-event-sessions.md); am 04.11.2026 freigegeben und umgesetzt. Produktionsmigration und Rollout bleiben offen; keine iOS-Änderungen.

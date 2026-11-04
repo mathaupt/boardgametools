@@ -12,6 +12,15 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.81",
+    date: "2026-11-04",
+    title: "Feature-Backlog neu geordnet",
+    description: "Abgeschlossene Features, offene Themen und laufende Bugs sind jetzt direkt voneinander getrennt einsehbar.",
+    changes: [
+      { type: "internal", text: "Feature-Backlog nach abgeschlossenen und offenen Features sortiert; die vier Bugs in Bearbeitung stehen direkt unter der offenen Featureliste." },
+    ],
+  },
+  {
     version: "0.50.80",
     date: "2026-11-04",
     title: "Sessions direkt aus Spieleabenden erfassen",
