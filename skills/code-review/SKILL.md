@@ -866,7 +866,7 @@ const isValid = await compare(inputPassword, group.password);
 
 ## Evaluator-Feedback (automatisch generiert)
 
-> Letzter Lauf: 2026-11-03 20:33:06
+> Letzter Lauf: 2026-11-04 08:02:26
 > Gesamt-Score: **10/10**
 
 ### Kategorie-Scores
@@ -907,7 +907,7 @@ const isValid = await compare(inputPassword, group.password);
 - ✅ **P2-19** Duplikat: Prisma-Client-Dateien: Duplikat entfernt
 - ✅ **P2-20** Duplikat: BGG-Logik: Kein dupliziertes XML-Parsing
 - ✅ **P2-21** next/image statt <img>: Keine <img> Tags
-- ✅ **P2-22** Fehlende Unit Tests: 163 Test-Dateien
+- ✅ **P2-22** Fehlende Unit Tests: 165 Test-Dateien
 - ✅ **P2-23** Inkonsistente Error-Responses: Konsistent: 212× {error}; {message} wird nur für Erfolgsmeldungen verwendet
 - ✅ **P2-24** CONCEPT.md aktualisieren: Tech-Stack aktuell
 - ✅ **P2-25** Pendende Invites dupliziert: Shared Query extrahiert
@@ -918,7 +918,7 @@ const isValid = await compare(inputPassword, group.password);
 - ✅ **P3-31** accessibility Skill fehlt: Accessibility Skill vorhanden
 - ✅ **P3-32** DB-Dumps in Git: Git-Check nicht möglich
 - ✅ **P3-33** Links zu /terms und /privacy fehlen: Beide Seiten vorhanden
-- ✅ **P3-35** Fehlende DB-Indices: 33 @@index Definitionen
+- ✅ **P3-35** Fehlende DB-Indices: 34 @@index Definitionen
 - ✅ **SEC-44** Fehlende Security Headers: CSP, X-Frame-Options, X-Content-Type-Options vorhanden
 - ✅ **SEC-45** npm audit: Bekannte Vulnerabilities: Keine Prod-Vulnerabilities (0 high nur in devDeps, 0 moderate)
 - ✅ **SEC-46** XSS: dangerouslySetInnerHTML ohne Sanitization: Kein dangerouslySetInnerHTML verwendet

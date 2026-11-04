@@ -13,7 +13,7 @@ export interface GameData {
 export interface SeriesEntry {
   id: string;
   seriesId: string;
-  gameId: string;
+  gameId: string | null;
   sortOrder: number;
   played: boolean;
   playedAt: string | null;
@@ -23,6 +23,9 @@ export interface SeriesEntry {
   successful: boolean | null;
   playerCount: number | null;
   score: number | null;
+  bggId?: string | null;
+  source?: "COLLECTION" | "TEMPORARY_BGG" | "DETACHED_COLLECTION";
+  temporaryReason?: "BORROWED" | "BROUGHT_BY_SOMEONE" | "NO_LONGER_OWNED" | "OTHER" | null;
   game: GameData;
 }
 
@@ -40,7 +43,7 @@ export type EntrySortOption = "sortOrder" | "name_asc" | "name_desc" | "rating_d
 
 export const DIFFICULTY_ORDER: Record<string, number> = { einsteiger: 1, fortgeschritten: 2, profi: 3 };
 
-export type AddSeriesGameInput = { gameId: string } | { bggId: string };
+export type AddSeriesGameInput = { gameId: string } | { bggId: string } | { kind: "temporary"; bggId: string; reason?: "BORROWED" | "BROUGHT_BY_SOMEONE" | "NO_LONGER_OWNED" | "OTHER" };
 
 export interface SeriesGameSelection {
   key: string;

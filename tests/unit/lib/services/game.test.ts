@@ -20,14 +20,16 @@ vi.mock("@/lib/db", () => {
   };
   const tagDb = { upsert: vi.fn() };
   const gameTagDb = { create: vi.fn(), deleteMany: vi.fn(), createMany: vi.fn(), upsert: vi.fn() };
+  const gameSeriesEntryDb = { updateMany: vi.fn() };
 
   return {
     default: {
       game: gameDb,
       tag: tagDb,
       gameTag: gameTagDb,
+      gameSeriesEntry: gameSeriesEntryDb,
       $transaction: vi.fn((fn: (tx: unknown) => Promise<unknown>) =>
-        fn({ game: gameDb, tag: tagDb, gameTag: gameTagDb })
+        fn({ game: gameDb, tag: tagDb, gameTag: gameTagDb, gameSeriesEntry: gameSeriesEntryDb })
       ),
     },
   };
@@ -44,6 +46,7 @@ vi.mock("@/lib/cache-tags", () => ({
     userTags: (id: string) => `tags-${id}`,
     userDashboard: (id: string) => `dash-${id}`,
     userStats: (id: string) => `stats-${id}`,
+    userSeries: (id: string) => `series-${id}`,
   },
 }));
 
@@ -282,11 +285,12 @@ describe("GameService", () => {
           where: { id: GAME_ID, ownerId: USER_ID },
         })
       );
-      expect(prisma.game.update).toHaveBeenCalledWith({
-        where: { id: GAME_ID },
-        data: { deletedAt: expect.any(Date) },
+      expect(prisma.$transaction).toHaveBeenCalled();
+      expect(prisma.gameSeriesEntry.updateMany).toHaveBeenCalledWith({
+        where: { gameId: GAME_ID, series: { ownerId: USER_ID } },
+        data: { gameId: null, source: "DETACHED_COLLECTION" },
       });
-      expect(invalidateTag).toHaveBeenCalledTimes(4);
+      expect(invalidateTag).toHaveBeenCalledTimes(5);
       expect(result).toEqual({ message: "Game deleted" });
     });
 
@@ -297,7 +301,7 @@ describe("GameService", () => {
       const result = await GameService.delete(USER_ID, GAME_ID);
 
       expect(prisma.game.update).not.toHaveBeenCalled();
-      expect(invalidateTag).toHaveBeenCalledTimes(4);
+      expect(invalidateTag).toHaveBeenCalledTimes(5);
       expect(result).toEqual({ message: "Game deleted" });
     });
 
@@ -318,11 +322,12 @@ describe("GameService", () => {
       const ids = ["g1", "g2", "g3"];
       const result = await GameService.bulkDelete(USER_ID, ids);
 
-      expect(prisma.game.updateMany).toHaveBeenCalledWith({
-        where: { id: { in: ids }, ownerId: USER_ID, deletedAt: null },
-        data: { deletedAt: expect.any(Date) },
+      expect(prisma.$transaction).toHaveBeenCalled();
+      expect(prisma.gameSeriesEntry.updateMany).toHaveBeenCalledWith({
+        where: { gameId: { in: ids }, game: { ownerId: USER_ID }, series: { ownerId: USER_ID } },
+        data: { gameId: null, source: "DETACHED_COLLECTION" },
       });
-      expect(invalidateTag).toHaveBeenCalledTimes(4);
+      expect(invalidateTag).toHaveBeenCalledTimes(5);
       expect(result).toEqual({ deleted: 3 });
     });
 

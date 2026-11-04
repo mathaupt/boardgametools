@@ -4,6 +4,7 @@ import prisma from "@/lib/db";
 import { withApiLogging } from "@/lib/api-logger";
 import { validateString, validateNumber, firstError } from "@/lib/validation";
 import { Errors } from "@/lib/error-messages";
+import { toSeriesEntryView } from "@/lib/series/entry-view";
 
 type RouteContext = { params: Promise<{ id: string; entryId: string }> };
 
@@ -111,7 +112,7 @@ export const PUT = withApiLogging(async function PUT(
       },
     });
 
-    return NextResponse.json(updated);
+    return NextResponse.json(toSeriesEntryView(updated));
   } catch (error) {
     return handleApiError(error);
   }

@@ -480,6 +480,8 @@ export async function GET() {
 | `src/lib/auth.ts` | NextAuth Konfiguration |
 | `src/lib/utils.ts` | Utility Funktionen |
 | `src/lib/validation.ts` | Input-Validierung |
+| `src/lib/series/entry-identity.ts` | Identität und Duplikatprüfung für verknüpfte und temporäre Reihenspiele |
+| `src/lib/series/entry-view.ts` | Einheitliche Spielansicht aus Reihen-Snapshot und optionaler Sammlungsrelation |
 | `src/lib/rate-limit.ts` | Rate Limiting |
 | `src/lib/changelog.ts` | **Changelog (PFLICHT bei jeder Aenderung!)** |
 | `src/lib/faq.ts` | **FAQ (PFLICHT bei neuen Features aktualisieren!)** |

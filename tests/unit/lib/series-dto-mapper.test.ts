@@ -34,6 +34,16 @@ describe("series DTO mappers", () => {
       id: "entry-1",
       seriesId: "series-1",
       gameId: "game-1",
+      gameName: "Catan",
+      gameDescription: "Beschreibung",
+      gameImageUrl: "/cover.jpg",
+      minPlayers: 3,
+      maxPlayers: 4,
+      gamePlayTimeMinutes: 60,
+      complexity: 2,
+      bggId: "13",
+      source: "COLLECTION",
+      temporaryReason: null,
       sortOrder: 2,
       played: true,
       playedAt: null,
@@ -50,6 +60,17 @@ describe("series DTO mappers", () => {
       id: "entry-1",
       seriesId: "series-1",
       gameId: "game-1",
+      collectionGameId: "game-1",
+      gameName: "Catan",
+      gameDescription: "Beschreibung",
+      gameImageUrl: "/cover.jpg",
+      minPlayers: 3,
+      maxPlayers: 4,
+      gamePlayTimeMinutes: 60,
+      complexity: 2,
+      bggId: "13",
+      source: "COLLECTION",
+      temporaryReason: null,
       sortOrder: 2,
       played: true,
       playedAt: null,
@@ -65,12 +86,58 @@ describe("series DTO mappers", () => {
     });
   });
 
+  it("serializes a temporary game without breaking the legacy mobile gameId", () => {
+    const dto = toSeriesEntryDto({
+      id: "entry-temp",
+      seriesId: "series-1",
+      gameId: null,
+      gameName: "Catan",
+      gameDescription: null,
+      gameImageUrl: "/cover.jpg",
+      minPlayers: 3,
+      maxPlayers: 4,
+      gamePlayTimeMinutes: null,
+      complexity: null,
+      bggId: "13",
+      source: "TEMPORARY_BGG",
+      temporaryReason: "BORROWED",
+      sortOrder: 0,
+      played: false,
+      playedAt: null,
+      rating: null,
+      difficulty: null,
+      playTimeMinutes: null,
+      successful: null,
+      playerCount: null,
+      score: null,
+      createdAt,
+      updatedAt,
+      game: null,
+    } as never);
+
+    expect(dto.gameId).toBe("temporary:entry-temp");
+    expect(dto.collectionGameId).toBeNull();
+    expect(dto.gameName).toBe("Catan");
+    expect(dto.source).toBe("TEMPORARY_BGG");
+    expect(dto.game).toEqual({ imageUrl: "/cover.jpg" });
+  });
+
   it("preserves an entry played date and omits missing game data", () => {
     const playedAt = new Date("2026-03-04T05:06:07.000Z");
     const dto = toSeriesEntryDto({
       id: "entry-2",
       seriesId: "series-1",
       gameId: "game-2",
+      gameName: "Exit",
+      gameDescription: null,
+      gameImageUrl: null,
+      minPlayers: 1,
+      maxPlayers: 4,
+      gamePlayTimeMinutes: null,
+      complexity: null,
+      bggId: null,
+      source: "COLLECTION",
+      temporaryReason: null,
       sortOrder: 0,
       played: false,
       playedAt,
@@ -86,7 +153,7 @@ describe("series DTO mappers", () => {
     } as never);
 
     expect(dto.playedAt).toBe(playedAt.toISOString());
-    expect(dto.game).toBeUndefined();
+    expect(dto.game).toEqual({ imageUrl: null });
     expect(dto.rating).toBe(8);
   });
 });

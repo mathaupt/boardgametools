@@ -125,7 +125,7 @@ export function SeriesEntryCard({
           </Button>
 
           {/* Game image */}
-          <Link
+          {entry.gameId ? <Link
             href={`/dashboard/games/${entry.game.id}`}
             className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-lg overflow-hidden bg-muted shrink-0 hover:ring-2 hover:ring-primary/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring transition-shadow"
           >
@@ -142,19 +142,23 @@ export function SeriesEntryCard({
                 <ImageIcon className="h-4 w-4" aria-hidden="true" />
               </div>
             )}
-          </Link>
+          </Link> : <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-lg overflow-hidden bg-muted shrink-0" aria-label="Spielbild">
+            {entry.game.imageUrl ? <Image src={entry.game.imageUrl} alt={gameName} className="object-cover" fill sizes="56px" /> : <div className="flex h-full w-full items-center justify-center text-muted-foreground"><ImageIcon className="h-4 w-4" aria-hidden="true" /></div>}
+          </div>}
 
           {/* Game info */}
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
-              <Link
+              {entry.gameId ? <Link
                 href={`/dashboard/games/${entry.game.id}`}
                 className={`font-medium hover:underline truncate text-sm sm:text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm ${
                   entry.played ? "line-through decoration-1 text-muted-foreground" : ""
                 }`}
               >
                 {gameName}
-              </Link>
+              </Link> : <span className={`truncate text-sm font-medium sm:text-base ${entry.played ? "line-through decoration-1 text-muted-foreground" : ""}`}>{gameName}</span>}
+              {entry.source === "TEMPORARY_BGG" && <Badge variant="secondary" className="text-[10px]">Nur für diese Reihe</Badge>}
+              {entry.source === "DETACHED_COLLECTION" && <Badge variant="outline" className="text-[10px]">Nicht mehr in Sammlung</Badge>}
               {entry.difficulty && DIFFICULTY_CONFIG[entry.difficulty] && (
                 <Badge variant="outline" className={`text-[10px] px-1.5 py-0 h-5 ${DIFFICULTY_CONFIG[entry.difficulty].className}`}>
                   {DIFFICULTY_CONFIG[entry.difficulty].label}

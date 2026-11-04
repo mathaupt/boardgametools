@@ -19,6 +19,7 @@ vi.mock("@/lib/db", () => ({
     game: { findFirst: vi.fn() },
     gameSeriesEntry: {
       findFirst: vi.fn(),
+      findUnique: vi.fn(),
       create: vi.fn(),
       update: vi.fn(),
       delete: vi.fn(),
@@ -69,7 +70,7 @@ const fakeSeries = {
   ],
 };
 
-const fakeGame = { id: GAME_ID, name: "Catan", ownerId: USER_ID };
+const fakeGame = { id: GAME_ID, name: "Catan", description: "Brettspiel", imageUrl: "https://example.test/catan.png", minPlayers: 3, maxPlayers: 4, playTimeMinutes: 60, complexity: 2, bggId: "13", ownerId: USER_ID };
 
 const fakeEntry = {
   id: ENTRY_ID,
@@ -255,6 +256,7 @@ describe("SeriesService", () => {
     it("adds entry with auto-calculated sortOrder and invalidates cache", async () => {
       vi.mocked(prisma.gameSeries.findFirst).mockResolvedValue(fakeSeries as never);
       vi.mocked(prisma.game.findFirst).mockResolvedValue(fakeGame as never);
+      vi.mocked(prisma.gameSeriesEntry.findUnique).mockResolvedValue(null as never);
       vi.mocked(prisma.gameSeriesEntry.findFirst).mockResolvedValue(null as never);
       vi.mocked(prisma.gameSeriesEntry.create).mockResolvedValue(fakeEntry as never);
 
@@ -267,11 +269,30 @@ describe("SeriesService", () => {
         })
       );
       expect(prisma.gameSeriesEntry.create).toHaveBeenCalledWith({
-        data: { seriesId: SERIES_ID, gameId: GAME_ID, sortOrder: 0 },
+        data: { seriesId: SERIES_ID, gameId: GAME_ID, gameName: "Catan", gameDescription: "Brettspiel", gameImageUrl: "https://example.test/catan.png", minPlayers: 3, maxPlayers: 4, gamePlayTimeMinutes: 60, complexity: 2, bggId: "13", source: "COLLECTION", sortOrder: 0 },
         include: { game: true },
       });
       expect(invalidateTag).toHaveBeenCalledWith(`series-${USER_ID}`);
       expect(result).toEqual(fakeEntry);
+    });
+
+    it("verhindert mobile Duplikate auch bei gleicher BGG-ID", async () => {
+      vi.mocked(prisma.gameSeries.findFirst).mockResolvedValue(fakeSeries as never);
+      vi.mocked(prisma.game.findFirst).mockResolvedValue(fakeGame as never);
+      vi.mocked(prisma.gameSeriesEntry.findFirst).mockResolvedValue({ id: "temporary-entry" } as never);
+
+      await expect(SeriesService.addEntry(USER_ID, SERIES_ID, { gameId: GAME_ID })).rejects.toMatchObject({ statusCode: 409 });
+      expect(prisma.gameSeriesEntry.create).not.toHaveBeenCalled();
+    });
+
+    it("übersetzt einen parallelen Unique-Konflikt in HTTP 409", async () => {
+      vi.mocked(prisma.gameSeries.findFirst).mockResolvedValue(fakeSeries as never);
+      vi.mocked(prisma.game.findFirst).mockResolvedValue(fakeGame as never);
+      vi.mocked(prisma.gameSeriesEntry.findUnique).mockResolvedValue(null as never);
+      vi.mocked(prisma.gameSeriesEntry.findFirst).mockResolvedValue(null as never);
+      vi.mocked(prisma.gameSeriesEntry.create).mockRejectedValue({ code: "P2002" });
+
+      await expect(SeriesService.addEntry(USER_ID, SERIES_ID, { gameId: GAME_ID })).rejects.toMatchObject({ statusCode: 409 });
     });
 
     it("throws ApiError(404) when series not found", async () => {

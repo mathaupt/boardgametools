@@ -131,6 +131,11 @@ export const faqSections: FaqSection[] = [
           'Unter "Reihen" kannst du zusammengehoerige Spiele gruppieren, z.B. alle EXIT-Spiele, Adventure Games oder Legacy-Kampagnen. Du kannst den Fortschritt tracken (X von Y gespielt), Bewertungen (1-5 Sterne) und Schwierigkeitsgrade vergeben, Spielzeit und Punkte erfassen und die Reihenfolge per Drag & Drop festlegen.',
       },
       {
+        question: "Muss ein Spiel in meiner Sammlung sein, um es einer Reihe hinzuzufügen?",
+        answer:
+          "Nein. Bei der BGG-Suche kannst du zwischen einem Import in die Sammlung und einem Eintrag nur für diese Reihe wählen. Wird ein Sammlungsspiel später entfernt, bleiben der Reihenfortschritt und die gespeicherten Spielangaben erhalten.",
+      },
+      {
         question: "Wie bewerte ich ein Spiel in einer Reihe?",
         answer:
           "Oeffne eine Spielereihe und klicke auf einen Eintrag. Du kannst eine Sternebewertung (1-5) vergeben, die Schwierigkeit einstufen (Einsteiger/Fortgeschritten/Profi), die Spieldauer, die Spieleranzahl, einen Score und ob das Spiel erfolgreich abgeschlossen wurde eintragen.",

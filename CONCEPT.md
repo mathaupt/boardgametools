@@ -81,7 +81,9 @@ Die Weboberfläche verwendet seit 0.50.20 die bestätigte Gestaltung „Club Pro
 
 ### 9. Spielereihen (Game Series)
 - **Reihe erstellen**: Name, Beschreibung, Cover-Bild (z.B. "EXIT - Das Spiel", "Adventure Games")
-- **Spiele hinzufügen**: Aus der Sammlung oder per BGG-Import (wird automatisch zur Sammlung hinzugefügt)
+- **Spiele hinzufügen**: Aus der Sammlung verknüpfen oder ein BGG-Spiel nur für diese Reihe aufnehmen; BGG-Spiele können weiterhin auch in die Sammlung importiert werden
+- **Sammlungsbezug lösen**: Beim Entfernen eines Sammlungsspiels bleibt der Spiel-Snapshot samt Reihenfortschritt erhalten; der Eintrag wird als nicht mehr in der Sammlung gekennzeichnet
+- **Temporäre Herkunft**: Optionaler Herkunftshinweis wie ausgeliehen, mitgebracht oder nicht mehr im Besitz; kein automatisches Ablauf- oder Löschdatum
 - **Fortschritt tracken**: Spiele als "gespielt" markieren mit Fortschrittsbalken
 - **Erweiterte Erfassung**: Spielzeit, Punkte/Score, Spieleranzahl, Erfolg (ja/nein)
 - **Bewertung**: 1-5 Sterne-Bewertung nach dem Spielen
@@ -632,6 +634,7 @@ ApiLog
 - `PUT /api/series/[id]` - Reihe aktualisieren
 - `DELETE /api/series/[id]` - Reihe löschen
 - `POST /api/series/[id]/entries` - Spiel zur Reihe hinzufügen
+  - `{ gameId }` verknüpft ein eigenes Sammlungsspiel; `{ bggId }` importiert oder verwendet weiterhin ein Sammlungsspiel; `{ kind: "temporary", bggId, reason? }` speichert BGG-Daten als Eintrag ohne Sammlungsspiel
 - `PUT /api/series/[id]/entries/[entryId]` - Entry aktualisieren
 - `DELETE /api/series/[id]/entries/[entryId]` - Entry entfernen
 - `PUT /api/series/[id]/entries/reorder` - Reihenfolge ändern

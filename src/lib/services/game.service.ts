@@ -206,13 +206,20 @@ export const GameService = {
     if (!existing) throw new ApiError(404, "Game not found");
 
     if (!existing.deletedAt) {
-      await prisma.game.update({
-        where: { id: gameId },
-        data: { deletedAt: new Date() },
+      await prisma.$transaction(async (tx) => {
+        await tx.gameSeriesEntry.updateMany({
+          where: { gameId, series: { ownerId: userId } },
+          data: { gameId: null, source: "DETACHED_COLLECTION" },
+        });
+        await tx.game.update({
+          where: { id: gameId },
+          data: { deletedAt: new Date() },
+        });
       });
     }
 
     this._invalidateGameCaches(userId);
+    invalidateTag(CacheTags.userSeries(userId));
     return { message: "Game deleted" };
   },
 
@@ -222,12 +229,19 @@ export const GameService = {
       throw new ApiError(400, "gameIds must be a non-empty array");
     }
 
-    const result = await prisma.game.updateMany({
-      where: { id: { in: gameIds }, ownerId: userId, ...NOT_DELETED },
-      data: { deletedAt: new Date() },
+    const result = await prisma.$transaction(async (tx) => {
+      await tx.gameSeriesEntry.updateMany({
+        where: { gameId: { in: gameIds }, game: { ownerId: userId }, series: { ownerId: userId } },
+        data: { gameId: null, source: "DETACHED_COLLECTION" },
+      });
+      return tx.game.updateMany({
+        where: { id: { in: gameIds }, ownerId: userId, ...NOT_DELETED },
+        data: { deletedAt: new Date() },
+      });
     });
 
     this._invalidateGameCaches(userId);
+    invalidateTag(CacheTags.userSeries(userId));
     return { deleted: result.count };
   },
 

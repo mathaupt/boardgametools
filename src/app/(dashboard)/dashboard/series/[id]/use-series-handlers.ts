@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/use-toast";
 import type { GameSeries, SeriesEntry, AddSeriesGameInput } from "./types";
+import { hasSeriesEntryIdentity } from "@/lib/series/entry-identity";
 
 interface UseSeriesHandlersOptions {
   seriesId: string;
@@ -194,7 +195,11 @@ export function useSeriesHandlers({
     if (!current) {
       throw new Error("Die Reihe konnte nicht aktualisiert werden. Bitte versuche es erneut.");
     }
-    const missing = inputs.some((input) => !current.entries.some(entry => "gameId" in input ? entry.gameId === input.gameId : entry.game.bggId === input.bggId));
+    const knownEntries = current.entries.map((entry) => ({ gameId: entry.gameId, bggId: entry.bggId ?? entry.game.bggId }));
+    const missing = inputs.some((input) => !hasSeriesEntryIdentity(
+      knownEntries,
+      "gameId" in input ? { gameId: input.gameId, bggId: null } : { gameId: null, bggId: input.bggId },
+    ));
     if (missing) {
       throw new Error(`${inputs.length === 1 ? "Das Spiel konnte" : "Ein Spiel konnte"} in der aktualisierten Reihe nicht gefunden werden. Bitte lade die Seite neu.`);
     }

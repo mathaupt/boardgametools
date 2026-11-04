@@ -3,6 +3,7 @@ import prisma from "@/lib/db";
 import { cachedQuery } from "@/lib/cache";
 import { CacheTags } from "@/lib/cache-tags";
 import SeriesListClient from "./series-list-client";
+import { toSeriesEntryView } from "@/lib/series/entry-view";
 
 export default async function SeriesPage() {
   const session = await auth();
@@ -15,13 +16,14 @@ export default async function SeriesPage() {
         orderBy: { name: "asc" },
         include: {
           entries: {
-            include: { game: { select: { imageUrl: true } } },
+            include: { game: { select: { id: true, name: true, description: true, imageUrl: true, minPlayers: true, maxPlayers: true, playTimeMinutes: true, complexity: true, bggId: true } } },
             orderBy: { sortOrder: "asc" },
           },
         },
       });
       return series.map((s) => ({
         ...s,
+        entries: s.entries.map((entry) => toSeriesEntryView(entry)),
         createdAt: s.createdAt.toISOString(),
         _count: {
           entries: s.entries.length,

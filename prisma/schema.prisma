@@ -474,7 +474,17 @@ model GameSeries {
 model GameSeriesEntry {
   id          String    @id @default(cuid())
   seriesId    String
-  gameId      String
+  gameId      String?
+  gameName    String
+  gameDescription String?
+  gameImageUrl String?
+  minPlayers  Int       @default(1)
+  maxPlayers  Int       @default(4)
+  gamePlayTimeMinutes Int?
+  complexity  Int?
+  bggId       String?
+  source      String    @default("COLLECTION")
+  temporaryReason String?
   sortOrder   Int       @default(0)
   played      Boolean   @default(false)
   playedAt    DateTime?
@@ -489,9 +499,10 @@ model GameSeriesEntry {
 
   // Relations
   series      GameSeries @relation(fields: [seriesId], references: [id], onDelete: Cascade)
-  game        Game       @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  game        Game?      @relation(fields: [gameId], references: [id], onDelete: SetNull)
 
   @@unique([seriesId, gameId])
+  @@index([seriesId, bggId])
 }
 
 model PasswordResetToken {

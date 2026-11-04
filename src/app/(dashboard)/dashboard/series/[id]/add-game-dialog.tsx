@@ -19,6 +19,7 @@ import { useBggCollectionPresence, fetchBggCollectionPresence } from "@/componen
 import { getSeriesGameSelectionKey } from "@/lib/series/bulk-add-entries";
 import { SeriesGameSelectionSummary } from "./series-game-selection-summary";
 import { SeriesCollectionGameList, type CollectionGame } from "./series-collection-game-list";
+import { SeriesBggAddMode } from "./series-bgg-add-mode";
 
 
 interface AddGameDialogProps {
@@ -39,6 +40,8 @@ export function AddGameDialog({
   onGamesAdded,
 }: AddGameDialogProps) {
   const [tab, setTab] = useState<"collection" | "bgg">("collection");
+  const [bggAddMode, setBggAddMode] = useState<"collection" | "temporary">("collection");
+  const [temporaryReason, setTemporaryReason] = useState<"" | "BORROWED" | "BROUGHT_BY_SOMEONE" | "NO_LONGER_OWNED" | "OTHER">("");
   const [games, setGames] = useState<CollectionGame[]>([]);
   const [loadingGames, setLoadingGames] = useState(false);
   const [search, setSearch] = useState("");
@@ -101,6 +104,10 @@ export function AddGameDialog({
 
   const handleAddFromCollection = (gameId: string) => addGame({ gameId });
   const handleAddFromBGG = async (bggId: string) => {
+    if (bggAddMode === "temporary") {
+      await addGame({ kind: "temporary", bggId, ...(temporaryReason ? { reason: temporaryReason } : {}) });
+      return;
+    }
     setPresenceError(null);
     try {
       const checked = await fetchBggCollectionPresence([bggId]);
@@ -143,7 +150,9 @@ export function AddGameDialog({
 
   function toggleBggSelection(bggId: string) {
     const match = presence.matches[bggId];
-    const input = match ? { gameId: match.id } as const : { bggId } as const;
+    const input = bggAddMode === "temporary"
+      ? { kind: "temporary", bggId, ...(temporaryReason ? { reason: temporaryReason } : {}) } as const
+      : match ? { gameId: match.id } as const : { bggId } as const;
     const result = bggResults.find((game) => game.bggId === bggId);
     if (!result) return;
     toggleSelection({ key: getSeriesGameSelectionKey(input), input, name: result.name, imageUrl: null, source: "bgg" });
@@ -254,7 +263,10 @@ export function AddGameDialog({
               )}
             </div>
           ) : (
-            <SeriesBggSearch bggSearch={bggSearch} setBggSearch={(value) => { bggRequestId.current += 1; setBggSearching(false); setBggSearch(value); setBggResults([]); setBggSearchError(null); setBggHasSearched(false); }} bggResults={bggResults} bggSearching={bggSearching} hasSearched={bggHasSearched} searchError={bggSearchError} handleSearchBGG={handleSearchBGG} handleAddFromBGG={handleAddFromBGG} adding={adding} presenceStatus={presence.status} matches={presence.matches} retryPresence={presence.retry} existingGameIds={existingGameIds} existingBggIds={existingBggIds} selectedKeys={selections.map((item) => item.key)} canSelectMore={selections.length < 20} disabled={batchProgress !== null} onToggle={toggleBggSelection} />
+            <div className="space-y-3">
+              <SeriesBggAddMode value={bggAddMode} reason={temporaryReason} disabled={selections.length > 0} onChange={setBggAddMode} onReasonChange={setTemporaryReason} />
+              <SeriesBggSearch bggSearch={bggSearch} setBggSearch={(value) => { bggRequestId.current += 1; setBggSearching(false); setBggSearch(value); setBggResults([]); setBggSearchError(null); setBggHasSearched(false); }} bggResults={bggResults} bggSearching={bggSearching} hasSearched={bggHasSearched} searchError={bggSearchError} handleSearchBGG={handleSearchBGG} handleAddFromBGG={handleAddFromBGG} adding={adding} presenceStatus={presence.status} matches={presence.matches} retryPresence={presence.retry} existingGameIds={existingGameIds} existingBggIds={existingBggIds} selectedKeys={selections.map((item) => item.key)} canSelectMore={selections.length < 20} disabled={batchProgress !== null} onToggle={toggleBggSelection} addMode={bggAddMode} />
+            </div>
           )}
         </div>
       </DialogContent>

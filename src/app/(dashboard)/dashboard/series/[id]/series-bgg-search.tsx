@@ -32,8 +32,9 @@ interface SeriesBggSearchProps {
   canSelectMore: boolean;
   disabled: boolean;
   onToggle: (bggId: string) => void;
+  addMode: "collection" | "temporary";
 }
-export function SeriesBggSearch({ bggSearch, setBggSearch, bggResults, bggSearching, hasSearched, searchError, handleSearchBGG, handleAddFromBGG, adding, presenceStatus, matches, retryPresence, existingGameIds, existingBggIds, selectedKeys, canSelectMore, disabled, onToggle }: SeriesBggSearchProps) {
+export function SeriesBggSearch({ bggSearch, setBggSearch, bggResults, bggSearching, hasSearched, searchError, handleSearchBGG, handleAddFromBGG, adding, presenceStatus, matches, retryPresence, existingGameIds, existingBggIds, selectedKeys, canSelectMore, disabled, onToggle, addMode }: SeriesBggSearchProps) {
   return (
 <div className="space-y-3">
               <form
@@ -78,7 +79,7 @@ export function SeriesBggSearch({ bggSearch, setBggSearch, bggResults, bggSearch
                 </div>
               ) : (
                 <>
-                <BggCollectionStatus status={presenceStatus} retry={retryPresence} hideAbsent />
+                {addMode === "collection" && <BggCollectionStatus status={presenceStatus} retry={retryPresence} hideAbsent />}
                 <div className="space-y-1">
                   {bggResults.map((result) => (
                     <div
@@ -87,9 +88,9 @@ export function SeriesBggSearch({ bggSearch, setBggSearch, bggResults, bggSearch
                     >
                       {(() => {
                         const match = matches[result.bggId];
-                        const key = getSeriesGameSelectionKey(match ? { gameId: match.id } : { bggId: result.bggId });
+                        const key = addMode === "temporary" ? getSeriesGameSelectionKey({ kind: "temporary", bggId: result.bggId }) : getSeriesGameSelectionKey(match ? { gameId: match.id } : { bggId: result.bggId });
                         const alreadyInSeries = existingBggIds.includes(result.bggId) || (!!match && existingGameIds.includes(match.id));
-                        return <Checkbox aria-label={`${result.name} auswählen`} checked={selectedKeys.includes(key)} disabled={disabled || adding !== null || presenceStatus !== "ready" || alreadyInSeries || (!canSelectMore && !selectedKeys.includes(key))} onChange={() => onToggle(result.bggId)} />;
+                        return <Checkbox aria-label={`${result.name} auswählen`} checked={selectedKeys.includes(key)} disabled={disabled || adding !== null || (addMode === "collection" && presenceStatus !== "ready") || alreadyInSeries || (!canSelectMore && !selectedKeys.includes(key))} onChange={() => onToggle(result.bggId)} />;
                       })()}
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium truncate">{result.name}</p>
@@ -108,11 +109,11 @@ export function SeriesBggSearch({ bggSearch, setBggSearch, bggResults, bggSearch
                         size="sm"
                         variant="outline"
                         onClick={() => handleAddFromBGG(result.bggId)}
-                        disabled={adding !== null || disabled || presenceStatus !== "ready" || existingBggIds.includes(result.bggId) || (!!matches[result.bggId] && existingGameIds.includes(matches[result.bggId]!.id))}
+                        disabled={adding !== null || disabled || (addMode === "collection" && presenceStatus !== "ready") || existingBggIds.includes(result.bggId) || (!!matches[result.bggId] && existingGameIds.includes(matches[result.bggId]!.id))}
                         className="min-h-11 shrink-0 whitespace-normal"
-                        aria-label={adding === `bgg:${result.bggId}` || adding === `game:${matches[result.bggId]?.id}` ? "Wird hinzugefügt" : matches[result.bggId] ? "Aus Sammlung hinzufügen" : "Importieren"}
+                        aria-label={adding === `temporary:${result.bggId}` || adding === `bgg:${result.bggId}` || adding === `game:${matches[result.bggId]?.id}` ? "Wird hinzugefügt" : addMode === "temporary" ? "Nur zur Reihe hinzufügen" : matches[result.bggId] ? "Aus Sammlung hinzufügen" : "Importieren"}
                       >
-                        {adding === `bgg:${result.bggId}` || adding === `game:${matches[result.bggId]?.id}` ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : <><Plus className="mr-1 h-4 w-4" aria-hidden="true" /><span className="sm:hidden">Hinzufügen</span><span className="hidden sm:inline">{matches[result.bggId] ? "Aus Sammlung hinzufügen" : "Importieren"}</span></>}
+                        {adding === `temporary:${result.bggId}` || adding === `bgg:${result.bggId}` || adding === `game:${matches[result.bggId]?.id}` ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : <><Plus className="mr-1 h-4 w-4" aria-hidden="true" /><span className="sm:hidden">{addMode === "temporary" ? "Nur zur Reihe" : "Hinzufügen"}</span><span className="hidden sm:inline">{addMode === "temporary" ? "Nur zur Reihe" : matches[result.bggId] ? "Aus Sammlung hinzufügen" : "Importieren"}</span></>}
                       </Button>
                       </div>
                     </div>

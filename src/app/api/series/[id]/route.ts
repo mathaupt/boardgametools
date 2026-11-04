@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { withApiLogging } from "@/lib/api-logger";
 import { requireAuth, handleApiError } from "@/lib/require-auth";
 import { SeriesService } from "@/lib/services";
+import { toSeriesEntryView } from "@/lib/series/entry-view";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -13,7 +14,7 @@ export const GET = withApiLogging(async function GET(
     const { userId } = await requireAuth();
     const { id } = await params;
     const result = await SeriesService.getById(userId, id);
-    return NextResponse.json(result, { headers: { "Cache-Control": "private, no-store" } });
+    return NextResponse.json({ ...result, entries: result.entries.map(toSeriesEntryView) }, { headers: { "Cache-Control": "private, no-store" } });
   } catch (error) {
     return handleApiError(error);
   }

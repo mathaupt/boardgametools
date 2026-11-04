@@ -79,7 +79,7 @@ export default function SeriesDetailClient({ initialSeries, seriesId }: SeriesDe
         onPlayDetailChange={handlePlayDetailChange}
         onDeleteEntry={setDeleteEntryTarget}
       />
-      <AddGameDialog open={addDialogOpen} onOpenChange={setAddDialogOpen} seriesId={seriesId} existingGameIds={series.entries.map((e) => e.gameId)} existingBggIds={series.entries.map((e) => e.game.bggId).filter((id): id is string => Boolean(id))} onGamesAdded={handleGameAdded} />
+      <AddGameDialog open={addDialogOpen} onOpenChange={setAddDialogOpen} seriesId={seriesId} existingGameIds={series.entries.flatMap((e) => e.gameId ? [e.gameId] : [])} existingBggIds={series.entries.map((e) => e.bggId ?? e.game.bggId).filter((id): id is string => Boolean(id))} onGamesAdded={handleGameAdded} />
       <SeriesDeleteDialogs deleteSeriesOpen={deleteSeriesOpen} onDeleteSeriesOpenChange={setDeleteSeriesOpen} deleteEntryTarget={deleteEntryTarget} onDeleteEntryTargetChange={setDeleteEntryTarget} onDeleteSeries={handleDeleteSeries} onDeleteEntry={handleDeleteEntry} deleting={deleting} seriesName={series.name} />
     </div>
   );

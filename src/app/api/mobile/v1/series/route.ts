@@ -4,6 +4,7 @@ import { withApiLogging } from "@/lib/api-logger";
 import { ApiError, handleApiError } from "@/lib/require-auth";
 import { Errors } from "@/lib/error-messages";
 import { SeriesService } from "@/lib/services";
+import { toSeriesDto } from "@/lib/dto-mappers/series";
 
 export const GET = withApiLogging(async function GET(request: NextRequest) {
   try {
@@ -15,7 +16,8 @@ export const GET = withApiLogging(async function GET(request: NextRequest) {
     const page = Number(searchParams.get("page")) || undefined;
     const limit = Number(searchParams.get("limit")) || undefined;
     const result = await SeriesService.list(session.user.id, { page, limit });
-    return NextResponse.json(result);
+    if (Array.isArray(result)) return NextResponse.json(result.map(toSeriesDto));
+    return NextResponse.json({ ...result, data: result.data.map(toSeriesDto) });
   } catch (error) {
     return handleApiError(error);
   }

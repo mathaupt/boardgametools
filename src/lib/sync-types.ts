@@ -192,7 +192,19 @@ export interface GroupDTO {
 export interface SeriesEntryDTO {
   id: string;
   seriesId: string;
+  /** Legacy stable identifier for existing mobile clients; temporary entries use a non-game sentinel. */
   gameId: string;
+  collectionGameId?: string | null;
+  gameName?: string;
+  gameDescription?: string | null;
+  gameImageUrl?: string | null;
+  minPlayers?: number;
+  maxPlayers?: number;
+  gamePlayTimeMinutes?: number | null;
+  complexity?: number | null;
+  bggId?: string | null;
+  source?: "COLLECTION" | "TEMPORARY_BGG" | "DETACHED_COLLECTION";
+  temporaryReason?: string | null;
   sortOrder: number;
   played: boolean;
   playedAt: string | null;

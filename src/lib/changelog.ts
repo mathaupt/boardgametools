@@ -12,6 +12,17 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.76",
+    date: "2026-11-04",
+    title: "Reihenspiele unabhängig von der Sammlung führen",
+    description: "BGG-Spiele können jetzt nur für eine Spielreihe aufgenommen werden; Reihenfortschritt und Spielangaben bleiben beim Entfernen aus der Sammlung erhalten.",
+    changes: [
+      { type: "feature", text: "FEAT-025: Beim BGG-Hinzufügen wählst du, ob das Spiel in deine Sammlung importiert oder nur in der Reihe geführt wird." },
+      { type: "improvement", text: "Einträge zeigen, ob ein Spiel nur zur Reihe gehört oder nicht mehr in der Sammlung ist. Spielreihen bleiben nach dem Entfernen eines Spiels samt Fortschritt erhalten." },
+      { type: "internal", text: "Additive Prisma-Migration mit Spiel-Snapshots und mobiler DTO-Kompatibilität erstellt; Produktionsmigration nicht ausgeführt." },
+    ],
+  },
+  {
     version: "0.50.75",
     date: "2026-11-03",
     title: "Öffentliche Badge-Profile planen",

@@ -258,6 +258,9 @@ Zeigt alle Eintraege der Reihe mit erweiterten Erfassungsmoeglichkeiten:
 **Aktionen:**
 - Spiel hinzufuegen (aus Sammlung oder per BGG-Import)
 - Mehrere Spiele aus Sammlung oder BGG auswählen und seriell hinzufügen (maximal 20 je Durchgang); BGG-Treffer aus der eigenen Sammlung verwenden vorhandene Spiele. Einzelergebnisse, Konflikte und gezielte Wiederholungen bleiben im Dialog sichtbar.
+- BGG-Aufnahmeart wählen: in die Sammlung importieren oder nur für diese Reihe aufnehmen. Temporäre Spiele erhalten ein erklärendes Kennzeichen und erscheinen nicht in Sammlung, Voting oder Sammlungsstatistik.
+- Wird ein Sammlungsspiel entfernt, bleibt sein Spiel-Snapshot mit Fortschritt und Reihenhistorie erhalten; der Eintrag wird als nicht mehr in der Sammlung gekennzeichnet.
+- Optionaler Herkunftshinweis für temporäre Spiele; er löst keine automatische Löschung aus.
 - Reihenfolge per Drag & Drop aendern
 - Eintrag bearbeiten / loeschen
 - Reihe loeschen

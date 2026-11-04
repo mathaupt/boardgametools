@@ -4,6 +4,7 @@ import { CacheTags } from "@/lib/cache-tags";
 import { ApiError } from "@/lib/require-auth";
 import { validateString, firstError } from "@/lib/validation";
 import { NOT_DELETED, buildPagination, paginatedResponse } from "./shared";
+import { toSeriesEntryView } from "@/lib/series/entry-view";
 
 // ── Types ────────────────────────────────────────────────────────
 
@@ -35,7 +36,7 @@ export interface UpdateEntryInput {
 
 const seriesInclude = {
   entries: {
-    include: { game: { select: { imageUrl: true } } },
+    include: { game: { select: { id: true, name: true, description: true, imageUrl: true, minPlayers: true, maxPlayers: true, playTimeMinutes: true, complexity: true, bggId: true } } },
     orderBy: { sortOrder: "asc" as const },
   },
 };
@@ -47,11 +48,12 @@ export const SeriesService = {
     const { page, limit, isPaginated, skip } = buildPagination(opts);
 
     const addCounts = <T extends { entries: { played: boolean }[] }>(series: T[]) =>
-      series.map((s) => ({
-        ...s,
+      series.map((raw) => ({
+        ...raw,
+        entries: raw.entries.map((entry) => toSeriesEntryView(entry as never)),
         _count: {
-          entries: s.entries.length,
-          played: s.entries.filter((e) => e.played).length,
+          entries: raw.entries.length,
+          played: raw.entries.filter((e) => e.played).length,
         },
       }));
 
@@ -89,7 +91,7 @@ export const SeriesService = {
       where: { id: seriesId, ownerId: userId, ...NOT_DELETED },
       include: {
         entries: {
-          include: { game: true },
+          include: { game: { select: { id: true, name: true, description: true, imageUrl: true, minPlayers: true, maxPlayers: true, playTimeMinutes: true, complexity: true, bggId: true } } },
           orderBy: { sortOrder: "asc" },
         },
       },
@@ -147,7 +149,7 @@ export const SeriesService = {
     });
 
     invalidateTag(CacheTags.userSeries(userId));
-    return updated;
+    return { ...updated, entries: updated.entries.map((entry) => toSeriesEntryView(entry as never)) };
   },
 
   /** Soft-delete a series */
@@ -178,6 +180,12 @@ export const SeriesService = {
     });
     if (!game) throw new ApiError(404, "Game not found");
 
+    const [sameGame, sameBgg] = await Promise.all([
+      prisma.gameSeriesEntry.findUnique({ where: { seriesId_gameId: { seriesId, gameId: input.gameId } } }),
+      game.bggId ? prisma.gameSeriesEntry.findFirst({ where: { seriesId, bggId: game.bggId } }) : Promise.resolve(null),
+    ]);
+    if (sameGame || sameBgg) throw new ApiError(409, "Game already in series");
+
     // Calculate sortOrder if not provided
     let sortOrder = input.sortOrder;
     if (sortOrder === undefined) {
@@ -189,14 +197,29 @@ export const SeriesService = {
       sortOrder = (maxEntry?.sortOrder ?? -1) + 1;
     }
 
-    const entry = await prisma.gameSeriesEntry.create({
-      data: {
-        seriesId,
-        gameId: input.gameId,
-        sortOrder,
-      },
-      include: { game: true },
-    });
+    let entry;
+    try {
+      entry = await prisma.gameSeriesEntry.create({
+        data: {
+          seriesId,
+          gameId: input.gameId,
+          gameName: game.name,
+          gameDescription: game.description,
+          gameImageUrl: game.imageUrl,
+          minPlayers: game.minPlayers,
+          maxPlayers: game.maxPlayers,
+          gamePlayTimeMinutes: game.playTimeMinutes,
+          complexity: game.complexity,
+          bggId: game.bggId,
+          source: "COLLECTION",
+          sortOrder,
+        },
+        include: { game: true },
+      });
+    } catch (error) {
+      if ((error as { code?: string })?.code === "P2002") throw new ApiError(409, "Game already in series");
+      throw error;
+    }
 
     invalidateTag(CacheTags.userSeries(userId));
     return entry;

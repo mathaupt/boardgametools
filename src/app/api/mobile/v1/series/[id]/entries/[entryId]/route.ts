@@ -4,6 +4,7 @@ import { withApiLogging } from "@/lib/api-logger";
 import { ApiError, handleApiError } from "@/lib/require-auth";
 import { Errors } from "@/lib/error-messages";
 import { SeriesService } from "@/lib/services";
+import { toSeriesEntryDto } from "@/lib/dto-mappers/series";
 
 export const PUT = withApiLogging(async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string; entryId: string }> }) {
   try {
@@ -14,7 +15,7 @@ export const PUT = withApiLogging(async function PUT(request: NextRequest, { par
     const { id, entryId } = await params;
     const body = await request.json();
     const result = await SeriesService.updateEntry(session.user.id, id, entryId, body);
-    return NextResponse.json(result);
+    return NextResponse.json(toSeriesEntryDto(result as never));
   } catch (error) {
     return handleApiError(error);
   }

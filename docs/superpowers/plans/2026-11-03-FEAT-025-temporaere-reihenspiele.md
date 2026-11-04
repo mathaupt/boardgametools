@@ -8,7 +8,15 @@
 
 **Technik:** Next.js 16, Prisma 7/PostgreSQL, additive Migration mit Backfill, NextAuth, Vitest, isolierte PostgreSQL-Abnahme.
 
-**Planungsstand:** 03.11.2026, HEAD `23cd674`, Version 0.50.67, Arbeitsbaum vor dieser Dokuänderung sauber. `GameSeriesEntry.gameId` ist aktuell verpflichtend und die FK-Beziehung löscht den Eintrag bei physischem Game-Delete mit; `GameService.delete` verwendet dagegen Soft-Delete. Bestehende Webseiten und mobile DTOs lesen `entry.game.*` direkt. Diese drei Verträge bestimmen Migration, Fallback-Snapshot und Kompatibilität.
+**Planungsstand:** 03.11.2026, bei Erstellung HEAD `23cd674`. Aktualitätsprüfung und Umsetzungsfreigabe: 04.11.2026, HEAD `fcae557`, Version `0.50.75`, Arbeitsbaum vor Änderungen sauber. FEAT-024 ist inzwischen umgesetzt; Mehrfachauswahl führt weiterhin über denselben Series-POST, deshalb bleibt der Server der zentrale Eigentums-/Duplikatwächter. Schema ist unverändert: `GameSeriesEntry.gameId` ist verpflichtend, die Game-FK löscht bei physischem Delete mit; `GameService` nutzt Soft-Delete. Web- und iOS-DTOs erwarten weiterhin `gameId` und `entry.game` direkt. Das Konzept bleibt tragfähig; API-/DTO-Kompatibilität und Snapshot-Verwendung müssen auf alle bestehenden Verbraucher ausgeweitet werden. Die Umsetzung umfasst Schema, Quellmigration, Web/API und mobile Vertragskompatibilität; Migration wird erstellt und lokal geprüft, aber nicht in Produktion angewendet. Produktionsdaten werden nicht abgefragt.
+
+### Aktualitätsprüfung vor Umsetzung – 04.11.2026
+
+- **Geprüfter Stand:** `fcae557`; sauberer Arbeitsbaum vor dieser Dokumentation. Aktuelles Produktpaket 0.50.75.
+- **Befund:** FEAT-024 ist umgesetzt und nutzt die bestehende Einzelanlage-Route. Das Schema besitzt weiter ein verpflichtendes `gameId`; die Dashboard-Seite, Entry-Karten, Such-/Duplikatprüfung, DTO-Mapper und Swift-DTO erwarten ein `game`-Objekt. `GameService.delete` und `bulkDelete` soft-deleten Spiele ohne vorherige Serienentkopplung.
+- **Plananpassung:** Snapshot-Vertrag wird auch in Dashboard- und Sync-DTOs abgebildet; bestehende Web-/iOS-Clients bleiben mit optionalem `gameId`/`game` dekodierbar. FEAT-024s Mehrfachauswahl erhält Auswahl „in Sammlung importieren“ oder „nur in diese Reihe“ für BGG-Treffer.
+- **Datenbankgrenze:** additive Migration mit Backfill und Constraints wird erstellt. Produktionsbestand/Produktionsmigration werden hier nicht abgefragt oder verändert; Anwendung der Migration bleibt ein gesonderter Deployschritt.
+- **Freigabe:** Der Nutzer hat die Umsetzung mit „implementiere FEAT-025“ am 04.11.2026 ausdrücklich freigegeben. Freigegebener Umfang: Web zuerst, API/Schema/Migration und mobile DTO-Kompatibilität ohne iOS-UI.
 
 ---
 
@@ -73,4 +81,19 @@
 - [ ] Abnahme: Unit + isolierte DB-Migrationstests, `npm run test:ios:contracts`, `npm run typecheck`, `npm run lint`, `npm run security-check:fast`, `npm run build`, `npm run review-evaluate:regression`; lokale gerenderte UI-Prüfung.
 - [ ] Commit mit regulären Hooks; danach Review-Ergebnis und Regressionsstatus in `docs/code-reviews/` prüfen und dokumentieren.
 
-**Freigabe:** Nicht erteilt. Schema, Migration und Produktionsdatenwirkung vor Umsetzung besonders prüfen und Umfang ausdrücklich freigeben lassen.
+**Freigabe:** Erteilt am 04.11.2026 für den in der Aktualitätsprüfung festgehaltenen Umfang. Produktionsmigration bleibt ausgenommen.
+
+## Umsetzungsstand – 04.11.2026
+
+- [x] Snapshotmodell, nullable Sammlungskante, Herkunft und partielle Duplikatsicherung implementiert; Migration erstellt.
+- [x] Serienansichten, Suche, Karten, API und mobile Sync-DTOs auf Snapshotwerte umgestellt.
+- [x] Temporäre BGG-Aufnahme ohne Sammlungseintrag sowie optionale Herkunftsauswahl (ausgeliehen, mitgebracht, nicht mehr im Besitz, Sonstiges) umgesetzt.
+- [x] Einzel- und Bulk-Löschen entkoppeln Reihenbezüge transaktional und behalten Reihenfortschritt sowie Spielhistorie.
+- [x] TDD-RED/GREEN für Identität, Snapshotdarstellung, Softdelete, API-Konflikte, mobile DTOs und UI-Aufnahme ausgeführt.
+- [x] 1139/1139 Unit-Tests, Typecheck, Produktionsbuild, iOS-Vertragstests, Security-Check, Prisma-Validierung und Regressionsevaluator bestanden.
+- [x] Impeccable: Vorschau mit synthetischen Daten bei Desktop- und 390-px-Breite gerendert; kein horizontaler Überlauf.
+- [x] Changelog, FAQ, OpenAPI, FEATURES, CONCEPT, Backlog, AGENTS und Review-Dokumentation aktualisiert.
+- [ ] Isolierter PostgreSQL-Migrationstest: mangels lokalem PostgreSQL/Docker nicht ausführbar. Migration ist nicht angewendet; vor Deployment erforderlich.
+- [ ] Commit/Hook-Ergebnis ergänzen.
+
+**Abnahmestand:** Anwendungscode und Dokumentation sind umgesetzt. Die Schemaquelle validiert; wegen fehlender isolierter PostgreSQL-Instanz ist die Migration noch nicht integrationsgeprüft. Keine Produktionsdaten abgefragt, keine Migration angewendet.

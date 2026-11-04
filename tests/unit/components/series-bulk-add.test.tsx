@@ -108,6 +108,27 @@ describe("AddGameDialog multi-selection", () => {
     ]);
   });
 
+  it("adds an unmatched BGG game to the series without importing it into the collection", async () => {
+    const user = userEvent.setup();
+    fetchMock.mockImplementation(async (url: string) => {
+      if (url === "/api/games") return Response.json(games);
+      if (url.startsWith("/api/bgg/search")) return Response.json([{ bggId: "999", name: "New Game", yearPublished: 2024 }]);
+      if (url === "/api/games/bgg-presence") return Response.json({ matches: { "999": null } });
+      return Response.json({}, { status: 201 });
+    });
+    renderDialog();
+    await user.click(screen.getByRole("tab", { name: "BGG Import" }));
+    await user.type(screen.getByRole("textbox", { name: "Spiel auf BGG suchen" }), "New Game");
+    await user.click(screen.getByRole("button", { name: "Suchen" }));
+    await screen.findByRole("checkbox", { name: "New Game auswählen" });
+    await user.click(screen.getByRole("radio", { name: "Nur in diese Reihe" }));
+    await user.selectOptions(screen.getByRole("combobox", { name: "Optionale Herkunft" }), "BORROWED");
+    await user.click(screen.getByRole("button", { name: "Nur zur Reihe hinzufügen" }));
+
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledWith("/api/series/series-1/entries", expect.objectContaining({ body: JSON.stringify({ kind: "temporary", bggId: "999", reason: "BORROWED" }) })));
+    expect(fetchMock).not.toHaveBeenCalledWith("/api/games", expect.objectContaining({ method: "POST" }));
+  });
+
   it("shows a no-results message only after a successful empty BGG search", async () => {
     const user = userEvent.setup();
     fetchMock.mockImplementation(async (url: string) => {

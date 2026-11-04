@@ -62,8 +62,8 @@ const sampleSeries = {
   description: null,
   imageUrl: null,
   ownerId: "u1",
-  createdAt: "2024-01-01T00:00:00.000Z",
-  updatedAt: "2024-01-01T00:00:00.000Z",
+  createdAt: new Date("2024-01-01T00:00:00.000Z"),
+  updatedAt: new Date("2024-01-01T00:00:00.000Z"),
   deletedAt: null,
   entries: [],
 };
@@ -99,7 +99,7 @@ describe("/api/mobile/v1/series", () => {
     const body = await res.json();
 
     expect(res.status).toBe(200);
-    expect(body).toEqual([sampleSeries]);
+    expect(body).toEqual([{ ...sampleSeries, createdAt: sampleSeries.createdAt.toISOString(), updatedAt: sampleSeries.updatedAt.toISOString() }]);
   });
 
   it("POST creates a series", async () => {
@@ -109,7 +109,7 @@ describe("/api/mobile/v1/series", () => {
     const body = await res.json();
 
     expect(res.status).toBe(201);
-    expect(body).toEqual(sampleSeries);
+    expect(body).toEqual({ ...sampleSeries, createdAt: sampleSeries.createdAt.toISOString(), updatedAt: sampleSeries.updatedAt.toISOString() });
   });
 
   it("GET /:id returns a series", async () => {

@@ -2,18 +2,29 @@ import { Prisma } from "@/generated/prisma/client";
 import type { SeriesDTO, SeriesEntryDTO } from "@/lib/sync-types";
 
 type SeriesEntryWithGame = Prisma.GameSeriesEntryGetPayload<{
-  include: { game: { select: { imageUrl: true } } };
+  include: { game: { select: { imageUrl: true, name: true } } };
 }>;
 
 type SeriesWithEntries = Prisma.GameSeriesGetPayload<{
-  include: { entries: { include: { game: { select: { imageUrl: true } } } } };
+  include: { entries: { include: { game: { select: { imageUrl: true, name: true } } } } };
 }>;
 
 export function toSeriesEntryDto(entry: SeriesEntryWithGame): SeriesEntryDTO {
   return {
     id: entry.id,
     seriesId: entry.seriesId,
-    gameId: entry.gameId,
+    gameId: entry.gameId ?? `temporary:${entry.id}`,
+    collectionGameId: entry.gameId,
+    gameName: entry.gameName || entry.game?.name || "Unbekanntes Spiel",
+    gameDescription: entry.gameDescription,
+    gameImageUrl: entry.gameImageUrl ?? entry.game?.imageUrl ?? null,
+    minPlayers: entry.minPlayers,
+    maxPlayers: entry.maxPlayers,
+    gamePlayTimeMinutes: entry.gamePlayTimeMinutes,
+    complexity: entry.complexity,
+    bggId: entry.bggId,
+    source: entry.source as SeriesEntryDTO["source"],
+    temporaryReason: entry.temporaryReason,
     sortOrder: entry.sortOrder,
     played: entry.played,
     playedAt: entry.playedAt?.toISOString() ?? null,
@@ -25,7 +36,7 @@ export function toSeriesEntryDto(entry: SeriesEntryWithGame): SeriesEntryDTO {
     score: entry.score,
     createdAt: entry.createdAt.toISOString(),
     updatedAt: entry.updatedAt.toISOString(),
-    game: entry.game ? { imageUrl: entry.game.imageUrl } : undefined,
+    game: { imageUrl: entry.gameImageUrl ?? entry.game?.imageUrl ?? null },
   };
 }
 

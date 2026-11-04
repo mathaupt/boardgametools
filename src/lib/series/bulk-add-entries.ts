@@ -9,8 +9,8 @@ export type SeriesBulkAddResult =
 
 type SeriesEntryRequest<Input> = (input: Input) => Promise<Response>;
 
-export function getSeriesGameSelectionKey(input: { gameId: string } | { bggId: string }): string {
-  return "gameId" in input ? `game:${input.gameId}` : `bgg:${input.bggId}`;
+export function getSeriesGameSelectionKey(input: { gameId: string } | { bggId: string } | { kind: "temporary"; bggId: string }): string {
+  return "gameId" in input ? `game:${input.gameId}` : `${"kind" in input && input.kind === "temporary" ? "temporary" : "bgg"}:${input.bggId}`;
 }
 
 export async function addSeriesGamesSequentially<Input>(

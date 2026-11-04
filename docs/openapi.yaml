@@ -264,7 +264,18 @@ components:
       properties:
         id: { type: string, format: cuid }
         seriesId: { type: string }
-        gameId: { type: string }
+        gameId: { type: string, nullable: true, description: Sammlungsbezug; bei temporären Einträgen null }
+        collectionGameId: { type: string, nullable: true, description: Additiver mobiler Sammlungsbezug; gameId bleibt für ältere Clients als Kennung erhalten }
+        gameName: { type: string }
+        gameDescription: { type: string, nullable: true }
+        gameImageUrl: { type: string, nullable: true }
+        minPlayers: { type: integer }
+        maxPlayers: { type: integer }
+        gamePlayTimeMinutes: { type: integer, nullable: true }
+        complexity: { type: integer, nullable: true }
+        bggId: { type: string, nullable: true }
+        source: { type: string, enum: [COLLECTION, TEMPORARY_BGG, DETACHED_COLLECTION] }
+        temporaryReason: { type: string, nullable: true, enum: [BORROWED, BROUGHT_BY_SOMEONE, NO_LONGER_OWNED, OTHER] }
         sortOrder: { type: integer }
         played: { type: boolean }
         playedAt: { type: string, format: date-time, nullable: true }
@@ -822,6 +833,8 @@ paths:
               properties:
                 gameId: { type: string, description: Spiel-ID aus eigener Sammlung }
                 bggId: { type: string, pattern: '^[1-9][0-9]{0,11}$', description: Gültige BGG-ID; ein vorhandenes eigenes Spiel wird verwendet. }
+                kind: { type: string, enum: [temporary], description: BGG-Spiel ohne Sammlungsimport nur in diese Reihe aufnehmen }
+                reason: { type: string, enum: [BORROWED, BROUGHT_BY_SOMEONE, NO_LONGER_OWNED, OTHER], description: Optionaler Herkunftshinweis für temporäre Einträge }
                 difficulty: { type: string, maxLength: 100 }
       responses:
         '201': { description: Eintrag erstellt }

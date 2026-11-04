@@ -3,6 +3,7 @@ import prisma from "@/lib/db";
 import { redirect, notFound } from "next/navigation";
 import SeriesDetailClient from "./SeriesDetailClient";
 import type { GameSeries } from "./types";
+import { toSeriesEntryView } from "@/lib/series/entry-view";
 
 export default async function SeriesDetailPage({
   params,
@@ -31,7 +32,9 @@ export default async function SeriesDetailPage({
     name: series.name,
     description: series.description,
     imageUrl: series.imageUrl,
-    entries: series.entries.map((entry) => ({
+    entries: series.entries.map((rawEntry) => {
+      const entry = toSeriesEntryView(rawEntry);
+      return ({
       id: entry.id,
       seriesId: entry.seriesId,
       gameId: entry.gameId,
@@ -44,6 +47,8 @@ export default async function SeriesDetailPage({
       successful: entry.successful,
       playerCount: entry.playerCount,
       score: entry.score,
+      source: entry.source as "COLLECTION" | "TEMPORARY_BGG" | "DETACHED_COLLECTION",
+      temporaryReason: entry.temporaryReason as "BORROWED" | "BROUGHT_BY_SOMEONE" | "NO_LONGER_OWNED" | "OTHER" | null,
       game: {
         id: entry.game.id,
         name: entry.game.name,
@@ -55,7 +60,7 @@ export default async function SeriesDetailPage({
         complexity: entry.game.complexity,
         bggId: entry.game.bggId,
       },
-    })),
+    });}),
   };
 
   return <SeriesDetailClient initialSeries={serializedSeries} seriesId={id} />;

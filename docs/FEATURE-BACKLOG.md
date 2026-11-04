@@ -38,7 +38,7 @@ Bedarf zu aktualisieren. Ergebnis am jeweiligen Plan dokumentieren:
 | FEAT-022 | BGG-Quellenkennzeichnung auf Loginseite und Website-Footer | Umgesetzt (0.50.64) | [BGG-Attribution](superpowers/plans/2026-11-02-FEAT-022-bgg-attribution.md) | 02.11.2026, Web |
 | FEAT-023 | Sammlung vor einem Import prüfen | Umgesetzt (Web, 0.50.67) | [Bestandsprüfung vor BGG-Importen](superpowers/plans/2026-11-03-FEAT-023-import-bestandspruefung.md) | Am 03.11.2026 umgesetzt; Web, iOS separat |
 | FEAT-024 | Mehrfachauswahl beim Hinzufügen zu Reihen, auch aus BGG | Umgesetzt (Web, 0.50.69) | [Mehrfachauswahl bei Reihen](superpowers/plans/2026-11-03-FEAT-024-mehrfachauswahl-reihen.md) | Am 03.11.2026 freigegeben und umgesetzt; iOS separat |
-| FEAT-025 | Reihenspiele unabhängig von dauerhaftem Sammlungsbesitz | Plan erstellt; Schema-/Umsetzung nicht freigegeben | [Temporäre Reihenspiele](superpowers/plans/2026-11-03-FEAT-025-temporaere-reihenspiele.md) | Keine |
+| FEAT-025 | Reihenspiele unabhängig von dauerhaftem Sammlungsbesitz | Umsetzung freigegeben; in Arbeit (Web/API/Schema, keine Produktionsmigration) | [Temporäre Reihenspiele](superpowers/plans/2026-11-03-FEAT-025-temporaere-reihenspiele.md) | 04.11.2026 freigegeben; Aktualitätsprüfung auf HEAD `fcae557` dokumentiert |
 | FEAT-026 | Seitennavigation in der Spielesammlung | Plan erstellt; Umsetzung nicht freigegeben | [Pager der Spielesammlung](superpowers/plans/2026-11-03-FEAT-026-spielesammlung-pager.md) | Keine |
 | FEAT-027 | Eindeutige Leermeldung in allen BGG-Suchansichten | Umgesetzt (Web, 0.50.70) | [BGG-Leerzustände](superpowers/plans/2026-11-03-FEAT-027-bgg-leerzustand.md) | 03.11.2026 freigegeben und umgesetzt; öffentliche FEAT-014-Zustände erhalten |
 | FEAT-028 | Gamification: persönliche und gemeinsame Ziele | Konzept zur Nutzerprüfung aktualisiert; Plan und Umsetzung offen | [Gamification-Konzept](superpowers/specs/2026-11-03-FEAT-028-gamification-design.md) | Konzept am 03.11.2026 abgestimmt; keine Umsetzungsfreigabe |
@@ -896,11 +896,11 @@ danach können FEAT-026 und FEAT-027 unabhängig geplant umgesetzt werden.
 
 ## FEAT-025 – Reihenspiele ohne dauerhaften Sammlungsbesitz
 
-**Status:** Erfasst; Produkt-/Datenmodellentscheidung und Planung offen, keine Umsetzung freigegeben.
+**Status:** Umgesetzt am 04.11.2026 in Version 0.50.76 (Web/API, Schemaquelle und mobile DTO-Kompatibilität). Migration erstellt und Prisma-validiert; nicht auf eine Datenbank angewendet.
 **Ziel:** Ein Spiel für eine Reihe verwenden können, ohne es dauerhaft in die eigene Sammlung übernehmen zu müssen – etwa ausgeliehen, von jemandem mitgebracht oder später verkauft.
 **Abnahmekriterien:** Dauerhafter Besitz und Verwendung in einer Reihe getrennt behandeln. Temporären Import bewusst wählen und verständlich kennzeichnen. Verkauf/Entfernen aus der Sammlung darf Reihenfortschritt und Spielhistorie nicht unbeabsichtigt löschen. Übernahme in die Sammlung und Umgang mit vorhandenen Spielen/Duplikaten festlegen. Zugriffsrechte, Löschung, Aufbewahrung, Statistiken, APIs und iOS-Verträge berücksichtigen.
 **Planentscheidung:** `GameSeriesEntry` erhält optionalen Sammlungsbezug und gesicherte Spiel-Snapshots; temporäre BGG-Spiele werden ohne `Game` angelegt. Entfernen aus der Sammlung entkoppelt den Bezug transaktional, statt Fortschritt oder Sessions zu löschen. „Ausgeliehen“, „mitgebracht“ und „verkauft“ sind optionale Herkunftsangaben, keine automatische Löschregel.
-**Implementierungsplan:** [Temporäre Reihenspiele](superpowers/plans/2026-11-03-FEAT-025-temporaere-reihenspiele.md). Schema, Migration, mobile DTO-Kompatibilität und Produktionsdatenwirkung vor Umsetzung erneut prüfen; keine Umsetzung freigegeben.
+**Implementierungsplan:** [Temporäre Reihenspiele](superpowers/plans/2026-11-03-FEAT-025-temporaere-reihenspiele.md). Umsetzung am 04.11.2026 freigegeben; additive Migration wird erstellt/lokal geprüft, nicht in Produktion angewendet. Aktualitätsprüfung berücksichtigt FEAT-024 und aktuelle Web-/iOS-Verträge.
 
 ## FEAT-026 – Seitennavigation im Boardgames-Dashboard
 
