@@ -1,6 +1,6 @@
 # FEAT-009 – HTML-Entities in Spieldaten korrekt behandeln
 
-**Status:** Code umgesetzt und Unit-Suite, Typprüfung, Build, iOS-Vertrag, Fast-Security-Check und Impeccable-Detektor abgeschlossen. E2E und vollständiger Security-Check sind nicht abgenommen. Produktionsbereinigung bleibt separat freigabepflichtig.
+**Status:** Code umgesetzt; Unit-Suite, Typprüfung, Build, iOS-Vertrag, Fast- und vollständiger Security-Check sowie Impeccable-Detektor sind abgeschlossen. E2E ist nicht abgenommen. Produktionsbereinigung bleibt separat freigabepflichtig.
 
 ## Produktionslauf-Vorprüfung – 2026-11-01
 
@@ -14,6 +14,7 @@
 - Der Codeumfang ist weiterhin umgesetzt; die gezielten Spieltexttests liefen mit 129/129 Tests erfolgreich.
 - Der Dry-Run wurde ausschließlich gegen die lokale isolierte Datenbank `bgt_test_feat028` ausgeführt: 0 Spiele, 0 Vorschläge, 0 zu tief kodierte Werte und 0 Schreibvorgänge. Das Testmanifest liegt unter `.maintenance/feat009-test.json`.
 - `BGT_MAINTENANCE_DATABASE_URL` für Produktion ist nicht konfiguriert. Produktionsmanifest, Herkunft und Wiederherstellbarkeit eines frischen Backups sowie Apply-Freigabe fehlen weiterhin. Produktionsdaten wurden nicht gelesen oder verändert.
+- `npm run security-check` lief am 05.11.2026 über den Commit-Hook erfolgreich durch: 0 Fehler, 2 vorhandene Hinweise.
 - Ergebnis: Der Plan bleibt aktuell. FEAT-009 kann code-seitig als fertig gelten, aber die vollständige Featureabnahme wartet auf den separat freizugebenden Produktionslauf.
 
 ## Aktualitätsprüfung vor Umsetzung – 2026-10-31

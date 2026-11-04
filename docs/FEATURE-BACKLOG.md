@@ -488,7 +488,7 @@ Limit (Drosselung beziehungsweise Abschaltung) bewerten und dokumentieren.
 ## FEAT-009 – HTML-Entities in Spieldaten korrekt behandeln
 
 **Implementierungsplan:** [FEAT-009](superpowers/plans/2026-10-31-FEAT-009-spieldaten-entities.md), erstellt am 31.10.2026.
-**Umsetzungsfreigabe:** Ausstehend; ein Produktions-Bereinigungslauf benötigt zusätzlich ein geprüftes konkretes Manifest und Backup.
+**Umsetzungsfreigabe:** Der Codeumfang ist freigegeben und umgesetzt. Für die Produktionsbereinigung sind ein geprüftes konkretes Manifest, ein frisches verifizierbares Backup und eine separate Apply-Freigabe erforderlich.
 **Plattformumfang:** Gemeinsame Backend-/Import-/Mobile-Ausgabe und Webdarstellung; iOS-Sync-Verträge prüfen, keine zusätzliche native Dekodierungslogik.
 **Bugbezug:** BUG-049; Datenherkunft einzelner Produktionswerte erst durch einen lesenden Bericht prüfen.
 
