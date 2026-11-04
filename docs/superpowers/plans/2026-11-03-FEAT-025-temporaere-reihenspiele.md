@@ -94,6 +94,6 @@
 - [x] Impeccable: Vorschau mit synthetischen Daten bei Desktop- und 390-px-Breite gerendert; kein horizontaler Überlauf.
 - [x] Changelog, FAQ, OpenAPI, FEATURES, CONCEPT, Backlog, AGENTS und Review-Dokumentation aktualisiert.
 - [ ] Isolierter PostgreSQL-Migrationstest: mangels lokalem PostgreSQL/Docker nicht ausführbar. Migration ist nicht angewendet; vor Deployment erforderlich.
-- [ ] Commit/Hook-Ergebnis ergänzen.
+- [x] Commit `523360d`; Commit-Hooks für lint-staged ESLint/Tests, Security-Check und Review-Regression bestanden.
 
 **Abnahmestand:** Anwendungscode und Dokumentation sind umgesetzt. Die Schemaquelle validiert; wegen fehlender isolierter PostgreSQL-Instanz ist die Migration noch nicht integrationsgeprüft. Keine Produktionsdaten abgefragt, keine Migration angewendet.

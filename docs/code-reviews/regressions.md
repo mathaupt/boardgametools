@@ -471,6 +471,6 @@ Jeder Eintrag enthält Felder für Root-Cause-Analyse und Gegenmaßnahmen (manue
 **Gegenmaßnahme:** `npm audit --omit=dev` und Regressionsevaluator mit freigegebenem Registryzugriff erneut ausgeführt. Audit meldete 0 Produktionsvulnerabilities; der Wiederholungslauf endete mit Exitcode 0 und ohne Regression.
 **Verantwortlich:** BoardGameTools-Wartung.
 
-**Auflösung 2026-11-04:** `npm audit --omit=dev` meldete 0 Vulnerabilities. `npm run review-evaluate:regression` endete nach Registryzugriff mit Exitcode 0. Snapshot: `history/2026-11-04_0856.json`.
+**Auflösung 2026-11-04:** `npm audit --omit=dev` meldete 0 Vulnerabilities. Der abschließende Hooklauf von `npm run review-evaluate:regression` endete mit Exitcode 0, 10/10 gesamt, 0 offenen Findings und ohne Regression. Snapshot: `history/2026-11-04_0902.json`.
 
 ---
