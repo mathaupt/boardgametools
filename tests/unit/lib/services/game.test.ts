@@ -129,6 +129,66 @@ describe("GameService", () => {
         totalPages: 1,
       });
     });
+
+    it("filters the owner collection before paging and returns a stable matching count", async () => {
+      vi.mocked(prisma.game.findMany).mockResolvedValue([fakeGame] as never);
+      vi.mocked(prisma.game.count).mockResolvedValue(25);
+
+      const result = await GameService.list(USER_ID, {
+        page: 2,
+        limit: 24,
+        search: "catan",
+        tagId: "strategy",
+        players: 4,
+        minComplexity: 2,
+        sort: "newest",
+      });
+
+      expect(prisma.game.count).toHaveBeenCalledWith({
+        where: expect.objectContaining({
+          ownerId: USER_ID,
+          deletedAt: null,
+          name: { contains: "catan", mode: "insensitive" },
+          tags: { some: { tagId: "strategy", tag: { ownerId: USER_ID } } },
+          minPlayers: { lte: 4 },
+          maxPlayers: { gte: 4 },
+          complexity: { gte: 2 },
+        }),
+      });
+      expect(prisma.game.findMany).toHaveBeenCalledWith(expect.objectContaining({
+        where: expect.objectContaining({ ownerId: USER_ID, deletedAt: null }),
+        orderBy: [{ createdAt: "desc" }, { id: "asc" }],
+        skip: 24,
+        take: 24,
+        include: expect.objectContaining({ tags: { include: { tag: true } } }),
+      }));
+      expect(result).toMatchObject({ total: 25, page: 2, totalPages: 2 });
+    });
+
+    it("clamps a requested page to the last page after collection changes", async () => {
+      vi.mocked(prisma.game.findMany).mockResolvedValue([fakeGame] as never);
+      vi.mocked(prisma.game.count).mockResolvedValue(25);
+
+      const result = await GameService.list(USER_ID, { page: 3, limit: 24 });
+
+      expect(prisma.game.findMany).toHaveBeenCalledWith(expect.objectContaining({ skip: 24, take: 24 }));
+      expect(result).toMatchObject({ page: 2, totalPages: 2 });
+    });
+  });
+
+  describe("bulkDeleteAll", () => {
+    it("detaches series entries and soft-deletes every active game owned by the user", async () => {
+      vi.mocked(prisma.game.updateMany).mockResolvedValue({ count: 27 } as never);
+
+      await expect(GameService.bulkDeleteAll(USER_ID)).resolves.toEqual({ deleted: 27 });
+
+      expect(prisma.$transaction).toHaveBeenCalledWith(expect.any(Function));
+      expect(prisma.game.updateMany).toHaveBeenCalledWith({
+        where: { ownerId: USER_ID, deletedAt: null },
+        data: { deletedAt: expect.any(Date) },
+      });
+      expect(invalidateTag).toHaveBeenCalledWith(`series-${USER_ID}`);
+    });
   });
 
   // ── getById ──────────────────────────────────────────────────

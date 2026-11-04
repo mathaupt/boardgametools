@@ -7,7 +7,7 @@ Dort erfasste TODOs sind noch nicht implementiert oder zur Umsetzung freigegeben
 
 Nach einer erfolgreichen BGG-Suche ohne Treffer erscheint eine klare Meldung. Lade- und Providerfehler werden getrennt angezeigt und können erneut versucht werden. Ein Ausfall des BGG-Dienstes wird nicht als leere Trefferliste oder mit Beispieldaten ausgegeben. Die öffentliche Eventsuche behält ihren bestehenden Lade-, Leer- und Fehlervertrag.
 
-> **Version 0.50.73** | 42 Seiten | 96 API-Endpunkte | 29 Datenbank-Modelle
+> **Version 0.50.77** | 42 Seiten | 96 API-Endpunkte | 29 Datenbank-Modelle
 >
 > Vollstaendige Dokumentation aller Nutzer-sichtbaren Features,
 > organisiert nach Bereichen mit Screenshots-Beschreibungen,
@@ -58,6 +58,8 @@ Seit 0.50.20: kobaltblaue Seitennavigation, hellblaue Arbeitsflächen, Barlow un
 
 ## 2. Spielesammlung
 
+Seit Version 0.50.77 wird die Sammlung mit 24 Spielen pro Seite geladen. Suche, Tags, Spielerzahl, Mindest-Komplexität und Sortierung bleiben in der URL erhalten und werden serverseitig angewendet. Die Seitennavigation zeigt den Ergebnisbereich und die gefilterte Gesamtzahl. Die Aktion „Alle Spiele entfernen“ bezieht weiterhin die komplette Sammlung ein.
+
 Spielnamen und Beschreibungen werden beim Import und Speichern vereinheitlicht. Bekannte HTML-Entities werden in Klartext überführt; die Anzeige behandelt diesen Inhalt weiterhin als Text. Suche und Web-/Mobile-Ausgabe verwenden dieselbe Darstellung. Eine kontrollierte Bereinigung bestehender Produktionsdaten ist separat freizugeben.
 
 ### Übersicht
@@ -68,7 +70,7 @@ Zeigt alle Spiele des Nutzers als Karten-Grid mit Cover-Bild, Name, Spieleranzah
 Spieldauer, Komplexitaet und Tags.
 
 **Aktionen:**
-- Textsuche (filtert nach Name, clientseitig)
+- Textsuche (serverseitig nach Spielname)
 - Tag-Filter (klickbare Chips, z.B. "Strategie", "Familie")
 - Spieleranzahl-Filter (Spiel muss den gewaehlten Wert unterstuetzen)
 - Komplexitaets-Filter (Mindest-Sternzahl, 1-5)
@@ -78,6 +80,7 @@ Spieldauer, Komplexitaet und Tags.
 - Barcode-Scanner oeffnen
 - Einzelnes Spiel loeschen (mit Bestaetigung)
 - Alle Spiele loeschen (Bulk-Delete mit Bestaetigung)
+- Seitennavigation mit Ergebnisbereich, Gesamtzahl und Beibehaltung der Filter in der URL
 
 ### Spiel hinzufuegen
 

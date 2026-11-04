@@ -402,12 +402,32 @@ paths:
       parameters:
         - $ref: '#/components/parameters/PageParam'
         - $ref: '#/components/parameters/LimitParam'
+        - name: q
+          in: query
+          description: Spielname suchen (maximal 100 Zeichen)
+          schema: { type: string, maxLength: 100 }
+        - name: tag
+          in: query
+          description: Nach einem eigenen Tag filtern
+          schema: { type: string, maxLength: 100 }
+        - name: players
+          in: query
+          description: Nur Spiele, die diese Spielerzahl unterstützen
+          schema: { type: integer, minimum: 1, maximum: 99 }
+        - name: complexity
+          in: query
+          description: Mindest-Komplexität von 1 bis 5
+          schema: { type: integer, minimum: 1, maximum: 5 }
+        - name: sort
+          in: query
+          schema: { type: string, enum: [name_asc, name_desc, complexity_asc, complexity_desc, players_asc, players_desc, newest] }
+          description: Sortierung mit stabiler ID-Auflösung bei gleichen Werten
         - name: include
           in: query
           schema: { type: string, enum: [sessions] }
           description: "'sessions' laedt die letzten 5 Sessions pro Spiel"
       responses:
-        '200': { description: Spieleliste (mit Tags und Session-Count) }
+        '200': { description: Bei page/limit oder Filtern paginierte Spiele (data, total, page, limit, totalPages); sonst bisherige vollständige Liste. Spieleinträge enthalten Tags und Session-Count. }
     post:
       tags: [Games]
       summary: Neues Spiel erstellen
@@ -493,16 +513,21 @@ paths:
   /api/games/bulk-delete:
     delete:
       tags: [Games]
-      summary: Mehrere Spiele loeschen
+      summary: Einige oder alle eigenen Spiele löschen
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: object
-              required: [ids]
-              properties:
-                ids: { type: array, items: { type: string }, minItems: 1, maxItems: 500 }
+              oneOf:
+                - type: object
+                  required: [ids]
+                  properties:
+                    ids: { type: array, items: { type: string }, minItems: 1, maxItems: 500 }
+                - type: object
+                  required: [all]
+                  properties:
+                    all: { type: boolean, const: true, description: Löscht alle aktiven Spiele des angemeldeten Kontos serverseitig. }
       responses:
         '200': { description: Anzahl geloeschter Spiele, content: { application/json: { schema: { type: object, properties: { deleted: { type: integer } } } } } }
 

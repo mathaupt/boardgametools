@@ -34,6 +34,7 @@ vi.mock("@/components/barcode-scanner", () => ({
 }));
 
 import GamesListClient, { type GameItem } from "@/app/(dashboard)/dashboard/games/games-list-client";
+import type { GameListQuery } from "@/lib/game-list-query";
 
 function game(overrides: Partial<GameItem> = {}): GameItem {
   return {
@@ -56,7 +57,7 @@ describe("GamesListClient", () => {
     expect(screen.queryByLabelText("Spiele suchen")).not.toBeInTheDocument();
   });
 
-  it("filters by search, player count, complexity, and tag and reports no matches", async () => {
+  it("writes collection filters to the URL and resets pagination through navigation", async () => {
     const user = userEvent.setup();
     render(<GamesListClient games={[
       game({ id: "catan", name: "Catan", tags: [{ tag: { id: "strategy", name: "Strategie" } }] }),
@@ -64,41 +65,59 @@ describe("GamesListClient", () => {
     ]} />);
 
     await user.type(screen.getByLabelText("Spiele suchen"), "azul");
-    expect(screen.getByText("Azul")).toBeInTheDocument();
-    expect(screen.queryByText("Catan")).not.toBeInTheDocument();
+    await waitFor(() => expect(push).toHaveBeenLastCalledWith("/dashboard/games?q=azul"));
     await user.clear(screen.getByLabelText("Spiele suchen"));
     await user.selectOptions(screen.getByLabelText("Spielerzahl"), "2");
-    expect(screen.getByText("Azul")).toBeInTheDocument();
-    expect(screen.queryByText("Catan")).not.toBeInTheDocument();
+    expect(push).toHaveBeenLastCalledWith("/dashboard/games?players=2");
     await user.click(screen.getByRole("button", { name: "Komplexität filtern" }));
+    expect(push).toHaveBeenLastCalledWith("/dashboard/games?players=2&complexity=3");
     await user.click(screen.getByRole("button", { name: "Strategie" }));
+    expect(push).toHaveBeenLastCalledWith("/dashboard/games?tag=strategy&players=2&complexity=3");
     await user.type(screen.getByLabelText("Spiele suchen"), "nicht vorhanden");
-    expect(screen.getByText("Keine Spiele gefunden für diesen Filter.")).toBeInTheDocument();
+    await waitFor(() => expect(push).toHaveBeenLastCalledWith("/dashboard/games?q=nicht+vorhanden&tag=strategy&players=2&complexity=3"));
   });
 
-  it("sorts by name, complexity, player count, and newest date", async () => {
+  it("keeps sort changes in the URL", async () => {
     const user = userEvent.setup();
     const { rerender } = render(<GamesListClient games={[
       game({ id: "low", name: "Azul", complexity: 1, minPlayers: 2, maxPlayers: 4, createdAt: "2025-01-01T00:00:00Z" }),
       game({ id: "high", name: "Catan", complexity: 3, minPlayers: 4, maxPlayers: 6, createdAt: "2026-01-01T00:00:00Z" }),
     ]} />);
-    const cards = () => screen.getAllByRole("link").filter((link) => {
-      const href = link.getAttribute("href") ?? "";
-      return href.startsWith("/dashboard/games/") && !["/dashboard/games/import", "/dashboard/games/new"].includes(href);
-    });
-    const order = () => cards().map((card) => card.textContent);
-
-    expect(order()).toEqual(["Azul", "Catan"]);
+    expect(screen.getByText("Azul")).toBeInTheDocument();
     await user.selectOptions(screen.getByLabelText("Sortierung"), "name_desc");
-    expect(order()).toEqual(["Catan", "Azul"]);
+    expect(push).toHaveBeenLastCalledWith("/dashboard/games?sort=name_desc");
     await user.selectOptions(screen.getByLabelText("Sortierung"), "complexity_desc");
-    expect(order()).toEqual(["Catan", "Azul"]);
+    expect(push).toHaveBeenLastCalledWith("/dashboard/games?sort=complexity_desc");
     await user.selectOptions(screen.getByLabelText("Sortierung"), "players_asc");
-    expect(order()).toEqual(["Azul", "Catan"]);
+    expect(push).toHaveBeenLastCalledWith("/dashboard/games?sort=players_asc");
     await user.selectOptions(screen.getByLabelText("Sortierung"), "players_desc");
-    expect(order()).toEqual(["Catan", "Azul"]);
+    expect(push).toHaveBeenLastCalledWith("/dashboard/games?sort=players_desc");
     await user.selectOptions(screen.getByLabelText("Sortierung"), "newest");
-    expect(order()).toEqual(["Catan", "Azul"]);
+    expect(push).toHaveBeenLastCalledWith("/dashboard/games?sort=newest");
+  });
+
+  it("resets to the first page when changing a filter and keeps the other URL filters", async () => {
+    const user = userEvent.setup();
+    const query: GameListQuery = {
+      page: 3, limit: 24, search: "Catan", tagId: "strategy", players: null, minComplexity: null, sort: "name_asc",
+    };
+    render(<GamesListClient games={[game()]} tags={[{ id: "strategy", name: "Strategie" }]} query={query} pageInfo={{ page: 3, total: 60, limit: 24, totalPages: 3 }} />);
+
+    await user.selectOptions(screen.getByLabelText("Spielerzahl"), "2");
+
+    expect(push).toHaveBeenCalledWith("/dashboard/games?q=Catan&tag=strategy&players=2");
+  });
+
+  it("shows the server-provided page range and navigation links", () => {
+    const query: GameListQuery = {
+      page: 2, limit: 24, search: "Catan", tagId: null, players: null, minComplexity: null, sort: "name_asc",
+    };
+    render(<GamesListClient games={[game()]} query={query} pageInfo={{ page: 2, total: 30, limit: 24, totalPages: 2 }} />);
+
+    expect(screen.getByText("Seite 2 von 2")).toBeInTheDocument();
+    expect(screen.getByText("25–30 von 30 Spielen")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Vorherige Seite" })).toHaveAttribute("href", "/dashboard/games?q=Catan");
+    expect(screen.getByRole("button", { name: "Nächste Seite" })).toBeDisabled();
   });
 
   it("deletes a selected game after confirmation and refreshes the route", async () => {
@@ -132,7 +151,7 @@ describe("GamesListClient", () => {
 
     await waitFor(() => expect(fetch).toHaveBeenCalledWith("/api/games/bulk-delete", expect.objectContaining({
       method: "DELETE",
-      body: JSON.stringify({ ids: ["catan", "azul"] }),
+      body: JSON.stringify({ all: true }),
     })));
     await waitFor(() => expect(screen.getByText("Du hast noch keine Spiele in deiner Sammlung.")).toBeInTheDocument());
     expect(refresh).toHaveBeenCalledOnce();

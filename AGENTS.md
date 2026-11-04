@@ -16,7 +16,7 @@ Die Impeccable-Design-Hooks sind für das Projekt aktiviert. Sie melden nach Än
 - `DESIGN.md` und `.impeccable/design.json` dokumentieren die bestätigte Webgestaltung „Club Programme“; Produktfakten stehen in `PRODUCT.md`.
 - Gemeinsame Anwendungsstile: `src/app/club.css`; semantische Farbvariablen: `src/app/globals.css`.
 - Reine Dashboard-/Eventdarstellung: `src/components/dashboard/`; Datenabfragen verbleiben in den Server-Seiten.
-- Sammlungskarten und Filter: `collection-game-card.tsx` und `collection-filters.tsx` neben `games-list-client.tsx`.
+- Sammlungskarten, Filter und Navigation: `collection-game-card.tsx`, `collection-filters.tsx`, `games-pagination.tsx` und `games-list-client.tsx`; URL-Filtervertrag in `src/lib/game-list-query.ts`, serverseitige Abfragen in `GameService.list`.
 - Spielauswahl bei Session-Anlage: `src/components/sessions/session-game-picker.tsx` und `session-game-options.ts`; der gemeinsame Radix-Popover-Wrapper liegt in `src/components/ui/popover.tsx`. Der Picker filtert lokal und liefert ausschließlich eine Spiel-ID.
 - BGG-Ausgabenwahl: `src/components/bgg/bgg-version-picker.tsx`; `src/lib/bgg-versions.ts` prüft die Zuordnung zum Hauptspiel und sichere BGG-Coveradressen. Einzelimporte verwenden `/api/games/import-bgg` mit optionaler `versionId`.
 - Gemeinsamer Website-Footer: `src/components/layout/site-footer.tsx`, einmalig in `src/app/layout.tsx`. Offizielles BGG-Asset und Herkunft unter `public/images/bgg/`; keine zusätzlichen Seiten-Footer für dieselbe Quellenkennzeichnung.

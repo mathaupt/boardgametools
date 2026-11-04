@@ -8,16 +8,17 @@
 
 **Technik:** Next.js App Router, Prisma, `GameService`, URLSearchParams, React, Vitest/Testing Library, Playwright für gerenderte Viewport-Abnahme.
 
-**Planungsstand:** 03.11.2026, HEAD `23cd674`, Version 0.50.67, Arbeitsbaum vor dieser Dokuänderung sauber. `/dashboard/games` lädt aktuell alle aktiven Spiele samt Tags und Sessionzähler serverseitig; Filter und Sortierung laufen im Client. `GET /api/games` und `GameService.list` haben bereits `page`/`limit` mit 1-basierter Seite, aber keinen Filtervertrag. Der neue Sammlungsabruf muss Tags/Zähler und Gesamtumfang mitliefern.
+**Planungsstand:** 03.11.2026, HEAD `23cd674`, Version 0.50.67. **Aktualitätsprüfung und Umsetzungsfreigabe:** 04.11.2026, HEAD `f1fc945`, Version `0.50.76`, Arbeitsbaum zu Beginn der Umsetzung sauber. `/dashboard/games` lud alle aktiven Spiele samt Tags und Sessionzähler; Filter/Sortierung liefen clientseitig. `GET /api/games` und `GameService.list` unterstützten 1-basierte `page`/`limit`, jedoch ohne Filtervertrag. FEAT-025 wurde inzwischen umgesetzt: `GameService` entkoppelt beim Löschen Reihenbezüge transaktional; keine Änderung am Game-Filtermodell. Freigegeben: Web-Sammlung, serverseitige Suche/Filter/Sortierung und Paging mit 24 Spielen pro Seite; URL-Zustand. Die bestehende Aktion „Alle Spiele entfernen“ muss weiterhin über alle Seiten gelten.
 
 ---
 
-## Aktualitätsprüfung vor Umsetzung
+## Aktualitätsprüfung vor Umsetzung – 04.11.2026
 
-- [ ] HEAD, Datenmenge, `GameService.list`, Cache-Tags und bestehende API-Paginierung prüfen.
-- [ ] Sicherstellen, ob FEAT-025 Änderungen an Sammlungslöschung/Abfragen berühren; Filter nur für aktive Sammlungsdatensätze verwenden.
-- [ ] Seitenlimit 24 als Startwert gegen reale Cover-/Kartengröße prüfen; API-Maximum bleibt 100.
-- [ ] URL-Vertrag festlegen: `page` beginnt bei 1; die bestehende `buildPagination`-Funktion erwartet ebenfalls positive, 1-basierte Seiten und berechnet den Offset. Dashboard-Anfragen senden immer `page` und `limit`; Aufrufer ohne diese Parameter behalten vorerst die bestehende unpagierte Antwort.
+- [x] HEAD `f1fc945`, `GameService.list`, API-Pagination und Filter-/Tagmodell geprüft; lokale Datenmenge nicht in eine Produktionsabfrage überführt.
+- [x] FEAT-025-Lösch-/Entkopplungsverhalten geprüft; Listenfilter verwenden ausschließlich aktive, dem Nutzer gehörende Spiele und eigene Tags.
+- [x] Seitenlimit 24 bestätigt; API-Aufrufer können `limit` weiter bis 100 anfordern.
+- [x] URL-Vertrag: `page` 1-basiert; Dashboard lädt mit `page`/`limit`. API-Aufrufe ohne Paging-/Filterparameter behalten die unpagierte Antwort.
+- [x] Umsetzungsfreigabe durch „setze FEAT-026 um“ am 04.11.2026.
 
 ## Betroffene Dateien
 
@@ -26,35 +27,37 @@
 - `src/lib/services/game.service.ts`: Filter/Sortierung mit Eigentümerfilter und `count` auf identischer WHERE-Klausel.
 - `src/app/(dashboard)/dashboard/games/games-list-client.tsx`: Pager, URL-Update, Filter-/Sortierzustand und Aktions-Rücksprung.
 - `src/app/(dashboard)/dashboard/games/collection-filters.tsx`: bestehende Controls kontrolliert an URL-/Serverzustand binden.
-- `src/components/ui/pagination.tsx` (nur falls vorhandene Komponente nicht passt; zuerst Bestand prüfen).
-- Tests: `tests/unit/lib/services/game.service.test.ts` (neu), `tests/unit/api/games.test.ts` erweitern, `tests/unit/components/games-list-client.test.tsx` erweitern; Server-Page-Test dort ergänzen, wo App Router testbar ist.
+- `src/app/(dashboard)/dashboard/games/games-pagination.tsx` und `games-list-overlays.tsx`: Pager plus getrennte Dialog-/Scanner-Oberfläche.
+- `src/lib/game-list-query.ts`: begrenzter Queryparser und URL-Serialisierung.
+- Tests: `tests/unit/lib/game-list-query.test.ts`, `tests/unit/components/games-pagination.test.tsx`, `tests/unit/api/games-bulk-delete.test.ts` (neu), `tests/unit/lib/services/game.test.ts`, `tests/unit/api/games.test.ts` und `tests/unit/components/games-list-client.test.tsx` erweitert.
 - `docs/openapi.yaml`, `docs/FEATURES.md`, FAQ und Changelog (Umsetzung), Backlog.
 
 ## Aufgabe 1 – Filtervertrag RED/GREEN/REFACTOR
 
-- [ ] **RED:** Service-Tests für Filter + Count mit gleichem Eigentümer-/deletedAt-Filter und stabilem Sortieren bei gleichen Namen schreiben.
-- [ ] **RED prüfen:** `npx vitest run tests/unit/lib/services/game.service.test.ts` muss am bisher nicht implementierten Filtervertrag scheitern.
-- [ ] **GREEN:** Query-Parser akzeptiert nur begrenzte Suchlänge, bekannte Tags, Spielerzahl 1–99, Komplexität 1–5, erlaubte Sortierschlüssel und positive Seitennummer. Ungültige Werte geben 400 oder sichere Defaults gemäß dokumentiertem Vertrag.
-- [ ] `GameService.list` liefert `{ items, total, page, limit, totalPages }`; dieselbe `where`-Bedingung wird für `findMany` und `count` verwendet. Reihenfolge nutzt gewählten Wert und `id` als eindeutigen Tie-Breaker.
-- [ ] **GREEN prüfen:** Test für Filter-/Sortier-Kombination, Nullwerte, leere Seite und totalPages=0 besteht.
-- [ ] **REFACTOR:** vorhandene Pagination-Utilities und `NOT_DELETED` wiederverwenden; unpaginierten API-Vertrag für andere Dialoge erhalten, bis alle Verbraucher migriert sind.
+- [x] **RED:** Service- und Parserverträge für Filter, Count, Nullwerte, stabile Sortierung, Grenzen und Seitenkorrektur testgetrieben ergänzt.
+- [x] **RED prüfen:** Die Service-Tests scheiterten zunächst an fehlenden Filtern/Seitengrenzen; der neue Parser-Test scheiterte an fehlendem Modul.
+- [x] **GREEN:** Parser begrenzt Suchtext, Tag-ID, Spielerzahl, Komplexität, Sortierschlüssel, Seite und API-Limit; fehlerhafte Werte erhalten sichere Defaults. Service filtert eigene aktive Spiele und eigene Tags.
+- [x] `GameService.list` liefert paginierte `{ data, total, page, limit, totalPages }`; Count/Items nutzen identische Bedingungen und stabile ID-Auflösung.
+- [x] **GREEN prüfen:** Filter-/Sortierkombination, leere Seite, `totalPages=0`, Out-of-range-Seiten und API-Altvertrag sind getestet.
+- [x] **REFACTOR:** `NOT_DELETED`, `buildPagination`, `paginatedResponse` wiederverwendet; Aufrufe ohne Paging-/Filterparameter behalten die vollständige Listenantwort.
 
 ## Aufgabe 2 – URL-gesteuerte Oberfläche RED/GREEN/REFACTOR
 
-- [ ] **RED:** UI-Tests für „Nächste Seite“, „Zurück“, erste/letzte Seite, leere Ergebnisse, Filterwechsel setzt Seite auf 1, Löschen/Import/Refresh erhalten Filter und gültige Seite schreiben.
-- [ ] **RED prüfen:** `npx vitest run tests/unit/components/games-list-client.test.tsx` scheitert zunächst an fehlendem Pager-/URL-Vertrag.
-- [ ] **GREEN:** Links/Buttons mit klarer Beschriftung, Anzahl „Seite X von Y“ und deaktivierten Randaktionen ergänzen. Filter/Suche/Sortierung bleiben in URL und werden serverseitig geladen.
-- [ ] Wenn ein Löschen die letzte Seite leert, auf die dann letzte gültige Seite zurückwechseln; bei Import und Filterwechsel `page=1`.
-- [ ] **GREEN prüfen:** UI-Tests und `npx vitest run tests/unit/api/games.test.ts tests/unit/lib/services/game.service.test.ts` bestehen.
-- [ ] **REFACTOR:** Paging-Zustand und Query-Serialisierung in kleinen typisierten Helpers halten; bestehende Filterbedienung nicht duplizieren.
+- [x] **RED:** UI-Verträge für Pager, Seitenbereich, Randaktionen, Filterwechsel und Query-Erhalt ergänzt.
+- [x] **RED prüfen:** Pager-Komponententest scheiterte zunächst am fehlenden Modul; Service-/UI-Tests zeigten fehlende Filter- und Pagerzustände.
+- [x] **GREEN:** beschriftete Vor/Zurück-Navigation, Ergebnisbereich, Gesamtzahl, URL-Filter und Page-1-Reset implementiert.
+- [x] Löschung/Import aktualisieren serverseitig die Seite; übergroße Seiten werden auf die letzte gültige Seite umgeleitet. Filterwechsel setzt die Seite auf 1.
+- [x] **GREEN prüfen:** gezielte API-, Service-, Parser-, Pager- und Clienttests bestanden.
+- [x] **REFACTOR:** typisierte Parser-/Serializer-Helper; Filterzustand und Dialog/Scanner in angemessene Module aufgeteilt.
 
 ## Aufgabe 3 – Impeccable, Performance, Security und Doku
 
-- [ ] Impeccable: lokal gerendert auf 390/768/1440 px und bei 200 % Zoom prüfen; Pager nicht horizontal überlaufen lassen, Fokusreihenfolge/ARIA und mindestens 44 px große Hauptaktionen sicherstellen. Lade-/Fehler-/Leerseite darstellen.
-- [ ] Security: Auth und Eigentümerfilter bleiben serverseitig; Querylängen, numerische Limits, Sortier-Whitelist und Tag-ID-Ownership prüfen. Keine dynamische Prisma-Sortierung aus ungeprüfter Eingabe.
-- [ ] Performance: Count und Items effizient abfragen; keine Gesamtmenge in Client übertragen; `EXPLAIN`/Indexbedarf mit Datenbestand beurteilen, keine ungeprüften Schemaänderungen.
-- [ ] OpenAPI Query-Parameter und Antwortschema, FEATURES/FAQ und Backlog aktualisieren.
-- [ ] Abnahme: gezielte Tests, `npm run typecheck`, `npm run lint`, `npm run security-check:fast`, `npm run build`, `npm run review-evaluate:regression`; Browserbelege mit kleinen und großen Datensätzen aus synthetischen Fixtures.
-- [ ] Commit mit regulären Hooks; Review-Ergebnis, Finding-Status und Regressionen in `docs/code-reviews/` nachvollziehen.
+- [x] Impeccable: lokal synthetisch bei 1440/768/390/320 CSS px und 195 CSS px als Zoom-Proxy gerendert. Keine horizontalen Überläufe; bei 195 px Pager-Aktionen vertikal und erreichbar, Hauptaktionen mindestens 44 px.
+- [x] Security: Auth bleibt erforderlich, WHERE enthält Eigentümer-/Soft-Deletefilter, Tag gehört zum Nutzer, Werte sind begrenzt und Sortierung allowlisted. Bulk-Delete-all führt nur eigene aktive Datensätze in einer Transaktion aus.
+- [x] Performance: nur 24 Spiele und die gefilterte Gesamtzahl gelangen in die Seite; keine ungeprüfte Schemaänderung. DB-EXPLAIN mangels lokaler isolierter DB nicht ausgeführt.
+- [x] OpenAPI, FEATURES, FAQ, CONCEPT, AGENTS, Changelog und Backlog aktualisiert.
+- [x] Abnahme: 1.151 Tests in 167 Dateien, TypeScript, Produktionsbuild, Security-Check und `npm audit --omit=dev` (0 Vulnerabilities) bestanden. ESLint: 0 Fehler, 652 vorhandene Warnungen aus Prüfscripts. Browsernachweise mit synthetischen 24er-/60er Fixtures bei 1440/768/390/320/195 CSS px.
+- [x] Review-Regressionscheck mit Registryzugriff: Exitcode 0, 10/10 gesamt und Sicherheit, 0 offene Findings, keine Regression; Snapshot `history/2026-11-04_0942.json`.
+- [ ] Commit mit regulären Hooks.
 
-**Freigabe:** Nicht erteilt. Vor Umsetzung Query-/URL-Vertrag und Seitenumfang ausdrücklich freigeben lassen.
+**Freigabe:** Erteilt am 04.11.2026 durch „setze FEAT-026 um“ für den oben aktualisierten Webumfang.

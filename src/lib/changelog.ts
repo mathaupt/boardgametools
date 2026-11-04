@@ -12,6 +12,17 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.77",
+    date: "2026-11-04",
+    title: "Große Spielesammlungen seitenweise durchsuchen",
+    description: "Die Spielesammlung lädt gefilterte Ergebnisse jetzt in übersichtlichen Seiten und behält Suche, Filter und Sortierung in der URL.",
+    changes: [
+      { type: "feature", text: "FEAT-026: Die Sammlung zeigt 24 Spiele pro Seite, Gesamtumfang und Navigation mit den aktiven Filtern." },
+      { type: "improvement", text: "Suche, Tags, Spielerzahl, Komplexität und Sortierung werden serverseitig ausgewertet; gelöschte oder fremde Spiele bleiben ausgeschlossen." },
+      { type: "internal", text: "Die Aktion „Alle Spiele entfernen“ arbeitet unabhängig von der sichtbaren Seite mit dem vollständigen aktiven Sammlungsbestand." },
+    ],
+  },
+  {
     version: "0.50.76",
     date: "2026-11-04",
     title: "Reihenspiele unabhängig von der Sammlung führen",

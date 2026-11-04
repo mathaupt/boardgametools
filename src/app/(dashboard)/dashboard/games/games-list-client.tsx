@@ -1,26 +1,17 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 import { Plus, Download, Trash2, Trash, ScanBarcode } from "lucide-react";
 import { CollectionFilters } from "./collection-filters";
 import { CollectionGameCard } from "./collection-game-card";
-import { BarcodeScanner } from "@/components/barcode-scanner";
-import { gameTextForRead } from "@/lib/game-text";
+import { gameListQueryToSearchParams, type GameListQuery } from "@/lib/game-list-query";
+import { GamesPagination } from "./games-pagination";
+import { GamesListOverlays } from "./games-list-overlays";
 
 export interface GameItem {
   id: string;
@@ -40,68 +31,65 @@ export interface GameItem {
 
 interface GamesListClientProps {
   games: GameItem[];
+  tags?: Array<{ id: string; name: string }>;
+  query?: GameListQuery;
+  collectionTotal?: number;
+  pageInfo?: { page: number; total: number; limit: number; totalPages: number };
 }
 
-export default function GamesListClient({ games: initialGames }: GamesListClientProps) {
+const DEFAULT_QUERY: GameListQuery = { page: 1, limit: 24, search: "", tagId: null, players: null, minComplexity: null, sort: "name_asc" };
+
+export default function GamesListClient({ games: initialGames, tags = [], query = DEFAULT_QUERY, collectionTotal = initialGames.length, pageInfo = { page: 1, total: initialGames.length, limit: 24, totalPages: Math.ceil(initialGames.length / 24) } }: GamesListClientProps) {
   const router = useRouter();
   const [games, setGames] = useState<GameItem[]>(initialGames);
+  const [totalCount, setTotalCount] = useState(pageInfo.total);
+  const [allGamesCount, setAllGamesCount] = useState(collectionTotal);
   const [deleteTarget, setDeleteTarget] = useState<GameItem | null>(null);
   const [deleteAllOpen, setDeleteAllOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [barcodeScannerOpen, setBarcodeScannerOpen] = useState(false);
-  const [searchText, setSearchText] = useState("");
-  const [activeTag, setActiveTag] = useState<string | null>(null);
-  const [playerCount, setPlayerCount] = useState<string>("all");
-  const [minComplexity, setMinComplexity] = useState<number | null>(null);
-  const [sortOption, setSortOption] = useState<string>("name_asc");
+  const [queryState, setQueryState] = useState(query);
+  const [searchText, setSearchText] = useState(query.search);
 
-  // Extract unique tags from all games
-  const allTags = Array.from(
-    new Map(
-      games.flatMap((g) => (g.tags ?? []).map((t) => [t.tag.id, t.tag.name]))
-    ).entries()
-  ).sort((a, b) => a[1].localeCompare(b[1]));
+  useEffect(() => {
+    setGames(initialGames);
+    setTotalCount(pageInfo.total);
+    setAllGamesCount(collectionTotal);
+    setQueryState(query);
+    setSearchText(query.search);
+  }, [initialGames, pageInfo.total, collectionTotal, query]);
 
-  // Filter and sort games
-  const filteredGames = useMemo(() => {
-    const selectedPlayers = playerCount === "all" ? null : Number(playerCount);
+  function navigateWithQuery(update: Partial<GameListQuery>) {
+    const next = { ...queryState, ...update, page: 1, search: update.search ?? searchText.trim().slice(0, 100) };
+    setQueryState(next);
+    const params = gameListQueryToSearchParams(next).toString();
+    router.push(params ? `/dashboard/games?${params}` : "/dashboard/games");
+  }
 
-    const filtered = games.filter((game) => {
-      const matchesSearch = !searchText || gameTextForRead(game.name).toLowerCase().includes(gameTextForRead(searchText).toLowerCase());
-      const matchesTag = !activeTag || (game.tags ?? []).some((t) => t.tag.id === activeTag);
-      const matchesPlayers =
-        selectedPlayers == null || (game.minPlayers <= selectedPlayers && game.maxPlayers >= selectedPlayers);
-      const matchesComplexity = minComplexity == null || (game.complexity ?? 0) >= minComplexity;
-      return matchesSearch && matchesTag && matchesPlayers && matchesComplexity;
-    });
+  useEffect(() => {
+    const trimmed = searchText.trim().slice(0, 100);
+    if (trimmed === queryState.search) return;
+    const timer = window.setTimeout(() => {
+      const next = { ...queryState, page: 1, search: trimmed };
+      setQueryState(next);
+      const params = gameListQueryToSearchParams(next).toString();
+      router.push(params ? `/dashboard/games?${params}` : "/dashboard/games");
+    }, 250);
+    return () => window.clearTimeout(timer);
+  }, [searchText, queryState, router]);
 
-    return filtered.sort((a, b) => {
-      switch (sortOption) {
-        case "name_asc":
-          return gameTextForRead(a.name).localeCompare(gameTextForRead(b.name), "de");
-        case "name_desc":
-          return gameTextForRead(b.name).localeCompare(gameTextForRead(a.name), "de");
-        case "complexity_asc":
-          return (a.complexity ?? 0) - (b.complexity ?? 0);
-        case "complexity_desc":
-          return (b.complexity ?? 0) - (a.complexity ?? 0);
-        case "players_asc":
-          return a.minPlayers - b.minPlayers;
-        case "players_desc":
-          return b.maxPlayers - a.maxPlayers;
-        case "newest":
-          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-        default:
-          return 0;
-      }
-    });
-  }, [games, searchText, activeTag, playerCount, minComplexity, sortOption]);
+  const allTags: [string, string][] = tags.map((tag) => [tag.id, tag.name]);
+  const hasFilters = Boolean(queryState.search || queryState.tagId || queryState.players || queryState.minComplexity);
+  const totalPages = Math.ceil(totalCount / pageInfo.limit);
+  const displayedPage = Math.min(pageInfo.page, Math.max(totalPages, 1));
 
   async function handleDelete(game: GameItem) {
     setDeleting(true);
     const res = await fetch(`/api/games/${game.id}`, { method: "DELETE" });
     if (res.ok) {
       setGames((prev) => prev.filter((g) => g.id !== game.id));
+      setTotalCount((count) => Math.max(0, count - 1));
+      setAllGamesCount((count) => Math.max(0, count - 1));
     }
     setDeleteTarget(null);
     setDeleting(false);
@@ -110,14 +98,15 @@ export default function GamesListClient({ games: initialGames }: GamesListClient
 
   async function handleDeleteAll() {
     setDeleting(true);
-    const ids = games.map((g) => g.id);
     const res = await fetch("/api/games/bulk-delete", {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ids }),
+      body: JSON.stringify({ all: true }),
     });
     if (res.ok) {
       setGames([]);
+      setTotalCount(0);
+      setAllGamesCount(0);
     }
     setDeleteAllOpen(false);
     setDeleting(false);
@@ -156,7 +145,7 @@ export default function GamesListClient({ games: initialGames }: GamesListClient
           <p className="text-muted-foreground">Finde das passende Spiel für eure nächste Runde.</p>
         </div>
         <div className="flex flex-wrap gap-2">
-          {games.length > 0 && (
+          {allGamesCount > 0 && (
             <Button
               variant="outline"
               className="text-destructive border-destructive hover:bg-destructive hover:text-destructive-foreground"
@@ -188,11 +177,37 @@ export default function GamesListClient({ games: initialGames }: GamesListClient
         </div>
       </div>
 
-      {games.length > 0 && (
-        <CollectionFilters searchText={searchText} setSearchText={setSearchText} playerCount={playerCount} setPlayerCount={setPlayerCount} sortOption={sortOption} setSortOption={setSortOption} minComplexity={minComplexity} setMinComplexity={setMinComplexity} activeTag={activeTag} setActiveTag={setActiveTag} allTags={allTags} />
+      {(totalCount > 0 || hasFilters) && (
+        <CollectionFilters
+          searchText={searchText}
+          setSearchText={setSearchText}
+          playerCount={queryState.players == null ? "all" : String(queryState.players)}
+          setPlayerCount={(value) => navigateWithQuery({ players: value === "all" ? null : Number(value) })}
+          sortOption={queryState.sort}
+          setSortOption={(value) => navigateWithQuery({ sort: value as GameListQuery["sort"] })}
+          minComplexity={queryState.minComplexity}
+          setMinComplexity={(value) => navigateWithQuery({ minComplexity: value })}
+          activeTag={queryState.tagId}
+          setActiveTag={(value) => navigateWithQuery({ tagId: value })}
+          allTags={allTags}
+          onReset={() => {
+            setSearchText("");
+            navigateWithQuery({ search: "", tagId: null, players: null, minComplexity: null, sort: "name_asc" });
+          }}
+        />
       )}
 
-      {games.length === 0 ? (
+      {totalCount === 0 && hasFilters ? (
+        <Card>
+          <CardContent className="flex flex-col items-center justify-center gap-3 py-12 text-center">
+            <p className="text-muted-foreground">Keine Spiele gefunden für diesen Filter.</p>
+            <Button type="button" variant="outline" onClick={() => {
+              setSearchText("");
+              navigateWithQuery({ search: "", tagId: null, players: null, minComplexity: null, sort: "name_asc" });
+            }}>Filter zurücksetzen</Button>
+          </CardContent>
+        </Card>
+      ) : totalCount === 0 ? (
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12">
             <p className="text-muted-foreground mb-4">Du hast noch keine Spiele in deiner Sammlung.</p>
@@ -204,15 +219,9 @@ export default function GamesListClient({ games: initialGames }: GamesListClient
             </Button>
           </CardContent>
         </Card>
-      ) : filteredGames.length === 0 ? (
-        <Card>
-          <CardContent className="flex flex-col items-center justify-center py-12">
-            <p className="text-muted-foreground">Keine Spiele gefunden für diesen Filter.</p>
-          </CardContent>
-        </Card>
       ) : (
         <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-          {filteredGames.map((game) => (
+          {games.map((game) => (
             <div key={game.id} className="relative group">
               <Link
                 href={`/dashboard/games/${game.id}`}
@@ -237,66 +246,20 @@ export default function GamesListClient({ games: initialGames }: GamesListClient
         </div>
       )}
 
-      {/* Einzelnes Spiel löschen */}
-      <AlertDialog open={!!deleteTarget} onOpenChange={(open: boolean) => { if (!open) setDeleteTarget(null); }}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Spiel entfernen</AlertDialogTitle>
-            <AlertDialogDescription>
-              Möchtest du <strong>{deleteTarget?.name}</strong> wirklich aus deiner Sammlung entfernen?
-              Alle zugehörigen Sessions werden ebenfalls gelöscht.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel
-              disabled={deleting}
-              className="bg-card text-card-foreground hover:bg-muted border border-border"
-            >
-              Abbrechen
-            </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => deleteTarget && handleDelete(deleteTarget)}
-              disabled={deleting}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              {deleting ? "Wird entfernt\u2026" : "Entfernen"}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      {totalCount > 0 && <GamesPagination page={displayedPage} totalPages={totalPages} total={totalCount} query={{ ...queryState, page: displayedPage }} />}
 
-      {/* Alle Spiele löschen */}
-      <AlertDialog open={deleteAllOpen} onOpenChange={setDeleteAllOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Alle Spiele entfernen</AlertDialogTitle>
-            <AlertDialogDescription>
-              Möchtest du wirklich alle <strong>{games.length} Spiele</strong> aus deiner Sammlung entfernen?
-              Diese Aktion kann nicht rückgängig gemacht werden.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel
-              disabled={deleting}
-              className="bg-card text-card-foreground hover:bg-muted border border-border"
-            >
-              Abbrechen
-            </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDeleteAll}
-              disabled={deleting}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              {deleting ? "Wird entfernt\u2026" : `Alle ${games.length} entfernen`}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-
-      <BarcodeScanner
-        open={barcodeScannerOpen}
-        onOpenChange={setBarcodeScannerOpen}
-        onGameSelected={handleBarcodeGameSelected}
+      <GamesListOverlays
+        deleteTarget={deleteTarget}
+        deleteAllOpen={deleteAllOpen}
+              totalCount={allGamesCount}
+        deleting={deleting}
+        barcodeScannerOpen={barcodeScannerOpen}
+        onDeleteOpenChange={(open) => { if (!open) setDeleteTarget(null); }}
+        onDeleteAllOpenChange={setDeleteAllOpen}
+        onDelete={() => { if (deleteTarget) void handleDelete(deleteTarget); }}
+        onDeleteAll={() => void handleDeleteAll()}
+        onBarcodeScannerOpenChange={setBarcodeScannerOpen}
+        onBarcodeGameSelected={(bggId, ean) => void handleBarcodeGameSelected(bggId, ean)}
         onLocalGameFound={handleLocalGameFound}
       />
     </>

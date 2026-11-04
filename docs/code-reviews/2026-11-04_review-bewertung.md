@@ -1,5 +1,20 @@
 # Review-Bewertung – 04.11.2026 / FEAT-025
 
+## FEAT-026 – Spielesammlung-Pager (0.50.77)
+
+Die Sammlung wird serverseitig gefiltert, sortiert und in 24er-Seiten geladen. Die Filter und die aktuelle Seite bleiben in der URL; „Alle Spiele entfernen“ wirkt weiterhin auf die gesamte Sammlung.
+
+| Bereich | Ergebnis |
+|---|---|
+| Unit-Tests | 1.151/1.151 bestanden (167 Dateien) |
+| TypeScript und Build | bestanden |
+| ESLint | 0 Fehler, 652 bestehende Warnungen in Prüfscripts |
+| Security-Check | bestanden; Produktionsaudit 0 Vulnerabilities |
+| Review-Regressionscheck | Exitcode 0, 10/10, 0 offene Findings, keine Regression |
+| Gerenderte Ansichten | 1440/768/390/320/195 CSS px; kein horizontaler Überlauf |
+
+Keine Datenbankschemaänderung. Die Browserprüfung verwendete ausschließlich synthetische Testdaten.
+
 ## Ergebnis
 
 Die Umsetzung trennt Reihenmitgliedschaft vom Sammlungsbesitz. Reihen behalten einen serverseitig befüllten Snapshot, Sammlungslöschungen entkoppeln Beziehungen transaktional und BGG-Spiele können ohne Sammlungseintrag hinzugefügt werden. mobile Sync-Antworten enthalten additive Snapshotfelder und behalten ein kompatibles `gameId`-Feld.

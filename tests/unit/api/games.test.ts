@@ -91,6 +91,19 @@ describe("API /api/games", () => {
       expect(GameService.list).toHaveBeenCalledWith(USER_ID, expect.objectContaining({ page: 2, limit: 10 }));
     });
 
+    it("passes collection filter parameters through the bounded parser", async () => {
+      vi.mocked(GameService.list).mockResolvedValue([] as never);
+      const req = createMockRequest("GET", "http://localhost:3000/api/games", {
+        searchParams: { page: "2", q: "Catan", tag: "tag-1", players: "4", complexity: "3", sort: "newest" },
+      });
+
+      await (GET as Function)(req);
+
+      expect(GameService.list).toHaveBeenCalledWith(USER_ID, {
+        page: 2, limit: 24, search: "Catan", tagId: "tag-1", players: 4, minComplexity: 3, sort: "newest", include: undefined,
+      });
+    });
+
     it("caps limit at 100", async () => {
       vi.mocked(GameService.list).mockResolvedValue([] as never);
 

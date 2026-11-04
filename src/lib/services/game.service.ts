@@ -6,6 +6,8 @@ import { validateString, validateNumber, firstError } from "@/lib/validation";
 import { NOT_DELETED, SAFE_USER_SELECT, buildPagination, paginatedResponse } from "./shared";
 import { TagService } from "./tag.service";
 import { gameTextForRead, normalizeGameDescriptionInput, normalizeGameNameInput } from "@/lib/game-text";
+import { Prisma } from "@/generated/prisma/client";
+import type { GameListQuery, GameSortOption } from "@/lib/game-list-query";
 
 // ── Types ────────────────────────────────────────────────────────
 
@@ -28,26 +30,34 @@ export type UpdateGameInput = Partial<CreateGameInput>
 
 export const GameService = {
   /** List games for a user (optionally paginated) */
-  async list(userId: string, opts?: { page?: number; limit?: number; include?: string }) {
-    const where = { ownerId: userId, ...NOT_DELETED };
-    const { page, limit, isPaginated, skip } = buildPagination(opts);
+  async list(userId: string, opts?: Partial<GameListQuery> & { page?: number; limit?: number; include?: string }) {
+    const where: Prisma.GameWhereInput = { ownerId: userId, ...NOT_DELETED };
+    if (opts?.search) where.name = { contains: opts.search, mode: "insensitive" };
+    if (opts?.tagId) where.tags = { some: { tagId: opts.tagId, tag: { ownerId: userId } } };
+    if (opts?.players) {
+      where.minPlayers = { lte: opts.players };
+      where.maxPlayers = { gte: opts.players };
+    }
+    if (opts?.minComplexity) where.complexity = { gte: opts.minComplexity };
+    const { page, limit, isPaginated } = buildPagination(opts);
     const include = opts?.include;
 
     if (isPaginated) {
-      const [games, total] = await Promise.all([
-        prisma.game.findMany({
-          where,
-          orderBy: { name: "asc" },
-          include: {
-            _count: { select: { sessions: true } },
-            ...(include === "sessions" ? { sessions: { orderBy: { playedAt: "desc" as const }, take: 5 } } : {}),
-          },
-          skip,
-          take: limit,
-        }),
-        prisma.game.count({ where }),
-      ]);
-      return paginatedResponse(games.map(normalizeGameRow), total, page, limit);
+      const total = await prisma.game.count({ where });
+      const totalPages = Math.ceil(total / limit);
+      const effectivePage = totalPages > 0 ? Math.min(page, totalPages) : 1;
+      const games = await prisma.game.findMany({
+        where,
+        orderBy: gameOrderBy(opts?.sort),
+        include: {
+          _count: { select: { sessions: true } },
+          tags: { include: { tag: true } },
+          ...(include === "sessions" ? { sessions: { orderBy: { playedAt: "desc" as const }, take: 5 } } : {}),
+        },
+        skip: (effectivePage - 1) * limit,
+        take: limit,
+      });
+      return paginatedResponse(games.map(normalizeGameRow), total, effectivePage, limit);
     }
 
     return cachedQuery(
@@ -245,6 +255,24 @@ export const GameService = {
     return { deleted: result.count };
   },
 
+  /** Soft-delete the full active collection without loading all game IDs into the client. */
+  async bulkDeleteAll(userId: string) {
+    const result = await prisma.$transaction(async (tx) => {
+      await tx.gameSeriesEntry.updateMany({
+        where: { series: { ownerId: userId }, game: { ownerId: userId, ...NOT_DELETED } },
+        data: { gameId: null, source: "DETACHED_COLLECTION" },
+      });
+      return tx.game.updateMany({
+        where: { ownerId: userId, ...NOT_DELETED },
+        data: { deletedAt: new Date() },
+      });
+    });
+
+    this._invalidateGameCaches(userId);
+    invalidateTag(CacheTags.userSeries(userId));
+    return { deleted: result.count };
+  },
+
   /** Invalidate all game-related caches for a user */
   _invalidateGameCaches(userId: string) {
     invalidateTag(CacheTags.userGames(userId));
@@ -253,6 +281,21 @@ export const GameService = {
     invalidateTag(CacheTags.userStats(userId));
   },
 };
+
+function gameOrderBy(sort: GameSortOption | undefined): Prisma.GameOrderByWithRelationInput[] {
+  let primary: Prisma.GameOrderByWithRelationInput;
+  switch (sort) {
+    case "name_desc": primary = { name: "desc" }; break;
+    case "complexity_asc": primary = { complexity: { sort: "asc", nulls: "last" } }; break;
+    case "complexity_desc": primary = { complexity: { sort: "desc", nulls: "last" } }; break;
+    case "players_asc": primary = { minPlayers: "asc" }; break;
+    case "players_desc": primary = { maxPlayers: "desc" }; break;
+    case "newest": primary = { createdAt: "desc" }; break;
+    case "name_asc":
+    default: primary = { name: "asc" };
+  }
+  return [primary, { id: "asc" }];
+}
 
 function normalizeInput(value: string, normalize: (input: string) => string): string {
   try {

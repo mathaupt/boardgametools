@@ -39,7 +39,7 @@ Bedarf zu aktualisieren. Ergebnis am jeweiligen Plan dokumentieren:
 | FEAT-023 | Sammlung vor einem Import prüfen | Umgesetzt (Web, 0.50.67) | [Bestandsprüfung vor BGG-Importen](superpowers/plans/2026-11-03-FEAT-023-import-bestandspruefung.md) | Am 03.11.2026 umgesetzt; Web, iOS separat |
 | FEAT-024 | Mehrfachauswahl beim Hinzufügen zu Reihen, auch aus BGG | Umgesetzt (Web, 0.50.69) | [Mehrfachauswahl bei Reihen](superpowers/plans/2026-11-03-FEAT-024-mehrfachauswahl-reihen.md) | Am 03.11.2026 freigegeben und umgesetzt; iOS separat |
 | FEAT-025 | Reihenspiele unabhängig von dauerhaftem Sammlungsbesitz | Umsetzung freigegeben; in Arbeit (Web/API/Schema, keine Produktionsmigration) | [Temporäre Reihenspiele](superpowers/plans/2026-11-03-FEAT-025-temporaere-reihenspiele.md) | 04.11.2026 freigegeben; Aktualitätsprüfung auf HEAD `fcae557` dokumentiert |
-| FEAT-026 | Seitennavigation in der Spielesammlung | Plan erstellt; Umsetzung nicht freigegeben | [Pager der Spielesammlung](superpowers/plans/2026-11-03-FEAT-026-spielesammlung-pager.md) | Keine |
+| FEAT-026 | Seitennavigation in der Spielesammlung | Umgesetzt 0.50.77 | [Pager der Spielesammlung](superpowers/plans/2026-11-03-FEAT-026-spielesammlung-pager.md) | Keine |
 | FEAT-027 | Eindeutige Leermeldung in allen BGG-Suchansichten | Umgesetzt (Web, 0.50.70) | [BGG-Leerzustände](superpowers/plans/2026-11-03-FEAT-027-bgg-leerzustand.md) | 03.11.2026 freigegeben und umgesetzt; öffentliche FEAT-014-Zustände erhalten |
 | FEAT-028 | Gamification: persönliche und gemeinsame Ziele | Konzept zur Nutzerprüfung aktualisiert; Plan und Umsetzung offen | [Gamification-Konzept](superpowers/specs/2026-11-03-FEAT-028-gamification-design.md) | Konzept am 03.11.2026 abgestimmt; keine Umsetzungsfreigabe |
 
@@ -904,10 +904,10 @@ danach können FEAT-026 und FEAT-027 unabhängig geplant umgesetzt werden.
 
 ## FEAT-026 – Seitennavigation im Boardgames-Dashboard
 
-**Status:** Erfasst; Planung und Umsetzung nicht freigegeben.
+**Status:** Umgesetzt am 04.11.2026 in Version 0.50.77 (Web-Sammlung).
 **Ziel:** Einen Pager für die Spieleübersicht bereitstellen. Vorläufiger Zielbereich: `/dashboard/games` (Sammlung); endgültigen Einbaupunkt im Plan anhand des aktuellen Dashboards bestätigen.
-**Abnahmekriterien:** Seiten und Gesamtumfang nachvollziehbar anzeigen, Filter/Sortierung erhalten und beim Ändern auf eine gültige Seite wechseln. Stabile Reihenfolge, leere/letzte Seite sowie Änderungen nach Import/Löschen behandeln. Serverseitige und lokale Paginierung mit tatsächlicher Datenmenge abgleichen; keine doppelte Seitennavigation. Kleine Bildschirme, Tastatur und Lade-/Fehlerzustände prüfen.
-**Implementierungsplan:** [Pager der Spielesammlung](superpowers/plans/2026-11-03-FEAT-026-spielesammlung-pager.md). Serverseitige Paginierung mit URL-Zustand ist vorgesehen; Seitenlimit und Filtervertrag vor Umsetzung bestätigen.
+**Abnahmekriterien:** 24 Spiele pro Seite; Ergebnisbereich und gefilterte Gesamtzahl sichtbar. Suche, Tag, Spielerzahl, Komplexität und Sortierung bleiben in URL und Serverabfrage erhalten; Filterwechsel setzt die Seite zurück. Sortierung ist bei gleichen Werten stabil. Ungültige beziehungsweise nach Löschung leere Seiten werden korrigiert. Bulk-Delete bleibt über alle Seiten wirksam. Mobile Navigation und Tastaturzugriff.
+**Implementierungsplan:** [Pager der Spielesammlung](superpowers/plans/2026-11-03-FEAT-026-spielesammlung-pager.md). Umsetzung am 04.11.2026 mit „setze FEAT-026 um“ freigegeben. Aktualitätsprüfung ergab, dass die API bereits Seitenannahmen hatte, aber die Web-Sammlung alles lud und clientseitig filterte; FEAT-025 war umgesetzt. Seitengröße 24; validierte URL-Filter und serverseitige Abfrage.
 
 ## FEAT-027 – Keine Treffer in der BGG-Suche eindeutig melden
 

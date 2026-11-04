@@ -2,15 +2,17 @@ import { NextRequest, NextResponse } from "next/server";
 import { withApiLogging } from "@/lib/api-logger";
 import { requireAuth, handleApiError } from "@/lib/require-auth";
 import { GameService } from "@/lib/services";
+import { parseGameListQuery } from "@/lib/game-list-query";
 
 export const GET = withApiLogging(async function GET(request: NextRequest) {
   try {
     const { userId } = await requireAuth();
     const { searchParams } = new URL(request.url);
-    const page = parseInt(searchParams.get("page") || "0", 10);
-    const limit = Math.min(parseInt(searchParams.get("limit") || "0", 10), 100);
     const include = searchParams.get("include") ?? undefined;
-    const result = await GameService.list(userId, { page, limit, include });
+    const usesListQuery = ["page", "limit", "q", "tag", "players", "complexity", "sort"].some((key) => searchParams.has(key));
+    const result = await GameService.list(userId, usesListQuery
+      ? { ...parseGameListQuery(searchParams), include }
+      : { page: 0, limit: 0, include });
     return NextResponse.json(result);
   } catch (error) {
     return handleApiError(error);

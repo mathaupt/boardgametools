@@ -18,6 +18,7 @@ Die Weboberfläche verwendet seit 0.50.20 die bestätigte Gestaltung „Club Pro
 - BGG-ID für Integration
 - EAN/Barcode für Spiel-Identifikation
 - Bulk-Delete für mehrere Spiele gleichzeitig
+- Spielesammlung serverseitig in 24er-Seiten laden; Name, eigener Tag, Spielerzahl, Mindest-Komplexität und Sortierung stehen als URL-Filter zur Verfügung. Die Ergebniszahl folgt den aktiven Filtern; „Alle Spiele entfernen“ bleibt über alle Seiten hinweg wirksam.
 - Spielnamen und Beschreibungen werden an Import- und Schreibgrenzen in stabilen Klartext normalisiert; bestehende API- und iOS-Sync-Felder bleiben JSON-Strings.
 
 ### 2. Spielsessions/Partien tracken
@@ -510,7 +511,7 @@ ApiLog
 - `POST /api/auth/password-reset/confirm` - Passwort-Reset bestätigen
 
 ### Games
-- `GET /api/games` - Alle Spiele (mit Pagination: `?page=N&limit=N`)
+- `GET /api/games` - Eigene Spiele auflisten; paginierte Antwort über `page`/`limit`, optional `q`, `tag`, `players`, `complexity` und `sort`
 - `POST /api/games` - Spiel erstellen
 - `GET /api/games/[id]` - Spiel Details
 - `PUT /api/games/[id]` - Spiel aktualisieren

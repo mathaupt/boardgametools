@@ -106,6 +106,10 @@ export const faqSections: FaqSection[] = [
         answer: "BoardGameTools wandelt bekannte HTML-Entities beim Import und Speichern in Klartext um. Sonderzeichen werden so in der Sammlung, Suche und iOS-Synchronisierung einheitlich angezeigt.",
       },
       {
+        question: "Wie navigiere ich durch eine große Spielesammlung?",
+        answer: "Die Sammlung zeigt 24 Spiele pro Seite. Suche, Tags, Spielerzahl, Mindest-Komplexität und Sortierung bleiben beim Seitenwechsel erhalten und stehen auch nach dem Neuladen in der URL. Die Gesamtzahl bezieht sich auf die aktuellen Filter.",
+      },
+      {
         question: "Kann ich Spiele per Barcode scannen?",
         answer:
           'Ja! Auf der Spiele-Uebersicht und beim Anlegen neuer Spiele findest du den Barcode-Scanner. Halte den Barcode (EAN/UPC) eines Spiels vor die Kamera \u2013 das Spiel wird automatisch erkannt und die Daten von BGG geladen. Alternativ kannst du auch ein Foto des Spielecovers machen \u2013 der Name wird per OCR (Texterkennung) erkannt und in BGG gesucht.',

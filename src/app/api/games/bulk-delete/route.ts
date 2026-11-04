@@ -8,6 +8,10 @@ export const DELETE = withApiLogging(async function DELETE(request: NextRequest)
   try {
     const { userId } = await requireAuth();
     const body = await request.json();
+    if (body?.all === true) {
+      const result = await GameService.bulkDeleteAll(userId);
+      return NextResponse.json(result);
+    }
     const { ids } = body as { ids?: string[] };
     if (!Array.isArray(ids) || ids.length === 0 || ids.length > 500) {
       return NextResponse.json({ error: Errors.IDS_REQUIRED }, { status: 400 });

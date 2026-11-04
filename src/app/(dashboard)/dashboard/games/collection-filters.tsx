@@ -10,8 +10,9 @@ interface CollectionFiltersProps {
   minComplexity: number | null; setMinComplexity: (value: number | null) => void;
   activeTag: string | null; setActiveTag: (value: string | null) => void;
   allTags: [string, string][];
+  onReset?: () => void;
 }
-export function CollectionFilters({ searchText, setSearchText, playerCount, setPlayerCount, sortOption, setSortOption, minComplexity, setMinComplexity, activeTag, setActiveTag, allTags }: CollectionFiltersProps) {
+export function CollectionFilters({ searchText, setSearchText, playerCount, setPlayerCount, sortOption, setSortOption, minComplexity, setMinComplexity, activeTag, setActiveTag, allTags, onReset }: CollectionFiltersProps) {
   return (
         <div className="club-collection-filters space-y-3">
           <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
@@ -39,7 +40,7 @@ export function CollectionFilters({ searchText, setSearchText, playerCount, setP
               </Select>
 
               <Select value={sortOption} onValueChange={setSortOption}>
-                <SelectTrigger className="w-[180px]" aria-label="Sortierung">
+                <SelectTrigger className="w-full min-w-0 min-[24rem]:w-[180px]" aria-label="Sortierung">
                   <SelectValue placeholder="Sortierung" />
                 </SelectTrigger>
                 <SelectContent>
@@ -58,6 +59,10 @@ export function CollectionFilters({ searchText, setSearchText, playerCount, setP
                 variant="outline"
                 size="sm"
                 onClick={() => {
+                  if (onReset) {
+                    onReset();
+                    return;
+                  }
                   setSearchText("");
                   setActiveTag(null);
                   setPlayerCount("all");
