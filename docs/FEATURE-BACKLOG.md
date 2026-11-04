@@ -38,10 +38,10 @@ Bedarf zu aktualisieren. Ergebnis am jeweiligen Plan dokumentieren:
 | FEAT-022 | BGG-Quellenkennzeichnung auf Loginseite und Website-Footer | Umgesetzt (0.50.64) | [BGG-Attribution](superpowers/plans/2026-11-02-FEAT-022-bgg-attribution.md) | 02.11.2026, Web |
 | FEAT-023 | Sammlung vor einem Import prüfen | Umgesetzt (Web, 0.50.67) | [Bestandsprüfung vor BGG-Importen](superpowers/plans/2026-11-03-FEAT-023-import-bestandspruefung.md) | Am 03.11.2026 umgesetzt; Web, iOS separat |
 | FEAT-024 | Mehrfachauswahl beim Hinzufügen zu Reihen, auch aus BGG | Umgesetzt (Web, 0.50.69) | [Mehrfachauswahl bei Reihen](superpowers/plans/2026-11-03-FEAT-024-mehrfachauswahl-reihen.md) | Am 03.11.2026 freigegeben und umgesetzt; iOS separat |
-| FEAT-025 | Reihenspiele unabhängig von dauerhaftem Sammlungsbesitz | Umsetzung freigegeben; in Arbeit (Web/API/Schema, keine Produktionsmigration) | [Temporäre Reihenspiele](superpowers/plans/2026-11-03-FEAT-025-temporaere-reihenspiele.md) | 04.11.2026 freigegeben; Aktualitätsprüfung auf HEAD `fcae557` dokumentiert |
+| FEAT-025 | Reihenspiele unabhängig von dauerhaftem Sammlungsbesitz | Web/API/Schema umgesetzt; Produktionsmigration offen | [Temporäre Reihenspiele](superpowers/plans/2026-11-03-FEAT-025-temporaere-reihenspiele.md) | 04.11.2026 freigegeben; Bestandsverknüpfungen bleiben erhalten |
 | FEAT-026 | Seitennavigation in der Spielesammlung | Umgesetzt 0.50.77 | [Pager der Spielesammlung](superpowers/plans/2026-11-03-FEAT-026-spielesammlung-pager.md) | Keine |
 | FEAT-027 | Eindeutige Leermeldung in allen BGG-Suchansichten | Umgesetzt (Web, 0.50.70) | [BGG-Leerzustände](superpowers/plans/2026-11-03-FEAT-027-bgg-leerzustand.md) | 03.11.2026 freigegeben und umgesetzt; öffentliche FEAT-014-Zustände erhalten |
-| FEAT-028 | Gamification: persönliche und gemeinsame Ziele | Konzept zur Nutzerprüfung aktualisiert; Plan und Umsetzung offen | [Gamification-Konzept](superpowers/specs/2026-11-03-FEAT-028-gamification-design.md) | Konzept am 03.11.2026 abgestimmt; keine Umsetzungsfreigabe |
+| FEAT-028 | Gamification: persönliche und gemeinsame Ziele | Plan erstellt; wartet auf Freigabe des konkreten Umsetzungsumfangs | [Gamification-Konzept](superpowers/specs/2026-11-03-FEAT-028-gamification-design.md), [Implementierungsplan](superpowers/plans/2026-11-04-FEAT-028-gamification.md) | Nutzer bat am 04.11.2026 um Umsetzung; Planfreigabe noch ausstehend |
 
 Am 30.10.2026 aufgenommen. Bei der Planung sind Web, iOS sowie angemeldete und
 öffentliche Voting-Ansichten auf Relevanz und bereits vorhandene Teilfunktionen
@@ -897,6 +897,7 @@ danach können FEAT-026 und FEAT-027 unabhängig geplant umgesetzt werden.
 ## FEAT-025 – Reihenspiele ohne dauerhaften Sammlungsbesitz
 
 **Status:** Umgesetzt am 04.11.2026 in Version 0.50.76 (Web/API, Schemaquelle und mobile DTO-Kompatibilität). Migration erstellt und Prisma-validiert; nicht auf eine Datenbank angewendet.
+**Bestandsentscheidung 04.11.2026:** Bereits bestehende Reiheneinträge behalten ihre bisherigen Sammlungsspiel-Verknüpfungen und ihren Status. Die temporäre Anlage gilt für neue Einträge. Der additive Backfill ergänzt Spiel-Snapshots, wandelt bestehende Einträge aber nicht in temporäre um.
 **Ziel:** Ein Spiel für eine Reihe verwenden können, ohne es dauerhaft in die eigene Sammlung übernehmen zu müssen – etwa ausgeliehen, von jemandem mitgebracht oder später verkauft.
 **Abnahmekriterien:** Dauerhafter Besitz und Verwendung in einer Reihe getrennt behandeln. Temporären Import bewusst wählen und verständlich kennzeichnen. Verkauf/Entfernen aus der Sammlung darf Reihenfortschritt und Spielhistorie nicht unbeabsichtigt löschen. Übernahme in die Sammlung und Umgang mit vorhandenen Spielen/Duplikaten festlegen. Zugriffsrechte, Löschung, Aufbewahrung, Statistiken, APIs und iOS-Verträge berücksichtigen.
 **Planentscheidung:** `GameSeriesEntry` erhält optionalen Sammlungsbezug und gesicherte Spiel-Snapshots; temporäre BGG-Spiele werden ohne `Game` angelegt. Entfernen aus der Sammlung entkoppelt den Bezug transaktional, statt Fortschritt oder Sessions zu löschen. „Ausgeliehen“, „mitgebracht“ und „verkauft“ sind optionale Herkunftsangaben, keine automatische Löschregel.
@@ -918,9 +919,10 @@ danach können FEAT-026 und FEAT-027 unabhängig geplant umgesetzt werden.
 
 ## FEAT-028 – Gamification: persönliche und gemeinsame Ziele
 
-**Status:** Konzept zur Nutzerprüfung aktualisiert; Implementierungsplan und Umsetzung nicht freigegeben.
+**Status:** Konzept liegt vor; Implementierungsplan erstellt und wartet auf Freigabe des konkreten Umfangs. Keine Laufzeitänderungen begonnen.
 **Ziel:** Sessions dokumentieren, die eigene Spielesammlung entdecken und mit Gruppen gemeinsame Spielziele erreichen – ohne Druck oder Ranglisten.
 **Bestätigte Entscheidungen:** Persönliche Meilensteine, Entdeckerziele und kooperative Gruppen-Challenges; keine Ranglisten. Der Gruppenfortschritt zählt die Sessions teilnehmender Gruppenmitglieder zusammen, auch wenn diese nicht gemeinsam gespielt haben.
 **Profilentscheidung:** Öffentliches Profil über teilbaren, widerrufbaren Link; für Gäste ohne Konto erreichbar und von öffentlichen Events verlinkt, wenn freigegeben. Kein Nutzerverzeichnis. Anzeigename, Badge-Vitrine und Aktivitätsaggregate sind sichtbar; E-Mail, Gruppen-/Eventdetails, Kommentare, Notizen, Einzelsessions, Ergebnisse und individuelle Gruppenbeiträge bleiben privat.
 **Abnahmekriterien für die spätere Umsetzung:** Persönliche Erfolge bleiben privat, außer Abzeichen und Aktivitätsaggregate, die der Nutzer über sein öffentliches Profil freigibt. Teilnahme an Gruppen-Challenges ist freiwillig und wird nur aggregiert sichtbar. Sessiondaten werden eigentümergeprüft, Soft-Deletes und Korrekturen aktualisieren den Fortschritt. Gäste werden nicht über Events hinweg profiliert. Keine Pflichtfelder, täglichen Streaks, Strafen oder Siege als Erfolgsvoraussetzung. Web und iOS werden separat abgeglichen.
+**Implementierungsplan:** [Gamification-Umsetzungsplan](superpowers/plans/2026-11-04-FEAT-028-gamification.md). Web in drei Stufen: persönliche Erfolge/Entdeckung, widerrufbare öffentliche Badge-Profile, freiwillige aggregierte Gruppen-Challenges. iOS bleibt separat. Planfreigabe vor Runtime-Änderungen erforderlich.
 **Konzept:** [Gamification-Konzept](superpowers/specs/2026-11-03-FEAT-028-gamification-design.md). Exakte Meilenstein-Schwellen, Challenge-Katalog und Daten-/Berechtigungsverträge im Implementierungsplan festlegen.

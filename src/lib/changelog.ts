@@ -12,6 +12,16 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.78",
+    date: "2026-11-04",
+    title: "Gamification-Umsetzung geplant",
+    description: "Der Umsetzungsplan für persönliche Abzeichen, teilbare Profile und freiwillige Gruppen-Challenges liegt zur Freigabe vor.",
+    changes: [
+      { type: "internal", text: "FEAT-028: Web-Umsetzungsplan erstellt; vor Laufzeitänderungen ist die Freigabe des konkreten Umfangs erforderlich." },
+      { type: "internal", text: "FEAT-025: Bestehende Spielereiheneinträge behalten ihre Sammlungsspiel-Verknüpfung; temporäre Einträge gelten für neue Einträge." },
+    ],
+  },
+  {
     version: "0.50.77",
     date: "2026-11-04",
     title: "Große Spielesammlungen seitenweise durchsuchen",
