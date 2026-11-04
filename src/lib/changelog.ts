@@ -12,6 +12,15 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.84",
+    date: "2026-11-05",
+    title: "FEAT-009 lokal final geprüft",
+    description: "Die Spieltextbereinigung ist gegen die isolierte Testdatenbank im Dry-Run geprüft; Produktionsdaten bleiben bis zur separaten Freigabe unangetastet.",
+    changes: [
+      { type: "internal", text: "129 gezielte Spieltexttests bestanden; isolierter FEAT-009-Dry-Run meldete 0 Änderungen. Produktionsmanifest, aktueller Backupnachweis und Apply-Freigabe bleiben offen." },
+    ],
+  },
+  {
     version: "0.50.83",
     date: "2026-11-05",
     title: "Health-Bugs abgeschlossen und Monitoring vorgemerkt",

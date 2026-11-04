@@ -9,6 +9,13 @@
 - `backups/boardgametools_20261101_220819.sql.gz` besteht die gzip-Integritätsprüfung. Herkunft als frisches Produktionsbackup und Wiederherstellung wurden nicht nachgewiesen.
 - Nächster zulässiger Schritt: Wartungs-URL sicher im Prozess bereitstellen, Dry-Run-Manifest erzeugen und prüfen sowie ein frisches, wiederherstellbares Backup nachweisen. Produktions-Apply bleibt danach ein separater Freigabeschritt.
 
+## Aktualitätsprüfung – 2026-11-05
+
+- Der Codeumfang ist weiterhin umgesetzt; die gezielten Spieltexttests liefen mit 129/129 Tests erfolgreich.
+- Der Dry-Run wurde ausschließlich gegen die lokale isolierte Datenbank `bgt_test_feat028` ausgeführt: 0 Spiele, 0 Vorschläge, 0 zu tief kodierte Werte und 0 Schreibvorgänge. Das Testmanifest liegt unter `.maintenance/feat009-test.json`.
+- `BGT_MAINTENANCE_DATABASE_URL` für Produktion ist nicht konfiguriert. Produktionsmanifest, Herkunft und Wiederherstellbarkeit eines frischen Backups sowie Apply-Freigabe fehlen weiterhin. Produktionsdaten wurden nicht gelesen oder verändert.
+- Ergebnis: Der Plan bleibt aktuell. FEAT-009 kann code-seitig als fertig gelten, aber die vollständige Featureabnahme wartet auf den separat freizugebenden Produktionslauf.
+
 ## Aktualitätsprüfung vor Umsetzung – 2026-10-31
 
 - **Geprüfter Stand:** Commit `9def76f` (`added new implementation plans`); Arbeitsbaum war sauber.

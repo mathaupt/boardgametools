@@ -44,7 +44,7 @@ nicht begonnener Umsetzung. Die offenen Punkte sind keine Umsetzungsfreigabe.
 | FEAT-004 | Voting-Vorschläge löschen | Manuelle VoiceOver-Abnahme | [Plan 001–004](superpowers/plans/2026-10-30-FEAT-001-004-voting.md) |
 | FEAT-007 | Vercel-Firewall für `/api/health` | Konto-/Monitorinventar und Regelentscheidung | [Plan](superpowers/plans/2026-10-31-FEAT-007-health-firewall.md) |
 | FEAT-008 | Spend-Management-Obergrenze | Billingdaten, Grenzwert und Betreiberentscheidung | [Plan](superpowers/plans/2026-10-31-FEAT-008-spend-management.md) |
-| FEAT-009 | HTML-Entities in Spieldaten | Produktionsmanifest, Backup und Datenbereinigung | [Plan](superpowers/plans/2026-10-31-FEAT-009-spieldaten-entities.md) |
+| FEAT-009 | HTML-Entities in Spieldaten | Produktionsmanifest prüfen, frisches Backup nachweisen und Datenbereinigung separat freigeben | [Plan](superpowers/plans/2026-10-31-FEAT-009-spieldaten-entities.md) |
 | FEAT-011 | Barrierefreie Terminabstimmung | Manuelle VoiceOver-Abnahme | [Plan](superpowers/plans/2026-10-31-FEAT-011-terminabstimmung-barrierefrei.md) |
 | FEAT-012 | Teilnahme vor passiven Listen | Browser-E2E und Viewport-Abnahme | [Plan](superpowers/plans/2026-10-31-FEAT-012-oeffentliche-teilnahme.md) |
 | FEAT-013 | Aktive Identität verständlich machen | Browser-E2E und Viewport-Abnahme | [Plan](superpowers/plans/2026-10-31-FEAT-013-aktive-identitaet.md) |
@@ -158,6 +158,15 @@ noch ein Manifest erzeugt. `backups/boardgametools_20261101_220819.sql.gz` ist
 gzip-konsistent. Das bestätigt nur die Integrität des Archivs, nicht seine
 Produktionsherkunft oder Wiederherstellbarkeit. Ein Produktionslauf bleibt
 separat freigabepflichtig.
+
+**Prüfung 05.11.2026:** Der Dry-Run gegen die isolierte lokale Datenbank
+`bgt_test_feat028` war erfolgreich: 0 Spiele, 0 Eventvorschläge und 0 Werte mit
+zu tiefer Kodierung; 0 Schreibvorgänge. Das Manifest liegt lokal unter
+`.maintenance/feat009-test.json`. `BGT_MAINTENANCE_DATABASE_URL` für Produktion
+ist nicht konfiguriert; Produktionsdaten wurden nicht gelesen oder verändert.
+Die vorhandene Backup-Datei ersetzt keinen aktuellen Herkunfts- und
+Wiederherstellungsnachweis. FEAT-009 bleibt bis Manifestprüfung, frischem
+Backupnachweis und separater Apply-Freigabe offen.
 
 ### E. Getrennte Sicherheits- und Plattformpläne
 
