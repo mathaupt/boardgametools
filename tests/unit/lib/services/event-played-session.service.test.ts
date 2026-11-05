@@ -121,4 +121,50 @@ describe("EventPlayedSessionService", () => {
     expect(mocks.createFromEvent).not.toHaveBeenCalled();
     expect(mocks.playedCreate).not.toHaveBeenCalled();
   });
+
+  it("rejects absent events, invalid operations, and deleted idempotency targets", async () => {
+    const featureModule = await loadService();
+    if (!featureModule) return;
+    mocks.eventFindFirst.mockResolvedValueOnce(null);
+    await expect(featureModule.EventPlayedSessionService.create("owner", "missing", {} as never)).rejects.toMatchObject({ statusCode: 404 });
+    await expect(featureModule.EventPlayedSessionService.create("owner", "event-1", { operationId: "short" } as never)).rejects.toMatchObject({ statusCode: 400 });
+    mocks.playedFindUnique.mockResolvedValueOnce({ session: { id: "deleted", deletedAt: new Date() } });
+    await expect(featureModule.EventPlayedSessionService.create("owner", "event-1", { operationId: "operation-123" } as never)).rejects.toMatchObject({ statusCode: 409 });
+  });
+
+  it("validates required data, dates, duration, notes, participant bounds, and duplicates", async () => {
+    const featureModule = await loadService();
+    if (!featureModule) return;
+    const valid = { proposalId: "proposal-1", operationId: "operation-123", playedAt: "2026-11-04T18:00:00.000Z", players: [{ userId: "owner" }], guestPlayers: [] };
+    const invalidInputs = [
+      { ...valid, proposalId: "", players: [] },
+      { ...valid, playedAt: "not-a-date" },
+      { ...valid, durationMinutes: 0 },
+      { ...valid, durationMinutes: 1441 },
+      { ...valid, durationMinutes: 1.5 },
+      { ...valid, notes: "x".repeat(2001) },
+      { ...valid, players: [], guestPlayers: [] },
+      { ...valid, players: Array.from({ length: 21 }, (_, i) => ({ userId: `u-${i}` })) },
+      { ...valid, players: [{ userId: "owner" }, { userId: "owner" }] },
+      { ...valid, guestPlayers: [{ guestId: "guest-1" }, { guestId: "guest-1" }] },
+    ];
+    for (const input of invalidInputs) {
+      await expect(featureModule.EventPlayedSessionService.create("owner", "event-1", input as never)).rejects.toMatchObject({ statusCode: 400 });
+    }
+  });
+
+  it("rejects unknown event guests and snapshots an available collection game", async () => {
+    const featureModule = await loadService();
+    if (!featureModule) return;
+    await expect(featureModule.EventPlayedSessionService.create("owner", "event-1", {
+      proposalId: "proposal-1", operationId: "operation-123", playedAt: "2026-11-04T18:00:00.000Z",
+      players: [{ userId: "owner" }], guestPlayers: [{ guestId: "not-here" }],
+    } as never)).rejects.toMatchObject({ statusCode: 400 });
+    mocks.proposalFindFirst.mockResolvedValueOnce({ id: "proposal-1", bggId: null, bggName: null, game: { id: "game-1", ownerId: "owner", deletedAt: null, name: "  Catan  ", bggId: "13", imageUrl: null, minPlayers: null, maxPlayers: null, playTimeMinutes: null, complexity: null } });
+    await featureModule.EventPlayedSessionService.create("owner", "event-1", {
+      proposalId: "proposal-1", operationId: "operation-124", playedAt: "2026-11-04T18:00:00.000Z",
+      players: [{ userId: "owner" }], guestPlayers: [],
+    } as never);
+    expect(mocks.createFromEvent).toHaveBeenLastCalledWith(expect.any(Object), "owner", expect.objectContaining({ gameId: "game-1", gameNameSnapshot: "  Catan  ", gameBggIdSnapshot: "13", gameMinPlayersSnapshot: undefined, notes: null }));
+  });
 });

@@ -2072,12 +2072,48 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 **Prüfnachweis:** Produktionsbackup vom 04.11.2026 ist lesbar; Migrationsstatus und Schemaobjekte nach Apply geprüft. Der Migrationstest läuft außerdem ausschließlich auf `bgt_test_feat028`.
 **Referenz im Changelog:** Version 0.50.79 – BUG-072.
 
+### [BUG-073] Auswahlaktion der BGG-Sammlung benennt ihren Zustand falsch
+
+**Status:** `fixed`
+**Schweregrad:** `low`
+**Entdeckt:** 2026-11-05
+**Behoben:** 2026-11-05
+**Behoben in Version:** 0.50.85
+**Test geschrieben:** Ja – `tests/unit/components/collection-import-dialog.test.tsx` ließ die falsche Beschriftung vor dem Fix fehlschlagen.
+
+**Beschreibung:** Wenn alle noch nicht vorhandenen Spiele vorausgewählt waren, zeigte die Aktion „Alle auswählen“, obwohl sie beim Klick die Auswahl leerte.
+**Reproduktion:** Eine BGG-Sammlung mit mindestens einem bereits importierten und einem neuen Spiel laden; die neuen Spiele sind vorausgewählt.
+**Erwartetes Verhalten:** Die Schaltfläche beschreibt, dass alle auswählbaren Spiele ausgewählt sind und abgewählt werden können.
+**Tatsächliches Verhalten:** Sie verglich die Auswahl mit der Gesamtzahl einschließlich bereits importierter Spiele und zeigte weiterhin „Alle auswählen“.
+**Ursache:** Die Zustandsbeschriftung verglich die Auswahl mit der Länge der gesamten Sammlung statt mit den auswählbaren Einträgen.
+**Lösung:** Auswahlbeschriftung anhand der Anzahl nicht importierter Spiele bestimmen.
+**Prüfnachweis:** Regressionstest vor Fix rot, danach alle vier Tests des BGG-Sammlungsimportdialogs grün.
+**Referenz im Changelog:** Version 0.50.85 – BUG-073.
+
+### [BUG-074] Event-Mailversand verwendet bei einer Erinnerung die Mehrzahl
+
+**Status:** `fixed`
+**Schweregrad:** `low`
+**Entdeckt:** 2026-11-05
+**Behoben:** 2026-11-05
+**Behoben in Version:** 0.50.85
+**Test geschrieben:** Ja – `tests/unit/api/event-mail.test.ts` schlug vor dem Fix bei „1 Erinnerungen“ fehl.
+
+**Beschreibung:** Die Versandbestätigung verwendete auch bei genau einer Nachricht oder Erinnerung die Mehrzahl.
+**Reproduktion:** Eine Event-Erinnerung an genau eine erreichbare Person senden.
+**Erwartetes Verhalten:** Die Bestätigung zeigt „1 Erinnerung gesendet“; bei einer Nachricht analog „1 Nachricht gesendet“.
+**Tatsächliches Verhalten:** Die Antwort lautete „1 Erinnerungen gesendet“ beziehungsweise „1 Nachrichten gesendet“.
+**Ursache:** Die Singular- und Pluralformen wurden nicht anhand der Versandanzahl ausgewählt.
+**Lösung:** Versandart und Anzahl bestimmen jetzt die passende deutsche Einzahl oder Mehrzahl.
+**Prüfnachweis:** Der Singular-Test war vor der Änderung rot; danach bestehen alle vier Tests der Event-Mailroute.
+**Referenz im Changelog:** Version 0.50.85 – BUG-074.
+
 ---
 
 ## Statistik
 
 - **Offene Bugs:** 0
 - **In Bearbeitung:** 2
-- **Behoben:** 70
+- **Behoben:** 72
 - **Wontfix:** 0
-- **Gesamt:** 72
+- **Gesamt:** 74

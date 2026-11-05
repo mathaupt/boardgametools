@@ -12,6 +12,28 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.86",
+    date: "2026-11-05",
+    title: "FEAT-018 erreicht und hält 80 Prozent Testabdeckung",
+    description: "Die vollständige Web-Runtime-Testabdeckung liegt in allen vier Kennzahlen über 80 Prozent; das globale Gate erzwingt diese Untergrenze dauerhaft.",
+    changes: [
+      { type: "improvement", text: "Das globale Coverage-Gate verlangt mindestens 80 Prozent Statements, Branches, Funktionen und Zeilen." },
+      { type: "internal", text: "Der vollständige Lauf besteht mit 1.386 Tests in 216 Dateien: 84,83/80,02/84,65/86,98 Prozent. Das Messinventar bleibt unverändert." },
+      { type: "internal", text: "FEAT-018: Event-Voting-Fehler- und Sperrzustände sind zusätzlich durch Regressionstests abgedeckt." },
+    ],
+  },
+  {
+    version: "0.50.85",
+    date: "2026-11-05",
+    title: "Coverage-Gate schrittweise auf 72 Prozent angehoben",
+    description: "Gezielte Tests prüfen Einladungen, Gruppen, Sessions, Passwort-Reset und Eventabschluss. Ein Auswahlhinweis beim BGG-Sammlungsimport wurde korrigiert.",
+    changes: [
+      { type: "improvement", text: "Das globale Coverage-Gate schützt jetzt mindestens 72 Prozent in Statements, Branches, Funktionen und Zeilen." },
+      { type: "fix", text: "Die BGG-Spielauswahl benennt den Zustand korrekt, und Versandmeldungen verwenden bei genau einer Nachricht oder Erinnerung die Einzahl.", bugRef: "BUG-073, BUG-074" },
+      { type: "internal", text: "FEAT-018 ist weiter in Umsetzung; das globale Ziel von 80 Prozent ist noch nicht erreicht." },
+    ],
+  },
+  {
     version: "0.50.84",
     date: "2026-11-05",
     title: "FEAT-009 lokal final geprüft",

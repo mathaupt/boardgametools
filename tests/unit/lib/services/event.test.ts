@@ -18,7 +18,7 @@ vi.mock("@/lib/db", () => ({
       count: vi.fn(),
     },
     $transaction: vi.fn(),
-    user: { findUnique: vi.fn() },
+    user: { findUnique: vi.fn(), findMany: vi.fn() },
   },
 }));
 
@@ -42,11 +42,16 @@ vi.mock("@/lib/validation", () => ({
 vi.mock("@/lib/mailer", () => ({ sendEventInviteEmail: vi.fn() }));
 vi.mock("@/lib/public-link", () => ({ getPublicBaseUrl: vi.fn().mockResolvedValue("http://localhost:3000") }));
 vi.mock("@/lib/crypto", () => ({ encryptId: vi.fn((id: string) => `encrypted-${id}`) }));
+vi.mock("@/lib/services/push.service", () => ({ notifyEventInvite: vi.fn(), notifyEventClosed: vi.fn() }));
 
 // ── Imports (after mocks) ────────────────────────────────────────
 
 import prisma from "@/lib/db";
 import { invalidateTag } from "@/lib/cache";
+import { sendEventInviteEmail } from "@/lib/mailer";
+import { getPublicBaseUrl } from "@/lib/public-link";
+import { encryptId } from "@/lib/crypto";
+import * as PushService from "@/lib/services/push.service";
 import { firstError } from "@/lib/validation";
 import { EventService } from "@/lib/services/event.service";
 import { ApiError } from "@/lib/require-auth";
@@ -259,6 +264,36 @@ describe("EventService", () => {
 
       expect(prisma.event.create).not.toHaveBeenCalled();
     });
+
+    it("creates registered and external invites, sends matching links and skips recipients without email", async () => {
+      const created = { ...fakeEvent, invites: [
+        { id: "owner-invite", userId: USER_ID, email: null, user: { email: "owner@example.test" } },
+        { id: "registered-invite", userId: "user-2", email: null, user: { email: "registered@example.test" } },
+        { id: "external-invite", userId: null, email: "outside@example.test", user: null },
+        { id: "empty-invite", userId: null, email: null, user: null },
+      ] };
+      vi.mocked(prisma.event.create).mockResolvedValue(created as never);
+      vi.mocked(prisma.user.findMany).mockResolvedValue([{ id: "user-2", email: "registered@example.test" }] as never);
+      vi.mocked(prisma.user.findUnique).mockResolvedValue({ id: USER_ID, name: null, email: null } as never);
+
+      await EventService.create(USER_ID, {
+        title: "Spieleabend", eventDate: "2026-11-10T18:00:00.000Z",
+        inviteEmails: ["registered@example.test", "outside@example.test"],
+      });
+
+      expect(prisma.event.create).toHaveBeenCalledWith(expect.objectContaining({ data: expect.objectContaining({ invites: { create: [
+        { userId: USER_ID, status: "accepted" },
+        { userId: "user-2", email: null, status: "pending" },
+        { userId: null, email: "outside@example.test", status: "pending" },
+      ] } }) }));
+      expect(getPublicBaseUrl).toHaveBeenCalledOnce();
+      expect(sendEventInviteEmail).toHaveBeenCalledTimes(2);
+      expect(sendEventInviteEmail).toHaveBeenCalledWith(expect.objectContaining({ to: "registered@example.test", inviterName: "Jemand", eventUrl: "http://localhost:3000/dashboard/events/event-1" }));
+      expect(sendEventInviteEmail).toHaveBeenCalledWith(expect.objectContaining({ to: "outside@example.test", eventUrl: "http://localhost:3000/public/invite/encrypted-external-invite" }));
+      expect(encryptId).toHaveBeenCalledWith("external-invite");
+      expect(PushService.notifyEventInvite).toHaveBeenCalledOnce();
+      expect(PushService.notifyEventInvite).toHaveBeenCalledWith("user-2", "event-1", "Spieleabend", "Jemand");
+    });
   });
 
   // ── close ────────────────────────────────────────────────────
@@ -336,6 +371,34 @@ describe("EventService", () => {
     it("does not let a generic update reopen a closed event", async () => {
       mockEventTransaction({ ...fakeEvent, status: "closed" });
       await expect(EventService.update(USER_ID, EVENT_ID, { status: "voting" })).rejects.toMatchObject({ statusCode: 409 });
+    });
+
+    it("rejects invalid dates, unsupported statuses, and non-owner updates before writing", async () => {
+      await expect(EventService.update(USER_ID, EVENT_ID, { eventDate: "not-a-date" })).rejects.toMatchObject({ statusCode: 400 });
+      await expect(EventService.update(USER_ID, EVENT_ID, { status: "unknown" })).rejects.toMatchObject({ statusCode: 400 });
+      const tx = mockEventTransaction({ ...fakeEvent, createdById: "another-user" });
+      await expect(EventService.update(USER_ID, EVENT_ID, { title: "Fremd" })).rejects.toMatchObject({ statusCode: 403 });
+      expect(tx.event.update).not.toHaveBeenCalled();
+    });
+
+    it("requires resetting a selected date before changing the event date", async () => {
+      mockEventTransaction({ ...fakeEvent, selectedDate: new Date("2026-11-10T12:00:00.000Z") } as unknown as typeof fakeEvent);
+      await expect(EventService.update(USER_ID, EVENT_ID, { eventDate: "2026-11-11T18:00:00.000Z" }))
+        .rejects.toMatchObject({ statusCode: 409 });
+    });
+
+    it("rejects a requested date change for a past event and updates nullable fields", async () => {
+      mockEventTransaction({ ...fakeEvent, eventDate: new Date("2020-11-10T18:00:00.000Z") });
+      await expect(EventService.update(USER_ID, EVENT_ID, { eventDate: "2026-11-11T18:00:00.000Z" }))
+        .rejects.toMatchObject({ statusCode: 409 });
+
+      const tx = mockEventTransaction();
+      await EventService.update(USER_ID, EVENT_ID, {
+        description: "Beschreibung", eventDate: "2026-11-11T18:00:00.000Z", location: "Ort", groupId: "",
+      });
+      expect(tx.event.update).toHaveBeenCalledWith(expect.objectContaining({ data: {
+        description: "Beschreibung", eventDate: new Date("2026-11-11T18:00:00.000Z"), location: "Ort", groupId: null,
+      } }));
     });
 
     it("routes a requested close through the locked close lifecycle", async () => {

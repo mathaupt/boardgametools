@@ -98,3 +98,7 @@ wurde auf 4.2.2 aktualisiert. Produktionsaudit: 0 Befunde. Vollständiger Audit:
 0 moderate/hohe/kritische Befunde, 3 niedrige Einträge aus der shadcn-CLI-
 Abhängigkeitskette (`deepmerge` und davon abhängige Pakete). shadcn bleibt als
 Build-Abhängigkeit für `shadcn/tailwind.css` erhalten.
+
+## SEC-45-Nachprüfung – 05.11.2026
+
+Der vollständige Registry-Audit bestätigte drei niedrige Befunde ausschließlich in der Entwicklungsabhängigkeit `shadcn` und ihrer `deepmerge`-Kette. `npm audit --omit=dev` meldet 0 Produktionsbefunde. Der erste Evaluatorversuch ohne Registryzugriff war ungültig und wurde nicht als Sicherheitsentwarnung gewertet; nach dem Audit mit Registryzugriff bestand `npm run review-evaluate:regression` mit Exitcode 0 und ohne Regression.

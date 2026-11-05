@@ -27,6 +27,14 @@ describe("evaluateBadgeProgress", () => {
     expect(result.find((badge) => badge.id === "games-5")).toMatchObject({ earned: true, progress: 5, target: 5 });
   });
 
+  it("treats negative and non-finite progress as zero", () => {
+    const result = evaluateBadgeProgress(stats({ createdSessions: -3, distinctGamesPlayed: Number.NaN, ownedGamesPlayed: Number.POSITIVE_INFINITY }));
+
+    expect(result.find((badge) => badge.id === "first-session")).toMatchObject({ progress: 0, earned: false });
+    expect(result.find((badge) => badge.id === "games-5")).toMatchObject({ progress: 0, earned: false });
+    expect(result.find((badge) => badge.id === "collection-game-first")).toMatchObject({ progress: 0, earned: false });
+  });
+
   it("only unlocks collection and series badges when those personal conditions hold", () => {
     expect(evaluateBadgeProgress(stats()).find((badge) => badge.id === "collection-game-first"))
       .toMatchObject({ earned: false, progress: 0, target: 1 });

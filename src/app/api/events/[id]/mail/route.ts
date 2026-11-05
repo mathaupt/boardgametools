@@ -108,7 +108,9 @@ export const POST = withApiLogging(async function POST(
       }
     }
 
-    const label = type === "custom" ? "Nachrichten" : "Erinnerungen";
+    const label = type === "custom"
+      ? (sentCount === 1 ? "Nachricht" : "Nachrichten")
+      : (sentCount === 1 ? "Erinnerung" : "Erinnerungen");
 
     return NextResponse.json({
       message: `${sentCount} ${label} gesendet${failedCount > 0 ? `, ${failedCount} fehlgeschlagen` : ""}`,

@@ -139,4 +139,88 @@ describe("Event voting page client", () => {
     expect(screen.getByRole("status")).toHaveTextContent("Nur Veranstalter dürfen abstimmen");
     expect(screen.queryByLabelText("BGG-Suche")).not.toBeInTheDocument();
   });
+
+  it("ignores vote changes when voting is closed", () => {
+    renderVoting({ initialEvent: {
+      id: "event-1", title: "Spieleabend", eventDate: new Date("2026-12-01"), location: null, description: null,
+      eventState: { ...eventState, available: { voteGame: false, proposeGame: false } },
+      proposals: [proposal], invites: [], createdBy: { id: "owner", name: "Owner" }, selectedGame: null,
+      selectedGameId: null, winningProposalId: null, currentUserId: "user-2", isCreator: false,
+    } });
+
+    fireEvent.click(screen.getByRole("button", { name: "vote-proposal-1" }));
+    fireEvent.click(screen.getByRole("button", { name: "remove-proposal-1" }));
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
+  it("handles rejected vote and vote-removal mutations", async () => {
+    vi.mocked(fetch).mockResolvedValueOnce({ ok: false, status: 500 } as Response).mockResolvedValueOnce({ ok: false, status: 500 } as Response);
+    renderVoting();
+    fireEvent.click(screen.getByRole("button", { name: "vote-proposal-1" }));
+    await waitFor(() => expect(toast).toHaveBeenCalledWith(expect.objectContaining({ description: "Fehler beim Abstimmen", variant: "destructive" })));
+    fireEvent.click(screen.getByRole("button", { name: "remove-proposal-1" }));
+    await waitFor(() => expect(toast).toHaveBeenCalledWith(expect.objectContaining({ title: "Fehler", description: "Fehler beim Entfernen", variant: "destructive" })));
+  });
+
+  it("refreshes stale proposal changes and leaves the event state authoritative", async () => {
+    vi.mocked(fetch)
+      .mockResolvedValueOnce({ ok: false, status: 409, json: async () => ({ error: "stale" }) } as Response)
+      .mockResolvedValueOnce({ ok: true, json: async () => ({ eventState }) } as Response)
+      .mockResolvedValueOnce({ ok: false, status: 409, json: async () => ({ error: "stale" }) } as Response)
+      .mockResolvedValueOnce({ ok: true, json: async () => ({ eventState: { ...eventState, available: { voteGame: false, proposeGame: false }, blockedReason: "Nicht mehr verfügbar" } }) } as Response);
+    renderVoting();
+    fireEvent.click(screen.getByRole("button", { name: "Vorschlag hinzufügen" }));
+    await waitFor(() => expect(toast).toHaveBeenCalledWith(expect.objectContaining({ description: "Der Planungsstand hat sich geändert. Deine Änderung wurde nicht gespeichert." })));
+    fireEvent.click(screen.getByRole("button", { name: "vote-proposal-1" }));
+    await waitFor(() => expect(screen.getByText("Nicht mehr verfügbar")).toBeInTheDocument());
+    expect(refresh).toHaveBeenCalledTimes(2);
+  });
+
+  it("skips an empty BGG query and reports search and import failures", async () => {
+    vi.mocked(fetch).mockResolvedValueOnce({ ok: false } as Response).mockResolvedValueOnce({ ok: false } as Response);
+    renderVoting();
+    fireEvent.click(screen.getByRole("button", { name: "BGG suchen" })); expect(fetch).not.toHaveBeenCalled();
+    fireEvent.change(screen.getByLabelText("BGG-Suche"), { target: { value: "Azul" } });
+    fireEvent.click(screen.getByRole("button", { name: "BGG suchen" }));
+    await waitFor(() => expect(toast).toHaveBeenCalledWith(expect.objectContaining({ description: "Fehler bei der BGG Suche", variant: "destructive" })));
+    fireEvent.click(screen.getByRole("button", { name: "BGG importieren" }));
+    await waitFor(() => expect(toast).toHaveBeenCalledWith(expect.objectContaining({ title: "Fehler beim Importieren", variant: "destructive" })));
+  });
+
+  it("handles stale vote removal and proposal deletion when event refresh has no state", async () => {
+    vi.mocked(fetch)
+      .mockResolvedValueOnce({ ok: false, status: 409 } as Response)
+      .mockResolvedValueOnce({ ok: true, json: async () => ({}) } as Response)
+      .mockResolvedValueOnce({ ok: false, status: 409, json: async () => ({}) } as Response)
+      .mockResolvedValueOnce({ ok: true, json: async () => ({}) } as Response);
+    renderVoting();
+
+    fireEvent.click(screen.getByRole("button", { name: "remove-proposal-1" }));
+    await waitFor(() => expect(toast).toHaveBeenCalledWith(expect.objectContaining({
+      description: "Der Planungsstand hat sich geändert. Deine Änderung wurde nicht gespeichert.",
+    })));
+    fireEvent.click(screen.getByRole("button", { name: "delete-proposal-1" }));
+    await waitFor(() => expect(toast).toHaveBeenCalledWith(expect.objectContaining({
+      title: "Fehler",
+      description: "Der Planungsstand hat sich geändert. Deine Änderung wurde nicht gespeichert.",
+      variant: "destructive",
+    })));
+    expect(refresh).toHaveBeenCalledTimes(2);
+  });
+
+  it("falls back for malformed proposal errors and failed BGG detail or game creation", async () => {
+    vi.mocked(fetch)
+      .mockResolvedValueOnce({ ok: false, status: 500, json: async () => { throw new Error("bad json"); } } as unknown as Response)
+      .mockResolvedValueOnce({ ok: false } as Response)
+      .mockResolvedValueOnce({ ok: true, json: async () => ({ name: "Catan", bggId: "13" }) } as Response)
+      .mockResolvedValueOnce({ ok: false } as Response);
+    renderVoting();
+
+    fireEvent.click(screen.getByRole("button", { name: "Vorschlag hinzufügen" }));
+    await waitFor(() => expect(toast).toHaveBeenCalledWith(expect.objectContaining({ description: "Fehler", variant: "destructive" })));
+    fireEvent.click(screen.getByRole("button", { name: "BGG importieren" }));
+    await waitFor(() => expect(toast).toHaveBeenCalledWith(expect.objectContaining({ title: "Fehler beim Importieren" })));
+    fireEvent.click(screen.getByRole("button", { name: "BGG importieren" }));
+    await waitFor(() => expect(toast).toHaveBeenCalledTimes(3));
+  });
 });

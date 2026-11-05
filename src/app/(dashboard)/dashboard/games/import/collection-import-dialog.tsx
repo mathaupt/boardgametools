@@ -136,6 +136,8 @@ export function CollectionImportDialog({ existingBggIds, onImported }: Collectio
     if (newlyImportedIds.length > 0) onImported(newlyImportedIds);
   }
 
+  const selectableCount = collection.filter((game) => game.bggId && !existingBggIds.has(game.bggId)).length;
+
   return (
     <Dialog open={open} onOpenChange={(o) => {
       setOpen(o);
@@ -196,7 +198,7 @@ export function CollectionImportDialog({ existingBggIds, onImported }: Collectio
                 className="text-muted-foreground hover:text-foreground"
               >
                 <CheckSquare className="h-4 w-4" aria-hidden="true" />
-                {selectedBggIds.size === collection.length ? "Alle abwählen" : "Alle auswählen"}
+                {selectedBggIds.size === selectableCount ? "Alle abwählen" : "Alle auswählen"}
               </Button>
                 <span className="text-muted-foreground">
                   {selectedBggIds.size} / {collection.length} ausgewählt

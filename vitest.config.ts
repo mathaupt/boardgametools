@@ -32,10 +32,10 @@ export default defineConfig({
       ],
       thresholds: {
         // FEAT-018: ratchet global gates only after a verified full-suite gain.
-        statements: 55,
-        branches: 55,
-        functions: 61,
-        lines: 56,
+        statements: 80,
+        branches: 80,
+        functions: 80,
+        lines: 80,
         // src/lib has passed 80% in all four metrics; enforce that milestone.
         "src/lib/**": {
           statements: 80,

@@ -46,7 +46,8 @@ export const GroupChallengeService = {
   },
 
   async create(groupId: string, userId: string, input: { title: string; kind: ChallengeKind; target: number; endsAt?: Date | null }) {
-    if (!input.title.trim() || input.title.length > 80 || !(TARGETS[input.kind] as readonly number[]).includes(input.target)) throw new ApiError(400, "Ungültiges Gruppenziel.");
+    const allowedTargets: readonly number[] = TARGETS[input.kind];
+    if (!input.title.trim() || input.title.length > 80 || !Object.hasOwn(TARGETS, input.kind) || !allowedTargets.includes(input.target)) throw new ApiError(400, "Ungültiges Gruppenziel.");
     if (input.endsAt && input.endsAt <= new Date()) throw new ApiError(400, "Das Enddatum muss in der Zukunft liegen.");
     return prisma.$transaction(async (tx) => {
       const membership = await assertMember(groupId, userId, tx);

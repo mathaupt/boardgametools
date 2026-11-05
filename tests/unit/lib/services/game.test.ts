@@ -174,6 +174,25 @@ describe("GameService", () => {
       expect(prisma.game.findMany).toHaveBeenCalledWith(expect.objectContaining({ skip: 24, take: 24 }));
       expect(result).toMatchObject({ page: 2, totalPages: 2 });
     });
+
+    it("supports every stable collection sort and session-expanded result mode", async () => {
+      for (const [sort, orderBy] of [
+        ["name_desc", { name: "desc" }],
+        ["complexity_asc", { complexity: { sort: "asc", nulls: "last" } }],
+        ["complexity_desc", { complexity: { sort: "desc", nulls: "last" } }],
+        ["players_asc", { minPlayers: "asc" }],
+        ["players_desc", { maxPlayers: "desc" }],
+        ["name_asc", { name: "asc" }],
+        ["unsupported", { name: "asc" }],
+      ] as const) {
+        vi.mocked(prisma.game.findMany).mockResolvedValueOnce([fakeGame] as never);
+        await GameService.list(USER_ID, { page: 1, limit: 5, sort: sort as never, include: "sessions" });
+        expect(prisma.game.findMany).toHaveBeenLastCalledWith(expect.objectContaining({
+          orderBy: [orderBy, { id: "asc" }],
+          include: expect.objectContaining({ sessions: { orderBy: { playedAt: "desc" }, take: 5 } }),
+        }));
+      }
+    });
   });
 
   describe("bulkDeleteAll", () => {
@@ -328,6 +347,16 @@ describe("GameService", () => {
       await expect(
         GameService.update(USER_ID, "nope", { name: "X" })
       ).rejects.toThrow("Game not found");
+    });
+
+    it("clears tags, skips blank labels, and returns null when the updated record disappears", async () => {
+      vi.mocked(prisma.game.findFirst).mockResolvedValue({ id: GAME_ID, ownerId: USER_ID } as never);
+      vi.mocked(prisma.game.update).mockResolvedValue({} as never);
+      vi.mocked(prisma.tag.upsert).mockResolvedValue({ id: "tag-1" } as never);
+      vi.mocked(prisma.game.findUnique).mockResolvedValue(null as never);
+      await expect(GameService.update(USER_ID, GAME_ID, { tagNames: ["", "  ", " Board "] })).resolves.toBeNull();
+      expect(prisma.gameTag.deleteMany).toHaveBeenCalledWith({ where: { gameId: GAME_ID } });
+      expect(prisma.gameTag.createMany).toHaveBeenCalledWith({ data: [{ gameId: GAME_ID, tagId: "tag-1" }] });
     });
   });
 

@@ -830,7 +830,7 @@ ohne Datum, Titel, Ergebnisse und Aktionen aus dem Blick zu verlieren.
 
 ## FEAT-018 – Testabdeckung schrittweise auf 80 % erhöhen
 
-**Status:** In Umsetzung; globales Gate 55/55/61/56 %, `src/lib` liegt bei 88,94/80,00/90,60/91,47 %; globale Coverageausweitung läuft.
+**Status:** Abgeschlossen am 05.11.2026 in Version 0.50.86. Das globale Gate erzwingt 80/80/80/80 %; letzter vollständiger Lauf: 84,83/80,02/84,65/86,98 % bei 1.386 Tests in 216 Dateien. `src/lib` besteht ebenfalls alle vier 80-%-Schwellen.
 **Umsetzungsplan:** [Coverage-Ziel 80 %](superpowers/plans/2026-11-02-FEAT-018-coverage-80.md).
 **Plattformumfang:** Vitest-erfasster Web-/Backend-Runtimecode; Browser-E2E und iOS-Verträge als separate Nachweise.
 **Umsetzungsfreigabe:** Am 02.11.2026 durch „implementiere FEAT-018“ erteilt.
@@ -840,18 +840,22 @@ gegen Commit `c497641`; danach Paket 4 gegen den aktuellen Arbeitsbaum geprüft.
 Der aktuelle Lauf besteht mit 994 Tests in 141 Dateien und globalen Werten von
 59,45/55,70/64,14/60,96 %; `src/lib` liegt bei 88,94/80,00/90,60/91,47 %.
 Das Gate liegt global bei 55/55/61/56 % und für `src/lib` bei 80/80/80/80 %.
-Die Coverage-Summary priorisiert
-als Nächstes Einladungen, Terminvorschläge und öffentliche Antworten.
+**Abgeschlossen 05.11.2026:** Einladungen, Terminvorschläge, öffentliche Antworten,
+Gruppen, Sessions, Passwort-Reset, Monitoring-Analysen und weitere UI-Flows sind
+durch echte Handler- und Komponententests abgesichert. Der letzte vollständige
+Lauf misst 84,83/80,02/84,65/86,98 %; alle vier globalen Gates stehen auf
+80/80/80/80 %. Die Event-Voting-Tests decken zusätzlich Konflikt-, Sperr- und
+Fehlerpfade ab. Das erfasste Datei-Inventar wurde nicht verkleinert.
 
-**Plan:** Das aktuelle globale Gate ist 55/55/61/56 %, `src/lib` besteht das 80/80/80/80-%-Gate. Danach Testpakete nach Risiko bearbeiten und alle vier globalen
-Metriken stufenweise auf 65, 72 und 80 % anheben. Quelleninventar,
-Messlücken, Charakterisierungstests und TDD für Fehlerkorrekturen sind im Plan
-festgelegt. Neue eigene Session-Komponenten werden automatisch mitgemessen.
-Kein Entfernen schlecht getesteter Runtime-Dateien aus dem Nenner.
+**Ergebnis:** Das globale Gate und das `src/lib`-Gate stehen auf 80/80/80/80 %.
+Der Plan dokumentiert Messinventar, Coveragepakete, Charakterisierungstests und
+TDD für gefundene Fehler. Neue eigene Session-Komponenten werden automatisch
+mitgemessen. Runtime-Dateien wurden nicht aus dem Nenner entfernt.
 
-**Abnahme:** 80 % aller vier globalen und Bibliotheksmetriken auf demselben
-Commit, grüne Tests und CI-Gates, nachvollziehbarer Messumfang und aktuelle
-Review-Dokumentation. Die Planung ändert keine Schwelle.
+**Abnahme:** Erfüllt: mindestens 80 % in allen vier globalen und
+Bibliotheksmetriken, vollständige grüne Suite und aktives 80-%-Gate; der
+Messumfang ist dokumentiert. Typecheck, Build, Security-Check und
+Review-Regressionsprüfung sind bestanden.
 
 **Monitoring-Korrektur:** BUG-067 verbindet Coverage/Testzahlen mit der versionierten vollständigen Messdatei. Gesamtumfang und `src/lib` bleiben getrennt; die Anzeige nennt Messzeitpunkt und Version. Plan: [BUG-067](superpowers/plans/2026-11-02-BUG-067-monitoring-messwerte.md).
 

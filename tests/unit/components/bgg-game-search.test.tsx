@@ -161,4 +161,40 @@ describe("BggGameSearch", () => {
     await waitFor(() => expect(props.onStateConflict).toHaveBeenCalledOnce());
     expect(props.onProposalAdded).not.toHaveBeenCalled();
   });
+
+  it("explains the identity requirement and disables search when proposals are closed", async () => {
+    render(<BggGameSearch {...props} proposalOpen={false} />);
+    expect(screen.getByText(/Zum Vorschlagen tritt dem Event als Gast bei/)).toBeInTheDocument();
+    expect(screen.getByText("Für dieses Event sind keine neuen Vorschläge möglich.")).toBeInTheDocument();
+    const user = userEvent.setup();
+    await user.type(screen.getByRole("searchbox", { name: "Spiel auf BoardGameGeek suchen" }), "Catan");
+    expect(screen.getByRole("button", { name: "Suchen" })).toBeDisabled();
+    expect(mockFetch).not.toHaveBeenCalled();
+  });
+
+  it("notifies an authenticated user when BGG details return an expired session", async () => {
+    const onSessionExpired = vi.fn(); const user = userEvent.setup();
+    mockFetch
+      .mockResolvedValueOnce(Response.json([{ bggId: "13", name: "Catan" }]))
+      .mockResolvedValueOnce(Response.json({ error: "expired" }, { status: 401 }));
+    render(<BggGameSearch {...props} currentUserId="user-1" onSessionExpired={onSessionExpired} />);
+    await user.type(screen.getByRole("searchbox", { name: "Spiel auf BoardGameGeek suchen" }), "Catan");
+    await user.click(screen.getByRole("button", { name: "Suchen" }));
+    await user.click(await screen.findByRole("button", { name: "Details zu Catan" }));
+    expect(await screen.findByRole("alert")).toHaveTextContent("expired");
+    expect(onSessionExpired).toHaveBeenCalledOnce();
+  });
+
+  it("refreshes a changed event when BGG details cannot be opened", async () => {
+    const onStateConflict = vi.fn(); const user = userEvent.setup();
+    mockFetch
+      .mockResolvedValueOnce(Response.json([{ bggId: "13", name: "Catan" }]))
+      .mockResolvedValueOnce(Response.json({ error: "closed" }, { status: 409 }));
+    render(<BggGameSearch {...props} onStateConflict={onStateConflict} />);
+    await user.type(screen.getByRole("searchbox", { name: "Spiel auf BoardGameGeek suchen" }), "Catan");
+    await user.click(screen.getByRole("button", { name: "Suchen" }));
+    await user.click(await screen.findByRole("button", { name: "Details zu Catan" }));
+    expect(await screen.findByRole("alert")).toHaveTextContent("closed");
+    expect(onStateConflict).toHaveBeenCalledOnce();
+  });
 });

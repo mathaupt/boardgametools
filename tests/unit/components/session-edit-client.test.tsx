@@ -117,4 +117,30 @@ describe("SessionEditClient", () => {
     await user.click(screen.getByRole("button", { name: "Abbrechen" }));
     expect(push).toHaveBeenCalledWith("/dashboard/sessions/session-1");
   });
+
+  it("adds, edits and removes a guest while saving a snapshot-only session", async () => {
+    const user = userEvent.setup();
+    vi.mocked(fetch).mockResolvedValueOnce({ ok: true } as Response);
+    render(<SessionEditClient session={{ ...session, gameId: null, gameNameSnapshot: null, durationMinutes: null, notes: null, players: [], guestPlayers: [] }} games={[]} users={[]} />);
+    expect(screen.getByText(/Unbekanntes Spiel/)).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Gastspieler hinzufügen" }));
+    await user.type(screen.getByLabelText("Gastname 1"), "  Mia  ");
+    await user.clear(screen.getByLabelText("Platz").closest("div")!.querySelector("input")!);
+    await user.type(screen.getByLabelText("Platz").closest("div")!.querySelector("input")!, "1");
+    await user.click(screen.getByRole("checkbox", { name: "Gewinner" }));
+    await user.click(screen.getByRole("button", { name: "Änderungen speichern" }));
+    await waitFor(() => expect(fetch).toHaveBeenCalledWith("/api/sessions/session-1", expect.objectContaining({
+      body: JSON.stringify({ playedAt: "2026-10-01", durationMinutes: null, notes: "", players: [], guestPlayers: [{ name: "Mia", score: null, isWinner: true, placement: 1 }] }),
+    })));
+    expect(push).toHaveBeenCalledWith("/dashboard/sessions/session-1");
+  });
+
+  it("uses a safe fallback when the failed save has no readable JSON body", async () => {
+    const user = userEvent.setup();
+    vi.mocked(fetch).mockResolvedValueOnce({ ok: false, json: async () => { throw new Error("invalid JSON"); } } as unknown as Response);
+    render(<SessionEditClient session={session} games={games} users={users} />);
+    await user.click(screen.getByRole("button", { name: "Änderungen speichern" }));
+    await waitFor(() => expect(toast).toHaveBeenCalledWith(expect.objectContaining({ description: "invalid JSON", variant: "destructive" })));
+    expect(push).not.toHaveBeenCalled();
+  });
 });

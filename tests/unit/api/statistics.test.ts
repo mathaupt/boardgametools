@@ -142,4 +142,46 @@ describe("API /api/statistics", () => {
 
     expect(body.monthlyActivity).toHaveLength(12);
   });
+
+  it("handles snapshots, missing games, unnamed players, duplicate players and activity outside the window", async () => {
+    vi.mocked(prisma.game.count).mockResolvedValue(2 as never);
+    vi.mocked(prisma.gameSession.count).mockResolvedValue(3 as never);
+    vi.mocked(prisma.gameSession.aggregate).mockResolvedValue({ _sum: { durationMinutes: null } } as never);
+    vi.mocked(prisma.sessionPlayer.findMany)
+      .mockResolvedValueOnce([{ userId: "p1" }, { userId: "p2" }] as never)
+      .mockResolvedValueOnce([
+        { userId: "p1", isWinner: true, user: { name: "Alex", email: "a@example.test" } },
+        { userId: "p1", isWinner: false, user: { name: "Alex", email: "a@example.test" } },
+        { userId: "p2", isWinner: false, user: { name: null, email: null } },
+      ] as never);
+    vi.mocked(prisma.gameSession.groupBy).mockResolvedValue([
+      { gameId: "game-1", _count: { id: 2 }, _sum: { durationMinutes: null } },
+      { gameId: "gone", _count: { id: 1 }, _sum: { durationMinutes: 50 } },
+      { gameId: null, _count: { id: 1 }, _sum: { durationMinutes: 10 } },
+    ] as never);
+    vi.mocked(prisma.game.findMany).mockResolvedValue([{ id: "game-1", name: "Catan", imageUrl: null }] as never);
+    vi.mocked(prisma.gameSession.findMany)
+      .mockResolvedValueOnce([
+        { id: "s1", playedAt: new Date("2026-11-01T12:00:00Z"), game: { name: "Catan" }, gameNameSnapshot: "Snapshot", _count: { players: 4 } },
+        { id: "s2", playedAt: new Date("2026-10-01T12:00:00Z"), game: null, gameNameSnapshot: "Snapshot-Spiel", _count: { players: 2 } },
+        { id: "s3", playedAt: new Date("2026-09-01T12:00:00Z"), game: null, gameNameSnapshot: null, _count: { players: 1 } },
+      ] as never)
+      .mockResolvedValueOnce([
+        { playedAt: new Date(), durationMinutes: 30 },
+        { playedAt: new Date("2000-01-01T00:00:00Z"), durationMinutes: 99 },
+      ] as never);
+
+    const response = await (GET as Function)(createMockRequest("GET", "http://localhost:3000/api/statistics"));
+    const { body } = parseResponse(response);
+    expect(body.mostPlayed).toEqual([
+      { gameId: "game-1", gameName: "Catan", gameImageUrl: null, sessionCount: 2, totalMinutes: 0 },
+      { gameId: "gone", gameName: "Unbekannt", gameImageUrl: null, sessionCount: 1, totalMinutes: 50 },
+    ]);
+    expect(body.recentSessions.map((session: { gameName: string }) => session.gameName)).toEqual(["Catan", "Snapshot-Spiel", "Unbekanntes Spiel"]);
+    expect(body.playerStats).toEqual([
+      { userId: "p1", userName: "Alex", totalSessions: 2, wins: 1, winRate: 50 },
+      { userId: "p2", userName: "Unbekannt", totalSessions: 1, wins: 0, winRate: 0 },
+    ]);
+    expect(body.monthlyActivity.reduce((sum: number, month: { totalMinutes: number }) => sum + month.totalMinutes, 0)).toBe(30);
+  });
 });
