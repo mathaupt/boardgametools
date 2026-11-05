@@ -56,7 +56,7 @@ nicht begonnener Umsetzung. Die offenen Punkte sind keine Umsetzungsfreigabe.
 | FEAT-019 | Spracheingabe für Suche und Sessions | Konzept vorhanden; Plan und Umsetzung offen | [Konzept](superpowers/specs/2026-11-02-spracheingabe-design.md) |
 | FEAT-029 | Gespielte Eventspiele als Sessions erfassen | Web und Produktionsmigration abgeschlossen; iOS separat | [Spec](superpowers/specs/2026-11-04-FEAT-029-event-sessions-design.md), [Plan](superpowers/plans/2026-11-04-FEAT-029-event-sessions.md) |
 | FEAT-030 | Liveness- und Readiness-Monitoring einrichten | Erst bei Auswahl eines Monitoring-Systems: Verbraucher inventarisieren, Secret und getrennte Checks konfigurieren, Staging-Abnahme durchführen | Noch zu planen |
-| FEAT-031 | Bei Event-Partien Spiele aus Vorschlägen, Sammlung oder BGG wählen | Anforderung aufgenommen; Implementierungsplan offen | Noch zu planen |
+| FEAT-031 | Bei Event-Partien Spiele aus Vorschlägen, Sammlung oder BGG wählen | Implementierungsplan erstellt; Freigabe offen | [Plan](superpowers/plans/2026-11-05-FEAT-031-event-session-game-selection.md) |
 | FEAT-032 | Abzeichenübersicht mit Freischaltbedingungen | Anforderung aufgenommen; Implementierungsplan offen | Noch zu planen |
 
 ## Offene Bugs
@@ -991,7 +991,7 @@ danach können FEAT-026 und FEAT-027 unabhängig geplant umgesetzt werden.
 
 ## FEAT-032 – Abzeichen und Freischaltbedingungen auffindbar machen
 
-**Status:** Anforderung aufgenommen; Implementierungsplan und Umsetzung offen.
+**Status:** Implementierungsplan am 05.11.2026 erstellt; Umsetzungsfreigabe offen.
 **Ziel:** Eine eigene, erreichbare Abzeichenübersicht bereitstellen, in der Nutzer alle verfügbaren Abzeichen sehen und nachvollziehen können, was sie für jedes Abzeichen tun müssen.
 **Abnahmekriterien:** Die Seite zeigt verdiente und noch nicht verdiente Abzeichen klar unterscheidbar. Für jedes Abzeichen werden Name, Bedeutung und konkrete Freischaltbedingung verständlich angezeigt; Fortschritt wird nur gezeigt, wenn er sich datenschutzgerecht bestimmen lässt. Die Übersicht ist vom Profil beziehungsweise Gamification-Bereich aus erreichbar und auf schmalen Ansichten bedienbar. Öffentliche Profilfreigaben zeigen weiterhin nur ausdrücklich freigegebene Abzeichen.
 **Implementierungsplan:** Noch nicht erstellt. Vor der Umsetzung vorhandene Badge-Logik und FEAT-028-Umsetzung prüfen, Regeln und erreichbare Navigation festlegen und den Plan mit RED-GREEN-REFACTOR-Tests, Impeccable-/Browserprüfung und Security-/Datenschutzprüfung zur Freigabe vorlegen.
@@ -1001,4 +1001,4 @@ danach können FEAT-026 und FEAT-027 unabhängig geplant umgesetzt werden.
 **Status:** Anforderung aufgenommen; Implementierungsplan und Umsetzung offen.
 **Ziel:** Beim Eintragen einer Partie in einem Event zuerst die Spiele anbieten, die für dieses Event ausgewählt beziehungsweise vorgeschlagen wurden. Falls das gespielte Spiel dort nicht enthalten ist, soll es alternativ in der eigenen Sammlung oder über die BoardGameGeek-Suche gefunden werden können.
 **Abnahmekriterien:** Eventspiele sind die primäre Auswahlquelle. Sammlungssuche und BGG-Suche stehen als Alternativen zur Verfügung, ohne die vorhandene Auswahl unnötig zu überladen. Der Plan klärt, wie BGG-Treffer ohne Sammlungsimport als Session gespeichert werden, welche Spieldaten übernommen werden und welche Berechtigungs-/Datenschutzregeln gelten.
-**Implementierungsplan:** Noch nicht erstellt. Vor der Umsetzung Bestand und FEAT-029-Vertrag prüfen, den Plan mit RED-GREEN-REFACTOR-Tests, UI-/Impeccable-Prüfung und Security-Prüfung erstellen und zur Freigabe vorlegen.
+**Implementierungsplan:** [Event-Partie-Spieleauswahl](superpowers/plans/2026-11-05-FEAT-031-event-session-game-selection.md). Der Plan umfasst Web/API und eine additive Migration; vor jeder Runtime-Änderung ist eine erneute Aktualitätsprüfung vorgeschrieben. Umsetzung erst nach ausdrücklicher Planfreigabe.

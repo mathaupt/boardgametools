@@ -12,6 +12,15 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.90",
+    date: "2026-11-05",
+    title: "Umsetzungsplan für FEAT-031 erstellt",
+    description: "Der Plan beschreibt eine bevorzugte Auswahl aus Eventspielen und eine Suche in Sammlung oder BGG als Alternativen.",
+    changes: [
+      { type: "internal", text: "FEAT-031: Web/API-Plan inklusive TDD, optionalem Eventvorschlagslink, Datenschutz, gerenderter UI-Abnahme und Security-Prüfung erstellt; Umsetzung wartet auf Freigabe." },
+    ],
+  },
+  {
     version: "0.50.89",
     date: "2026-11-05",
     title: "Abzeichenübersicht als Feature aufgenommen",
