@@ -56,6 +56,7 @@ nicht begonnener Umsetzung. Die offenen Punkte sind keine Umsetzungsfreigabe.
 | FEAT-019 | Spracheingabe für Suche und Sessions | Konzept vorhanden; Plan und Umsetzung offen | [Konzept](superpowers/specs/2026-11-02-spracheingabe-design.md) |
 | FEAT-029 | Gespielte Eventspiele als Sessions erfassen | Web und Produktionsmigration abgeschlossen; iOS separat | [Spec](superpowers/specs/2026-11-04-FEAT-029-event-sessions-design.md), [Plan](superpowers/plans/2026-11-04-FEAT-029-event-sessions.md) |
 | FEAT-030 | Liveness- und Readiness-Monitoring einrichten | Erst bei Auswahl eines Monitoring-Systems: Verbraucher inventarisieren, Secret und getrennte Checks konfigurieren, Staging-Abnahme durchführen | Noch zu planen |
+| FEAT-031 | Bei Event-Partien Spiele aus Vorschlägen, Sammlung oder BGG wählen | Anforderung aufgenommen; Implementierungsplan offen | Noch zu planen |
 
 ## Offene Bugs
 
@@ -78,7 +79,7 @@ Prüfprotokolle zum damaligen Stand; für den aktuellen Status gilt diese Übers
 
 Die Abschnitte A bis I dokumentieren Betriebs-, Abnahme- und Feature-Restarbeiten
 mit ihrem jeweiligen Prüfdatum. Der aktuelle Featurestatus steht in der
-Übersicht; neue Anforderungen FEAT-023 bis FEAT-029 sind darunter verlinkt.
+Übersicht; neue Anforderungen FEAT-023 bis FEAT-031 sind darunter verlinkt.
 „Offen“ bedeutet
 hier entweder eine ausdrücklich ausstehende Abnahme, eine gesonderte
 Produkt-/Betriebsfreigabe oder einen separat zu planenden Sicherheitsumfang.
@@ -986,3 +987,10 @@ danach können FEAT-026 und FEAT-027 unabhängig geplant umgesetzt werden.
 **Ziel:** Sobald ein Monitoring-System ausgewählt wird, die Prozess-Liveness und Datenbank-Readiness getrennt überwachen.
 **Abnahmekriterien:** Verbraucher und gewünschte Verfügbarkeit inventarisieren; `/api/health` als DB-freie Liveness und `/api/health/ready` mit einem separaten Secret konfigurieren; Secret sicher bereitstellen; Verhalten bei DB-Ausfall und Erholung in isoliertem Staging prüfen; Alarmierung und Betrieb dokumentieren.
 **Implementierungsplan:** Noch nicht erstellt. Vor einer Einrichtung gemäß verbindlichem Feature-Ablauf planen und Umfang freigeben lassen.
+
+## FEAT-031 – Spiele für Event-Partien flexibel auswählen
+
+**Status:** Anforderung aufgenommen; Implementierungsplan und Umsetzung offen.
+**Ziel:** Beim Eintragen einer Partie in einem Event zuerst die Spiele anbieten, die für dieses Event ausgewählt beziehungsweise vorgeschlagen wurden. Falls das gespielte Spiel dort nicht enthalten ist, soll es alternativ in der eigenen Sammlung oder über die BoardGameGeek-Suche gefunden werden können.
+**Abnahmekriterien:** Eventspiele sind die primäre Auswahlquelle. Sammlungssuche und BGG-Suche stehen als Alternativen zur Verfügung, ohne die vorhandene Auswahl unnötig zu überladen. Der Plan klärt, wie BGG-Treffer ohne Sammlungsimport als Session gespeichert werden, welche Spieldaten übernommen werden und welche Berechtigungs-/Datenschutzregeln gelten.
+**Implementierungsplan:** Noch nicht erstellt. Vor der Umsetzung Bestand und FEAT-029-Vertrag prüfen, den Plan mit RED-GREEN-REFACTOR-Tests, UI-/Impeccable-Prüfung und Security-Prüfung erstellen und zur Freigabe vorlegen.

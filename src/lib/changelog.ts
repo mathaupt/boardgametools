@@ -12,6 +12,15 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.88",
+    date: "2026-11-05",
+    title: "Auswahl für Event-Partien erweitert geplant",
+    description: "Eine neue Anforderung erfasst: Bei Event-Partien sollen Eventspiele zuerst und ersatzweise Sammlung oder BGG durchsuchbar sein.",
+    changes: [
+      { type: "internal", text: "FEAT-031 im Backlog aufgenommen; Implementierungsplan und Umsetzung sind offen." },
+    ],
+  },
+  {
     version: "0.50.87",
     date: "2026-11-05",
     title: "Produktionsschema für Event-Sessions vervollständigt",
