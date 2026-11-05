@@ -12,6 +12,15 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.87",
+    date: "2026-11-05",
+    title: "Fehlende Produktionsmigrationen erfasst",
+    description: "Produktionslogs zeigen, dass Schemaänderungen für gespeicherte Spiele und Event-Sessions in der verbundenen Datenbank fehlen.",
+    changes: [
+      { type: "internal", text: "BUG-075 dokumentiert Prisma-Fehler durch fehlende GameSession-Spalten und die Tabelle EventPlayedSession; die Produktionsmigrationen müssen geprüft und nach Backup ausgerollt werden.", bugRef: "BUG-075" },
+    ],
+  },
+  {
     version: "0.50.86",
     date: "2026-11-05",
     title: "FEAT-018 erreicht und hält 80 Prozent Testabdeckung",

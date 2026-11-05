@@ -52,18 +52,19 @@ nicht begonnener Umsetzung. Die offenen Punkte sind keine Umsetzungsfreigabe.
 | FEAT-015 | Top-3-Spiele im Event-Kurzüberblick | Manuelle Browser-/Viewport-Abnahme | [Plan](superpowers/plans/2026-11-02-FEAT-015-dashboard-top-three.md) |
 | FEAT-016 | Spielauswahl bei Session-Anlage durchsuchen | Manuelle Browser-/VoiceOver-Abnahme | [Plan](superpowers/plans/2026-11-02-FEAT-016-session-spielsuche.md) |
 | FEAT-017 | Spielcover in der Sessions-Übersicht | Responsive Browser-/Viewport-Abnahme | [Plan](superpowers/plans/2026-11-02-FEAT-017-session-cover.md) |
-| FEAT-018 | Testabdeckung schrittweise auf 80 % erhöhen | Globale Coverage-Gates und weitere Pakete offen | [Plan](superpowers/plans/2026-11-02-FEAT-018-coverage-80.md) |
+| FEAT-018 | Testabdeckung schrittweise auf 80 % erhöhen | Abgeschlossen; globales 80-%-Gate aktiv | [Plan](superpowers/plans/2026-11-02-FEAT-018-coverage-80.md) |
 | FEAT-019 | Spracheingabe für Suche und Sessions | Konzept vorhanden; Plan und Umsetzung offen | [Konzept](superpowers/specs/2026-11-02-spracheingabe-design.md) |
 | FEAT-029 | Gespielte Eventspiele als Sessions erfassen | Webcode und isolierter Test abgeschlossen; Produktionsmigration/Rollout offen, iOS separat | [Spec](superpowers/specs/2026-11-04-FEAT-029-event-sessions-design.md), [Plan](superpowers/plans/2026-11-04-FEAT-029-event-sessions.md) |
 | FEAT-030 | Liveness- und Readiness-Monitoring einrichten | Erst bei Auswahl eines Monitoring-Systems: Verbraucher inventarisieren, Secret und getrennte Checks konfigurieren, Staging-Abnahme durchführen | Noch zu planen |
 
 ## Offene Bugs
 
-Zwei Bugs sind derzeit in Bearbeitung. Die vollständigen Beschreibungen,
+Ein Bug ist offen; zwei Bugs sind derzeit in Bearbeitung. Die vollständigen Beschreibungen,
 Reproduktionsschritte und Prüfnachweise stehen in der [Bug-Tracking-Liste](bugs.md).
 
 | ID | Schweregrad | Bug | Status |
 |---|---|---|---|
+| BUG-075 | Hoch | Produktionsschema enthält die FEAT-025-/FEAT-029-Migrationen nicht | Offen |
 | BUG-038 | Mittel | Mobile Terminantworten teilweise verborgen und zu klein | In Bearbeitung |
 | BUG-041 | Niedrig | Desktop-Raster der öffentlichen Eventseite unwirksam | In Bearbeitung |
 

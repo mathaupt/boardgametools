@@ -2108,12 +2108,29 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 **Prüfnachweis:** Der Singular-Test war vor der Änderung rot; danach bestehen alle vier Tests der Event-Mailroute.
 **Referenz im Changelog:** Version 0.50.85 – BUG-074.
 
+### [BUG-075] Produktionsdatenbank hat FEAT-025-/FEAT-029-Schema nicht
+
+**Status:** `open`
+**Schweregrad:** `high`
+**Entdeckt:** 2026-11-05
+**Behoben:**
+**Behoben in Version:**
+**Test geschrieben:** Nein – Deployment-/Migrationsfehler, kein Laufzeitcode-Fix.
+
+**Beschreibung:** Produktionslogs vom 05.11.2026 zeigen Prisma-Fehler auf mehreren angemeldeten Dashboardseiten. Abfragen erwarten `GameSession.gameNameSnapshot`; die Eventdetailseite erwartet `public.EventPlayedSession`. Beide Schemaobjekte fehlen in der verbundenen Datenbank.
+**Reproduktion:** Die betroffenen Dashboardseiten (`/dashboard/sessions`, `/dashboard/statistics`, `/dashboard/profile`, `/dashboard/events/new` oder `/dashboard/events/{id}`) mit dem ausgelieferten App-Build gegen die betroffene Produktionsdatenbank aufrufen.
+**Erwartetes Verhalten:** Das Produktionsschema enthält alle Migrationen, die der ausgelieferte Prisma-Client und Anwendungscode voraussetzen; Seiten laden ohne `P2021`-/`P2022`-Fehler.
+**Tatsächliches Verhalten:** Prisma meldet `P2022` für `GameSession.gameNameSnapshot` und `P2021` für die Tabelle `public.EventPlayedSession`. Sessions, Statistiken, Profil und Eventseiten können dadurch fehlschlagen.
+**Ursache:** Die Produktionsmigrationen `20261104080000_series_entry_game_snapshot` und `20261104160000_event_played_sessions` sind im Datenbankschema offenbar nicht angewendet, während der App-Code diese Spalten und Tabelle bereits abfragt.
+**Lösung:** Vor einer Produktionsänderung den aktuellen Migrationsstatus und ein geprüftes, konsistentes Backup sichern; danach die fehlenden Migrationen mit dem dokumentierten `npm run prisma:deploy` anwenden und den Status read-only verifizieren. Nicht `db push` verwenden. Bis zur Prüfung ist nicht bestätigt, ob weitere Migrationen fehlen.
+**Referenz im Changelog:** Version 0.50.87 – BUG-075.
+
 ---
 
 ## Statistik
 
-- **Offene Bugs:** 0
+- **Offene Bugs:** 1
 - **In Bearbeitung:** 2
 - **Behoben:** 72
 - **Wontfix:** 0
-- **Gesamt:** 74
+- **Gesamt:** 75
