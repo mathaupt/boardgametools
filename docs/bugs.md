@@ -2108,29 +2108,30 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 **Prüfnachweis:** Der Singular-Test war vor der Änderung rot; danach bestehen alle vier Tests der Event-Mailroute.
 **Referenz im Changelog:** Version 0.50.85 – BUG-074.
 
-### [BUG-075] Produktionsdatenbank hat FEAT-025-/FEAT-029-Schema nicht
+### [BUG-075] Produktionsmigration für Event-Sessions fehlte
 
-**Status:** `open`
+**Status:** `fixed`
 **Schweregrad:** `high`
 **Entdeckt:** 2026-11-05
-**Behoben:**
-**Behoben in Version:**
-**Test geschrieben:** Nein – Deployment-/Migrationsfehler, kein Laufzeitcode-Fix.
+**Behoben:** 2026-11-05
+**Behoben in Version:** 0.50.87
+**Test geschrieben:** Ja – `tests/integration/feat029-migration.test.ts` (isolierte PostgreSQL-Migration, 1/1); nach Produktionsmigration zusätzlich direkte Prisma-Leseabfragen und read-only Schemaprüfung.
 
-**Beschreibung:** Produktionslogs vom 05.11.2026 zeigen Prisma-Fehler auf mehreren angemeldeten Dashboardseiten. Abfragen erwarten `GameSession.gameNameSnapshot`; die Eventdetailseite erwartet `public.EventPlayedSession`. Beide Schemaobjekte fehlen in der verbundenen Datenbank.
+**Beschreibung:** Produktionslogs vom 05.11.2026 zeigten Prisma-Fehler auf mehreren Dashboardseiten. Abfragen erwarteten `GameSession.gameNameSnapshot`; die Eventdetailseite erwartete `public.EventPlayedSession`. Diese Schemaobjekte fehlten in der verbundenen Datenbank.
 **Reproduktion:** Die betroffenen Dashboardseiten (`/dashboard/sessions`, `/dashboard/statistics`, `/dashboard/profile`, `/dashboard/events/new` oder `/dashboard/events/{id}`) mit dem ausgelieferten App-Build gegen die betroffene Produktionsdatenbank aufrufen.
-**Erwartetes Verhalten:** Das Produktionsschema enthält alle Migrationen, die der ausgelieferte Prisma-Client und Anwendungscode voraussetzen; Seiten laden ohne `P2021`-/`P2022`-Fehler.
-**Tatsächliches Verhalten:** Prisma meldet `P2022` für `GameSession.gameNameSnapshot` und `P2021` für die Tabelle `public.EventPlayedSession`. Sessions, Statistiken, Profil und Eventseiten können dadurch fehlschlagen.
-**Ursache:** Die Produktionsmigrationen `20261104080000_series_entry_game_snapshot` und `20261104160000_event_played_sessions` sind im Datenbankschema offenbar nicht angewendet, während der App-Code diese Spalten und Tabelle bereits abfragt.
-**Lösung:** Vor einer Produktionsänderung den aktuellen Migrationsstatus und ein geprüftes, konsistentes Backup sichern; danach die fehlenden Migrationen mit dem dokumentierten `npm run prisma:deploy` anwenden und den Status read-only verifizieren. Nicht `db push` verwenden. Bis zur Prüfung ist nicht bestätigt, ob weitere Migrationen fehlen.
+**Erwartetes Verhalten:** Das Produktionsschema enthält die vom ausgelieferten Prisma-Client erwarteten Spalten und Tabellen; die betroffenen Abfragen funktionieren ohne `P2021`-/`P2022`-Fehler.
+**Tatsächliches Verhalten:** Prisma meldete `P2022` für Session-Snapshotspalten und `P2021` für `EventPlayedSession`.
+**Ursache:** Die Migration `20261104160000_event_played_sessions` war nicht angewendet. Die Serien-Snapshotmigration `20261104080000_series_entry_game_snapshot` war bereits angewendet.
+**Lösung:** Ein vollständiges, konsistentes Backup erstellt und geprüft (33 Tabellen, 982 Zeilen, gzip-Prüfung, SHA-256; ältere Sicherungen erhalten). Danach ausschließlich die einzige ausstehende Migration `20261104160000_event_played_sessions` mit `npm run prisma:deploy` angewendet.
+**Prüfnachweis:** `prisma migrate status`: „Database schema is up to date“. Read-only bestätigt: Snapshotspalten, `SessionGuestPlayer`, `EventPlayedSession`, Primär-/Fremdschlüssel vorhanden. Prisma-Leseabfragen für Sessions und Eventdetails erfolgreich. Bestandszahlen stimmen mit dem Backup überein: 3 Sessions, 25 Reihen, 238 Spiele, 5 Events; `_prisma_migrations` enthält erwartungsgemäß einen zusätzlichen abgeschlossenen Eintrag. `EventPlayedSession` startet mit 0 Verknüpfungen.
 **Referenz im Changelog:** Version 0.50.87 – BUG-075.
 
 ---
 
 ## Statistik
 
-- **Offene Bugs:** 1
+- **Offene Bugs:** 0
 - **In Bearbeitung:** 2
-- **Behoben:** 72
+- **Behoben:** 73
 - **Wontfix:** 0
 - **Gesamt:** 75

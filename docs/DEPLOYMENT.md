@@ -73,6 +73,7 @@ In Vercel unter **Project Settings → Environment Variables** eintragen (Bereic
 - Bei externem Postgres: Stelle sicher, dass die Datenbank erreichbar ist und SSL aktiviert ist (Vercel erfordert SSL).
 - Vor einem Release den Zustand und die Wiederherstellbarkeit des Backups prüfen und Migrationen zuerst an einer separaten Testdatenbank erproben.
 - Die Migration `20261103193000_guest_participant_credentials` ergänzt den Hash des Gast-Besitznachweises. Bestehende Datensätze und Stimmen bleiben erhalten; alte Browserzugänge ohne Nachweis müssen nach dem Release einen neuen Spitznamen registrieren. Diese Migration wurde am 04.11.2026 nach geprüftem Produktionsbackup zusammen mit den inzwischen freigegebenen FEAT-025- und FEAT-028-Migrationen auf Produktion angewendet. Anschließend wurden 25 bestehende Reiheneinträge als `COLLECTION` bestätigt; kein Bestandsspiel wurde in einen temporären Eintrag umgewandelt.
+- Die FEAT-029-Migration `20261104160000_event_played_sessions` wurde am 05.11.2026 nach einem konsistenten `REPEATABLE READ READ ONLY`-Backup (33 Tabellen, 982 Zeilen) mit `npm run prisma:deploy` auf Produktion angewendet. Migrationsstatus, Schemaobjekte und direkte Prisma-Leseabfragen wurden geprüft; vorhandene Sessions, Spiele, Reihen und Events blieben unverändert.
 - Freigegebene Migrationen gezielt mit `npm run prisma:deploy` ausführen. Der Befehl bricht beim ersten Fehler ab; es gibt kein automatisches Baseline und kein `prisma db push`.
 - Erst nach erfolgreicher Migration den vorbereiteten Build veröffentlichen. Vercel verwendet weiterhin `npm run build`; neue Migrationen werden dadurch nicht stillschweigend ausgeführt.
 - Für ausdrücklich freigegebene Release-Umgebungen kombiniert `npm run release:build` Migration und anschließenden Build. Das ist kein Prüf- oder Preview-Befehl.
@@ -88,7 +89,7 @@ In Vercel unter **Project Settings → Environment Variables** eintragen (Bereic
 ### 2.6 Production-Deployment
 
 1. Merge in `main` oder manuelles **Redeploy** in Vercel.
-2. Vor dem Release die ausdrücklich freigegebenen Migrationen mit `npm run prisma:deploy` anwenden und deren Erfolg prüfen; `npm run build` selbst führt keine Migration aus. Beim Release vom 04.11.2026 wurden die Migrationen `20261103193000_guest_participant_credentials`, `20261104080000_series_entry_game_snapshot` und `20261104130000_gamification_profiles_and_challenges` nach einem geprüften Backup erfolgreich angewendet.
+2. Vor dem Release die ausdrücklich freigegebenen Migrationen mit `npm run prisma:deploy` anwenden und deren Erfolg prüfen; `npm run build` selbst führt keine Migration aus. Am 04.11.2026 wurden `20261103193000_guest_participant_credentials`, `20261104080000_series_entry_game_snapshot` und `20261104130000_gamification_profiles_and_challenges` angewendet; `20261104160000_event_played_sessions` folgte nach geprüftem Backup am 05.11.2026.
 3. `/api/health` ist eine öffentliche, datenbankfreie Liveness-Prüfung und muss JSON mit `check: "liveness"` und `status: "healthy"` liefern.
 4. `/api/health/ready` ist eine separat geschützte Datenbank-Readiness. Für den Betriebsmonitor `HEALTH_READINESS_TOKEN` als serverseitiges Secret setzen (mindestens 32 zufällige Zeichen) und als Bearer-Token konfigurieren. Ohne Secret antwortet die Route mit 503.
 5. `/api/docs` (Swagger UI) prüfen.

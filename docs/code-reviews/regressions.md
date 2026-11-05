@@ -497,9 +497,11 @@ Jeder Eintrag enthält Felder für Root-Cause-Analyse und Gegenmaßnahmen (manue
 |---------|-----------|--------|-------|--------|
 | SEC-45: npm audit: Bekannte Vulnerabilities | P2 | resolved | open | npm audit lieferte keine gültigen Prüfdaten |
 
-**Root-Cause:** <!-- Manuell ausfüllen: Warum ist das Finding zurückgekehrt? -->
-**Gegenmaßnahme:** <!-- Manuell ausfüllen: Wie wird verhindert, dass es erneut passiert? -->
-**Verantwortlich:** <!-- Manuell ausfüllen -->
+**Root-Cause:** Der erste Evaluatorlauf fand in der eingeschränkten Netzwerkumgebung keine Verbindung zur npm Registry und wertete fehlende Auditdaten fail-closed als offenes Finding. Es wurden keine Abhängigkeiten geändert.
+**Gegenmaßnahme:** Produktionsaudit und Regressionsevaluator mit Registryzugriff wiederholen; bei ungültigen Prüfdaten den Lauf nicht als Ergebnis werten.
+**Verantwortlich:** BoardGameTools-Wartung.
+
+**Auflösung 2026-11-05:** `npm audit --omit=dev` meldete 0 Vulnerabilities. Der Regressionsevaluator mit Registryzugriff endete mit Exitcode 0, Sicherheit 10/10 und ohne Regression. Snapshot: `history/2026-11-05_1159.json`.
 
 ---
 
@@ -540,5 +542,17 @@ Jeder Eintrag enthält Felder für Root-Cause-Analyse und Gegenmaßnahmen (manue
 **Verantwortlich:** BoardGameTools-Wartung.
 
 **Auflösung 2026-11-05:** Vollständiger `npm audit --json` bestätigte 3 niedrige Befunde ausschließlich in `shadcn`/`@shadcn/registry`/`deepmerge` (Entwicklungsabhängigkeiten); der Produktionsaudit lieferte 0 Vulnerabilities. `npm run review-evaluate:regression` mit Registryzugriff: Exitcode 0, Sicherheit 10/10, 0 offene Security-Findings und keine Regression. Der Commit-Hook wiederholte die erfolgreiche Prüfung; Snapshot: `history/2026-11-05_1017.json`.
+
+---
+
+## 2026-11-05 10:58:33
+
+| Finding | Priorität | Vorher | Jetzt | Detail |
+|---------|-----------|--------|-------|--------|
+| SEC-45: npm audit: Bekannte Vulnerabilities | P2 | resolved | open | npm audit lieferte keine gültigen Prüfdaten |
+
+**Root-Cause:** <!-- Manuell ausfüllen: Warum ist das Finding zurückgekehrt? -->
+**Gegenmaßnahme:** <!-- Manuell ausfüllen: Wie wird verhindert, dass es erneut passiert? -->
+**Verantwortlich:** <!-- Manuell ausfüllen -->
 
 ---

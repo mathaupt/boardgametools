@@ -54,21 +54,20 @@ nicht begonnener Umsetzung. Die offenen Punkte sind keine Umsetzungsfreigabe.
 | FEAT-017 | Spielcover in der Sessions-Übersicht | Responsive Browser-/Viewport-Abnahme | [Plan](superpowers/plans/2026-11-02-FEAT-017-session-cover.md) |
 | FEAT-018 | Testabdeckung schrittweise auf 80 % erhöhen | Abgeschlossen; globales 80-%-Gate aktiv | [Plan](superpowers/plans/2026-11-02-FEAT-018-coverage-80.md) |
 | FEAT-019 | Spracheingabe für Suche und Sessions | Konzept vorhanden; Plan und Umsetzung offen | [Konzept](superpowers/specs/2026-11-02-spracheingabe-design.md) |
-| FEAT-029 | Gespielte Eventspiele als Sessions erfassen | Webcode und isolierter Test abgeschlossen; Produktionsmigration/Rollout offen, iOS separat | [Spec](superpowers/specs/2026-11-04-FEAT-029-event-sessions-design.md), [Plan](superpowers/plans/2026-11-04-FEAT-029-event-sessions.md) |
+| FEAT-029 | Gespielte Eventspiele als Sessions erfassen | Web und Produktionsmigration abgeschlossen; iOS separat | [Spec](superpowers/specs/2026-11-04-FEAT-029-event-sessions-design.md), [Plan](superpowers/plans/2026-11-04-FEAT-029-event-sessions.md) |
 | FEAT-030 | Liveness- und Readiness-Monitoring einrichten | Erst bei Auswahl eines Monitoring-Systems: Verbraucher inventarisieren, Secret und getrennte Checks konfigurieren, Staging-Abnahme durchführen | Noch zu planen |
 
 ## Offene Bugs
 
-Ein Bug ist offen; zwei Bugs sind derzeit in Bearbeitung. Die vollständigen Beschreibungen,
+Zwei Bugs sind derzeit in Bearbeitung. Die vollständigen Beschreibungen,
 Reproduktionsschritte und Prüfnachweise stehen in der [Bug-Tracking-Liste](bugs.md).
 
 | ID | Schweregrad | Bug | Status |
 |---|---|---|---|
-| BUG-075 | Hoch | Produktionsschema enthält die FEAT-025-/FEAT-029-Migrationen nicht | Offen |
 | BUG-038 | Mittel | Mobile Terminantworten teilweise verborgen und zu klein | In Bearbeitung |
 | BUG-041 | Niedrig | Desktop-Raster der öffentlichen Eventseite unwirksam | In Bearbeitung |
 
-**Stand:** 05.11.2026. BUG-055 und BUG-056 sind geschlossen; eine spätere
+**Stand:** 05.11.2026. BUG-055, BUG-056 und BUG-075 sind geschlossen; eine spätere
 Monitoring-Einrichtung ist als FEAT-030 erfasst. Die vollständigen Feature-Spezifikationen,
 Implementierungsnachweise und historischen Abschnitte A bis I folgen unterhalb
 als Detailarchiv. Statusänderungen werden in dieser Übersicht und im jeweiligen
@@ -973,13 +972,13 @@ danach können FEAT-026 und FEAT-027 unabhängig geplant umgesetzt werden.
 
 ## FEAT-029 – Gespielte Eventspiele direkt als Sessions erfassen
 
-**Status:** Webcode in Version 0.50.80 abgeschlossen und am 04.11.2026 committed. Die Migration ist isoliert getestet, aber noch nicht in Produktion ausgerollt; deshalb bleibt FEAT-029 bis zum Rollout offen. iOS separat.
+**Status:** Webcode in Version 0.50.80 abgeschlossen; die Produktionsmigration 20261104160000_event_played_sessions wurde am 05.11.2026 nach geprüftem Backup angewendet und read-only verifiziert. FEAT-029 ist für Web abgeschlossen; iOS separat.
 **Ziel:** Im Event festhalten, welche vorgeschlagenen Spiele tatsächlich gespielt wurden, und die Partien direkt von dort als Sessions erfassen und mit dem Event verknüpfen.
 **Bestätigter Umfang:** Je tatsächlich gespielter Partie eine eigene Session. Eventteilnehmer werden vorausgewählt. Mitspieler, Dauer, Gewinner/Platzierungen und Notizen können erfasst werden. Gäste werden namentlich als Session-Mitspieler übernommen. Reine BGG-Vorschläge können ohne dauerhaften Sammlungsimport als Session erfasst werden. Nur der Event-Ersteller darf Sessions im Event speichern und nachträglich ändern. Angemeldete Eventberechtigte sehen die Sessiondetails im Event; Gäste mit öffentlichem Event-Link sehen nur die gespielten Spiele.
-**Abnahmekriterien:** Gespielte Partien sind im Event erkennbar und mit Sessions verknüpft; Sessiondaten fließen in bestehende Historie und Statistiken ein; wiederholtes Absenden erzeugt keine ungewollten Duplikate; nicht gespielte Vorschläge bleiben ungetrackt; Zugriffsrechte und Korrekturen sind abgesichert. Code- und isolierte Testabnahme abgeschlossen; Produktionsmigration/Rollout offen.
+**Abnahmekriterien:** Gespielte Partien sind im Event erkennbar und mit Sessions verknüpft; Sessiondaten fließen in bestehende Historie und Statistiken ein; wiederholtes Absenden erzeugt keine ungewollten Duplikate; nicht gespielte Vorschläge bleiben ungetrackt; Zugriffsrechte und Korrekturen sind abgesichert. Code-, isolierte Test- und Produktionsschemaabnahme abgeschlossen.
 **Im Implementierungsplan festgelegt:** Retry derselben Operations-ID liefert dieselbe Session; eine bewusst neue Partie erhält eine neue ID. Event-/Vorschlagslöschung entfernt nur den Eventlink, Sessions bleiben erhalten. Session-Soft-Delete blendet die Partie im Event aus und erhält den Retry-Link. Snapshots tragen BGG-only- und fremde Sammlungsspiele ohne Sammlungspflicht; mobile Session-DTOs bleiben rückwärtskompatibel.
 **Plattform:** Web zuerst; native iOS-Oberflächen separat planen.
-**Design-Spec:** [Eventspiele als Sessions](superpowers/specs/2026-11-04-FEAT-029-event-sessions-design.md). Produktumfang am 04.11.2026 bestätigt. **Implementierungsplan:** [Sessions aus Eventspielen](superpowers/plans/2026-11-04-FEAT-029-event-sessions.md); am 04.11.2026 freigegeben und umgesetzt. Produktionsmigration und Rollout bleiben offen; keine iOS-Änderungen.
+**Design-Spec:** [Eventspiele als Sessions](superpowers/specs/2026-11-04-FEAT-029-event-sessions-design.md). Produktumfang am 04.11.2026 bestätigt. **Implementierungsplan:** [Sessions aus Eventspielen](superpowers/plans/2026-11-04-FEAT-029-event-sessions.md); am 04.11.2026 freigegeben und umgesetzt. Produktionsmigration am 05.11.2026 angewendet; keine iOS-Änderungen.
 
 ## FEAT-030 – Liveness- und Readiness-Monitoring einrichten
 

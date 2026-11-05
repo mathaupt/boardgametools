@@ -94,3 +94,7 @@
 - Abnahme erwartet Datenbankmigrationstest, Unit/API/Komponententests, mobile DTO-Vertrag, gerenderte Impeccable-Prüfung und vollständige Privacy-/IDOR-Prüfung. iOS-UI ist ausgeschlossen.
 - **Freigabe:** Nutzer hat den Plan am 04.11.2026 ausdrücklich zur Umsetzung freigegeben.
 - **Abnahme:** Vollständige Vitest-Suite 1.216/1.216 bestanden; Prisma-Validierung, Typecheck, Produktionsbuild, Lint ohne Fehler, Security-Check und Review-Regressionscheck 9,9/10 ohne Regression bestanden. Alle 18 Migrationen und der FEAT-029-Schemavertrag wurden auf einer frischen lokalen temporären PostgreSQL-14-Instanz geprüft. Gerenderte lokale Vorschau wurde bei 390 px und 1440 px mit Playwright geprüft; Impeccable-Detektor meldete nach Behebung der Findings keine Befunde. Commit `3bf2d1b` mit regulären Hooks erfolgreich. Produktionsmigration nicht ausgeführt.
+
+### Produktionsnachtrag 05.11.2026
+
+Nach der ursprünglichen Abnahme wurde die einzige ausstehende Migration `20261104160000_event_played_sessions` nach einem geprüften konsistenten Produktionsbackup angewendet. `prisma migrate status` meldet „Database schema is up to date“. Die erwarteten Snapshotspalten, Tabellen und Beziehungen sowie die betroffenen Prisma-Abfragen sind read-only bestätigt; die Bestandszeilen in Sessions, Spielen, Reihen und Events stimmen mit dem Backup überein. BUG-075 ist damit behoben. Webumfang abgeschlossen; iOS bleibt separat.

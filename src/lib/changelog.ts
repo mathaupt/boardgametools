@@ -14,10 +14,10 @@ export const changelog: ChangelogEntry[] = [
   {
     version: "0.50.87",
     date: "2026-11-05",
-    title: "Fehlende Produktionsmigrationen erfasst",
-    description: "Produktionslogs zeigen, dass Schemaänderungen für gespeicherte Spiele und Event-Sessions in der verbundenen Datenbank fehlen.",
+    title: "Produktionsschema für Event-Sessions vervollständigt",
+    description: "Die fehlende Produktionsmigration für Session-Snapshots, Gastmitspieler und gespielte Eventpartien wurde nach geprüftem Backup angewendet.",
     changes: [
-      { type: "internal", text: "BUG-075 dokumentiert Prisma-Fehler durch fehlende GameSession-Spalten und die Tabelle EventPlayedSession; die Produktionsmigrationen müssen geprüft und nach Backup ausgerollt werden.", bugRef: "BUG-075" },
+      { type: "fix", text: "BUG-075: Die Produktionsmigration 20261104160000_event_played_sessions ergänzt die erwarteten Session-Snapshotspalten, Gastspieler und EventPlayedSession. Prisma-Status, Bestandszeilen und betroffene Leseabfragen sind geprüft.", bugRef: "BUG-075" },
     ],
   },
   {
