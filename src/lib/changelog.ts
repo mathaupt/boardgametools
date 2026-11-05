@@ -12,6 +12,15 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.89",
+    date: "2026-11-05",
+    title: "Abzeichenübersicht als Feature aufgenommen",
+    description: "Das Backlog erfasst jetzt eine erreichbare Übersicht aller Abzeichen mit verständlichen Freischaltbedingungen.",
+    changes: [
+      { type: "internal", text: "FEAT-032 aufgenommen; Seite, Navigation und Freischaltbedingungen sind noch zu planen und nicht zur Umsetzung freigegeben." },
+    ],
+  },
+  {
     version: "0.50.88",
     date: "2026-11-05",
     title: "Auswahl für Event-Partien erweitert geplant",

@@ -57,6 +57,7 @@ nicht begonnener Umsetzung. Die offenen Punkte sind keine Umsetzungsfreigabe.
 | FEAT-029 | Gespielte Eventspiele als Sessions erfassen | Web und Produktionsmigration abgeschlossen; iOS separat | [Spec](superpowers/specs/2026-11-04-FEAT-029-event-sessions-design.md), [Plan](superpowers/plans/2026-11-04-FEAT-029-event-sessions.md) |
 | FEAT-030 | Liveness- und Readiness-Monitoring einrichten | Erst bei Auswahl eines Monitoring-Systems: Verbraucher inventarisieren, Secret und getrennte Checks konfigurieren, Staging-Abnahme durchführen | Noch zu planen |
 | FEAT-031 | Bei Event-Partien Spiele aus Vorschlägen, Sammlung oder BGG wählen | Anforderung aufgenommen; Implementierungsplan offen | Noch zu planen |
+| FEAT-032 | Abzeichenübersicht mit Freischaltbedingungen | Anforderung aufgenommen; Implementierungsplan offen | Noch zu planen |
 
 ## Offene Bugs
 
@@ -79,7 +80,7 @@ Prüfprotokolle zum damaligen Stand; für den aktuellen Status gilt diese Übers
 
 Die Abschnitte A bis I dokumentieren Betriebs-, Abnahme- und Feature-Restarbeiten
 mit ihrem jeweiligen Prüfdatum. Der aktuelle Featurestatus steht in der
-Übersicht; neue Anforderungen FEAT-023 bis FEAT-031 sind darunter verlinkt.
+Übersicht; neue Anforderungen FEAT-023 bis FEAT-032 sind darunter verlinkt.
 „Offen“ bedeutet
 hier entweder eine ausdrücklich ausstehende Abnahme, eine gesonderte
 Produkt-/Betriebsfreigabe oder einen separat zu planenden Sicherheitsumfang.
@@ -987,6 +988,13 @@ danach können FEAT-026 und FEAT-027 unabhängig geplant umgesetzt werden.
 **Ziel:** Sobald ein Monitoring-System ausgewählt wird, die Prozess-Liveness und Datenbank-Readiness getrennt überwachen.
 **Abnahmekriterien:** Verbraucher und gewünschte Verfügbarkeit inventarisieren; `/api/health` als DB-freie Liveness und `/api/health/ready` mit einem separaten Secret konfigurieren; Secret sicher bereitstellen; Verhalten bei DB-Ausfall und Erholung in isoliertem Staging prüfen; Alarmierung und Betrieb dokumentieren.
 **Implementierungsplan:** Noch nicht erstellt. Vor einer Einrichtung gemäß verbindlichem Feature-Ablauf planen und Umfang freigeben lassen.
+
+## FEAT-032 – Abzeichen und Freischaltbedingungen auffindbar machen
+
+**Status:** Anforderung aufgenommen; Implementierungsplan und Umsetzung offen.
+**Ziel:** Eine eigene, erreichbare Abzeichenübersicht bereitstellen, in der Nutzer alle verfügbaren Abzeichen sehen und nachvollziehen können, was sie für jedes Abzeichen tun müssen.
+**Abnahmekriterien:** Die Seite zeigt verdiente und noch nicht verdiente Abzeichen klar unterscheidbar. Für jedes Abzeichen werden Name, Bedeutung und konkrete Freischaltbedingung verständlich angezeigt; Fortschritt wird nur gezeigt, wenn er sich datenschutzgerecht bestimmen lässt. Die Übersicht ist vom Profil beziehungsweise Gamification-Bereich aus erreichbar und auf schmalen Ansichten bedienbar. Öffentliche Profilfreigaben zeigen weiterhin nur ausdrücklich freigegebene Abzeichen.
+**Implementierungsplan:** Noch nicht erstellt. Vor der Umsetzung vorhandene Badge-Logik und FEAT-028-Umsetzung prüfen, Regeln und erreichbare Navigation festlegen und den Plan mit RED-GREEN-REFACTOR-Tests, Impeccable-/Browserprüfung und Security-/Datenschutzprüfung zur Freigabe vorlegen.
 
 ## FEAT-031 – Spiele für Event-Partien flexibel auswählen
 
