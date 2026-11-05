@@ -12,6 +12,16 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.91",
+    date: "2026-11-05",
+    title: "Startzeit und Dauer im Kalenderexport korrigiert",
+    description: "Events übernehmen jetzt eine wählbare Dauer. Kalenderdateien verwenden die korrekte Startzeit und die gespeicherte Endzeit.",
+    changes: [
+      { type: "fix", text: "BUG-076: ICS-Zeitstempel sind unabhängig von der Serverzeitzone korrekt; ausgewählte Termintage behalten die Eventstartzeit und die Endzeit folgt der gewählten Dauer.", bugRef: "BUG-076" },
+      { type: "internal", text: "Die additive Produktionsmigration für Eventdauer ist erstellt, aber noch nicht ausgerollt." },
+    ],
+  },
+  {
     version: "0.50.90",
     date: "2026-11-05",
     title: "Umsetzungsplan für FEAT-031 erstellt",

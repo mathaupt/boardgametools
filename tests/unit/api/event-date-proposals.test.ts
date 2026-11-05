@@ -4,8 +4,9 @@ const mocks = vi.hoisted(() => {
   const tx = {
     dateProposal: { upsert: vi.fn(), findMany: vi.fn(), deleteMany: vi.fn(), findFirst: vi.fn() },
     dateVote: { upsert: vi.fn() },
+    event: { update: vi.fn() },
   };
-  const event = { createdById: "user-1", selectedDate: null as Date | null };
+  const event = { createdById: "user-1", eventDate: new Date("2026-11-01T18:00:00.000Z"), selectedDate: null as Date | null };
   return {
     auth: vi.fn(),
     event,
@@ -26,6 +27,7 @@ vi.mock("@/lib/db", () => ({ default: { event: { findFirst: mocks.eventFind }, d
 vi.mock("@/lib/services/event-mutation.service", () => ({ withEventMutation: mocks.mutation }));
 
 import { GET, POST, DELETE } from "@/app/api/events/[id]/date-proposals/route";
+import { POST as selectDate } from "@/app/api/events/[id]/date-proposals/select/route";
 import { POST as vote, PUT as bulkVote } from "@/app/api/events/[id]/date-proposals/vote/route";
 
 const params = { params: Promise.resolve({ id: "event-1" }) };
@@ -39,6 +41,7 @@ describe("event date proposal routes", () => {
     vi.clearAllMocks();
     mocks.auth.mockResolvedValue({ userId: "user-1" });
     mocks.event.createdById = "user-1";
+    mocks.event.eventDate = new Date("2026-11-01T18:00:00.000Z");
     mocks.event.selectedDate = null;
     mocks.eventFind.mockResolvedValue({ id: "event-1", createdById: "user-1", invites: [{ userId: "user-2" }] });
     mocks.proposalsFind.mockResolvedValue([]);
@@ -92,6 +95,18 @@ describe("event date proposal routes", () => {
     mocks.event.selectedDate = null;
     expect((await DELETE(request("DELETE"), params)).status).toBe(200);
     expect(mocks.tx.dateProposal.deleteMany).toHaveBeenCalledWith({ where: { eventId: "event-1" } });
+  });
+
+  it("keeps the event start time when the date poll finalizes a calendar date", async () => {
+    mocks.tx.dateProposal.findFirst.mockResolvedValue({ id: "proposal-2", date: new Date("2026-11-03T00:00:00.000Z") });
+    mocks.tx.event.update.mockResolvedValue({ selectedDate: new Date("2026-11-03T00:00:00.000Z"), eventDate: new Date("2026-11-03T18:00:00.000Z") });
+
+    await selectDate(request("POST", { dateProposalId: "proposal-2" }), params);
+
+    expect(mocks.tx.event.update).toHaveBeenCalledWith({
+      where: { id: "event-1" },
+      data: { selectedDate: new Date("2026-11-03T00:00:00.000Z"), eventDate: new Date("2026-11-03T18:00:00.000Z") },
+    });
   });
 
   it("validates single date votes and requires a proposal in the same event", async () => {

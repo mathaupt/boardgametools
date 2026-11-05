@@ -61,13 +61,14 @@ nicht begonnener Umsetzung. Die offenen Punkte sind keine Umsetzungsfreigabe.
 
 ## Offene Bugs
 
-Zwei Bugs sind derzeit in Bearbeitung. Die vollständigen Beschreibungen,
+Drei Bugs sind derzeit in Bearbeitung. Die vollständigen Beschreibungen,
 Reproduktionsschritte und Prüfnachweise stehen in der [Bug-Tracking-Liste](bugs.md).
 
 | ID | Schweregrad | Bug | Status |
 |---|---|---|---|
 | BUG-038 | Mittel | Mobile Terminantworten teilweise verborgen und zu klein | In Bearbeitung |
 | BUG-041 | Niedrig | Desktop-Raster der öffentlichen Eventseite unwirksam | In Bearbeitung |
+| BUG-076 | Mittel | Kalenderexport verschiebt Startzeit und setzt feste Dreistundendauer | In Bearbeitung |
 
 **Stand:** 05.11.2026. BUG-055, BUG-056 und BUG-075 sind geschlossen; eine spätere
 Monitoring-Einrichtung ist als FEAT-030 erfasst. Die vollständigen Feature-Spezifikationen,

@@ -367,6 +367,7 @@ model Event {
   title             String
   description       String?
   eventDate         DateTime
+  durationMinutes   Int       @default(180)
   location          String?
   status            String    @default("draft") // draft, voting, closed
   createdById       String

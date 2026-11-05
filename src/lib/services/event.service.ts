@@ -20,6 +20,7 @@ export interface CreateEventInput {
   title: string;
   description?: string;
   eventDate: string;
+  durationMinutes?: number;
   location?: string;
   groupId?: string;
   inviteEmails?: string[];
@@ -133,6 +134,11 @@ export const EventService = {
     );
     if (validationError) throw new ApiError(400, validationError);
 
+    const durationMinutes = input.durationMinutes ?? 180;
+    if (!Number.isInteger(durationMinutes) || durationMinutes < 30 || durationMinutes > 1440) {
+      throw new ApiError(400, "Die Dauer muss zwischen 30 Minuten und 24 Stunden liegen.");
+    }
+
     // Build invite list
     const organizerInvite = { userId, status: "accepted" as const };
     const additionalInvites: { userId: string | null; email: string | null; status: "pending" }[] = [];
@@ -156,6 +162,7 @@ export const EventService = {
         title: input.title,
         description: input.description || null,
         eventDate: new Date(input.eventDate),
+        durationMinutes,
         location: input.location || null,
         groupId: input.groupId || null,
         createdById: userId,

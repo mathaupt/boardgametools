@@ -2126,12 +2126,30 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 **Prüfnachweis:** `prisma migrate status`: „Database schema is up to date“. Read-only bestätigt: Snapshotspalten, `SessionGuestPlayer`, `EventPlayedSession`, Primär-/Fremdschlüssel vorhanden. Prisma-Leseabfragen für Sessions und Eventdetails erfolgreich. Bestandszahlen stimmen mit dem Backup überein: 3 Sessions, 25 Reihen, 238 Spiele, 5 Events; `_prisma_migrations` enthält erwartungsgemäß einen zusätzlichen abgeschlossenen Eintrag. `EventPlayedSession` startet mit 0 Verknüpfungen.
 **Referenz im Changelog:** Version 0.50.87 – BUG-075.
 
+### [BUG-076] Kalenderexport verschiebt Startzeit und setzt feste Dreistundendauer
+
+**Status:** `in_progress`
+**Schweregrad:** `medium`
+**Entdeckt:** 2026-11-05
+**Behoben:**
+**Behoben in Version:**
+**Test geschrieben:** Ja – Kalender-UTC/Dauer, Datumauswahl mit erhaltener Startzeit (inklusive Sommerzeitwechsel), Eventanlage und Dauerpersistenz. Isolierter Migrationstest ergänzt; lokale Ausführung mangels erreichbarer Testdatenbank noch offen.
+
+**Beschreibung:** Der Kalenderdownload kann für ein Event eine falsche Uhrzeit anzeigen (gemeldet: 1–3 Uhr). Bei der Eventanlage ist eine Startzeit vorhanden, aber keine Dauer auswählbar. Die Datumauswahl setzt die Eventstartzeit auf UTC-Mitternacht zurück; der ICS-Export rechnet außerdem stets drei Stunden hinzu und schreibt lokale Serverzeitwerte fälschlich mit UTC-Kennzeichnung.
+**Reproduktion:** Event mit konkreter Startzeit anlegen, einen Tag in der Terminabstimmung auswählen und die ICS-Datei herunterladen. Mit einer Eventstartzeit 19:00 Uhr und einer gewünschten Dauer von zwei Stunden muss der Kalender 19:00–21:00 Uhr Ortszeit anzeigen.
+**Erwartetes Verhalten:** Die Eventanlage speichert Startzeit und wählbare Dauer. Die Auswahl eines Abstimmungstags erhält die Startuhrzeit. Der ICS-Export enthält den korrekten Zeitpunkt unabhängig von der Serverzeitzone und endet nach der gespeicherten Dauer.
+**Tatsächliches Verhalten:** Der Export endet pauschal drei Stunden nach dem Start. Durch lokale Datumsgetter mit angehängtem `Z` sowie eine beim Datumsauswählen auf Mitternacht gesetzte Eventzeit wird die angezeigte Kalenderzeit verschoben.
+**Ursache:** Die Dauer war nicht im Eventmodell gespeichert; `DTEND` verwendete einen festen Dreistundenwert; die ICS-Formatierung verwendete lokale statt UTC-Getter; das Finalisieren der Terminabstimmung ersetzte `eventDate` vollständig durch ein Datum ohne Uhrzeit.
+**Lösung:** Code und additive Migration erstellt: Dauer in Minuten (30–1440, Standard 180), Eventformular mit Startzeit/Dauer, Datumauswahl übernimmt die Ortszeit `Europe/Berlin`, ICS nutzt UTC-Getter und berechnet `DTEND` aus der Dauer. Die Produktionsmigration ist noch nicht ausgerollt; BUG-076 bleibt deshalb in Bearbeitung.
+**Prüfnachweis:** Die gezielten Unit-Tests bestehen mit 40/40. Der neue Integrationstest für Default und Nullbarkeit der Spalte wartet auf eine verfügbare isolierte PostgreSQL-Testdatenbank. Vor dem Fix schlugen die drei Regressionstests für UTC-Formatierung, Dauer und Zeiterhalt erwartungsgemäß fehl.
+**Referenz im Changelog:** Version 0.50.91 – BUG-076.
+
 ---
 
 ## Statistik
 
 - **Offene Bugs:** 0
-- **In Bearbeitung:** 2
+- **In Bearbeitung:** 3
 - **Behoben:** 73
 - **Wontfix:** 0
-- **Gesamt:** 75
+- **Gesamt:** 76

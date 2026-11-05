@@ -305,7 +305,8 @@ Oben: **Offene Einladungen** mit Zusagen/Absagen-Buttons.
 | Feld | Typ | Pflicht |
 |------|-----|---------|
 | Titel | Text | Ja |
-| Datum/Uhrzeit | Datumspicker | Nein |
+| Datum und Uhrzeit | Lokale Datum-/Zeitauswahl | Ja |
+| Dauer | Auswahl von 1 bis 12 Stunden | Ja, Standard: 3 Stunden |
 | Ort | Text | Nein |
 | Beschreibung | Textarea | Nein |
 | Einladungen | Kommagetrennte E-Mail-Adressen | Nein |
@@ -327,7 +328,7 @@ Sammlung. Idempotente Wiederholungen erzeugen keine doppelten Sessions. Gäste
 details erscheinen nur für angemeldete Eventberechtigte.
 
 #### Event-Info
-Datum, Ort, serverseitig abgeleiteter Status (Planung / Abstimmung / geschlossen / abgesagt / vergangen), Beschreibung und gespeichertes Abstimmungsergebnis. Ein ausgewählter Termin wird als Datum ohne erfundene Uhrzeit angezeigt.
+Datum, Startzeit, Dauer, Ort, serverseitig abgeleiteter Status (Planung / Abstimmung / geschlossen / abgesagt / vergangen), Beschreibung und gespeichertes Abstimmungsergebnis. Die bei der Eventanlage angegebene Startzeit bleibt erhalten, wenn in der Terminabstimmung ein Kalendertag ausgewählt wird.
 
 #### Oeffentlicher Link
 - Status-Badge (Oeffentlich / Nicht veroeffentlicht)

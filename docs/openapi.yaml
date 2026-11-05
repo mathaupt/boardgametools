@@ -1099,6 +1099,7 @@ paths:
                 title: { type: string }
                 description: { type: string }
                 eventDate: { type: string, format: date-time }
+                durationMinutes: { type: integer, minimum: 30, maximum: 1440, default: 180, description: "Eventdauer in Minuten; Standard drei Stunden" }
                 location: { type: string }
                 inviteEmails: { type: array, items: { type: string, format: email } }
       responses:

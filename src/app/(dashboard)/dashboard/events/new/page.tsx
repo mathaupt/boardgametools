@@ -20,6 +20,7 @@ export default function NewEventPage() {
     title: "",
     description: "",
     eventDate: "",
+    durationMinutes: "180",
     location: "",
     inviteEmails: ""
   });
@@ -42,6 +43,7 @@ export default function NewEventPage() {
         body: JSON.stringify({
           ...formData,
           eventDate: new Date(formData.eventDate).toISOString(),
+          durationMinutes: Number(formData.durationMinutes),
           inviteEmails: inviteEmails.length > 0 ? inviteEmails : undefined
         }),
       });
@@ -61,7 +63,7 @@ export default function NewEventPage() {
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
@@ -118,7 +120,7 @@ export default function NewEventPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="eventDate">Datum *</Label>
+                <Label htmlFor="eventDate">Datum und Uhrzeit *</Label>
                 <Input
                   id="eventDate"
                   name="eventDate"
@@ -130,6 +132,27 @@ export default function NewEventPage() {
               </div>
 
               <div>
+                <Label htmlFor="durationMinutes">Dauer</Label>
+                <select
+                  id="durationMinutes"
+                  name="durationMinutes"
+                  className="flex min-h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
+                  value={formData.durationMinutes}
+                  onChange={handleChange}
+                >
+                  <option value="60">1 Stunde</option>
+                  <option value="90">1,5 Stunden</option>
+                  <option value="120">2 Stunden</option>
+                  <option value="180">3 Stunden</option>
+                  <option value="240">4 Stunden</option>
+                  <option value="360">6 Stunden</option>
+                  <option value="480">8 Stunden</option>
+                  <option value="720">12 Stunden</option>
+                </select>
+                <p className="mt-1 text-sm text-muted-foreground">Diese Dauer bestimmt das Ende im Kalenderexport.</p>
+              </div>
+
+              <div className="md:col-span-2">
                 <Label htmlFor="location">Ort</Label>
                 <Input
                   id="location"

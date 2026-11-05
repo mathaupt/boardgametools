@@ -6,7 +6,7 @@ vi.mock("@/lib/db", () => ({ default: { event: { findFirst: m.eventFind } } }));
 vi.mock("@/lib/api-logger", () => ({ withApiLogging: (handler: unknown) => handler }));
 vi.mock("@/lib/error-messages", () => ({ Errors: { EVENT_NOT_FOUND: "Event nicht gefunden", ACCESS_DENIED: "Zugriff verweigert" } }));
 import { GET } from "@/app/api/events/[id]/calendar/route";
-const event = { id: "e1", createdById: "owner", eventDate: new Date(2026, 10, 20, 18, 0, 0), title: "Spielabend!", description: "Bring Spiele", location: null, createdBy: { name: "Alex", email: "alex@example.test" }, invites: [{ userId: "guest", status: "accepted", user: { name: "Sam" } }, { userId: "owner", status: "declined", user: null }], proposals: [{ game: { name: "Catan" }, bggName: null }, { game: null, bggName: "Azul" }, { game: null, bggName: null }] };
+const event = { id: "e1", createdById: "owner", eventDate: new Date("2026-11-20T18:00:00.000Z"), title: "Spielabend!", description: "Bring Spiele", location: null, createdBy: { name: "Alex", email: "alex@example.test" }, invites: [{ userId: "guest", status: "accepted", user: { name: "Sam" } }, { userId: "owner", status: "declined", user: null }], proposals: [{ game: { name: "Catan" }, bggName: null }, { game: null, bggName: "Azul" }, { game: null, bggName: null }] };
 beforeEach(() => { vi.clearAllMocks(); m.auth.mockResolvedValue({ userId: "owner" }); m.eventFind.mockResolvedValue(event); m.handleError.mockImplementation(() => Response.json({ error: "forbidden" }, { status: 403 })); });
 const call = () => GET(new Request("http://local/api/events/e1/calendar") as never, { params: Promise.resolve({ id: "e1" }) });
 
@@ -17,6 +17,20 @@ describe("Event-Kalenderexport", () => {
     expect(response.headers.get("Content-Disposition")).toContain("event-Spielabend-.ics");
     expect(text).toContain("SUMMARY:Spielabend!"); expect(text).toContain("1. Catan\\n2. Azul\\n3. Unbekannt");
     expect(text).toContain("✅ Sam\\n❌ Unbekannt"); expect(text).toContain("Ort: TBD"); expect(text).toContain("DTEND:20261120T210000Z");
+  });
+  it("exportiert die angegebene Startzeit als UTC und berechnet das Ende aus der Eventdauer", async () => {
+    const previousTimezone = process.env.TZ;
+    process.env.TZ = "Europe/Berlin";
+    m.eventFind.mockResolvedValueOnce({ ...event, eventDate: new Date("2026-11-20T18:00:00.000Z"), durationMinutes: 120 });
+    try {
+      const response = await call();
+      const text = await response.text();
+      expect(text).toContain("DTSTART:20261120T180000Z");
+      expect(text).toContain("DTEND:20261120T200000Z");
+    } finally {
+      if (previousTimezone === undefined) delete process.env.TZ;
+      else process.env.TZ = previousTimezone;
+    }
   });
   it("erlaubt eingeladene Personen, aber verbirgt fremde und fehlende Events", async () => {
     m.auth.mockResolvedValueOnce({ userId: "guest" }); expect((await call()).status).toBe(200);

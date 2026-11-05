@@ -3,6 +3,7 @@ import { requireAuth, handleApiError, ApiError } from "@/lib/require-auth";
 import { withApiLogging } from "@/lib/api-logger";
 import { Errors } from "@/lib/error-messages";
 import { withEventMutation } from "@/lib/services/event-mutation.service";
+import { combineEventDateWithStartTime } from "@/lib/events/event-date";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -31,7 +32,9 @@ export const POST = withApiLogging(async function POST(
         if (event.createdById !== userId) throw new ApiError(403, Errors.ONLY_CREATOR_CAN_SELECT);
         const proposal = await tx.dateProposal.findFirst({ where: { id: dateProposalId, eventId: id } });
         if (!proposal) throw new ApiError(404, Errors.DATE_PROPOSAL_NOT_FOUND);
-        return tx.event.update({ where: { id }, data: { selectedDate: proposal.date, eventDate: proposal.date } });
+        const eventDate = combineEventDateWithStartTime(proposal.date, event.eventDate);
+        if (!eventDate) throw new ApiError(400, "Die Eventuhrzeit konnte nicht übernommen werden.");
+        return tx.event.update({ where: { id }, data: { selectedDate: proposal.date, eventDate } });
       }
     );
 

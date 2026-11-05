@@ -212,7 +212,7 @@ export const faqSections: FaqSection[] = [
       {
         question: "Kann ich ein Event in meinen Kalender exportieren?",
         answer:
-          "Ja! Auf der Event-Detailseite findest du den Kalender-Export-Button. Er erstellt eine .ics-Datei mit allen Event-Details (Datum, Ort, vorgeschlagene Spiele, Teilnehmerliste), die du in Google Calendar, Apple Kalender, Outlook oder jeden anderen Kalender importieren kannst.",
+          "Ja! Auf der Event-Detailseite findest du den Kalender-Export-Button. Die .ics-Datei übernimmt die beim Event angegebene Startzeit und Dauer sowie Ort, Spielvorschläge und Teilnehmerliste. Bestehende Events haben weiterhin eine Dauer von drei Stunden. Importiere die Datei in Google Calendar, Apple Kalender, Outlook oder einen anderen Kalender.",
       },
       {
         question: "Koennen Gaeste auch Spiele aus BGG vorschlagen?",

@@ -387,6 +387,7 @@ Event
 ├── title
 ├── description
 ├── eventDate
+├── durationMinutes (Standard 180 Minuten)
 ├── location
 ├── status (draft/voting/closed)
 ├── createdById (FK User)

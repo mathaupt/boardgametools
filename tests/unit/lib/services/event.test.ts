@@ -208,6 +208,28 @@ describe("EventService", () => {
   // ── create ───────────────────────────────────────────────────
 
   describe("create", () => {
+    it("persists the selected event duration in minutes", async () => {
+      const createdEvent = { ...fakeEvent, durationMinutes: 120, invites: [] };
+      vi.mocked(prisma.event.create).mockResolvedValue(createdEvent as never);
+      vi.mocked(prisma.user.findUnique).mockResolvedValue({ id: USER_ID, name: "Owner", email: null } as never);
+
+      await EventService.create(USER_ID, {
+        title: "Spieleabend", eventDate: "2026-11-10T18:00:00.000Z", durationMinutes: 120,
+      });
+
+      expect(prisma.event.create).toHaveBeenCalledWith(expect.objectContaining({
+        data: expect.objectContaining({ durationMinutes: 120 }),
+      }));
+    });
+
+    it.each([0, 15, 1441, 90.5])("rejects invalid event duration %s before creating the event", async (durationMinutes) => {
+      await expect(EventService.create(USER_ID, {
+        title: "Spieleabend", eventDate: "2026-11-10T18:00:00.000Z", durationMinutes,
+      })).rejects.toMatchObject({ statusCode: 400 });
+
+      expect(prisma.event.create).not.toHaveBeenCalled();
+    });
+
     it("creates event with invites and invalidates caches", async () => {
       const createdEvent = {
         ...fakeEvent,
