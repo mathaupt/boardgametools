@@ -601,10 +601,6 @@ Jeder Eintrag enthält Felder für Root-Cause-Analyse und Gegenmaßnahmen (manue
 |---------|-----------|--------|-------|--------|
 | SEC-45: npm audit: Bekannte Vulnerabilities | P2 | resolved | open | npm audit lieferte keine gültigen Prüfdaten |
 
-**Root-Cause:** <!-- Manuell ausfüllen: Warum ist das Finding zurückgekehrt? -->
-**Gegenmaßnahme:** <!-- Manuell ausfüllen: Wie wird verhindert, dass es erneut passiert? -->
-**Verantwortlich:** <!-- Manuell ausfüllen -->
-
 **Root-Cause:** Der erste Evaluatorlauf lief in der eingeschränkten Umgebung ohne Netzwerkzugriff und erhielt keine Antwort von registry.npmjs.org. SEC-45 wurde deshalb fail-closed als Regression gemeldet; Abhängigkeiten und Lockfile blieben unverändert.
 **Gegenmaßnahme:** Bei fehlenden Auditdaten denselben Evaluator mit gültigem Registryzugriff wiederholen und nur dessen Ergebnis als Maßstab verwenden.
 **Verantwortlich:** BoardGameTools-Wartung.

@@ -16,4 +16,4 @@ Screenshots: `.impeccable/critique/feat032/`. Der vollständige Unit-Testlauf wu
 
 ## Arbeitsstatus
 
-FEAT-032 Web ist umgesetzt und lokal geprüft. Keine Schema-, API- oder iOS-Änderung. Commit wird nach Abschluss der Repository-Hooks erstellt.
+FEAT-032 Web ist umgesetzt und lokal geprüft. Keine Schema-, API- oder iOS-Änderung. Commit `14945cb` bestand lint-staged, Security-Check und Regressionsevaluator.

@@ -22,4 +22,4 @@ Es wurden keine Datenbankmigration, API oder iOS-Oberfläche geändert. Der voll
 
 ## Commitstatus
 
-Umsetzung und Dokumentation sind vollständig. Commit nach regulären Repository-Hooks.
+Umsetzung und Dokumentation sind vollständig. Commit `14945cb` bestand die regulären Repository-Hooks.

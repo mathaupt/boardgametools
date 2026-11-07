@@ -8,7 +8,7 @@
 - [x] Datenschutzverträge der öffentlichen Profile mit gezielten Unit-Tests erneut geprüft.
 - [x] Typecheck, gezieltes ESLint, Security-Check und Regressionsevaluator ausgeführt.
 - [x] Offlinebedingten SEC-45-Scheinbefund mit gültigem Registryzugriff geprüft und im Regressionslog aufgelöst.
-- [ ] Repositoryänderungen mit regulären Commit-Hooks committen.
+- [x] Commit `14945cb` mit regulären Hooks erstellen; lint-staged, zugehörige Tests, Security-Check und Regressionsevaluator bestanden.
 
 ## Prozessbeobachtung
 
