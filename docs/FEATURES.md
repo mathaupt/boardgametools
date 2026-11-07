@@ -571,6 +571,11 @@ Aktuelles Passwort + neues Passwort (2x). Laenge: 8–128 Zeichen.
 
 Unter `/dashboard/achievements` erscheinen persönliche Meilensteine und Spiele
 aus der eigenen Sammlung, die noch nie oder länger nicht mitgespielt wurden.
+Die private Übersicht ist zusätzlich direkt im Profil über „Abzeichen und Erfolge“
+erreichbar. Sie führt alle verfügbaren Abzeichen getrennt nach freigeschaltet
+und noch offen auf. Jedes Abzeichen zeigt seine Bedeutung und die konkrete
+Freischaltbedingung; bei offenen Zielen sind Fortschrittsbalken und Zahlenwert
+sichtbar. Fortschritt bleibt privat und wird nicht in öffentliche Profile übernommen.
 Abzeichen und Fortschritt bleiben privat, bis ein öffentliches Profil unter
 `/dashboard/profile` ausdrücklich aktiviert wird. Dort können nur bereits
 verdiente Abzeichen ausgewählt werden; der Link lässt sich erneuern oder

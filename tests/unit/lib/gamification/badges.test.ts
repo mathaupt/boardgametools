@@ -51,4 +51,17 @@ describe("evaluateBadgeProgress", () => {
     ]);
     expect(result.every((badge) => badge.title && badge.description && badge.altText && badge.icon)).toBe(true);
   });
+
+  it("provides a concrete German unlock condition for every badge", () => {
+    const result = evaluateBadgeProgress(stats());
+
+    expect(result.map(({ id, unlockCondition }) => [id, unlockCondition])).toEqual([
+      ["first-session", "Dokumentiere 1 nicht gelöschte Session als Ersteller."],
+      ["sessions-10", "Dokumentiere 10 nicht gelöschte Sessions als Ersteller."],
+      ["sessions-50", "Dokumentiere 50 nicht gelöschte Sessions als Ersteller."],
+      ["games-5", "Spiele 5 verschiedene Spiele in nicht gelöschten Sessions selbst mit."],
+      ["collection-game-first", "Spiele mindestens 1 Spiel aus deiner aktiven Sammlung selbst mit."],
+      ["series-complete", "Markiere alle Spiele in mindestens 1 nicht gelöschten Spielreihe als gespielt."],
+    ]);
+  });
 });

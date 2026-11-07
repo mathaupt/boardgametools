@@ -12,6 +12,25 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.93",
+    date: "2026-11-07",
+    title: "Abzeichen leichter finden und verstehen",
+    description: "Im Profil führt ein neuer Einstieg zu allen Abzeichen mit klaren Freischaltbedingungen und nachvollziehbarem Fortschritt.",
+    changes: [
+      { type: "feature", text: "FEAT-032: Die private Abzeichenübersicht ist direkt vom Profil erreichbar und erklärt für jedes Abzeichen Bedeutung und Freischaltbedingung." },
+      { type: "improvement", text: "Fortschrittsanzeigen zeigen den tatsächlichen Füllstand; Einheiten passen sich an einzelne und mehrere Ziele an." },
+    ],
+  },
+  {
+    version: "0.50.92",
+    date: "2026-11-06",
+    title: "Plan für die Abzeichenübersicht erstellt",
+    description: "Der Plan ergänzt einen direkten Zugang vom Profil und verständliche Freischaltbedingungen für alle Abzeichen.",
+    changes: [
+      { type: "internal", text: "FEAT-032: Bestehende private Übersicht `/dashboard/achievements` wiederverwenden; Profileinstieg, klare Bedingungen, RED-GREEN-REFACTOR-Tests sowie Impeccable-, Browser- und Datenschutzabnahme geplant. Umsetzung nicht freigegeben." },
+    ],
+  },
+  {
     version: "0.50.91",
     date: "2026-11-05",
     title: "Startzeit und Dauer im Kalenderexport korrigiert",

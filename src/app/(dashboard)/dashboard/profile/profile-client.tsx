@@ -7,6 +7,7 @@ import { PasswordChangeForm } from "./password-change-form";
 import { ProfileActivityCards } from "./profile-activity-cards";
 import { ProfileMessagesCard } from "./profile-messages-card";
 import { PublicProfileSettings } from "./public-profile-settings";
+import { ProfileAchievementLink } from "./profile-achievement-link";
 
 interface ProfileUser {
   id: string;
@@ -94,6 +95,8 @@ export function ProfileClient({ user, invites, events, groups, comments, session
           </p>
         </div>
       </div>
+
+      <ProfileAchievementLink />
 
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Left column: Profile + Password */}

@@ -33,6 +33,7 @@ Web-/API-Umfang.
 | FEAT-026 | Seitennavigation in der Spielesammlung | Web umgesetzt, Version 0.50.77; [Plan](superpowers/plans/2026-11-03-FEAT-026-spielesammlung-pager.md) |
 | FEAT-027 | Eindeutige Meldung bei leeren BGG-Suchen | Web umgesetzt, Version 0.50.70; [Plan](superpowers/plans/2026-11-03-FEAT-027-bgg-leerzustand.md) |
 | FEAT-028 | Persönliche Abzeichen und gemeinsame Ziele | Web-Umsetzung abgeschlossen; [Konzept](superpowers/specs/2026-11-03-FEAT-028-gamification-design.md), [Plan](superpowers/plans/2026-11-04-FEAT-028-gamification.md) |
+| FEAT-032 | Abzeichenübersicht mit Freischaltbedingungen | Web umgesetzt und lokal gerendert geprüft am 07.11.2026, Version 0.50.93; [Plan](superpowers/plans/2026-11-06-FEAT-032-badge-overview.md) |
 
 ## Offene Features
 
@@ -57,7 +58,7 @@ nicht begonnener Umsetzung. Die offenen Punkte sind keine Umsetzungsfreigabe.
 | FEAT-029 | Gespielte Eventspiele als Sessions erfassen | Web und Produktionsmigration abgeschlossen; iOS separat | [Spec](superpowers/specs/2026-11-04-FEAT-029-event-sessions-design.md), [Plan](superpowers/plans/2026-11-04-FEAT-029-event-sessions.md) |
 | FEAT-030 | Liveness- und Readiness-Monitoring einrichten | Erst bei Auswahl eines Monitoring-Systems: Verbraucher inventarisieren, Secret und getrennte Checks konfigurieren, Staging-Abnahme durchführen | Noch zu planen |
 | FEAT-031 | Bei Event-Partien Spiele aus Vorschlägen, Sammlung oder BGG wählen | Implementierungsplan erstellt; Freigabe offen | [Plan](superpowers/plans/2026-11-05-FEAT-031-event-session-game-selection.md) |
-| FEAT-032 | Abzeichenübersicht mit Freischaltbedingungen | Anforderung aufgenommen; Implementierungsplan offen | Noch zu planen |
+| FEAT-032 | Abzeichenübersicht mit Freischaltbedingungen | In Umsetzung; am 06.11.2026 freigegeben | [Plan](superpowers/plans/2026-11-06-FEAT-032-badge-overview.md) |
 
 ## Offene Bugs
 
@@ -70,7 +71,7 @@ Reproduktionsschritte und Prüfnachweise stehen in der [Bug-Tracking-Liste](bugs
 | BUG-041 | Niedrig | Desktop-Raster der öffentlichen Eventseite unwirksam | In Bearbeitung |
 | BUG-076 | Mittel | Kalenderexport verschiebt Startzeit und setzt feste Dreistundendauer | In Bearbeitung |
 
-**Stand:** 05.11.2026. BUG-055, BUG-056 und BUG-075 sind geschlossen; eine spätere
+**Stand:** 06.11.2026. BUG-055, BUG-056 und BUG-075 sind geschlossen; eine spätere
 Monitoring-Einrichtung ist als FEAT-030 erfasst. Die vollständigen Feature-Spezifikationen,
 Implementierungsnachweise und historischen Abschnitte A bis I folgen unterhalb
 als Detailarchiv. Statusänderungen werden in dieser Übersicht und im jeweiligen
@@ -992,10 +993,10 @@ danach können FEAT-026 und FEAT-027 unabhängig geplant umgesetzt werden.
 
 ## FEAT-032 – Abzeichen und Freischaltbedingungen auffindbar machen
 
-**Status:** Implementierungsplan am 05.11.2026 erstellt; Umsetzungsfreigabe offen.
+**Status:** Web-Umsetzung abgeschlossen am 07.11.2026 (Version 0.50.93); iOS separat zu planen.
 **Ziel:** Eine eigene, erreichbare Abzeichenübersicht bereitstellen, in der Nutzer alle verfügbaren Abzeichen sehen und nachvollziehen können, was sie für jedes Abzeichen tun müssen.
 **Abnahmekriterien:** Die Seite zeigt verdiente und noch nicht verdiente Abzeichen klar unterscheidbar. Für jedes Abzeichen werden Name, Bedeutung und konkrete Freischaltbedingung verständlich angezeigt; Fortschritt wird nur gezeigt, wenn er sich datenschutzgerecht bestimmen lässt. Die Übersicht ist vom Profil beziehungsweise Gamification-Bereich aus erreichbar und auf schmalen Ansichten bedienbar. Öffentliche Profilfreigaben zeigen weiterhin nur ausdrücklich freigegebene Abzeichen.
-**Implementierungsplan:** Noch nicht erstellt. Vor der Umsetzung vorhandene Badge-Logik und FEAT-028-Umsetzung prüfen, Regeln und erreichbare Navigation festlegen und den Plan mit RED-GREEN-REFACTOR-Tests, Impeccable-/Browserprüfung und Security-/Datenschutzprüfung zur Freigabe vorlegen.
+**Implementierungsplan:** [Abzeichenübersicht und Freischaltbedingungen](superpowers/plans/2026-11-06-FEAT-032-badge-overview.md). Die Bestandsprüfung hat die bereits vorhandene private Übersicht `/dashboard/achievements` und den Hauptnavigationslink bestätigt. Die Web-Umsetzung ergänzt den Profileinstieg und konkrete Bedingungen im bestehenden Katalog. Gerenderte Mobil- und Desktopansichten wurden geprüft; Fortschrittsbalken unterscheiden Track und Füllstand, Einheiten sind grammatisch angepasst. iOS, Datenbankänderungen und zusätzliche API-Routen sind nicht umfasst.
 
 ## FEAT-031 – Spiele für Event-Partien flexibel auswählen
 

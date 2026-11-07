@@ -75,6 +75,11 @@
 input,textarea { caret-color:var(--primary); }
 a { text-underline-offset:.25em; }
 .club-navigation a:focus-visible,.club-navigation button:focus-visible { outline:3px solid var(--accent); outline-offset:2px; }
+@media (max-width:240px) {
+  .club-brand-row { padding-inline:.75rem; }
+  .club-brand { gap:.35rem; font-size:1rem; }
+  .club-brand span { display:none; }
+}
 @media (min-width:768px) {
   .club-main h1 { font-size:2.5rem; }
   .club-workspace { grid-template-columns:minmax(0,1fr) minmax(15rem,.46fr); align-items:start; }

@@ -391,7 +391,7 @@ export const faqSections: FaqSection[] = [
       },
       {
         question: "Wo finde ich meine persönlichen Abzeichen und Entdeckerziele?",
-        answer: "Öffne im Hauptmenü den Bereich „Abzeichen“. Dort findest du deine verdienten Meilensteine und Spiele aus deiner Sammlung, die du noch nicht oder länger nicht mitgespielt hast. Diese Übersicht ist privat.",
+        answer: "Öffne im Hauptmenü den Bereich „Abzeichen“ oder den Link „Abzeichen und Erfolge“ in deinem Profil. Die private Übersicht zeigt verdiente und noch offene Abzeichen, ihre Bedeutung, die konkrete Freischaltbedingung und deinen Fortschritt. Außerdem findest du dort Spiele aus deiner Sammlung, die du noch nicht oder länger nicht mitgespielt hast.",
       },
       {
         question: "Was wird in meinem öffentlichen Abzeichenprofil angezeigt?",

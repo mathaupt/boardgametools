@@ -10,8 +10,8 @@ afterEach(() => {
 });
 
 const badges: BadgeProgress[] = [
-  { id: "first-session", title: "Erste Spielrunde", description: "Eine Session festgehalten.", altText: "Abzeichen: Erste Spielrunde", target: 1, progress: 1, earned: true, icon: "spark", metric: "createdSessions" },
-  { id: "sessions-10", title: "Zehn gemeinsame Runden", description: "Zehn Sessions dokumentieren.", altText: "Abzeichen: Zehn gemeinsame Runden", target: 10, progress: 4, earned: false, icon: "table", metric: "createdSessions" },
+  { id: "first-session", title: "Erste Spielrunde", description: "Eine Session festgehalten.", unlockCondition: "Dokumentiere 1 Session als Ersteller.", altText: "Abzeichen: Erste Spielrunde", target: 1, progress: 1, earned: true, icon: "spark", metric: "createdSessions" },
+  { id: "sessions-10", title: "Zehn gemeinsame Runden", description: "Zehn Sessions dokumentieren.", unlockCondition: "Dokumentiere 10 Sessions als Ersteller.", altText: "Abzeichen: Zehn gemeinsame Runden", target: 10, progress: 4, earned: false, icon: "table", metric: "createdSessions" },
 ];
 
 describe("AchievementDashboard", () => {
@@ -23,18 +23,36 @@ describe("AchievementDashboard", () => {
     }} />);
 
     expect(screen.getByRole("heading", { name: "Abzeichen" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Freigeschaltet" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Noch nicht freigeschaltet" })).toBeInTheDocument();
     expect(screen.getByRole("img", { name: "Abzeichen: Erste Spielrunde" })).toBeInTheDocument();
     expect(screen.getByText("Erste Spielrunde")).toBeInTheDocument();
+    expect(screen.getByText("Dokumentiere 1 Session als Ersteller.")).toBeInTheDocument();
+    expect(screen.getByText("Dokumentiere 10 Sessions als Ersteller.")).toBeInTheDocument();
+    expect(screen.getByText("Freigeschaltet", { selector: "p" })).toBeInTheDocument();
     expect(screen.getByText("4 von 10 Sessions")).toBeInTheDocument();
+    expect(screen.getByRole("progressbar", { name: "Fortschritt: Zehn gemeinsame Runden" })).toBeInTheDocument();
+    expect(screen.queryByRole("progressbar", { name: "Fortschritt: Erste Spielrunde" })).not.toBeInTheDocument();
   });
 
   it("shows the relevant unit for game milestones", () => {
     render(<AchievementDashboard overview={{
       stats: { createdSessions: 4, distinctGamesPlayed: 2, ownedGamesPlayed: 0, completedSeries: 0 },
-      badges: [{ id: "games-5", title: "Fünf Spiele entdeckt", description: "Verschiedene Spiele mitspielen.", altText: "Abzeichen: Fünf Spiele entdeckt", target: 5, progress: 2, earned: false, icon: "compass", metric: "distinctGamesPlayed" }],
+      badges: [{ id: "games-5", title: "Fünf Spiele entdeckt", description: "Verschiedene Spiele mitspielen.", unlockCondition: "Spiele fünf verschiedene Spiele selbst mit.", altText: "Abzeichen: Fünf Spiele entdeckt", target: 5, progress: 2, earned: false, icon: "compass", metric: "distinctGamesPlayed" }],
       discovery: { neverPlayed: [], longUnplayed: [] },
     }} />);
-    expect(screen.getByText("2 von 5 verschiedene Spiele")).toBeInTheDocument();
+    expect(screen.getByText("2 von 5 verschiedenen Spielen")).toBeInTheDocument();
+  });
+
+  it("renders an honest zero progress state with a singular unit for a target of one", () => {
+    render(<AchievementDashboard overview={{
+      stats: { createdSessions: 0, distinctGamesPlayed: 0, ownedGamesPlayed: 0, completedSeries: 0 },
+      badges: [{ ...badges[1], target: 1, progress: 0 }],
+      discovery: { neverPlayed: [], longUnplayed: [] },
+    }} />);
+    expect(screen.getByText("0 von 1 Session")).toBeInTheDocument();
+    expect(screen.getByRole("progressbar", { name: "Fortschritt: Zehn gemeinsame Runden" })).toHaveAttribute("aria-valuenow", "0");
+    expect(screen.getByRole("progressbar", { name: "Fortschritt: Zehn gemeinsame Runden" }).firstElementChild).toHaveStyle({ width: "0%" });
   });
 
   it("offers a direct first-session path when the user has no achievement data", () => {

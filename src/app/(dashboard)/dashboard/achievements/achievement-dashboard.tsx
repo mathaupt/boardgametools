@@ -41,31 +41,47 @@ function BadgeArtwork({ badge, earned }: { badge: BadgeProgress; earned: boolean
 }
 
 function ProgressBadge({ badge }: { badge: BadgeProgress }) {
-  const unit = {
-    createdSessions: "Sessions",
-    distinctGamesPlayed: "verschiedene Spiele",
-    ownedGamesPlayed: "eigene Spiele",
-    completedSeries: "Spielereihen",
+  const units = {
+    createdSessions: { singular: "Session", plural: "Sessions" },
+    distinctGamesPlayed: { singular: "Spiel", plural: "verschiedenen Spielen" },
+    ownedGamesPlayed: { singular: "eigenem Spiel", plural: "eigenen Spielen" },
+    completedSeries: { singular: "Spielreihe", plural: "Spielereihen" },
   }[badge.metric];
+  const progress = Math.min(badge.progress, badge.target);
+  const percent = badge.target > 0 ? (progress / badge.target) * 100 : 0;
   return (
     <li className="flex min-w-0 items-center gap-4 border-b border-border py-4 last:border-0">
       <BadgeArtwork badge={badge} earned={false} />
-      <div className="min-w-0 flex-1">
+      <div className="min-w-0 flex-1 [overflow-wrap:anywhere]">
         <h3 className="font-semibold leading-snug">{badge.title}</h3>
         <p className="mt-1 text-sm text-muted-foreground">{badge.description}</p>
+        <BadgeCondition badge={badge} />
         <div className="mt-3 flex items-center gap-3">
-          <progress
-            className="h-2 min-w-0 flex-1 accent-primary"
-            value={badge.progress}
-            max={badge.target}
+          <div
+            className="h-2 min-w-0 flex-1 overflow-hidden rounded-full bg-muted"
+            role="progressbar"
             aria-label={`Fortschritt: ${badge.title}`}
-          />
-          <span className="shrink-0 text-xs tabular-nums text-muted-foreground">
-            {badge.progress} von {badge.target} {unit}
+            aria-valuemin={0}
+            aria-valuemax={badge.target}
+            aria-valuenow={progress}
+          >
+            <span className="block h-full rounded-full bg-primary" style={{ width: `${percent}%` }} />
+          </div>
+          <span className="min-w-0 flex-1 break-words text-xs tabular-nums text-muted-foreground">
+            {progress} von {badge.target} {badge.target === 1 ? units.singular : units.plural}
           </span>
         </div>
       </div>
     </li>
+  );
+}
+
+function BadgeCondition({ badge }: { badge: BadgeProgress }) {
+  return (
+    <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+      <span className="font-medium text-foreground [overflow-wrap:anywhere]">Freischaltbedingung: </span>
+      {badge.unlockCondition}
+    </p>
   );
 }
 
@@ -161,27 +177,37 @@ export function AchievementDashboard({ overview }: AchievementDashboardProps) {
           <h2 id="achievement-badges" className="text-2xl font-semibold tracking-tight">Abzeichen</h2>
           <p className="mt-1 text-sm text-muted-foreground">Deine Fortschritte beruhen auf deinen dokumentierten Spielrunden.</p>
         </div>
-        {earned.length > 0 ? (
-          <ul className="flex flex-wrap gap-x-7 gap-y-5">
-            {earned.map((badge) => (
-              <li key={badge.id} className="flex w-36 flex-col items-center gap-2 text-center">
-                <BadgeArtwork badge={badge} earned />
-                <h3 className="text-sm font-semibold leading-snug">{badge.title}</h3>
-                <p className="text-xs leading-relaxed text-muted-foreground">{badge.description}</p>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="text-sm text-muted-foreground">Noch kein Abzeichen freigeschaltet. Jede eigene Spielrunde zählt.</p>
-        )}
-        {nextBadges.length > 0 && (
-          <div className="max-w-3xl border-t border-border pt-4">
-            <h3 className="font-semibold">Auf dem Weg</h3>
-            <ul className="mt-1 divide-y divide-border">
+        <section aria-labelledby="earned-badges" className="space-y-2">
+          <h3 id="earned-badges" className="text-lg font-semibold">Freigeschaltet</h3>
+          {earned.length > 0 ? (
+            <ul className="grid gap-x-8 sm:grid-cols-2">
+              {earned.map((badge) => (
+                <li key={badge.id} className="flex min-w-0 items-start gap-4 border-b border-border py-4">
+                  <BadgeArtwork badge={badge} earned />
+                  <div className="min-w-0 flex-1 [overflow-wrap:anywhere]">
+                    <h4 className="font-semibold leading-snug">{badge.title}</h4>
+                    <p className="mt-1 text-sm text-muted-foreground">{badge.description}</p>
+                    <BadgeCondition badge={badge} />
+                    <p className="mt-2 text-sm font-semibold text-primary">Freigeschaltet</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-sm text-muted-foreground">Noch kein Abzeichen freigeschaltet. Jede eigene Spielrunde zählt.</p>
+          )}
+        </section>
+
+        <section aria-labelledby="upcoming-badges" className="max-w-3xl space-y-2 border-t border-border pt-5">
+          <h3 id="upcoming-badges" className="text-lg font-semibold">Noch nicht freigeschaltet</h3>
+          {nextBadges.length > 0 ? (
+            <ul className="divide-y divide-border">
               {nextBadges.map((badge) => <ProgressBadge key={badge.id} badge={badge} />)}
             </ul>
-          </div>
-        )}
+          ) : (
+            <p className="text-sm text-muted-foreground">Du hast alle verfügbaren Abzeichen freigeschaltet.</p>
+          )}
+        </section>
       </section>
 
       <section aria-labelledby="collection-discovery" className="max-w-3xl space-y-5 border-t border-border pt-7">

@@ -134,6 +134,8 @@ Die Weboberfläche verwendet seit 0.50.20 die bestätigte Gestaltung „Club Pro
 
 ### 17. Gamification (FEAT-028 – Web-Umsetzung)
 
+- Die private Abzeichenübersicht ist über Hauptnavigation und Profil erreichbar;
+  sie listet Bedeutung, konkrete Freischaltbedingung und privaten Fortschritt.
 - Persönliche Abzeichen für dokumentierte Sessions, gespielte Vielfalt und
   Fortschritt in Spielereihen; Erfolge sind standardmäßig privat und können
   über eine gestaltete Badge-Vitrine im freigegebenen Profil hervorgehoben
