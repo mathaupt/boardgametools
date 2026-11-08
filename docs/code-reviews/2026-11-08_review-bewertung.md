@@ -13,3 +13,6 @@ Die Änderung ergänzt einen überprüfbaren Umfang mit RED/GREEN/REFACTOR, konk
 Die automatische Bewertung bleibt bei 9,9/10; die Sicherheitskategorie erreicht 10/10. Der unveränderte Hinweis auf potenzielle Magic Numbers ist kein neuer Laufzeitbefund. Konkrete neue Risiken wurden gezielt geprüft: kein Speichern durch Spracheingabe, eindeutige Zuordnung ausschließlich vorhandener IDs, Abbruch im Hintergrund, enge Dokumentrichtlinien und Secretfreiheit in Runnerargumenten. BUG-078 zeigte, warum Tests keine lokalen Betriebsdateien laden dürfen; Testfixture isoliert und Token rotiert.
 
 Automatische Tests, lokale Renderings und ein bestandener Build sind von Produktionsbetrieb und tatsächlicher assistiver Nutzung getrennt. FEAT-030 ist vor Veröffentlichung/Alarmzustellung nicht betrieblich abgeschlossen; BUG-038/076 bleiben begründet in Bearbeitung.
+
+
+Produktionsnachtrag 0.50.96: BUG-076 erst nach geprüftem Backup/Restore und erfolgreicher additiver Migration geschlossen. FEAT-030 bleibt bis zum belegten Workflowlauf und Alarmnachweis betrieblich offen. BUG-038 bleibt bis zur VoiceOver-Prüfung offen.

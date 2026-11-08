@@ -56,22 +56,22 @@ nicht begonnener Umsetzung. Die offenen Punkte sind keine Umsetzungsfreigabe.
 | FEAT-018 | Testabdeckung schrittweise auf 80 % erhöhen | Abgeschlossen; globales 80-%-Gate aktiv | [Plan](superpowers/plans/2026-11-02-FEAT-018-coverage-80.md) |
 | FEAT-019 | Spracheingabe für Suche und Sessions | Webcode in 0.50.95 umgesetzt und lokal geprüft; reale Audio-/VoiceOver-Abnahme ausstehend | [Konzept](superpowers/specs/2026-11-02-spracheingabe-design.md) |
 | FEAT-029 | Gespielte Eventspiele als Sessions erfassen | Web und Produktionsmigration abgeschlossen; iOS separat | [Spec](superpowers/specs/2026-11-04-FEAT-029-event-sessions-design.md), [Plan](superpowers/plans/2026-11-04-FEAT-029-event-sessions.md) |
-| FEAT-030 | Liveness- und Readiness-Monitoring einrichten | Workflow und Secrets vorbereitet, lokale Ausfall-/Erholungsprüfung bestanden; Veröffentlichung und Alarmabnahme ausstehend | [Plan](superpowers/plans/2026-11-08-FEAT-019-029-030-bugabschluss.md) |
+| FEAT-030 | Liveness- und Readiness-Monitoring einrichten | Workflow und Secrets vorbereitet, lokale Ausfall-/Erholungsprüfung bestanden; Aktivierung nach Push sowie echte Alarmabnahme ausstehend | [Plan](superpowers/plans/2026-11-08-FEAT-019-029-030-bugabschluss.md) |
 | FEAT-031 | Bei Event-Partien Spiele aus Vorschlägen, Sammlung oder BGG wählen | Implementierungsplan erstellt; Freigabe offen | [Plan](superpowers/plans/2026-11-05-FEAT-031-event-session-game-selection.md) |
 | FEAT-032 | Abzeichenübersicht mit Freischaltbedingungen | In Umsetzung; am 06.11.2026 freigegeben | [Plan](superpowers/plans/2026-11-06-FEAT-032-badge-overview.md) |
 
 ## Offene Bugs
 
-Drei Bugs sind derzeit in Bearbeitung. Die vollständigen Beschreibungen,
+Ein Bug ist derzeit in Bearbeitung. Die vollständigen Beschreibungen,
 Reproduktionsschritte und Prüfnachweise stehen in der [Bug-Tracking-Liste](bugs.md).
 
 | ID | Schweregrad | Bug | Status |
 |---|---|---|---|
 | BUG-038 | Mittel | Mobile Terminantworten teilweise verborgen und zu klein | In Bearbeitung |
-| BUG-041 | Niedrig | Desktop-Raster der öffentlichen Eventseite unwirksam | In Bearbeitung |
-| BUG-076 | Mittel | Kalenderexport verschiebt Startzeit und setzt feste Dreistundendauer | In Bearbeitung |
+| BUG-041 | Niedrig | Desktop-Raster der öffentlichen Eventseite unwirksam | Behoben am 08.11.2026 |
+| BUG-076 | Mittel | Kalenderexport verschiebt Startzeit und setzt feste Dreistundendauer | Behoben am 08.11.2026 (0.50.96) |
 
-**Stand:** 06.11.2026. BUG-055, BUG-056 und BUG-075 sind geschlossen; eine spätere
+**Stand:** 08.11.2026. BUG-055, BUG-056, BUG-075 und BUG-076 sind geschlossen; eine spätere
 Monitoring-Einrichtung ist als FEAT-030 erfasst. Die vollständigen Feature-Spezifikationen,
 Implementierungsnachweise und historischen Abschnitte A bis I folgen unterhalb
 als Detailarchiv. Statusänderungen werden in dieser Übersicht und im jeweiligen

@@ -15,3 +15,7 @@
 - BUG-077 zusätzlich zum automatischen Rootlayout-Vertrag manuell im lokalen finalen Build Ende-zu-Ende geprüft.
 - Automatische Backupablehnung nicht umgangen. Erst nach ausdrücklicher Autorisierung vollständiges Produktionsbackup samt Wiederherstellungsprüfung erstellen; danach genau die ausstehende Eventdauer-Migration freigeben/anwenden.
 - Veröffentlichung nur nach gesondertem Git-Push-/Deploymentauftrag. Geplante GitHub-Prüfungen und persönliche Workflow-Benachrichtigungseinstellungen bei Aktivierung tatsächlich prüfen.
+
+
+- Produktionsrelease erst nach explizitem Auftrag fortgesetzt: konsistenter Snapshot und vollständige isolierte Wiederherstellung vor genau einer freigegebenen additiven Migration. Produktionsschema danach ausschließlich lesend verifiziert.
+- Git-Push und Monitoringaktivierung sind vom Nutzer autorisiert; tatsächliche Workflow- und Alarmnachweise werden nach Veröffentlichung separat dokumentiert.

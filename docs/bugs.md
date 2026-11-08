@@ -2134,11 +2134,11 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 ### [BUG-076] Kalenderexport verschiebt Startzeit und setzt feste Dreistundendauer
 
-**Status:** `in_progress`
+**Status:** `fixed`
 **Schweregrad:** `medium`
 **Entdeckt:** 2026-11-05
-**Behoben:**
-**Behoben in Version:**
+**Behoben:** 2026-11-08
+**Behoben in Version:** 0.50.96
 **Test geschrieben:** Ja – Kalender-UTC/Dauer, Datumauswahl mit erhaltener Startzeit (inklusive Sommerzeitwechsel), Eventanlage und Dauerpersistenz. Isolierter Migrationstest in temporärer PostgreSQL-Testdatenbank bestanden.
 
 **Beschreibung:** Der Kalenderdownload kann für ein Event eine falsche Uhrzeit anzeigen (gemeldet: 1–3 Uhr). Bei der Eventanlage ist eine Startzeit vorhanden, aber keine Dauer auswählbar. Die Datumauswahl setzt die Eventstartzeit auf UTC-Mitternacht zurück; der ICS-Export rechnet außerdem stets drei Stunden hinzu und schreibt lokale Serverzeitwerte fälschlich mit UTC-Kennzeichnung.
@@ -2146,13 +2146,13 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 **Erwartetes Verhalten:** Die Eventanlage speichert Startzeit und wählbare Dauer. Die Auswahl eines Abstimmungstags erhält die Startuhrzeit. Der ICS-Export enthält den korrekten Zeitpunkt unabhängig von der Serverzeitzone und endet nach der gespeicherten Dauer.
 **Tatsächliches Verhalten:** Der Export endet pauschal drei Stunden nach dem Start. Durch lokale Datumsgetter mit angehängtem `Z` sowie eine beim Datumsauswählen auf Mitternacht gesetzte Eventzeit wird die angezeigte Kalenderzeit verschoben.
 **Ursache:** Die Dauer war nicht im Eventmodell gespeichert; `DTEND` verwendete einen festen Dreistundenwert; die ICS-Formatierung verwendete lokale statt UTC-Getter; das Finalisieren der Terminabstimmung ersetzte `eventDate` vollständig durch ein Datum ohne Uhrzeit.
-**Lösung:** Code und additive Migration erstellt: Dauer in Minuten (30–1440, Standard 180), Eventformular mit Startzeit/Dauer, Datumauswahl übernimmt die Ortszeit `Europe/Berlin`, ICS nutzt UTC-Getter und berechnet `DTEND` aus der Dauer. Die Produktionsmigration ist noch nicht ausgerollt; BUG-076 bleibt deshalb in Bearbeitung.
-**Prüfnachweis:** Die gezielten Unit-Tests bestehen mit 40/40. Der Integrationstest bestätigte nach Anwendung der Migration in einer temporären isolierten PostgreSQL-Testdatenbank `NOT NULL` und Standardwert `180`. Vor dem Fix schlugen die Regressionstests für UTC-Formatierung, Dauer und Zeiterhalt erwartungsgemäß fehl. Die Produktionsmigration ist weiterhin ausstehend.
-**Referenz im Changelog:** Version 0.50.91 – BUG-076.
+**Lösung:** Code und additive Migration erstellt: Dauer in Minuten (30–1440, Standard 180), Eventformular mit Startzeit/Dauer, Datumauswahl übernimmt die Ortszeit `Europe/Berlin`, ICS nutzt UTC-Getter und berechnet `DTEND` aus der Dauer. Die additive Produktionsmigration `20261105214500_event_duration` wurde nach geprüftem Backup angewendet.
+**Prüfnachweis:** Die gezielten Unit-Tests bestehen mit 40/40. Der Integrationstest bestätigte nach Anwendung der Migration in einer temporären isolierten PostgreSQL-Testdatenbank `NOT NULL` und Standardwert `180`. Vor dem Fix schlugen die Regressionstests für UTC-Formatierung, Dauer und Zeiterhalt erwartungsgemäß fehl. Produktionsschema und Migrationshistorie wurden nach dem Release lesend geprüft.
+**Referenz im Changelog:** Version 0.50.96 – BUG-076.
 
 ---
 
-**Nachprüfung 08.11.2026:** UTC-/Dauer-/Datumauswahltests erneut grün; additive Migration auf frischer isolierter lokaler DB mit `NOT NULL` und Default `180` bestätigt. Produktionsstand ausschließlich lesend geprüft: genau `20261105214500_event_duration` fehlt, Spalte noch nicht vorhanden. Vollständiges Produktionsbackup von der automatischen Freigabeprüfung wegen der lokalen Kopie sensibler Produktionsdaten abgelehnt; keine Ausführung und keine Produktionsmigration. Ausdrückliche Backup-/Releasefreigabe erforderlich.
+**Produktionsnachweis 08.11.2026:** Vollständiger konsistenter Snapshot mit 35 Tabellen und 1.005 Zeilen erstellt, SHA-256 dokumentiert und erfolgreich in eine frische isolierte `bgt_test_*`-Datenbank zurückgespielt; alle Tabellenzeilenzahlen stimmen überein. Danach ausschließlich `20261105214500_event_duration` mit `npm run prisma:deploy` angewendet. Lesend bestätigt: Migration abgeschlossen, `Event.durationMinutes` ist `NOT NULL` mit Default `180`, kein Event hat einen unerwarteten Wert und keine Migration ist ausstehend. BUG-076 ist behoben.
 
 ### [BUG-077] Gemeinsame Toast-Rückmeldungen sind nicht sichtbar
 
@@ -2195,7 +2195,7 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 ## Statistik
 
 - **Offene Bugs:** 0
-- **In Bearbeitung:** 2
-- **Behoben:** 76
+- **In Bearbeitung:** 1
+- **Behoben:** 77
 - **Wontfix:** 0
 - **Gesamt:** 78

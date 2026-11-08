@@ -12,6 +12,16 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.96",
+    date: "2026-11-08",
+    title: "Eventdauer in der Produktion aktiviert",
+    description: "Die geprüfte Eventdauer-Migration wurde nach vollständigem Backup und erfolgreicher Wiederherstellungsprobe angewendet.",
+    changes: [
+      { type: "fix", text: "BUG-076: Die Produktionsdatenbank speichert jetzt die wählbare Eventdauer; bestehende Events behalten den Standard von 180 Minuten.", bugRef: "BUG-076" },
+      { type: "internal", text: "Produktionsbackup mit 35 Tabellen und 1.005 Zeilen in einer frischen isolierten Datenbank wiederhergestellt und geprüft; ausschließlich die freigegebene additive Eventdauer-Migration angewendet." },
+    ],
+  },
+  {
     version: "0.50.95",
     date: "2026-11-08",
     title: "Suche und Sessions mit Sprache vorbereiten",
@@ -19,7 +29,7 @@ export const changelog: ChangelogEntry[] = [
     changes: [
       { type: "feature", text: "FEAT-019: Spracheingabe startet erst nach Zustimmung zum Browserdienst. Erkannte Texte bleiben bearbeitbar und werden ausdrücklich übernommen; die manuelle Eingabe bleibt verfügbar." },
       { type: "feature", text: "Session-Beschreibungen wie „Azul mit Anna, 90 Minuten“ werden lokal in Entwürfe übersetzt. Unbekannte oder mehrdeutige Angaben bleiben offen; gespeichert wird erst über das Formular." },
-      { type: "internal", text: "FEAT-030: Getrennte GitHub-Workflowprüfungen für Liveness und Readiness vorbereitet, Readiness-Secrets sicher hinterlegt und Datenbankausfall sowie Erholung lokal geprüft. Aktivierung und Produktionsdeployment stehen aus." },
+      { type: "internal", text: "FEAT-030: Getrennte GitHub-Workflowprüfungen für Liveness und Readiness vorbereitet; Veröffentlichung und Produktionsaktivierung folgen mit dem Push." },
       { type: "fix", text: "BUG-041: Die vorhandene Desktop-Spaltenaufteilung der öffentlichen Eventseite ist mit dem aktuellen gerenderten Stand bei 1440 Pixeln bestätigt.", bugRef: "BUG-041" },
       { type: "internal", text: "BUG-078: Monitoringtests sind von lokaler Betriebskonfiguration getrennt und verwenden ausschließlich künstliche Zugangsdaten.", bugRef: "BUG-078" },
       { type: "fix", text: "BUG-077: Gemeinsame Rückmeldungen zu Erfolgen und Fehlern werden wieder sichtbar angezeigt.", bugRef: "BUG-077" },

@@ -26,3 +26,10 @@
 - Finaler Produktionsbuild, Typecheck, gezieltes ESLint ohne Warnungen und `git diff --check` bestanden. Globales ESLint zuvor mit 0 Fehlern und bestehenden Warnungen in den versionierten Impeccable-Skripten beendet.
 - Security-Check mit Registryzugriff: 0 Fehler, 2 bestehende Hinweise. Review-Regressionscheck: 9,9/10, keine Regression.
 - Keine automatische E2E-Suite ausgeführt; manuelle native Safari-Prüfungen und Grenzen oben ausdrücklich getrennt dokumentiert.
+
+
+## Produktionsrelease 0.50.96
+
+- BUG-076 geschlossen: vollständiger Produktionssnapshot (35 Tabellen, 1.005 Zeilen) in frischer isolierter Datenbank wiederhergestellt; Zeilenzahlen stimmen. Einzige ausstehende additive Migration angewendet und Schema/Status lesend verifiziert.
+- FEAT-030: Workflow und Readiness-Secrets vorbereitet; Aktivierung, Deployment und Alarmabnahme nach dem autorisierten Push noch zu dokumentieren.
+- BUG-038 bleibt offen bis zur tatsächlichen VoiceOver-Abnahme.
