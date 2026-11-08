@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import Link from "@/components/speech/speech-page-link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import {

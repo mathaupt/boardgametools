@@ -54,9 +54,9 @@ nicht begonnener Umsetzung. Die offenen Punkte sind keine Umsetzungsfreigabe.
 | FEAT-016 | Spielauswahl bei Session-Anlage durchsuchen | Manuelle Browser-/VoiceOver-Abnahme | [Plan](superpowers/plans/2026-11-02-FEAT-016-session-spielsuche.md) |
 | FEAT-017 | Spielcover in der Sessions-Übersicht | Responsive Browser-/Viewport-Abnahme | [Plan](superpowers/plans/2026-11-02-FEAT-017-session-cover.md) |
 | FEAT-018 | Testabdeckung schrittweise auf 80 % erhöhen | Abgeschlossen; globales 80-%-Gate aktiv | [Plan](superpowers/plans/2026-11-02-FEAT-018-coverage-80.md) |
-| FEAT-019 | Spracheingabe für Suche und Sessions | Konzept vorhanden; konkreter Webplan am 08.11.2026 vorgelegt, Planfreigabe ausstehend | [Konzept](superpowers/specs/2026-11-02-spracheingabe-design.md) |
+| FEAT-019 | Spracheingabe für Suche und Sessions | Webcode in 0.50.95 umgesetzt und lokal geprüft; reale Audio-/VoiceOver-Abnahme ausstehend | [Konzept](superpowers/specs/2026-11-02-spracheingabe-design.md) |
 | FEAT-029 | Gespielte Eventspiele als Sessions erfassen | Web und Produktionsmigration abgeschlossen; iOS separat | [Spec](superpowers/specs/2026-11-04-FEAT-029-event-sessions-design.md), [Plan](superpowers/plans/2026-11-04-FEAT-029-event-sessions.md) |
-| FEAT-030 | Liveness- und Readiness-Monitoring einrichten | GitHub Actions mit Workflow-Alarmen am 08.11.2026 gewählt; konkreter Plan vorgelegt, Planfreigabe ausstehend | [Plan](superpowers/plans/2026-11-08-FEAT-019-029-030-bugabschluss.md) |
+| FEAT-030 | Liveness- und Readiness-Monitoring einrichten | Workflow und Secrets vorbereitet, lokale Ausfall-/Erholungsprüfung bestanden; Veröffentlichung und Alarmabnahme ausstehend | [Plan](superpowers/plans/2026-11-08-FEAT-019-029-030-bugabschluss.md) |
 | FEAT-031 | Bei Event-Partien Spiele aus Vorschlägen, Sammlung oder BGG wählen | Implementierungsplan erstellt; Freigabe offen | [Plan](superpowers/plans/2026-11-05-FEAT-031-event-session-game-selection.md) |
 | FEAT-032 | Abzeichenübersicht mit Freischaltbedingungen | In Umsetzung; am 06.11.2026 freigegeben | [Plan](superpowers/plans/2026-11-06-FEAT-032-badge-overview.md) |
 
@@ -230,7 +230,7 @@ Agentenregel ergänzt. Zwei Stack-Skills wurden lokal aufgenommen.
 
 ### I. Spracheingabe: FEAT-019
 
-**Umsetzungsauftrag vom 08.11.2026:** Web-Spracheingabe einschließlich überprüfbarer Session-Entwürfe angefordert. Der [konkrete Plan](superpowers/plans/2026-11-08-FEAT-019-029-030-bugabschluss.md) wurde erstellt und wird zur Freigabe vorgelegt; noch keine Runtime-Implementierung.
+**Umsetzungsauftrag vom 08.11.2026:** Web-Spracheingabe einschließlich überprüfbarer Session-Entwürfe angefordert. Der [konkrete Plan](superpowers/plans/2026-11-08-FEAT-019-029-030-bugabschluss.md) wurde mit „bitte umsetzen“ freigegeben. Webcode in 0.50.95 umgesetzt: Browserdiktat mit Vorschau und expliziter Übernahme, lokaler Session-Parser, sichere Dokumentnavigation und gezielte Mikrofonrichtlinie. Automatische Tests und lokale Safari-Ansichten geprüft; reale Audio-/VoiceOver-Abnahme weiter ausstehend.
 
 Das Konzept trennt zwei Fähigkeiten, damit einfache Spracheingabe ohne KI
 starten kann und strukturierte Session-Befehle eigene Datenschutz- und
@@ -252,7 +252,7 @@ optional und darf höchstens den erkannten Text in ein strikt validiertes
 Entwurfsschema überführen; sie erhält keine Audiodateien und darf keine
 Aktionen direkt ausführen. Native iOS-Eingabe ist separat zu planen.
 
-**Bestandsbefund:** Die Web-App setzt derzeit global
+**Ursprünglicher Bestandsbefund vor Version 0.50.95:** Die Web-App setzte global
 `microphone=()` in ihrer `Permissions-Policy`; Mikrofonzugriff ist daher vor
 einer Implementierung gezielt und eng begrenzt zu erlauben. Browser-
 Spracherkennung ist nicht überall verfügbar und kann Audio an einen
@@ -988,10 +988,10 @@ danach können FEAT-026 und FEAT-027 unabhängig geplant umgesetzt werden.
 
 ## FEAT-030 – Liveness- und Readiness-Monitoring einrichten
 
-**Status:** Umsetzung am 08.11.2026 angefordert. Nutzer hat GitHub Actions mit Workflow-Alarmen gewählt; konkreter Web-/Betriebsplan vorgelegt, Planfreigabe und tatsächliche Einrichtung ausstehend.
+**Status:** Plan am 08.11.2026 durch „bitte umsetzen“ freigegeben. Workflow lokal implementiert und getestet; Readiness-Secret verschlüsselt in GitHub und als sensibles Vercel-Produktionssecret hinterlegt. Lokale Ausfall-/Erholungsabnahme bestanden. Workflow-Veröffentlichung, wirksames Produktionsdeployment und echte Alarmzustellung stehen aus.
 **Ziel:** Sobald ein Monitoring-System ausgewählt wird, die Prozess-Liveness und Datenbank-Readiness getrennt überwachen.
 **Abnahmekriterien:** Verbraucher und gewünschte Verfügbarkeit inventarisieren; `/api/health` als DB-freie Liveness und `/api/health/ready` mit einem separaten Secret konfigurieren; Secret sicher bereitstellen; Verhalten bei DB-Ausfall und Erholung in isoliertem Staging prüfen; Alarmierung und Betrieb dokumentieren.
-**Implementierungsplan:** [Webumsetzung und Bugabschluss](superpowers/plans/2026-11-08-FEAT-019-029-030-bugabschluss.md). Zwei unabhängige Prüfjobs alle 15 Minuten und manueller Start; Readiness-Secret über GitHub Secrets, Alarmierung über persönliche Actions-Benachrichtigungen. Planfreigabe ausstehend.
+**Implementierungsplan:** [Webumsetzung und Bugabschluss](superpowers/plans/2026-11-08-FEAT-019-029-030-bugabschluss.md). Zwei unabhängige Prüfjobs alle 15 Minuten und manueller Start; Readiness-Secret über GitHub Secrets, Alarmierung über persönliche Actions-Benachrichtigungen. Freigegeben am 08.11.2026; Betriebsabschluss erst nach tatsächlicher Aktivierung und Zustellnachweis.
 
 ## FEAT-032 – Abzeichen und Freischaltbedingungen auffindbar machen
 

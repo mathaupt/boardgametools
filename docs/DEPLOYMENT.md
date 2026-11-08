@@ -272,3 +272,25 @@ neuen Messlauf behält sichtbar den letzten gemessenen Stand. Es führt nicht se
 Tests oder Messungen aus. Neu erzeugte lokale Messwerte werden erst mit einem
 neuen Deployment auf der Website sichtbar. Andere Review-Kennzahlen bleiben als
 historisch beschriftet. Es sind keine Migrationen nötig.
+
+
+## GitHub-Healthmonitoring (FEAT-030)
+
+Workflow: `.github/workflows/health-monitoring.yml`, manuell über **Actions → Health Monitoring → Run workflow** oder geplant um Minute 7, 22, 37 und 52 jeder Stunde (UTC). Zwei unabhängige Jobs mit je zwei Minuten Timeout prüfen Liveness und Readiness. Kein App-Build, kein Datenbankcredential auf dem Runner und keine automatischen Retries.
+
+- Ziel: optionale Repositoryvariable `HEALTH_MONITOR_URL`; Standard `https://boardgametools.vercel.app`. Kein Secret und keine Benutzerinformationen in diese URL aufnehmen.
+- GitHub Repositorysecret `HEALTH_READINESS_TOKEN` und gleichnamige sensible Vercel-Produktionsvariable müssen denselben zufälligen Wert mit mindestens 32 Zeichen enthalten. Der Token wird ausschließlich als Umgebungsvariable übergeben und im HTTP-Header über curl-stdin gesendet.
+- Bereitstellung am 08.11.2026: Secret verschlüsselt über GitHub Public-Key/SealedBox hinterlegt; identischer Wert in Vercel als `sensitive` für `production`. Kein Wert wurde ausgegeben oder committed. Lokale Betriebskopie ausschließlich in der ignorierten `.env.pipeline-check` (Dateimodus 0600).
+- Nach Bereitstellung deckte ein fehlgeschlagener lokaler Providertest eine unzureichende Fixture-Isolation auf (BUG-078). Der Test nahm den Betriebswert statt seines künstlichen Tokens auf und gab ihn in einer lokalen Assertion aus. Secret sofort in beiden Systemen rotiert und lokale Fehlerausgaben bereinigt; der Test verwendet jetzt eine temporäre Skriptkopie ohne Betriebsdatei. Keine Secretwerte committed.
+- Neue Vercel-Umgebungsvariablen gelten erst für ein anschließendes Deployment. Vor Aktivierung Schemafreigabe für BUG-076 abschließen; Produktionsbackup und Migration sind separate Freigabeschritte. Der lokale Workflow ist noch nicht veröffentlicht/aktiv.
+- Alarmierung: Verantwortlicher Betreiber aktiviert in seinen persönlichen GitHub-Einstellungen Actions-Web-/E-Mail-Benachrichtigungen, vorzugsweise nur fehlgeschlagene Workflows. Bei Zeitplänen bestimmt GitHub den Benachrichtigungsempfänger anhand des letzten Bearbeiters der Cron-Konfiguration. Reale Zustellung nach Veröffentlichung kontrolliert nachweisen; ein YAML-Test allein genügt nicht.
+- Zustände: Liveness `200` mit `check=liveness,status=healthy`; Readiness `200` mit `healthy` oder `degraded`, sonst Jobfehler. Fehlendes Secret, `401`, `429`, `503`, HTML und Verbindungsfehler sind Fehler, keine übersprungenen Erfolgsprüfungen.
+- Lokaler Staging-Nachweis vom 08.11.2026: beide Prüfungen erfolgreich; nach Stoppen ausschließlich der temporären Testdatenbank Liveness `200`, Readiness `503` und Providerexit `1`; nach Neustart beide `200` und Providerexit `0`. Keine Ausfall-/Lastsimulation auf Produktion.
+- Wiederherstellung: DB-/Deploymentproblem beheben, Workflow manuell erneut ausführen und Erholung prüfen. Secretrotation zuerst konsistent zwischen beiden Systemen vorbereiten, deployen und beide Jobs erneut prüfen. Alte Werte nicht in Tickets oder Logs übertragen.
+- GitHub-Zeitpläne können verzögert oder unter Last verworfen werden; 15 Minuten sind keine garantierte Alarmfrist. Bei öffentlichen Repositories kann Inaktivität zur Deaktivierung geplanter Workflows führen. Betreiber kontrolliert deshalb auch den letzten tatsächlichen Lauf.
+
+Quellen: [GitHub schedule](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#schedule), [Actions-Benachrichtigungen](https://docs.github.com/en/actions/concepts/workflows-and-actions/notifications-for-workflow-runs), [GitHub-Secrets](https://docs.github.com/en/rest/actions/secrets).
+
+### Produktionsstand Eventdauer (BUG-076)
+
+Lesende Prüfung am 08.11.2026 bestätigt genau eine ausstehende Migration: `20261105214500_event_duration`. Die Spalte `Event.durationMinutes` fehlt noch. Alle 19 Repositorymigrationen einschließlich Event-Sessions und Eventdauer wurden auf einer frischen lokalen `bgt_test_*`-Datenbank angewendet; beide isolierten Schema-Vertragstests bestehen. Das vollständige Produktionsbackup wurde durch die automatische Freigabeprüfung vor Ausführung abgelehnt (sensible Produktionsdaten, ausdrückliche Autorisierung erforderlich). Kein Backup und keine Produktionsmigration in diesem Arbeitsschritt ausgeführt. Vor Release Backup mit Wiederherstellungsnachweis ausdrücklich freigeben, danach nur den geprüften Migrationssatz anwenden und Schema/Bestand lesend verifizieren.

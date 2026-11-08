@@ -965,3 +965,18 @@ Zusätzliche Detailabfragen für Event-Vorschläge:
 - Spielereiheneinträge erwarten die tatsächlich gelieferte Bildzusammenfassung statt eines vollständigen Spiels. Bild-Upload-Antworten entsprechen dem Backendformat.
 - Konto- und Backendwechsel sowie Abmelden löschen alle lokalen Kontodaten. Antworten früherer Sitzungen können den Cache nicht erneut befüllen. Abmeldung beim Backendwechsel erfolgt am bisherigen Server.
 - Bei unbekannter Cache-Zuordnung nach dem Update sind erneute Anmeldung und Online-Synchronisation nötig. Bereits eindeutig zugeordnete Daten bleiben beim Neustart für Offline-Lesen erhalten.
+
+
+## Spracheingabe und Session-Entwürfe (FEAT-019, Web)
+
+- Sammlung `/dashboard/games`: „Suche diktieren“ bietet editierbare Vorschau; erst „Text übernehmen“ aktualisiert den vorhandenen Suchfilter.
+- Session-Anlage `/dashboard/sessions/new`: Diktat in der lokalen Spielsuche und für Notizen; optionaler Session-Entwurf aus gesprochenem oder getipptem Text nach dem Muster „Azul mit Anna und Ben, 90 Minuten“.
+- Titel und Kontonamen werden ausschließlich exakt und eindeutig gegen die bereits verfügbaren Optionen aufgelöst. Unbekannte/mehrdeutige Angaben bleiben sichtbar offen; Dauer optional 1–1440 ganze Minuten, Eingabe maximal 2000 Zeichen. Es wird keine KI verwendet.
+- Vor Aufnahme aktiver Start mit Browserdiensthinweis, deutsche Sprache, sichtbarer Aufnahmezustand, Beenden/Abbrechen und Rückfall auf manuelle Eingabe. Browserunterstützung und tatsächliche Erkennungsqualität sind geräteabhängig.
+- Keine Audio-/Transkriptpersistenz, kein neuer API-Endpunkt. Entwurf, Vorschau und Formularübernahme speichern keine Session; die bestehende authentifizierte Session-API bleibt zuständig.
+- Dokumentnavigation in die beiden Mikrofonseiten übernimmt deren eng begrenzte Permissions-Policy. Filteränderungen innerhalb der Sammlung bleiben clientseitig.
+- Lokale Komponenten-/Browserabnahme vorhanden; reale Mikrofon-/Audioabnahme und Safari-VoiceOver-Abnahme sind weiterhin gesondert nachzuweisen. Native iOS-Eingabe separat.
+
+## Betriebsmonitoring (FEAT-030)
+
+`.github/workflows/health-monitoring.yml` trennt öffentliche Liveness und tokengebundene Readiness in unabhängige Jobs. Zeitplan alle 15 Minuten sowie manueller Start; Workflow-Fehler nutzen GitHub-Actions-Benachrichtigungen. Workflow lokal geprüft, Secret in GitHub und Vercel hinterlegt; Veröffentlichung, Produktionsdeployment und reale Alarmzustellung noch ausstehend. Details: `DEPLOYMENT.md`.

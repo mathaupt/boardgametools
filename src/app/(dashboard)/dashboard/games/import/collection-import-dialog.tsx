@@ -1,5 +1,7 @@
 "use client";
 
+import { navigateSpeechDocument } from "@/lib/speech/navigation";
+
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -270,7 +272,7 @@ export function CollectionImportDialog({ existingBggIds, onImported }: Collectio
             </Button>
           )}
           {result && (
-            <Button onClick={() => { setOpen(false); router.push("/dashboard/games"); router.refresh(); }}>
+            <Button onClick={() => { setOpen(false); navigateSpeechDocument("/dashboard/games"); router.refresh(); }}>
               Zur Spielesammlung
             </Button>
           )}

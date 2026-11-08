@@ -7,6 +7,7 @@ const { mockPush, mockRefresh } = vi.hoisted(() => ({
   mockRefresh: vi.fn(),
 }));
 
+vi.mock("@/lib/speech/navigation", () => ({ navigateSpeechDocument: mockPush }));
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: mockPush, refresh: mockRefresh }),
 }));

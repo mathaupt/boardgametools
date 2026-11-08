@@ -1237,6 +1237,8 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 ---
 
+**Nachprüfung 08.11.2026:** Aktueller lokaler Build bei 390 × 844 CSS-Pixeln mit zehn Terminen und 50 synthetischen Gästen plus neu registriertem Prüfgast gerendert. Alle drei Antworten stehen vollständig sichtbar untereinander. Die Tastatur erreicht „Vielleicht“; der Speicherversuch im lokalen Produktionsbuild scheiterte erwartbar am über HTTP nicht übermittelten Secure-Gastcookie und wird nicht als erfolgreiche Persistenzabnahme gewertet. VoiceOver-Start über native Steuerung endete im Computer-Use-Timeout; keine tatsächliche Sprachausgabe bestätigt. Deshalb weiterhin `in_progress`; keine abgeschlossene VoiceOver-Abnahme behauptet.
+
 ### [BUG-039] Statusbeschriftungen der öffentlichen Eventseite haben zu wenig Kontrast
 
 **Status:** `fixed`
@@ -1297,7 +1299,9 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 ### [BUG-041] Vorgesehenes Desktop-Raster der öffentlichen Eventseite ist unwirksam
 
-**Status:** `in_progress`
+**Status:** `fixed`
+**Behoben:** 2026-11-08
+**Behoben in Version:** 0.50.95
 **Schweregrad:** `low`
 **Entdeckt:** 2026-10-30
 **Test geschrieben:** Ja – `tests/unit/components/public-event-client.test.tsx` prüft die Desktop-Rasterklasse; gerenderte Viewport-Abnahme bleibt offen.
@@ -1312,15 +1316,17 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 **Ursache:** lg:grid-cols-[2fr,1fr] in page.tsx erzeugt keine wirksame gültige Zweispaltenaufteilung.
 
-**Lösung:** Gültiges `lg:grid-cols-[minmax(0,2fr)_minmax(16rem,1fr)]` in der öffentlichen Eventseite umgesetzt; die Teilnehmerübersicht wird bei Desktopbreite als Seitenbereich angeordnet. Die aktuellen Screenshots in `public-event-A/` und `public-event-B/` stammen aus einem älteren Layout; die finale Browsermessung bei 1440 px muss mit dem aktuellen Quellstand erfolgen.
+**Lösung:** Gültiges `lg:grid-cols-[minmax(0,2fr)_minmax(16rem,1fr)]` in der öffentlichen Eventseite umgesetzt; die Teilnehmerübersicht wird bei Desktopbreite als Seitenbereich angeordnet. Die aktuellen Screenshots in `public-event-A/` und `public-event-B/` stammen aus einem älteren Layout; die aktuelle Browserabnahme bei 1440 px ist im Nachtrag vom 08.11.2026 bestätigt.
 
 **Prüfnachweis:** Unit-Test prüft die aktuelle Rasterklasse. Archivierte `anonymous-1440.png`-Belege und Layoutbeobachtungen sind wegen älteren Layouts nicht als aktuelle Abnahme gewertet.
 
-**Test-Status:** Unit-Abdeckung vorhanden; Browser-Viewport-Abnahme offen.
+**Test-Status:** Unit-Abdeckung vorhanden und aktuelle native Safari-Viewport-Abnahme bei 1440 px bestanden.
 
-**Referenz im Changelog:** Version 0.50.24 – Prüfung der öffentlichen Eventseite dokumentiert.
+**Referenz im Changelog:** Version 0.50.95 – BUG-041: Desktop-Raster mit aktuellem Rendernachweis bestätigt.
 
 ---
+
+**Abnahme 08.11.2026:** Aktueller lokaler App-Build mit frischer isolierter PostgreSQL-Testdatenbank in nativer Safari-Steuerung bei ausdrücklich eingestellten 1440 × 900 CSS-Pixeln gerendert. Spielebereich und Teilnehmendenliste (51 Einträge mit langen Namen) stehen sichtbar nebeneinander; Zeilen umbrechen innerhalb ihrer Spalte. Zusätzlich 390-px-Ansicht geprüft. Der vorhandene Komponenten-Regressionstest besteht. Schriftliche Evidenz: `.impeccable/critique/feat019-030-bugs/2026-11-08-review.md`; Screenshots im Computer-Use-Prüfverlauf. Damit ersetzt die neue Abnahme die im älteren Text noch als ausstehend beschriebene Desktopprüfung.
 
 ### [BUG-042] Gästelisten auf öffentlicher Eventseite laufen auseinander
 
@@ -2146,10 +2152,50 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 ---
 
+**Nachprüfung 08.11.2026:** UTC-/Dauer-/Datumauswahltests erneut grün; additive Migration auf frischer isolierter lokaler DB mit `NOT NULL` und Default `180` bestätigt. Produktionsstand ausschließlich lesend geprüft: genau `20261105214500_event_duration` fehlt, Spalte noch nicht vorhanden. Vollständiges Produktionsbackup von der automatischen Freigabeprüfung wegen der lokalen Kopie sensibler Produktionsdaten abgelehnt; keine Ausführung und keine Produktionsmigration. Ausdrückliche Backup-/Releasefreigabe erforderlich.
+
+### [BUG-077] Gemeinsame Toast-Rückmeldungen sind nicht sichtbar
+
+**Status:** `fixed`
+**Schweregrad:** `medium`
+**Entdeckt:** 2026-11-08
+**Behoben:** 2026-11-08
+**Behoben in Version:** 0.50.95
+**Test geschrieben:** Ja – `tests/unit/components/root-toast.test.tsx` löst eine Meldung über den echten gemeinsamen Store aus und prüft sichtbaren Titel und Beschreibung; vor dem Fix erwartungsgemäß rot, danach grün. Zusätzlich E2E-Vertrag `tests/e2e/feedback_test.ts` mit lokaler Datenbank-Schutzprüfung ergänzt; automatischer Browserlauf noch nicht ausgeführt. Reale manuelle Ende-zu-Ende-Prüfung im lokalen Build: vorhandener synthetischer Gastname abgelehnt und erklärende rote Toastmeldung in separater privater Safari-Session sichtbar.
+
+**Beschreibung:** Komponenten melden Erfolge und Fehler über `useToast`, im Rootlayout war aber kein Anzeigebereich für diesen Store eingebunden.
+**Reproduktion:** Öffentlichen Gastbeitritt mit einer abgelehnten Anfrage auslösen oder über `useToast` eine Fehlermeldung erzeugen.
+**Erwartetes Verhalten:** Titel und Beschreibung der Rückmeldung sind sichtbar.
+**Tatsächliches Verhalten:** Der Store enthält die Meldung, aber im DOM erscheint sie nicht.
+**Ursache:** Der vorhandene `Toaster` war nicht in das gemeinsame Rootlayout eingebunden.
+**Lösung:** Vorhandene Toastanzeige genau einmal in `src/app/layout.tsx` eingebunden. Keine Änderung an API-Fehlern oder Berechtigungen.
+**Referenz im Changelog:** Version 0.50.95 – BUG-077.
+
+---
+
+### [BUG-078] Health-Providertests laden lokale Betriebscredentials
+
+**Status:** `fixed`
+**Schweregrad:** `medium`
+**Entdeckt:** 2026-11-08
+**Behoben:** 2026-11-08
+**Behoben in Version:** 0.50.95
+**Test geschrieben:** Ja – bestehender Vertrag `tests/unit/scripts/health-provider.test.ts` schlug nach Bereitstellung des lokalen Readiness-Secrets erwartungsgemäß fehl; Testaufbau danach in temporäre isolierte Kopie der echten Provider verlegt, Vertrag erneut grün geprüft.
+
+**Beschreibung:** Der Providertest ruft das Skript aus dem Arbeitsbaum auf. Dieses lädt die ignorierte `.env.pipeline-check`, deren Betriebswerte den vorgesehenen künstlichen Testtoken überschreiben.
+**Reproduktion:** Lokales Readiness-Secret in `.env.pipeline-check` hinterlegen und den Provider-Test starten.
+**Erwartetes Verhalten:** Ausschließlich der künstliche Testtoken erreicht den simulierten curl-Aufruf.
+**Tatsächliches Verhalten:** Ein Betriebswert erreicht den simulierten Aufruf und kann bei einer fehlgeschlagenen Assertion in lokaler Testausgabe erscheinen. Es erfolgt kein echter HTTP-Aufruf, weil curl im Test simuliert ist.
+**Ursache:** Testfixture verwendet den echten Projektpfad mit lokaler Betriebskonfiguration.
+**Lösung:** Echter Prüfcode und Provider werden vor dem Test in ein temporäres Verzeichnis ohne `.env.pipeline-check` kopiert. Der Prozess verwendet ausschließlich die explizite Testumgebung und einen simulierten curl. Nach dem Fund wurde das betroffene Readiness-Secret in GitHub und Vercel sofort rotiert; betroffene lokale Testberichte wurden bereinigt. Keine Secretwerte committed, kein aktiver Produktionstoken aus diesem Testlauf beibehalten.
+**Referenz im Changelog:** Version 0.50.95 – BUG-078.
+
+---
+
 ## Statistik
 
 - **Offene Bugs:** 0
-- **In Bearbeitung:** 3
-- **Behoben:** 73
+- **In Bearbeitung:** 2
+- **Behoben:** 76
 - **Wontfix:** 0
-- **Gesamt:** 76
+- **Gesamt:** 78

@@ -722,3 +722,10 @@ Senior Dev Code Reviewer – Prüft Code-Qualität, Architektur, Sicherheit und 
 Die iOS-Modelle unterscheiden Login-Antwort, Token-Erneuerung und Spielzusammenfassung einer Reihe. Der lokale SwiftData-Cache gehört zu genau einer Kombination aus Backend und Nutzer. Abmelden und Identitätswechsel löschen den Cache einschließlich Sync-Metadaten; verspätete Antworten der alten Sitzung werden nicht übernommen. Bei der ersten Aktualisierung werden alte, nicht zugeordnete Cache-Daten verworfen; eine erneute Anmeldung und Online-Synchronisation ist dann erforderlich.
 
 `npm run build` erstellt ausschließlich den Build. Datenbankmigrationen werden separat freigegeben und mit `npm run prisma:deploy` ausgeführt; Migrationsfehler führen zum Abbruch. Die Swift-Regressionstests können auf macOS ohne iOS-Simulator über `npm run test:ios:contracts` ausgeführt werden.
+
+
+### Web-Spracheingabe und Betriebsmonitoring (Stand 08.11.2026)
+
+FEAT-019 ergänzt vorhandene Textfelder um bewusst gestartetes Browserdiktat mit editierbarer Vorschau. Audio wird durch den Browser verarbeitet und kann dabei dessen Erkennungsdienst erreichen; BoardGameTools persistiert weder Audio noch Transkripte. Ein lokaler deterministischer Parser übersetzt das begrenzte Muster „Spiel mit Personen, Dauer Minuten“ in einen überprüfbaren Session-Entwurf. IDs stammen ausschließlich aus den bereits verfügbaren Sammlungsspielen und Konten; mehrdeutige Angaben werden nicht erraten. Die bestehende Session-API bleibt der einzige Speicherweg. Die Mikrofonrichtlinie ist auf Sammlung und Session-Anlage begrenzt; deren Einstieg lädt ein vollständiges Dokument. Native iOS-Spracheingabe ist separat zu planen.
+
+FEAT-030 verwendet gemäß Nutzerentscheidung GitHub Actions mit zwei unabhängigen HTTP-Prüfjobs und Workflow-Alarmen. Öffentliche Liveness bleibt DB-frei, Readiness besitzt ein eigenes Secret. Die lokale Ausfall-/Erholungsprüfung ist erfolgt; Workflow-Aktivierung und echte Alarmzustellung sind noch keine abgeschlossene Betriebsabnahme.

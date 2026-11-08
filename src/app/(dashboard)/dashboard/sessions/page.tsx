@@ -5,7 +5,7 @@ import { CacheTags } from "@/lib/cache-tags";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Plus, Calendar, Users, Clock, Trophy } from "lucide-react";
-import Link from "next/link";
+import Link from "@/components/speech/speech-page-link";
 import { redirect } from "next/navigation";
 import { formatDate } from "@/lib/date";
 import { gameTextForRead } from "@/lib/game-text";

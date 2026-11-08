@@ -64,3 +64,20 @@ describe("SessionFormClient game selection", () => {
     await waitFor(() => expect(mockPush).toHaveBeenCalledWith("/dashboard/sessions"));
   });
 });
+
+describe("spoken session form integration", () => {
+  it("keeps preview and applied draft editable without saving and submits via the existing route", async () => {
+    const user = userEvent.setup(); const { container } = render(<SessionFormClient games={games} users={[{ id: "anna", name: "Anna", email: null }]} />);
+    await user.type(screen.getByLabelText("Session beschreiben"), "Azul mit Anna, 90 Minuten");
+    await user.click(screen.getByRole("button", { name: "Entwurf prüfen" }));
+    expect(fetch).not.toHaveBeenCalled();
+    await user.click(screen.getByRole("button", { name: "Ins Formular übernehmen" }));
+    expect(fetch).not.toHaveBeenCalled();
+    expect(screen.getByLabelText("Dauer (Minuten)")).toHaveValue(90);
+    await user.clear(screen.getByLabelText("Dauer (Minuten)"));
+    await user.type(screen.getByLabelText("Dauer (Minuten)"), "80");
+    await act(async () => fireEvent.submit(container.querySelector("form")!));
+    await waitFor(() => expect(fetch).toHaveBeenCalledOnce());
+    expect(JSON.parse(String(vi.mocked(fetch).mock.calls[0][1]?.body))).toMatchObject({ gameId: "game-azul", durationMinutes: 80, players: [{ userId: "anna", isWinner: false }] });
+  });
+});

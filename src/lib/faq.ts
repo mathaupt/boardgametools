@@ -19,6 +19,14 @@ export const faqSections: FaqSection[] = [
     description: "So startest du mit BoardGameTools.",
     items: [
       {
+        question: "Wie verwende ich Spracheingabe für Suche und Sessions?",
+        answer: "Nutze Suche diktieren in der Sammlung, Spielsuche diktieren in der Session-Spielauswahl oder Notizen diktieren. Vor dem Start erscheint der Hinweis, dass dein Browser Audio an seinen Spracherkennungsdienst übertragen kann. Prüfe und bearbeite den erkannten Text, bevor du ihn übernimmst. Bei fehlender Unterstützung oder verweigerter Mikrofonfreigabe kannst du normal tippen. BoardGameTools speichert keine Audioaufnahme.",
+      },
+      {
+        question: "Kann ich eine ganze Session beschreiben?",
+        answer: "In der Session-Anlage kannst du zum Beispiel Azul mit Anna und Ben, 90 Minuten diktieren oder eintippen. Entwurf prüfen zeigt die erkannten Angaben. Nur eindeutige Spiele aus deiner Sammlung und eindeutige vorhandene Kontonamen werden zugeordnet. Andere Angaben ergänzt du im Formular. Ins Formular übernehmen ersetzt Spiel, Mitspielende und Dauer; Datum und Notizen bleiben erhalten. Erst Session speichern legt die Partie an. Weitere Angaben wie Gewinner oder Datum werden nicht aus dem Satz abgeleitet.",
+      },
+      {
         question: "Warum heißt es beim Hinzufügen eines Spiels Bereits in der Reihe?",
         answer: "Das Spiel ist auf dem Server bereits mit dieser Reihe verknüpft. Es wird kein zweiter Eintrag angelegt. Die App lädt die Reihe neu und setzt aktive Filter zurück, damit du den vorhandenen Eintrag sehen kannst. Kann die Liste nicht geladen oder das Spiel darin nicht gefunden werden, bleibt der Dialog mit einer Fehlermeldung offen. Du kannst es dann erneut versuchen oder die Seite neu laden.",
       },

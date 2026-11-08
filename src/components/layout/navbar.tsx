@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import Link from "next/link";
+import Link from "@/components/speech/speech-page-link";
 import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 import { Dice6, LayoutDashboard, Gamepad2, CalendarDays, Users, BarChart3, Vote, Shield, Library, LogOut, HelpCircle, Activity, FileCode, Menu, X, Award } from "lucide-react";

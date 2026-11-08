@@ -1,5 +1,7 @@
 "use client";
 
+import { navigateSpeechDocument } from "@/lib/speech/navigation";
+
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -8,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, ScanBarcode, X } from "lucide-react";
-import Link from "next/link";
+import Link from "@/components/speech/speech-page-link";
 import Image from "next/image";
 import { BarcodeScanner } from "@/components/barcode-scanner";
 
@@ -74,7 +76,7 @@ export default function NewGamePage() {
         const result = await response.json();
         setError(result.error || "Fehler beim Erstellen");
       } else {
-        router.push("/dashboard/games");
+        navigateSpeechDocument("/dashboard/games");
         router.refresh();
       }
     } catch {
@@ -96,7 +98,7 @@ export default function NewGamePage() {
         body: JSON.stringify({ bggId, ean }),
       });
       if (res.ok) {
-        router.push("/dashboard/games");
+        navigateSpeechDocument("/dashboard/games");
         router.refresh();
       } else if (res.status === 409) {
         setError("Dieses Spiel ist bereits in deiner Sammlung");

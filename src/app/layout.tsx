@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Barlow, Geist_Mono } from "next/font/google";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/next";
+import { Toaster } from "@/components/ui/toaster";
 import { SiteFooter } from "@/components/layout/site-footer";
 import "./globals.css";
 
@@ -35,6 +36,7 @@ export default function RootLayout({
       >
         <div className="flex min-w-0 flex-1 flex-col">{children}</div>
         <SiteFooter />
+        <Toaster />
         <SpeedInsights />
         <Analytics />
       </body>

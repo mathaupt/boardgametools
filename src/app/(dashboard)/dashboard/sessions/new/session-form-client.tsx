@@ -9,6 +9,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { SpeechInput } from "@/components/speech/speech-input";
+import { SpokenSessionDraft } from "@/components/sessions/spoken-session-draft";
 import { SessionGamePicker } from "@/components/sessions/session-game-picker";
 import type { SessionGameOption } from "@/components/sessions/session-game-options";
 import { Plus, Trash2, Trophy, Users } from "lucide-react";
@@ -118,6 +120,12 @@ export default function SessionFormClient({ games, users }: SessionFormClientPro
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
+        <SpokenSessionDraft games={games} users={users} disabled={saving} onApply={(draft) => {
+          setFormData((previous) => ({ ...previous, gameId: draft.gameId ?? "", durationMinutes: draft.durationMinutes === null ? "" : String(draft.durationMinutes) }));
+          setPlayers(draft.userIds.length ? draft.userIds.map((userId, index) => ({ userId, score: null, isWinner: false, placement: index + 1 })) : [{ userId: "", score: null, isWinner: false, placement: 1 }]);
+          setGameError("");
+          gamePickerRef.current?.focus();
+        }} />
         <Card>
           <CardHeader>
             <CardTitle as="h2">Session Details</CardTitle>
@@ -152,6 +160,7 @@ export default function SessionFormClient({ games, users }: SessionFormClientPro
             <div>
               <Label htmlFor="notes">Notizen</Label>
               <Textarea id="notes" value={formData.notes} onChange={(e) => setFormData((prev) => ({ ...prev, notes: e.target.value }))} placeholder="Besondere Ereignisse, lustige Momente, etc." rows={3} />
+              <SpeechInput label="Notizen diktieren" disabled={saving} onAccept={(text) => setFormData((previous) => ({ ...previous, notes: text }))} />
             </div>
           </CardContent>
         </Card>

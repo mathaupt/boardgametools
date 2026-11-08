@@ -1,7 +1,7 @@
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
 import { redirect, notFound } from "next/navigation";
-import Link from "next/link";
+import Link from "@/components/speech/speech-page-link";
 import EditGameForm from "./EditGameForm";
 
 export default async function EditGamePage({

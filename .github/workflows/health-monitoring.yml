@@ -1,0 +1,39 @@
+name: Health Monitoring
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "7,22,37,52 * * * *"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: health-monitoring
+  cancel-in-progress: false
+
+jobs:
+  liveness:
+    name: Prozess-Liveness
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - run: bash scripts/check-pipeline.sh --health
+        env:
+          PROD_URL: ${{ vars.HEALTH_MONITOR_URL || 'https://boardgametools.vercel.app' }}
+
+  readiness:
+    name: Datenbank-Readiness
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - run: bash scripts/check-pipeline.sh --health-readiness
+        env:
+          PROD_URL: ${{ vars.HEALTH_MONITOR_URL || 'https://boardgametools.vercel.app' }}
+          HEALTH_READINESS_TOKEN: ${{ secrets.HEALTH_READINESS_TOKEN }}

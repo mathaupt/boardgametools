@@ -1,10 +1,11 @@
 "use client";
 
+import { navigateSpeechDocument } from "@/lib/speech/navigation";
+
 import { useState } from "react";
-import Link from "next/link";
+import Link from "@/components/speech/speech-page-link";
 import Image from "next/image";
 import { gameTextForRead } from "@/lib/game-text";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -36,7 +37,6 @@ export default function GameDetailClient({ game }: { game: SerializedGame }) {
   const gameName = gameTextForRead(game.name);
   const gameDescription = game.description ? gameTextForRead(game.description) : null;
   const { toast } = useToast();
-  const router = useRouter();
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
@@ -45,7 +45,7 @@ export default function GameDetailClient({ game }: { game: SerializedGame }) {
     try {
       const response = await fetch(`/api/games/${game.id}`, { method: "DELETE" });
       if (!response.ok) throw new Error("Fehler beim Löschen des Spiels");
-      router.push("/dashboard/games");
+      navigateSpeechDocument("/dashboard/games");
     } catch (_error) {
       toast({
         title: "Fehler",

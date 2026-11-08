@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import Link from "@/components/speech/speech-page-link";
 import { useMemo, useState } from "react";
 import { Award, CalendarDays, Compass, Gamepad2, LibraryBig, Sparkles, Table2, X } from "lucide-react";
 import type { BadgeProgress } from "@/lib/gamification/badges";

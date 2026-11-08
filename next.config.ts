@@ -48,6 +48,10 @@ const nextConfig: NextConfig = {
           },
         ],
       },
+      ...['/dashboard/games', '/dashboard/sessions/new'].map((source) => ({
+        source,
+        headers: [{ key: 'Permissions-Policy', value: 'camera=(self), microphone=(self), geolocation=()' }],
+      })),
     ];
   },
   webpack: (config, { dev }) => {

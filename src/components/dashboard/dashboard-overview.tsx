@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/speech/speech-page-link";
 import { ArrowRight, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PendingInvites, type PendingInvite } from "@/components/pending-invites";

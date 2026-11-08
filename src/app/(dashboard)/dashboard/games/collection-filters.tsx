@@ -1,3 +1,4 @@
+import { SpeechInput } from "@/components/speech/speech-input";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -16,6 +17,7 @@ export function CollectionFilters({ searchText, setSearchText, playerCount, setP
   return (
         <div className="club-collection-filters space-y-3">
           <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
+            <div className="w-full min-w-0 space-y-2 sm:max-w-sm">
             <Input
               placeholder="Spiele durchsuchen…"
               value={searchText}
@@ -23,6 +25,8 @@ export function CollectionFilters({ searchText, setSearchText, playerCount, setP
               className="max-w-sm"
               aria-label="Spiele durchsuchen"
             />
+            <SpeechInput label="Suche diktieren" maxLength={200} onAccept={setSearchText} />
+            </div>
 
             <div className="flex flex-wrap gap-2 items-center">
               <Select value={playerCount} onValueChange={setPlayerCount}>

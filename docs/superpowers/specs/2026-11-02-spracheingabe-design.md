@@ -2,8 +2,8 @@
 
 **Status:** Konzept freigegeben am 02.11.2026; schriftliche Spezifikation zur Prüfung.  
 **Plattform:** Web zuerst. Native iOS-Oberflächen separat planen.  
-**Umsetzungsplan:** Noch nicht erstellt.  
-**Umsetzungsfreigabe:** Keine.
+**Umsetzungsplan:** [Web-Spracheingabe und Betriebsabschluss](../plans/2026-11-08-FEAT-019-029-030-bugabschluss.md).
+**Umsetzungsfreigabe:** Konkreter Webplan am 08.11.2026 durch „bitte umsetzen“ freigegeben.
 
 ## Ziel
 
@@ -12,7 +12,7 @@ ohne Nutzer:innen die Kontrolle über Suche, Session-Daten oder Speichervorgäng
 zu nehmen. Diktat und gesprochene Befehle sind ausdrücklich getrennte
 Funktionen mit unterschiedlichen Fähigkeiten und Datenschutzanforderungen.
 
-## Bestehender Kontext
+## Ausgangskontext vom 02.11.2026
 
 - Die Web-App verwendet Next.js App Router, React und TypeScript. Die
   Session-Anlage ist ein clientseitiges Formular mit vorhandenen Feldern und
@@ -140,3 +140,8 @@ vom Browser, Betriebssystem, Gerät und Netzwerk abhängen.
 - Festlegung eines konkreten KI-Anbieters oder einer konkreten
   Spracherkennungsbibliothek.
 - Umsetzung oder Umsetzungsfreigabe.
+
+
+## Umsetzungsstand 08.11.2026
+
+Webcode für Diktat, explizite Textübernahme und lokale überprüfbare Session-Entwürfe in Version 0.50.95 umgesetzt. Die vorstehend beschriebene optionale KI wird nicht verwendet. Das unterstützte Sessionmuster ist bewusst auf Titel, vorhandene Kontonamen und ganzzahlige Minuten begrenzt. Einträge entstehen weiterhin erst über das bestehende Formular. Automatische Verträge und lokale Safari-Ansichten geprüft; reale Mikrofon-/Audioabnahme und VoiceOver-Ausgabe noch nicht bestätigt. Native iOS-Eingabe bleibt separat.

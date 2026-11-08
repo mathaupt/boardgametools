@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 const mocks = vi.hoisted(() => ({ push: vi.fn(), refresh: vi.fn(), fetch: vi.fn(), imported: vi.fn() }));
+vi.mock("@/lib/speech/navigation", () => ({ navigateSpeechDocument: mocks.push }));
 vi.mock("next/navigation", () => ({ useRouter: () => ({ push: mocks.push, refresh: mocks.refresh }) }));
 vi.mock("next/image", () => ({ default: (props: { src: string; alt: string }) => <img {...props} /> }));
 import { CollectionImportDialog } from "@/app/(dashboard)/dashboard/games/import/collection-import-dialog";

@@ -32,7 +32,10 @@ describe("Club navigation", () => {
     expect(toggle).toHaveAttribute("aria-expanded", "false");
     await user.click(toggle);
     expect(screen.getByRole("button", { name: "Menü schließen" })).toHaveAttribute("aria-expanded", "true");
-    await user.click(screen.getByRole("link", { name: "Spiele" }));
+    const gamesLink = screen.getByRole("link", { name: "Spiele" });
+    // JSDOM cannot navigate full documents; keep this assertion focused on closing the menu.
+    gamesLink.addEventListener("click", (event) => event.preventDefault());
+    await user.click(gamesLink);
     expect(screen.getByRole("button", { name: "Menü öffnen" })).toHaveAttribute("aria-expanded", "false");
   });
 

@@ -1,8 +1,10 @@
 "use client";
 
+import { navigateSpeechDocument } from "@/lib/speech/navigation";
+
 import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
+import Link from "@/components/speech/speech-page-link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -155,7 +157,7 @@ export default function ImportBGGPage() {
       if (response.ok) {
         setImportedBggId(selectedGame.bggId);
         setBarcodeEan(null);
-        router.push("/dashboard/games");
+        navigateSpeechDocument("/dashboard/games");
         router.refresh();
         setExistingBggIds((prev) => {
           const next = new Set(prev);

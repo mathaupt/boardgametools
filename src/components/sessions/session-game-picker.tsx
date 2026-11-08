@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Check, ChevronDown, X } from "lucide-react";
+import { SpeechInput } from "@/components/speech/speech-input";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -64,7 +65,7 @@ export function SessionGamePicker({ games, value, onValueChange, id, disabled, e
         'button:not([disabled]), a[href], input:not([disabled]), [tabindex]:not([tabindex="-1"])'
       ) ?? []
     );
-    const currentIndex = focusableInside.indexOf(event.currentTarget);
+    const currentIndex = focusableInside.indexOf(event.target as HTMLElement);
     if (currentIndex >= 0 && focusableInside[currentIndex + direction]) return;
 
     event.preventDefault();
@@ -143,6 +144,9 @@ export function SessionGamePicker({ games, value, onValueChange, id, disabled, e
             searchRef.current?.focus();
           }}
         >
+          <div className="mb-2" onKeyDown={leavePickerOnTab}>
+            <SpeechInput label="Spielsuche diktieren" maxLength={200} disabled={disabled} onAccept={(text) => { setQuery(text); setActiveIndex(0); searchRef.current?.focus(); }} />
+          </div>
           <div className="relative">
             <Input
               ref={searchRef}

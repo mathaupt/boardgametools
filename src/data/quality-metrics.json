@@ -1,30 +1,31 @@
 {
   "schemaVersion": 1,
-  "version": "0.50.86",
-  "measuredAt": "2026-11-05T09:15:18.266Z",
+  "version": "0.50.87",
+  "measuredAt": "2026-11-08T20:33:25.325Z",
   "coverage": {
-    "statements": 84.83,
-    "branches": 80.02,
-    "functions": 84.65,
-    "lines": 86.98
+    "statements": 85.26,
+    "branches": 80.31,
+    "functions": 85.29,
+    "lines": 87.42
   },
   "libraryCoverage": {
-    "statements": 92.86,
-    "branches": 87.65,
-    "functions": 92.84,
-    "lines": 94.77
+    "statements": 93.05,
+    "branches": 87.8,
+    "functions": 93.19,
+    "lines": 94.96
   },
   "tests": {
-    "total": 1386,
-    "files": 216,
+    "total": 1427,
+    "files": 229,
     "allPassing": true,
-    "apiRouteTests": 286,
+    "apiRouteTests": 288,
     "byArea": [
       {
         "area": "Weitere Tests",
-        "files": 17,
-        "tests": 136,
+        "files": 18,
+        "tests": 137,
         "modules": [
+          "next-config-speech",
           "proxy",
           "wcag",
           "security-check",
@@ -47,7 +48,7 @@
       {
         "area": "API-Routen",
         "files": 53,
-        "tests": 286,
+        "tests": 288,
         "modules": [
           "achievement-discovery-dismissals",
           "admin-monitoring-analytics",
@@ -106,8 +107,8 @@
       },
       {
         "area": "Bibliotheken",
-        "files": 74,
-        "tests": 632,
+        "files": 77,
+        "tests": 650,
         "modules": [
           "api-auth",
           "api-logger",
@@ -130,6 +131,7 @@
           "db",
           "env",
           "error-messages",
+          "event-date",
           "event-proposal-permissions",
           "event-share",
           "event-state",
@@ -165,6 +167,9 @@
           "challenge-progress",
           "discovery",
           "profile-token",
+          "bulk-add-entries",
+          "entry-identity",
+          "entry-view",
           "achievement.service",
           "event-close.service",
           "event-played-session.service",
@@ -180,30 +185,14 @@
           "session",
           "shared",
           "tag",
-          "bulk-add-entries",
-          "entry-identity",
-          "entry-view"
-        ]
-      },
-      {
-        "area": "Skripte",
-        "files": 8,
-        "tests": 29,
-        "modules": [
-          "ci-install",
-          "error-response-audit",
-          "game-text-cleanup",
-          "health-provider",
-          "npm-audit-result",
-          "prisma-deploy",
-          "quality-metrics",
-          "vercel-provider"
+          "navigation",
+          "session-draft"
         ]
       },
       {
         "area": "Komponenten",
-        "files": 64,
-        "tests": 303,
+        "files": 72,
+        "tests": 322,
         "modules": [
           "achievement-dashboard",
           "admin-user-modals",
@@ -215,6 +204,7 @@
           "bgg-version-picker",
           "club-dashboard",
           "club-navigation",
+          "collection-filters",
           "collection-import-dialog",
           "cover-scan-tab",
           "create-poll-form",
@@ -225,6 +215,7 @@
           "date-poll-voting-matrix",
           "date-proposal-item",
           "date-voting",
+          "event-create-page",
           "event-invite-client",
           "event-mail-dialog",
           "event-voting-page-client",
@@ -242,6 +233,7 @@
           "personal-selection-summary",
           "played-session-form",
           "played-sessions-card",
+          "profile-client",
           "proposal-game-details",
           "proposal-ranking-list",
           "public-event-client",
@@ -256,6 +248,7 @@
           "quality-coverage",
           "quality-tab",
           "register",
+          "root-toast",
           "series-bulk-add",
           "series-entry-conflict",
           "series-list-client",
@@ -263,12 +256,32 @@
           "session-detail-client",
           "session-edit-client",
           "session-form-client",
+          "session-game-picker-speech",
           "session-game-picker",
           "sessions-page",
           "site-footer",
+          "speech-input",
+          "speech-page-link",
+          "spoken-session-draft",
           "use-bgg-search",
           "use-public-actor",
           "voting-client"
+        ]
+      },
+      {
+        "area": "Skripte",
+        "files": 9,
+        "tests": 30,
+        "modules": [
+          "ci-install",
+          "error-response-audit",
+          "game-text-cleanup",
+          "health-monitoring-workflow",
+          "health-provider",
+          "npm-audit-result",
+          "prisma-deploy",
+          "quality-metrics",
+          "vercel-provider"
         ]
       }
     ]

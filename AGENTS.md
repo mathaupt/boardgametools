@@ -28,6 +28,15 @@ Die Impeccable-Design-Hooks sind für das Projekt aktiviert. Sie melden nach Än
 - Lokale Impeccable-Prüfberichte und Browserbelege liegen unter `.impeccable/critique/`;
   bestätigte Fehler werden zusätzlich dauerhaft in `docs/bugs.md` erfasst.
 
+## Spracheingabe und Monitoring
+
+- FEAT-019: `src/components/speech/use-speech-input.ts` kapselt Browsererkennung und Cleanup; `speech-input.tsx` verlangt aktiven Start, zeigt den Browserdiensthinweis und übernimmt erst editierbaren Text nach Bestätigung. Keine Audio-/Transkriptpersistenz oder automatische Speicheraktion.
+- `src/lib/speech/session-draft.ts` löst ausschließlich eindeutige vorhandene Spiel-/Kontonamen auf. `src/components/sessions/spoken-session-draft.tsx` zeigt offene Angaben und überträgt erst nach Bestätigung in das Sessionformular.
+- Mikrofonfreigabe in `next.config.ts` nur für `/dashboard/games` und `/dashboard/sessions/new`. Einstiegslinks verwenden `src/components/speech/speech-page-link.tsx`, programmatische Rückkehr zur Sammlung `src/lib/speech/navigation.ts`, damit Dokumentheader auch nach App-Navigation angewendet werden. Sammlungsfilter bleiben clientseitig.
+- Gemeinsame Toastanzeige einmalig im Rootlayout (`Toaster`); `useToast` allein rendert keine Meldung. Regression: `tests/unit/components/root-toast.test.tsx`.
+- Provider-Tests kopieren die echten Pipeline-Skripte in temporäre Fixtures ohne `.env.pipeline-check`; niemals lokale Betriebscredentials in Tests übernehmen (BUG-078).
+- FEAT-030: `.github/workflows/health-monitoring.yml` verwendet getrennte Liveness-/Readiness-Jobs und GitHub-Secrets. Secret niemals in URL, Prozessargumenten oder Ausgaben. Aktivierungs- und Betriebsgrenzen in `docs/DEPLOYMENT.md` beachten.
+
 ## BGG-Bestandsprüfung
 
 - `POST /api/games/bgg-presence` ist eine private, auf 50 IDs begrenzte Prüfung ausschließlich aktiver Spiele des angemeldeten Kontos; keine Treffer oder Fehler dürfen fremde Bestände offenlegen.

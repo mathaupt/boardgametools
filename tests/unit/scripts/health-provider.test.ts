@@ -1,6 +1,6 @@
 // @vitest-environment node
 import { afterEach, describe, expect, it } from "vitest";
-import { chmodSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { chmodSync, copyFileSync, cpSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
@@ -11,6 +11,10 @@ const token = "test-readiness-token-0123456789abcdef";
 function runProvider(name: "health" | "health-readiness", status: string, body: string, curlExit = "0", includeToken = true) {
   const dir = mkdtempSync(path.join(tmpdir(), "bgt-health-provider-"));
   tempDirs.push(dir);
+  // Never source the developer's real .env.pipeline-check or use its credentials.
+  mkdirSync(path.join(dir, "scripts"));
+  copyFileSync("scripts/check-pipeline.sh", path.join(dir, "scripts/check-pipeline.sh"));
+  cpSync("scripts/pipeline-checks", path.join(dir, "scripts/pipeline-checks"), { recursive: true });
   const curlPath = path.join(dir, "curl");
   const argsPath = path.join(dir, "args");
   const stdinPath = path.join(dir, "stdin");
@@ -29,7 +33,7 @@ function runProvider(name: "health" | "health-readiness", status: string, body: 
   if (includeToken) env.HEALTH_READINESS_TOKEN = token;
   else delete env.HEALTH_READINESS_TOKEN;
   const result = spawnSync("bash", ["scripts/check-pipeline.sh", `--${name}`], {
-    cwd: process.cwd(),
+    cwd: dir,
     encoding: "utf8",
     env,
   });
