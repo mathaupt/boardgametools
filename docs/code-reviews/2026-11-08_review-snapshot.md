@@ -33,3 +33,7 @@
 - BUG-076 geschlossen: vollständiger Produktionssnapshot (35 Tabellen, 1.005 Zeilen) in frischer isolierter Datenbank wiederhergestellt; Zeilenzahlen stimmen. Einzige ausstehende additive Migration angewendet und Schema/Status lesend verifiziert.
 - FEAT-030: Workflow und Readiness-Secrets vorbereitet; Aktivierung, Deployment und Alarmabnahme nach dem autorisierten Push noch zu dokumentieren.
 - BUG-038 bleibt offen bis zur tatsächlichen VoiceOver-Abnahme.
+
+## Monitoringaktivierung 0.50.97
+
+- Workflow veröffentlicht; Vercel-Productiondeployment READY. Manueller Healthlauf 42522130250 nach Deployment: Liveness und Readiness erfolgreich. Persönliche Fehlalarmzustellung bleibt unbestätigt.

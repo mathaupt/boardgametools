@@ -12,6 +12,15 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.97",
+    date: "2026-11-08",
+    title: "Produktionsmonitoring aktiviert",
+    description: "GitHub Actions prüft Liveness und Datenbank-Readiness getrennt im Viertelstundentakt.",
+    changes: [
+      { type: "internal", text: "FEAT-030: Workflow auf main veröffentlicht; erfolgreicher manueller Produktionslauf für beide Prüfungen nach READY-Deployment bestätigt. Die persönliche Zustellung von Fehlalarmbenachrichtigungen ist noch nicht nachgewiesen." },
+    ],
+  },
+  {
     version: "0.50.96",
     date: "2026-11-08",
     title: "Eventdauer in der Produktion aktiviert",

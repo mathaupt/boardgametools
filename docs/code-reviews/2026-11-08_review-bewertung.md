@@ -16,3 +16,5 @@ Automatische Tests, lokale Renderings und ein bestandener Build sind von Produkt
 
 
 Produktionsnachtrag 0.50.96: BUG-076 erst nach geprüftem Backup/Restore und erfolgreicher additiver Migration geschlossen. FEAT-030 bleibt bis zum belegten Workflowlauf und Alarmnachweis betrieblich offen. BUG-038 bleibt bis zur VoiceOver-Prüfung offen.
+
+Monitoringnachtrag: Der veröffentlichte Workflow hat nach dem READY-Deployment beide Produktionsprüfungen bestanden. Die persönliche Alarmzustellung ist mangels Fehlalarm-/Empfängerabnahme noch nicht bewertet.

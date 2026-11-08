@@ -19,3 +19,5 @@
 
 - Produktionsrelease erst nach explizitem Auftrag fortgesetzt: konsistenter Snapshot und vollständige isolierte Wiederherstellung vor genau einer freigegebenen additiven Migration. Produktionsschema danach ausschließlich lesend verifiziert.
 - Git-Push und Monitoringaktivierung sind vom Nutzer autorisiert; tatsächliche Workflow- und Alarmnachweise werden nach Veröffentlichung separat dokumentiert.
+
+- Monitoring erst nach READY-Deployment erneut ausgeführt: erster Lauf während des Builds trennte Liveness-Erfolg und Readiness-Fehler; Folgelauf nach READY beide erfolgreich. Tatsächliche persönliche Benachrichtigungen bleiben ausdrücklich offen.

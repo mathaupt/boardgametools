@@ -56,7 +56,7 @@ nicht begonnener Umsetzung. Die offenen Punkte sind keine Umsetzungsfreigabe.
 | FEAT-018 | Testabdeckung schrittweise auf 80 % erhöhen | Abgeschlossen; globales 80-%-Gate aktiv | [Plan](superpowers/plans/2026-11-02-FEAT-018-coverage-80.md) |
 | FEAT-019 | Spracheingabe für Suche und Sessions | Webcode in 0.50.95 umgesetzt und lokal geprüft; reale Audio-/VoiceOver-Abnahme ausstehend | [Konzept](superpowers/specs/2026-11-02-spracheingabe-design.md) |
 | FEAT-029 | Gespielte Eventspiele als Sessions erfassen | Web und Produktionsmigration abgeschlossen; iOS separat | [Spec](superpowers/specs/2026-11-04-FEAT-029-event-sessions-design.md), [Plan](superpowers/plans/2026-11-04-FEAT-029-event-sessions.md) |
-| FEAT-030 | Liveness- und Readiness-Monitoring einrichten | Workflow und Secrets vorbereitet, lokale Ausfall-/Erholungsprüfung bestanden; Aktivierung nach Push sowie echte Alarmabnahme ausstehend | [Plan](superpowers/plans/2026-11-08-FEAT-019-029-030-bugabschluss.md) |
+| FEAT-030 | Liveness- und Readiness-Monitoring einrichten | Workflow auf main aktiv; Liveness und Readiness nach Production-Deployment erfolgreich geprüft. Persönliche Fehlalarmzustellung noch nicht nachgewiesen | [Plan](superpowers/plans/2026-11-08-FEAT-019-029-030-bugabschluss.md) |
 | FEAT-031 | Bei Event-Partien Spiele aus Vorschlägen, Sammlung oder BGG wählen | Implementierungsplan erstellt; Freigabe offen | [Plan](superpowers/plans/2026-11-05-FEAT-031-event-session-game-selection.md) |
 | FEAT-032 | Abzeichenübersicht mit Freischaltbedingungen | In Umsetzung; am 06.11.2026 freigegeben | [Plan](superpowers/plans/2026-11-06-FEAT-032-badge-overview.md) |
 
@@ -991,7 +991,7 @@ danach können FEAT-026 und FEAT-027 unabhängig geplant umgesetzt werden.
 **Status:** Plan am 08.11.2026 durch „bitte umsetzen“ freigegeben. Workflow lokal implementiert und getestet; Readiness-Secret verschlüsselt in GitHub und als sensibles Vercel-Produktionssecret hinterlegt. Lokale Ausfall-/Erholungsabnahme bestanden. Workflow-Veröffentlichung, wirksames Produktionsdeployment und echte Alarmzustellung stehen aus.
 **Ziel:** Sobald ein Monitoring-System ausgewählt wird, die Prozess-Liveness und Datenbank-Readiness getrennt überwachen.
 **Abnahmekriterien:** Verbraucher und gewünschte Verfügbarkeit inventarisieren; `/api/health` als DB-freie Liveness und `/api/health/ready` mit einem separaten Secret konfigurieren; Secret sicher bereitstellen; Verhalten bei DB-Ausfall und Erholung in isoliertem Staging prüfen; Alarmierung und Betrieb dokumentieren.
-**Implementierungsplan:** [Webumsetzung und Bugabschluss](superpowers/plans/2026-11-08-FEAT-019-029-030-bugabschluss.md). Zwei unabhängige Prüfjobs alle 15 Minuten und manueller Start; Readiness-Secret über GitHub Secrets, Alarmierung über persönliche Actions-Benachrichtigungen. Freigegeben am 08.11.2026; Betriebsabschluss erst nach tatsächlicher Aktivierung und Zustellnachweis.
+**Implementierungsplan:** [Webumsetzung und Bugabschluss](superpowers/plans/2026-11-08-FEAT-019-029-030-bugabschluss.md). Zwei unabhängige Prüfjobs alle 15 Minuten und manueller Start; Readiness-Secret über GitHub Secrets, Alarmierung über persönliche Actions-Benachrichtigungen. Freigegeben am 08.11.2026; Workflow veröffentlicht und beide Produktionsprüfungen erfolgreich. Persönliche Fehlalarmzustellung bleibt zu bestätigen.
 
 ## FEAT-032 – Abzeichen und Freischaltbedingungen auffindbar machen
 
