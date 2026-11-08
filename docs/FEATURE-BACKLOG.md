@@ -54,9 +54,9 @@ nicht begonnener Umsetzung. Die offenen Punkte sind keine Umsetzungsfreigabe.
 | FEAT-016 | Spielauswahl bei Session-Anlage durchsuchen | Manuelle Browser-/VoiceOver-Abnahme | [Plan](superpowers/plans/2026-11-02-FEAT-016-session-spielsuche.md) |
 | FEAT-017 | Spielcover in der Sessions-Übersicht | Responsive Browser-/Viewport-Abnahme | [Plan](superpowers/plans/2026-11-02-FEAT-017-session-cover.md) |
 | FEAT-018 | Testabdeckung schrittweise auf 80 % erhöhen | Abgeschlossen; globales 80-%-Gate aktiv | [Plan](superpowers/plans/2026-11-02-FEAT-018-coverage-80.md) |
-| FEAT-019 | Spracheingabe für Suche und Sessions | Konzept vorhanden; Plan und Umsetzung offen | [Konzept](superpowers/specs/2026-11-02-spracheingabe-design.md) |
+| FEAT-019 | Spracheingabe für Suche und Sessions | Konzept vorhanden; konkreter Webplan am 08.11.2026 vorgelegt, Planfreigabe ausstehend | [Konzept](superpowers/specs/2026-11-02-spracheingabe-design.md) |
 | FEAT-029 | Gespielte Eventspiele als Sessions erfassen | Web und Produktionsmigration abgeschlossen; iOS separat | [Spec](superpowers/specs/2026-11-04-FEAT-029-event-sessions-design.md), [Plan](superpowers/plans/2026-11-04-FEAT-029-event-sessions.md) |
-| FEAT-030 | Liveness- und Readiness-Monitoring einrichten | Erst bei Auswahl eines Monitoring-Systems: Verbraucher inventarisieren, Secret und getrennte Checks konfigurieren, Staging-Abnahme durchführen | Noch zu planen |
+| FEAT-030 | Liveness- und Readiness-Monitoring einrichten | GitHub Actions mit Workflow-Alarmen am 08.11.2026 gewählt; konkreter Plan vorgelegt, Planfreigabe ausstehend | [Plan](superpowers/plans/2026-11-08-FEAT-019-029-030-bugabschluss.md) |
 | FEAT-031 | Bei Event-Partien Spiele aus Vorschlägen, Sammlung oder BGG wählen | Implementierungsplan erstellt; Freigabe offen | [Plan](superpowers/plans/2026-11-05-FEAT-031-event-session-game-selection.md) |
 | FEAT-032 | Abzeichenübersicht mit Freischaltbedingungen | In Umsetzung; am 06.11.2026 freigegeben | [Plan](superpowers/plans/2026-11-06-FEAT-032-badge-overview.md) |
 
@@ -229,6 +229,8 @@ TDD wurde als verbindliche
 Agentenregel ergänzt. Zwei Stack-Skills wurden lokal aufgenommen.
 
 ### I. Spracheingabe: FEAT-019
+
+**Umsetzungsauftrag vom 08.11.2026:** Web-Spracheingabe einschließlich überprüfbarer Session-Entwürfe angefordert. Der [konkrete Plan](superpowers/plans/2026-11-08-FEAT-019-029-030-bugabschluss.md) wurde erstellt und wird zur Freigabe vorgelegt; noch keine Runtime-Implementierung.
 
 Das Konzept trennt zwei Fähigkeiten, damit einfache Spracheingabe ohne KI
 starten kann und strukturierte Session-Befehle eigene Datenschutz- und
@@ -986,10 +988,10 @@ danach können FEAT-026 und FEAT-027 unabhängig geplant umgesetzt werden.
 
 ## FEAT-030 – Liveness- und Readiness-Monitoring einrichten
 
-**Status:** Offen; derzeit ist laut Nutzer kein Monitoring-System im Einsatz. Dies ist ein späterer Betriebspunkt und keine aktuelle Bugbehebung oder Umsetzungsfreigabe.
+**Status:** Umsetzung am 08.11.2026 angefordert. Nutzer hat GitHub Actions mit Workflow-Alarmen gewählt; konkreter Web-/Betriebsplan vorgelegt, Planfreigabe und tatsächliche Einrichtung ausstehend.
 **Ziel:** Sobald ein Monitoring-System ausgewählt wird, die Prozess-Liveness und Datenbank-Readiness getrennt überwachen.
 **Abnahmekriterien:** Verbraucher und gewünschte Verfügbarkeit inventarisieren; `/api/health` als DB-freie Liveness und `/api/health/ready` mit einem separaten Secret konfigurieren; Secret sicher bereitstellen; Verhalten bei DB-Ausfall und Erholung in isoliertem Staging prüfen; Alarmierung und Betrieb dokumentieren.
-**Implementierungsplan:** Noch nicht erstellt. Vor einer Einrichtung gemäß verbindlichem Feature-Ablauf planen und Umfang freigeben lassen.
+**Implementierungsplan:** [Webumsetzung und Bugabschluss](superpowers/plans/2026-11-08-FEAT-019-029-030-bugabschluss.md). Zwei unabhängige Prüfjobs alle 15 Minuten und manueller Start; Readiness-Secret über GitHub Secrets, Alarmierung über persönliche Actions-Benachrichtigungen. Planfreigabe ausstehend.
 
 ## FEAT-032 – Abzeichen und Freischaltbedingungen auffindbar machen
 

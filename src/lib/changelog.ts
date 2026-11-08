@@ -12,6 +12,16 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.94",
+    date: "2026-11-08",
+    title: "Spracheingabe und Betriebsprüfungen konkret geplant",
+    description: "Der Webplan beschreibt Spracheingabe, GitHub-Monitoring und die noch erforderlichen Abnahmen für Terminwahl, Desktopdarstellung und Eventdauer.",
+    changes: [
+      { type: "internal", text: "FEAT-019/029/030: Umsetzungsauftrag erfasst, GitHub Actions mit Workflow-Alarmen ausgewählt und konkreten Plan mit testgetriebener Umsetzung sowie Betriebs- und Datenschutzprüfungen vorgelegt. Planfreigabe und Umsetzung stehen noch aus." },
+      { type: "internal", text: "BUG-038/041/076: Vorhandene Korrekturen und verbleibende Browser-, VoiceOver- und Produktionsmigrationsabnahmen im gemeinsamen Plan festgehalten; Bugstatus unverändert." },
+    ],
+  },
+  {
     version: "0.50.93",
     date: "2026-11-07",
     title: "Abzeichen leichter finden und verstehen",
