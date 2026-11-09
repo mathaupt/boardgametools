@@ -4,10 +4,11 @@ import { fireEvent, render, screen } from "@testing-library/react";
 vi.mock("next/navigation", () => ({ useRouter: () => ({ refresh: vi.fn(), push: vi.fn() }) }));
 const cardLoaders = import.meta.glob("../../../src/app/(dashboard)/dashboard/events/[id]/played-sessions-card.tsx");
 
-const props: { eventId: string; eventDate: string; proposals: { id: string; gameName: string; imageUrl: string | null; playedSessions: { id: string; session: any }[] }[]; participants: { id: string; name: string; kind: "user" | "guest" }[]; isCreator: boolean } = {
+const props: { eventId: string; eventDate: string; proposals: { id: string; gameName: string; imageUrl: string | null; playedSessions: { id: string; session: any }[] }[]; otherSessions: { id: string; gameName: string; session: any }[]; participants: { id: string; name: string; kind: "user" | "guest" }[]; isCreator: boolean } = {
   eventId: "event-1",
   eventDate: "2026-11-04T18:00:00.000Z",
   proposals: [{ id: "proposal-1", gameName: "Catan", imageUrl: null, playedSessions: [] }],
+  otherSessions: [],
   participants: [{ id: "user-1", name: "Anna", kind: "user" as const }, { id: "guest-1", name: "Max (Gast)", kind: "guest" as const }],
   isCreator: false,
 };
@@ -20,6 +21,17 @@ describe("PlayedSessionsCard", () => {
     render(<featureModule.PlayedSessionsCard {...props} isCreator />);
     fireEvent.click(screen.getByRole("button", { name: /Partie erfassen/i }));
     expect(await screen.findByRole("checkbox", { name: "Gewinner für Anna" })).toBeInTheDocument();
+  });
+
+  it("allows the event creator to record a session when there are no proposals", async () => {
+    const loader = Object.values(cardLoaders)[0];
+    if (!loader) return;
+    const featureModule = await loader() as { PlayedSessionsCard: React.ComponentType<typeof props> };
+    render(<featureModule.PlayedSessionsCard {...props} proposals={[]} isCreator />);
+    fireEvent.click(screen.getByRole("button", { name: /Partie erfassen/i }));
+    expect(await screen.findByRole("form", { name: "Gespielte Partie erfassen" })).toBeInTheDocument();
+    expect(screen.getByRole("combobox", { name: "Spielquelle" })).toHaveValue("collection");
+    expect(screen.getByRole("option", { name: "BoardGameGeek" })).toBeInTheDocument();
   });
 
   it("shows the played status and detailed session only to authorized event viewers", async () => {

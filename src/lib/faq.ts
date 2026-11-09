@@ -195,6 +195,10 @@ export const faqSections: FaqSection[] = [
         answer: "Klicke in der Abstimmung auf den Spielnamen oder auf „Spieldetails“. Die Informationen öffnen sich in einem Dialog, der sich per Schließen-Schaltfläche oder Escape wieder schließen lässt. Öffentliche Gäste sehen keine privat verfasste Sammlungsbeschreibung.",
       },
       {
+        question: "Wie erfasse ich ein gespieltes Spiel, das nicht vorgeschlagen wurde?",
+        answer: "Als Event-Ersteller kannst du unter „Gespielte Partien“ die Quelle „Meine Sammlung“ oder „BoardGameGeek“ wählen. Sammlungsspiele werden deinem Konto zugeordnet; BGG-Spiele werden mit den gefundenen Spieldaten als Session gespeichert, ohne sie in die Sammlung zu importieren.",
+      },
+      {
         question: "Wie kann ich die Spielvorschläge sortieren?",
         answer: "Standardmäßig stehen die Vorschläge mit den meisten Stimmen oben. Über „Sortieren“ kannst du stattdessen alphabetisch nach Name oder nach den neuesten Vorschlägen ordnen. Nutzer- und Gaststimmen werden gemeinsam gezählt.",
       },

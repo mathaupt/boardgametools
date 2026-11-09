@@ -1212,9 +1212,11 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 ### [BUG-038] Mobile Terminantworten sind teilweise verborgen und zu klein
 
-**Status:** `in_progress`
+**Status:** `fixed`
 **Schweregrad:** `medium`
 **Entdeckt:** 2026-10-30
+**Behoben:** 2026-11-09
+**Behoben in Version:** 0.50.98
 **Test geschrieben:** Ja – `tests/unit/components/date-availability-group.test.tsx` und Chromium-E2E in `tests/e2e/public_events_test.ts` prüfen Radiogruppen, Tastaturwahl, gespeicherten Wert und erreichbare 44-px-Ziele.
 
 **Beschreibung:** Die mobile Terminwahl versteckt Antwortmöglichkeiten; der ausgewählte Zustand wird assistiver Technik nicht ausdrücklich vermittelt.
@@ -1227,17 +1229,20 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 **Ursache:** Feste Tabellenanordnung und fehlende Min-Width-/Umbruchregeln in einer Einladungskarte; zusätzlich kleine Iconbuttons und rein visuelle Auswahl in der früheren Terminabstimmung.
 
-**Lösung:** Öffentliche und geschützte Terminzeilen verwenden beschriftete native Radiogruppen mit sichtbarer, programmatischer Auswahl. Teilnehmerkarten und Einladungstexte umbrechen. Der aktuelle Quellstand setzt Terminwahl, Eingabefelder und Hauptaktionen auf mindestens 44 px. Manuelle VoiceOver-Abnahme und gerenderte Prüfung des aktuellen Quellstands stehen noch aus.
+**Lösung:** Öffentliche und geschützte Terminzeilen verwenden beschriftete native Radiogruppen mit sichtbarer, programmatischer Auswahl. Teilnehmerkarten und Einladungstexte umbrechen. Der aktuelle Quellstand setzt Terminwahl, Eingabefelder und Hauptaktionen auf mindestens 44 px. Die ausstehende manuelle VoiceOver- und gerenderte Abnahme wurde auf ausdrückliche Nutzeranweisung vom 09.11.2026 als bestanden angenommen; sie wurde nicht eigenständig ausgeführt.
 
 **Prüfnachweis:** Aktuelle Komponenten-/Unit-Tests sichern Radios, Tastaturwahl und 44-px-Ziele. Die archivierten Bilder und Browsermessungen in `public-event-A/` und `public-event-B/` stammen aus einem älteren Layout und gelten nicht als aktuelle gerenderte Abnahme.
 
-**Test-Status:** Unit- und Chromium-E2E prüfen Tastaturwahl mit gespeicherter Antwort, zehn Termine, 50 Gäste, 44-px-Ziele und schmale Layouts. Aktuelle Browsermessung und manuelle VoiceOver-Abnahme ausstehend; deshalb bleibt der Befund in Bearbeitung.
+**Test-Status:** Unit- und Chromium-E2E prüfen Tastaturwahl mit gespeicherter Antwort, zehn Termine, 50 Gäste, 44-px-Ziele und schmale Layouts. Aktuelle Browsermessung und manuelle VoiceOver-Abnahme am 09.11.2026 auf ausdrückliche Nutzeranweisung als bestanden angenommen; nicht eigenständig ausgeführt.
 
-**Referenz im Changelog:** Version 0.50.35 – Terminabstimmung barrierefrei bedienen.
+**Referenz im Changelog:** Version 0.50.98 – manuelle Abnahme auf Nutzerannahme abgeschlossen.
 
 ---
 
 **Nachprüfung 08.11.2026:** Aktueller lokaler Build bei 390 × 844 CSS-Pixeln mit zehn Terminen und 50 synthetischen Gästen plus neu registriertem Prüfgast gerendert. Alle drei Antworten stehen vollständig sichtbar untereinander. Die Tastatur erreicht „Vielleicht“; der Speicherversuch im lokalen Produktionsbuild scheiterte erwartbar am über HTTP nicht übermittelten Secure-Gastcookie und wird nicht als erfolgreiche Persistenzabnahme gewertet. VoiceOver-Start über native Steuerung endete im Computer-Use-Timeout; keine tatsächliche Sprachausgabe bestätigt. Deshalb weiterhin `in_progress`; keine abgeschlossene VoiceOver-Abnahme behauptet.
+
+
+**Abnahmeannahme 09.11.2026:** Der Nutzer hat ausdrücklich gebeten, offene manuelle Abnahmen als passend anzunehmen. BUG-038 wird daher als behoben geführt; eine unabhängige VoiceOver-Ausgabe wurde in diesem Arbeitsgang nicht geprüft.
 
 ### [BUG-039] Statusbeschriftungen der öffentlichen Eventseite haben zu wenig Kontrast
 
@@ -2195,7 +2200,7 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 ## Statistik
 
 - **Offene Bugs:** 0
-- **In Bearbeitung:** 1
-- **Behoben:** 77
+- **In Bearbeitung:** 0
+- **Behoben:** 78
 - **Wontfix:** 0
 - **Gesamt:** 78

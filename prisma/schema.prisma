@@ -447,13 +447,13 @@ model GameProposal {
 model EventPlayedSession {
   id          String   @id @default(cuid())
   eventId     String
-  proposalId  String
+  proposalId  String?
   sessionId   String   @unique
   operationId String
   createdAt   DateTime @default(now())
 
   event    Event        @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  proposal GameProposal @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+  proposal GameProposal? @relation(fields: [proposalId], references: [id], onDelete: Cascade)
   session  GameSession  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
 
   @@unique([eventId, operationId])

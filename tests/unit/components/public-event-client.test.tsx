@@ -57,6 +57,13 @@ describe("PublicEventClient identity and participation layout", () => {
     )).toBe(true);
   });
 
+  it("shows proposal-less played game titles without session details", async () => {
+    render(<PublicEventClient token="token" event={{ ...event, playedGamesWithoutProposal: ["Azul"] } as SerializedPublicEvent} />);
+    expect(await screen.findByText("Weitere gespielte Spiele")).toBeInTheDocument();
+    expect(screen.getByText("Azul")).toBeInTheDocument();
+    expect(screen.getAllByText("Gespielt")).toHaveLength(2);
+  });
+
   it("upserts the server-confirmed guest after successful registration", async () => {
     window.localStorage.clear();
     const mockFetch = vi.fn().mockResolvedValue({

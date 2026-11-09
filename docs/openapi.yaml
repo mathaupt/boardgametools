@@ -1124,7 +1124,7 @@ paths:
     post:
       tags: [Events, Sessions]
       summary: Gespielte Eventpartie als Session erfassen
-      description: Nur der Event-Ersteller darf eine Session für einen Vorschlag dieses Events anlegen. Wiederholungen derselben operationId liefern dieselbe Session. Öffentliche Share-Links berechtigen nicht zum Schreiben.
+      description: Nur der Event-Ersteller darf eine Event-Session anlegen. Als Spielquelle dient ein Vorschlag, ein eigenes Sammlungsspiel oder eine numerische BGG-ID; Sammlungseigentum und BGG-Metadaten werden serverseitig geprüft. Wiederholungen derselben operationId liefern dieselbe Session. Öffentliche Share-Links berechtigen nicht zum Schreiben.
       parameters:
         - name: id
           in: path
@@ -1136,9 +1136,28 @@ paths:
           application/json:
             schema:
               type: object
-              required: [proposalId, operationId, playedAt, players, guestPlayers]
+              required: [source, operationId, playedAt, players, guestPlayers]
               properties:
-                proposalId: { type: string }
+                source:
+                  oneOf:
+                    - type: object
+                      required: [type, proposalId]
+                      additionalProperties: false
+                      properties:
+                        type: { const: proposal }
+                        proposalId: { type: string, minLength: 1, maxLength: 64 }
+                    - type: object
+                      required: [type, collectionGameId]
+                      additionalProperties: false
+                      properties:
+                        type: { const: collection }
+                        collectionGameId: { type: string, minLength: 1, maxLength: 64 }
+                    - type: object
+                      required: [type, bggId]
+                      additionalProperties: false
+                      properties:
+                        type: { const: bgg }
+                        bggId: { type: string, pattern: '^\\d{1,12}$' }
                 operationId: { type: string, minLength: 8, maxLength: 100 }
                 playedAt: { type: string, format: date-time }
                 durationMinutes: { type: integer, minimum: 1, maximum: 1440, nullable: true }

@@ -525,9 +525,11 @@ Jeder Eintrag enthält Felder für Root-Cause-Analyse und Gegenmaßnahmen (manue
 |---------|-----------|--------|-------|--------|
 | SEC-45: npm audit: Bekannte Vulnerabilities | P2 | resolved | open | npm audit lieferte keine gültigen Prüfdaten |
 
-**Root-Cause:** <!-- Manuell ausfüllen: Warum ist das Finding zurückgekehrt? -->
-**Gegenmaßnahme:** <!-- Manuell ausfüllen: Wie wird verhindert, dass es erneut passiert? -->
-**Verantwortlich:** <!-- Manuell ausfüllen -->
+**Root-Cause:** Der erste Evaluatorlauf in der netzbeschränkten Sandbox konnte registry.npmjs.org nicht erreichen. Die nachfolgende npm-Auditdatei enthielt deshalb keine Metadaten; es gab keine Dependencyänderung.
+**Gegenmaßnahme:** Den verpflichtenden Regressionsevaluator mit freigegebenem Registryzugriff wiederholen und ausschließlich dessen valide Produktions-/Entwicklungszusammenfassung bewerten.
+**Verantwortlich:** BoardGameTools-Wartung.
+
+**Auflösung 09.11.2026 13:04:** `npm run review-evaluate:regression` mit Registryzugriff bestanden (Exitcode 0), Gesamt 9,9/10, Sicherheit 10/10, SEC-45 resolved, keine Regression. Snapshot: `history/2026-11-09_1304.json`.
 
 ---
 
@@ -551,9 +553,11 @@ Jeder Eintrag enthält Felder für Root-Cause-Analyse und Gegenmaßnahmen (manue
 |---------|-----------|--------|-------|--------|
 | SEC-45: npm audit: Bekannte Vulnerabilities | P2 | resolved | open | npm audit lieferte keine gültigen Prüfdaten |
 
-**Root-Cause:** <!-- Manuell ausfüllen: Warum ist das Finding zurückgekehrt? -->
-**Gegenmaßnahme:** <!-- Manuell ausfüllen: Wie wird verhindert, dass es erneut passiert? -->
-**Verantwortlich:** <!-- Manuell ausfüllen -->
+**Root-Cause:** Der erste Evaluatorlauf in der netzbeschränkten Sandbox konnte registry.npmjs.org nicht erreichen. Die folgende npm-Auditdatei enthielt deshalb keine Metadaten; an Dependencies wurde nichts geändert.
+**Gegenmaßnahme:** Den Regressionscheck mit Registryzugriff wiederholen und nur valide Produktions-/Entwicklungszusammenfassungen bewerten.
+**Verantwortlich:** BoardGameTools-Wartung.
+
+**Auflösung 09.11.2026 13:12:** `npm run review-evaluate:regression` mit Registryzugriff bestanden (Exitcode 0), Gesamt 9,9/10, Sicherheit 10/10, SEC-45 resolved, keine Regression. Snapshot: `history/2026-11-09_1312.json`.
 
 ---
 
@@ -620,5 +624,17 @@ Jeder Eintrag enthält Felder für Root-Cause-Analyse und Gegenmaßnahmen (manue
 **Verantwortlich:** BoardGameTools-Wartung.
 
 **Auflösung 08.11.2026:** `npm run review-evaluate:regression` mit Registryzugriff bestanden (Exitcode 0), Gesamt 9,9/10, Sicherheit 10/10, SEC-45 wieder resolved. Snapshot: `history/2026-11-08_2045.json`.
+
+---
+
+## 2026-11-09 12:02:54
+
+| Finding | Priorität | Vorher | Jetzt | Detail |
+|---------|-----------|--------|-------|--------|
+| SEC-45: npm audit: Bekannte Vulnerabilities | P2 | resolved | open | npm audit lieferte keine gültigen Prüfdaten |
+
+**Root-Cause:** <!-- Manuell ausfüllen: Warum ist das Finding zurückgekehrt? -->
+**Gegenmaßnahme:** <!-- Manuell ausfüllen: Wie wird verhindert, dass es erneut passiert? -->
+**Verantwortlich:** <!-- Manuell ausfüllen -->
 
 ---

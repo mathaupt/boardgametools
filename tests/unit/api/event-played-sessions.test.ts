@@ -29,7 +29,7 @@ describe("POST /api/events/:id/played-sessions", () => {
   it("validates and creates a played session for the authenticated event creator", async () => {
     const route = await loadPost();
     if (!route) return;
-    const body = { proposalId: "proposal-1", operationId: "operation-123", playedAt: "2026-11-04T18:00:00.000Z", players: [{ userId: "owner" }], guestPlayers: [] };
+    const body = { source: { type: "proposal", proposalId: "proposal-1" }, operationId: "operation-123", playedAt: "2026-11-04T18:00:00.000Z", players: [{ userId: "owner" }], guestPlayers: [] };
     const response = await route.POST({ json: async () => body }, { params: Promise.resolve({ id: "event-1" }) });
 
     expect(response).toEqual({ status: 201, body: { session: { id: "session-1" }, duplicate: false } });
@@ -49,6 +49,30 @@ describe("POST /api/events/:id/played-sessions", () => {
     const route = await loadPost();
     if (!route) return;
     const response = await route.POST({ json: async () => ({ proposalId: "", operationId: "bad", playedAt: "invalid", players: [], guestPlayers: [] }) }, { params: Promise.resolve({ id: "event-1" }) });
+
+    expect(response.status).toBe(400);
+    expect(mocks.create).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    { type: "proposal", proposalId: "proposal-1" },
+    { type: "collection", collectionGameId: "game-1" },
+    { type: "bgg", bggId: "13" },
+  ])("accepts the strict $type game source", async (source) => {
+    const route = await loadPost();
+    if (!route) return;
+    const body = { source, operationId: "operation-123", playedAt: "2026-11-04T18:00:00.000Z", players: [{ userId: "owner" }], guestPlayers: [] };
+    const response = await route.POST({ json: async () => body }, { params: Promise.resolve({ id: "event-1" }) });
+
+    expect(response.status).toBe(201);
+    expect(mocks.create).toHaveBeenCalledWith("owner", "event-1", body);
+  });
+
+  it("rejects mixed or unknown game sources before calling the service", async () => {
+    const route = await loadPost();
+    if (!route) return;
+    const body = { source: { type: "collection", collectionGameId: "game-1", bggId: "13" }, operationId: "operation-123", playedAt: "2026-11-04T18:00:00.000Z", players: [{ userId: "owner" }], guestPlayers: [] };
+    const response = await route.POST({ json: async () => body }, { params: Promise.resolve({ id: "event-1" }) });
 
     expect(response.status).toBe(400);
     expect(mocks.create).not.toHaveBeenCalled();

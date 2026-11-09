@@ -12,6 +12,27 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.99",
+    date: "2026-11-09",
+    title: "Gespielte Eventpartien flexibel erfassen",
+    description: "Partien lassen sich auch dann dokumentieren, wenn das Spiel nicht zur Eventabstimmung gehörte.",
+    changes: [
+      { type: "feature", text: "FEAT-031: Event-Ersteller können als Spielquelle einen Eventvorschlag, ein eigenes Sammlungsspiel oder ein BGG-Spiel wählen." },
+      { type: "improvement", text: "Vorschlagslose Eventpartien erscheinen in der internen Historie; öffentliche Events zeigen davon nur Spieltitel und Gespielt-Status." },
+      { type: "internal", text: "Optionale Eventvorschlagsverknüpfung ergänzt; bestehende Partien bleiben verknüpft. Isolierte PostgreSQL-Migration und gezielte Datenschutz-, Quellen- und UI-Tests ergänzt." },
+      { type: "internal", text: "Offene Betriebsbedingungen für FEAT-007/008/009 sowie der Produktionsrollout von FEAT-031 in Plänen und Backlog dokumentiert; keine externe Konfiguration oder Produktionsdaten geändert." },
+    ],
+  },
+  {
+    version: "0.50.98",
+    date: "2026-11-09",
+    title: "Offene Abnahmen nach Nutzerannahme abgeschlossen",
+    description: "Bereits umgesetzte Features wurden anhand der ausdrücklich angenommenen manuellen und Browser-Abnahmen aus dem offenen Backlog übernommen.",
+    changes: [
+      { type: "internal", text: "FEAT-004, 011–019, 029, 030 und 032 sowie die VoiceOver-Abnahme von BUG-038 sind gemäß Nutzeranweisung vom 09.11.2026 als angenommen abgeschlossen dokumentiert. Die Prüfungen wurden nicht eigenständig ausgeführt; die Dokumentation weist diese Grenze aus." },
+    ],
+  },
+  {
     version: "0.50.97",
     date: "2026-11-08",
     title: "Produktionsmonitoring aktiviert",

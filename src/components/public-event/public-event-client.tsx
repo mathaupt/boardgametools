@@ -173,6 +173,10 @@ export function PublicEventClient({ token, event }: PublicEventClientProps) {
           {!canVoteGame && (
             <PublicEventStateBadge label={eventState.label} />
           )}
+          {(event.playedGamesWithoutProposal ?? []).length > 0 && <div className="space-y-2 border-t border-border pt-4" aria-label="Weitere gespielte Spiele">
+            <h3 className="font-semibold">Weitere gespielte Spiele</h3>
+            <ul className="space-y-2">{(event.playedGamesWithoutProposal ?? []).map((name, index) => <li key={`${name}-${index}`} className="flex items-center justify-between gap-3 rounded-lg border border-border px-4 py-3 text-sm"><span>{name}</span><span className="rounded-full bg-success/15 px-2.5 py-1 text-xs font-semibold text-foreground">Gespielt</span></li>)}</ul>
+          </div>}
         </div>
         <div className="mt-4 space-y-4">
           {proposals.length > 0 && (

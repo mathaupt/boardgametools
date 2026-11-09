@@ -1,5 +1,11 @@
 # FEAT-009 – HTML-Entities in Spieldaten korrekt behandeln
 
+## Aktualitätsprüfung 09.11.2026
+
+- Normalisierung, sichere Klartextausgabe und konfliktgeprüfte Dry-Run-/Apply-/Rollback-CLI sind bereits umgesetzt. Offen ist ausschließlich die konkrete Bestandsbereinigung in Produktion.
+- `BGT_MAINTENANCE_DATABASE_URL` ist weder in der Prozessumgebung noch als dedizierter Wartungszugang in `.env.prod` vorhanden. Die CLI akzeptiert absichtlich keinen stillen Rückfall auf `SQL_DATABASE_URL`; deshalb wurde kein Produktionsmanifest erzeugt.
+- Kein Produktionsbackup erstellt, keine Produktionsdaten gelesen oder geändert. Für die Fortsetzung werden ein dedizierter Wartungszugang, ein frisches wiederherstellbares Backup und danach die Prüfung des vertraulichen Manifests vor einem gesondert freigegebenen Apply benötigt.
+
 **Status:** Code umgesetzt; Unit-Suite, Typprüfung, Build, iOS-Vertrag, Fast- und vollständiger Security-Check sowie Impeccable-Detektor sind abgeschlossen. E2E ist nicht abgenommen. Produktionsbereinigung bleibt separat freigabepflichtig.
 
 ## Produktionslauf-Vorprüfung – 2026-11-01

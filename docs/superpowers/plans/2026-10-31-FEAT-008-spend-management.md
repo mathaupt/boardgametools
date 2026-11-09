@@ -1,5 +1,11 @@
 # FEAT-008 – Vercel-Budget, Warnungen und Pausenverhalten
 
+## Aktualitätsprüfung 09.11.2026
+
+- Die offizielle Vercel-Dokumentation bestätigt weiterhin Budget pro Team-Abrechnungsperiode, Benachrichtigungen und die optionale Pause aller Produktionsprojekte. Das Setzen eines Betrags unter dem bereits ausgegebenen Verbrauch kann die konfigurierten Aktionen unmittelbar auslösen.
+- Die lesbare Vercel-Billing-API ist vorhanden; lokal ist keine verknüpfte Vercel-CLI verfügbar und der Pipelinezugang enthält keinen vollständigen Team-/Projekt-Scope für Billing. Tarif, aktueller Verbrauch, bestehender Grenzwert und Empfänger wurden daher nicht aus dem Konto verifiziert.
+- Kein Budget gesetzt und keine Benachrichtigung-/Pausenaktion verändert. Betrag sowie Pausenwunsch sind Betreiberentscheidungen und müssen vor der Konfiguration konkret feststehen.
+
 **Status:** Lesende Vorprüfung am 01.11.2026 aktualisiert. Kein Billingzugriff auf Tarif, Budget oder Verbrauch; kein Betrag festgelegt. Keine Einstellung geändert.
 
 **Ziel:** Ein vom Betreiber bestätigtes Budget für variable Vercel-Nutzung löst rechtzeitig Warnungen und ein bewusst gewähltes Begrenzungsverhalten aus.

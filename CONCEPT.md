@@ -10,6 +10,15 @@ Die Weboberfläche verwendet seit 0.50.20 die bestätigte Gestaltung „Club Pro
 
 ## Features
 
+### Eventpartien und Spielquellen
+
+Event-Ersteller können gespielte Partien direkt mit einem Eventvorschlag, einem
+eigenen Sammlungsspiel oder einer BoardGameGeek-ID erfassen. Sammlungseigentum
+und BGG-Metadaten werden serverseitig geprüft; BGG-Treffer müssen nicht in die
+Sammlung importiert werden. Sessions bleiben auch ohne Vorschlagsverknüpfung
+Teil der Eventhistorie. Öffentliche Events erhalten dafür nur den Spieltitel
+und den Gespielt-Status, keine Session-, Ergebnis- oder Teilnehmerdetails.
+
 ### 1. Brettspiel-Sammlung (CRUD)
 - Spiele hinzufügen, bearbeiten, löschen
 - Spieldetails: Name, Beschreibung, Min/Max Spieler, Spieldauer, Komplexität

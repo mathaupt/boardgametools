@@ -1,0 +1,9 @@
+# Review-Snapshot – 09.11.2026 / FEAT-031 und angenommene Abnahmen (0.50.99)
+
+- FEAT-031: Spielquellen für Eventpartien über Eventvorschlag, eigene Sammlung und BGG; optionale Vorschlagsrelation mit additiver Migration.
+- Tests zuerst rot nachgewiesen, danach grün: 1.436/1.436 Unit-Tests, Branch-Coverage 80,07 %, Statements 85,01 %, Functions 84,53 %, Lines 87,25 %. `npm run test:coverage` hat `src/data/quality-metrics.json` aktualisiert.
+- FEAT-031-Migration auf isolierter PostgreSQL-Testdatenbank angewendet; Nullable- und Unique-Constraint-Vertrag bestanden. Keine Produktionsmigration.
+- `npm run typecheck`, Produktionsbuild, gezieltes ESLint der geänderten Laufzeit-/Testdateien, `npm run security-check:fast` und `git diff --check` bestanden. Vollständiges ESLint mit `--max-warnings=0` scheitert an bereits vorhandenen Warnungen in versionierten Impeccable-Skripten; die geänderten Dateien melden keine Warnung.
+- Impeccable-Detektor für geänderte UI-Dateien: keine Findings. Browser-E2E und manuelle/gerenderte UI-Abnahme gelten auf Nutzeranweisung als angenommen, wurden in diesem Arbeitsgang nicht ausgeführt.
+- Review-Evaluator mit Registryzugriff um 13:12: 9,9/10, Sicherheit 10/10, keine Regression. SEC-45 nach validem Registrylauf resolved. Ein allgemeiner Prüferhinweis nennt 11 potenzielle Magic Numbers in API-Routen; kein neues FEAT-031-spezifisches Finding. Snapshot: `history/2026-11-09_1312.json`.
+- FEAT-007/008 bleiben von Vercel-Monitor-/Tarifdaten und Betreiberentscheidungen abhängig; FEAT-009 wartet auf frisches Produktionsbackup, konkretes Manifest und separate Freigabe des Datenlaufs. FEAT-031-Code ist umgesetzt, Produktionsmigration und Deployment bleiben offen.

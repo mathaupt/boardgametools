@@ -6,9 +6,15 @@ import { validateString } from "@/lib/validation";
 import { CacheTags } from "@/lib/cache-tags";
 import { invalidateTag } from "@/lib/cache";
 import { SessionService, type CreateEventSessionInput } from "@/lib/services/session.service";
+import { fetchBGGGame } from "@/lib/bgg";
+
+export type PlayedSessionSource =
+  | { type: "proposal"; proposalId: string }
+  | { type: "collection"; collectionGameId: string }
+  | { type: "bgg"; bggId: string };
 
 export interface PlayedSessionInput {
-  proposalId: string;
+  source: PlayedSessionSource;
   operationId: string;
   playedAt: string;
   durationMinutes?: number | null;
@@ -57,7 +63,7 @@ export const EventPlayedSessionService = {
       return { session: prior.session, duplicate: true };
     }
 
-    if (!input.proposalId || !input.playedAt || !Array.isArray(input.players) || !Array.isArray(input.guestPlayers)) {
+    if (!input.source || !input.playedAt || !Array.isArray(input.players) || !Array.isArray(input.guestPlayers)) {
       throw new ApiError(400, "Bitte Spiel, Datum und Teilnehmende angeben.");
     }
     const playedAt = new Date(input.playedAt);
@@ -75,22 +81,28 @@ export const EventPlayedSessionService = {
       throw new ApiError(400, "Teilnehmende dürfen nicht doppelt ausgewählt werden.");
     }
 
-    const proposal = await prisma.gameProposal.findFirst({
-      where: { id: input.proposalId, eventId },
+    const proposal = input.source.type === "proposal" ? await prisma.gameProposal.findFirst({
+      where: { id: input.source.proposalId, eventId },
       select: {
-        id: true,
-        eventId: true,
-        gameId: true,
-        bggId: true,
-        bggName: true,
-        bggImageUrl: true,
-        bggMinPlayers: true,
-        bggMaxPlayers: true,
-        bggPlayTimeMinutes: true,
+        id: true, eventId: true, gameId: true, bggId: true, bggName: true, bggImageUrl: true,
+        bggMinPlayers: true, bggMaxPlayers: true, bggPlayTimeMinutes: true,
         game: { select: { id: true, ownerId: true, deletedAt: true, name: true, bggId: true, imageUrl: true, minPlayers: true, maxPlayers: true, playTimeMinutes: true, complexity: true } },
       },
-    });
-    if (!proposal) throw new ApiError(404, "Spielvorschlag gehört nicht zu diesem Event oder wurde entfernt.");
+    }) : null;
+    if (input.source.type === "proposal" && !proposal) throw new ApiError(404, "Spielvorschlag gehört nicht zu diesem Event oder wurde entfernt.");
+
+    const gameSelect = { id: true, ownerId: true, deletedAt: true, name: true, bggId: true, imageUrl: true, minPlayers: true, maxPlayers: true, playTimeMinutes: true, complexity: true } as const;
+    const collectionGame = input.source.type === "collection" ? await prisma.game.findFirst({
+      where: { id: input.source.collectionGameId, ownerId: userId, deletedAt: null }, select: gameSelect,
+    }) : null;
+    if (input.source.type === "collection" && !collectionGame) throw new ApiError(404, "Sammlungsspiel nicht gefunden.");
+
+    const bggGame = input.source.type === "bgg" ? await fetchBGGGame(input.source.bggId) : null;
+    if (input.source.type === "bgg" && !bggGame) throw new ApiError(404, "BoardGameGeek-Spiel nicht gefunden.");
+    const ownedBggGame = input.source.type === "bgg" ? await prisma.game.findFirst({
+      where: { ownerId: userId, bggId: input.source.bggId, deletedAt: null }, select: gameSelect,
+      orderBy: { createdAt: "asc" },
+    }) : null;
 
     const allowedUsers = new Set([
       event.createdById,
@@ -104,15 +116,21 @@ export const EventPlayedSessionService = {
       throw new ApiError(400, "Mindestens ein Gast gehört nicht zu diesem Event.");
     }
 
-    const game = proposal.game;
+    const game = input.source.type === "proposal" ? proposal!.game : input.source.type === "collection" ? collectionGame : ownedBggGame;
+    const bggName = input.source.type === "proposal" ? proposal!.bggName : input.source.type === "bgg" ? bggGame!.name : null;
+    const bggId = input.source.type === "proposal" ? proposal!.bggId : input.source.type === "bgg" ? bggGame!.bggId : null;
+    const bggImageUrl = input.source.type === "proposal" ? proposal!.bggImageUrl : input.source.type === "bgg" ? bggGame!.imageUrl : null;
+    const bggMinPlayers = input.source.type === "proposal" ? proposal!.bggMinPlayers : input.source.type === "bgg" ? bggGame!.minPlayers : null;
+    const bggMaxPlayers = input.source.type === "proposal" ? proposal!.bggMaxPlayers : input.source.type === "bgg" ? bggGame!.maxPlayers : null;
+    const bggPlayTime = input.source.type === "proposal" ? proposal!.bggPlayTimeMinutes : input.source.type === "bgg" ? bggGame!.playTimeMinutes : null;
     const snapshot: CreateEventSessionInput = {
       gameId: game && game.ownerId === userId && game.deletedAt === null ? game.id : null,
-      gameNameSnapshot: gameTextForRead(game?.name ?? proposal.bggName ?? "Unbekanntes Spiel"),
-      gameBggIdSnapshot: game?.bggId ?? proposal.bggId,
-      gameImageUrlSnapshot: game?.imageUrl ?? proposal.bggImageUrl,
-      gameMinPlayersSnapshot: game?.minPlayers ?? proposal.bggMinPlayers,
-      gameMaxPlayersSnapshot: game?.maxPlayers ?? proposal.bggMaxPlayers,
-      gamePlayTimeMinutesSnapshot: game?.playTimeMinutes ?? proposal.bggPlayTimeMinutes,
+      gameNameSnapshot: gameTextForRead(game?.name ?? bggName ?? "Unbekanntes Spiel"),
+      gameBggIdSnapshot: game?.bggId ?? bggId,
+      gameImageUrlSnapshot: game?.imageUrl ?? bggImageUrl,
+      gameMinPlayersSnapshot: game?.minPlayers ?? bggMinPlayers,
+      gameMaxPlayersSnapshot: game?.maxPlayers ?? bggMaxPlayers,
+      gamePlayTimeMinutesSnapshot: game?.playTimeMinutes ?? bggPlayTime,
       gameComplexitySnapshot: game?.complexity ?? null,
       playedAt: playedAt.toISOString(),
       durationMinutes: input.durationMinutes ?? null,
@@ -130,7 +148,7 @@ export const EventPlayedSessionService = {
       const result = await prisma.$transaction(async (tx) => {
         const createdSession = await SessionService.createFromEvent(tx, userId, snapshot);
         const link = await tx.eventPlayedSession.create({
-          data: { eventId, proposalId: proposal.id, sessionId: createdSession.id, operationId },
+          data: { eventId, proposalId: proposal?.id ?? null, sessionId: createdSession.id, operationId },
           include: includeSession,
         });
         return { session: link.session, duplicate: false };

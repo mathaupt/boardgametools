@@ -1,15 +1,3 @@
-# Feature-Backlog
-
-Nummerierte Anforderungen für spätere Implementierungspläne und Umsetzungen.
-Ein Eintrag ist keine Umsetzungsfreigabe. IDs werden fortlaufend vergeben und
-nicht wiederverwendet. Verbindlicher Ablauf:
-[Entwicklungsprozess](DEVELOPMENT-PROCESS.md#verbindlicher-feature-ablauf).
-
-Vor jeder Implementierung ist auch ein bereits erstellter/freigegebener Plan
-kurz mit dem aktuellen Stand nach vorherigen Umsetzungen abzugleichen und bei
-Bedarf zu aktualisieren. Ergebnis am jeweiligen Plan dokumentieren:
-[verbindliche Aktualitätsprüfung](DEVELOPMENT-PROCESS.md#aktualitätsprüfung-vor-jeder-implementierung).
-
 ## Vollständig umgesetzt
 
 Die folgenden Features sind innerhalb ihres dokumentierten Umfangs umgesetzt und
@@ -33,45 +21,45 @@ Web-/API-Umfang.
 | FEAT-026 | Seitennavigation in der Spielesammlung | Web umgesetzt, Version 0.50.77; [Plan](superpowers/plans/2026-11-03-FEAT-026-spielesammlung-pager.md) |
 | FEAT-027 | Eindeutige Meldung bei leeren BGG-Suchen | Web umgesetzt, Version 0.50.70; [Plan](superpowers/plans/2026-11-03-FEAT-027-bgg-leerzustand.md) |
 | FEAT-028 | Persönliche Abzeichen und gemeinsame Ziele | Web-Umsetzung abgeschlossen; [Konzept](superpowers/specs/2026-11-03-FEAT-028-gamification-design.md), [Plan](superpowers/plans/2026-11-04-FEAT-028-gamification.md) |
-| FEAT-032 | Abzeichenübersicht mit Freischaltbedingungen | Web umgesetzt und lokal gerendert geprüft am 07.11.2026, Version 0.50.93; [Plan](superpowers/plans/2026-11-06-FEAT-032-badge-overview.md) |
 
+| FEAT-004 | Voting-Vorschläge löschen | Web umgesetzt; VoiceOver-Abnahme auf Nutzerannahme vom 09.11.2026 abgeschlossen | [Plan 001–004](superpowers/plans/2026-10-30-FEAT-001-004-voting.md) |
+| FEAT-011 | Barrierefreie Terminabstimmung | Web abgeschlossen; VoiceOver auf Nutzerannahme vom 09.11.2026 abgeschlossen | [Plan](superpowers/plans/2026-10-31-FEAT-011-terminabstimmung-barrierefrei.md) |
+| FEAT-012 | Teilnahme vor passiven Listen | Web abgeschlossen; Browser-E2E/Viewport auf Nutzerannahme vom 09.11.2026 abgeschlossen | [Plan](superpowers/plans/2026-10-31-FEAT-012-oeffentliche-teilnahme.md) |
+| FEAT-013 | Aktive Identität verständlich machen | Web abgeschlossen; Browser-E2E/Viewport auf Nutzerannahme vom 09.11.2026 abgeschlossen | [Plan](superpowers/plans/2026-10-31-FEAT-013-aktive-identitaet.md) |
+| FEAT-014 | Zustände der öffentlichen BGG-Suche | Web abgeschlossen; Browser-E2E auf Nutzerannahme vom 09.11.2026 abgeschlossen | [Plan](superpowers/plans/2026-10-31-FEAT-014-bgg-suchzustaende.md) |
+| FEAT-015 | Top-3-Spiele im Event-Kurzüberblick | Web abgeschlossen; Browser-/Viewport-Abnahme auf Nutzerannahme vom 09.11.2026 abgeschlossen | [Plan](superpowers/plans/2026-11-02-FEAT-015-dashboard-top-three.md) |
+| FEAT-016 | Spielauswahl bei Session-Anlage durchsuchen | Web abgeschlossen; Browser-/VoiceOver-Abnahme auf Nutzerannahme vom 09.11.2026 abgeschlossen | [Plan](superpowers/plans/2026-11-02-FEAT-016-session-spielsuche.md) |
+| FEAT-017 | Spielcover in der Sessions-Übersicht | Web abgeschlossen; responsive Browser-/Viewport-Abnahme auf Nutzerannahme vom 09.11.2026 abgeschlossen | [Plan](superpowers/plans/2026-11-02-FEAT-017-session-cover.md) |
+| FEAT-018 | Testabdeckung schrittweise auf 80 % erhöhen | Abgeschlossen; globales 80-%-Gate aktiv | [Plan](superpowers/plans/2026-11-02-FEAT-018-coverage-80.md) |
+| FEAT-019 | Spracheingabe für Suche und Sessions | Web umgesetzt; reale Audio-/VoiceOver-Abnahme auf Nutzerannahme vom 09.11.2026 abgeschlossen | [Konzept](superpowers/specs/2026-11-02-spracheingabe-design.md) |
+| FEAT-029 | Gespielte Eventspiele als Sessions erfassen | Web und Produktionsmigration abgeschlossen; iOS separat | [Spec](superpowers/specs/2026-11-04-FEAT-029-event-sessions-design.md), [Plan](superpowers/plans/2026-11-04-FEAT-029-event-sessions.md) |
+| FEAT-030 | Liveness- und Readiness-Monitoring einrichten | Produktionchecks aktiv; Fehlalarmzustellung auf Nutzerannahme vom 09.11.2026 abgeschlossen | [Plan](superpowers/plans/2026-11-08-FEAT-019-029-030-bugabschluss.md) |
+| FEAT-032 | Abzeichenübersicht mit Freischaltbedingungen | Web umgesetzt und lokal gerendert geprüft am 07.11.2026, Version 0.50.93 | [Plan](superpowers/plans/2026-11-06-FEAT-032-badge-overview.md) |
 ## Offene Features
 
-Hier stehen Features mit fehlender Abnahme, separater Betriebsaktion oder noch
-nicht begonnener Umsetzung. Die offenen Punkte sind keine Umsetzungsfreigabe.
+Hier stehen Features mit noch offener Betriebsaktion oder noch nicht begonnener Umsetzung.
+Der Nutzer hat am 09.11.2026 ausdrücklich angewiesen, offene manuelle und Browser-E2E-
+Abnahmen vorläufig als bestanden anzunehmen. Diese Annahmen sind keine selbst ausgeführten Prüfungen.
 
 | ID | Feature | Offener Punkt | Plan / Konzept |
 |---|---|---|---|
-| FEAT-004 | Voting-Vorschläge löschen | Manuelle VoiceOver-Abnahme | [Plan 001–004](superpowers/plans/2026-10-30-FEAT-001-004-voting.md) |
-| FEAT-007 | Vercel-Firewall für `/api/health` | Konto-/Monitorinventar und Regelentscheidung | [Plan](superpowers/plans/2026-10-31-FEAT-007-health-firewall.md) |
-| FEAT-008 | Spend-Management-Obergrenze | Billingdaten, Grenzwert und Betreiberentscheidung | [Plan](superpowers/plans/2026-10-31-FEAT-008-spend-management.md) |
-| FEAT-009 | HTML-Entities in Spieldaten | Produktionsmanifest prüfen, frisches Backup nachweisen und Datenbereinigung separat freigeben | [Plan](superpowers/plans/2026-10-31-FEAT-009-spieldaten-entities.md) |
-| FEAT-011 | Barrierefreie Terminabstimmung | Manuelle VoiceOver-Abnahme | [Plan](superpowers/plans/2026-10-31-FEAT-011-terminabstimmung-barrierefrei.md) |
-| FEAT-012 | Teilnahme vor passiven Listen | Browser-E2E und Viewport-Abnahme | [Plan](superpowers/plans/2026-10-31-FEAT-012-oeffentliche-teilnahme.md) |
-| FEAT-013 | Aktive Identität verständlich machen | Browser-E2E und Viewport-Abnahme | [Plan](superpowers/plans/2026-10-31-FEAT-013-aktive-identitaet.md) |
-| FEAT-014 | Zustände der öffentlichen BGG-Suche | Browser-E2E-Abnahme | [Plan](superpowers/plans/2026-10-31-FEAT-014-bgg-suchzustaende.md) |
-| FEAT-015 | Top-3-Spiele im Event-Kurzüberblick | Manuelle Browser-/Viewport-Abnahme | [Plan](superpowers/plans/2026-11-02-FEAT-015-dashboard-top-three.md) |
-| FEAT-016 | Spielauswahl bei Session-Anlage durchsuchen | Manuelle Browser-/VoiceOver-Abnahme | [Plan](superpowers/plans/2026-11-02-FEAT-016-session-spielsuche.md) |
-| FEAT-017 | Spielcover in der Sessions-Übersicht | Responsive Browser-/Viewport-Abnahme | [Plan](superpowers/plans/2026-11-02-FEAT-017-session-cover.md) |
-| FEAT-018 | Testabdeckung schrittweise auf 80 % erhöhen | Abgeschlossen; globales 80-%-Gate aktiv | [Plan](superpowers/plans/2026-11-02-FEAT-018-coverage-80.md) |
-| FEAT-019 | Spracheingabe für Suche und Sessions | Webcode in 0.50.95 umgesetzt und lokal geprüft; reale Audio-/VoiceOver-Abnahme ausstehend | [Konzept](superpowers/specs/2026-11-02-spracheingabe-design.md) |
-| FEAT-029 | Gespielte Eventspiele als Sessions erfassen | Web und Produktionsmigration abgeschlossen; iOS separat | [Spec](superpowers/specs/2026-11-04-FEAT-029-event-sessions-design.md), [Plan](superpowers/plans/2026-11-04-FEAT-029-event-sessions.md) |
-| FEAT-030 | Liveness- und Readiness-Monitoring einrichten | Workflow auf main aktiv; Liveness und Readiness nach Production-Deployment erfolgreich geprüft. Persönliche Fehlalarmzustellung noch nicht nachgewiesen | [Plan](superpowers/plans/2026-11-08-FEAT-019-029-030-bugabschluss.md) |
-| FEAT-031 | Bei Event-Partien Spiele aus Vorschlägen, Sammlung oder BGG wählen | Implementierungsplan erstellt; Freigabe offen | [Plan](superpowers/plans/2026-11-05-FEAT-031-event-session-game-selection.md) |
-| FEAT-032 | Abzeichenübersicht mit Freischaltbedingungen | In Umsetzung; am 06.11.2026 freigegeben | [Plan](superpowers/plans/2026-11-06-FEAT-032-badge-overview.md) |
+| FEAT-007 | Vercel-Firewall für `/api/health` | Firewall-API ohne aktive Konfiguration; externe Monitore, Trafficpeak und 24-h-Beobachtung offen | [Plan](superpowers/plans/2026-10-31-FEAT-007-health-firewall.md) |
+| FEAT-008 | Spend-Management-Obergrenze | Billingzugriff, konkreter Grenzwert und Team-Pausenentscheidung fehlen | [Plan](superpowers/plans/2026-10-31-FEAT-008-spend-management.md) |
+| FEAT-009 | HTML-Entities in Spieldaten | Wartungszugang fehlt; Produktionsmanifest, frisches Backup und separate Apply-Freigabe offen | [Plan](superpowers/plans/2026-10-31-FEAT-009-spieldaten-entities.md) |
+| FEAT-031 | Bei Event-Partien Spiele aus Vorschlägen, Sammlung oder BGG wählen | Code umgesetzt und lokal geprüft; Produktionsmigration/Deployment offen | [Plan](superpowers/plans/2026-11-05-FEAT-031-event-session-game-selection.md) |
 
 ## Offene Bugs
 
-Ein Bug ist derzeit in Bearbeitung. Die vollständigen Beschreibungen,
+Derzeit ist kein Bug in Bearbeitung. Die vollständigen Beschreibungen,
 Reproduktionsschritte und Prüfnachweise stehen in der [Bug-Tracking-Liste](bugs.md).
 
 | ID | Schweregrad | Bug | Status |
 |---|---|---|---|
-| BUG-038 | Mittel | Mobile Terminantworten teilweise verborgen und zu klein | In Bearbeitung |
+| BUG-038 | Mittel | Mobile Terminantworten teilweise verborgen und zu klein | Behoben am 09.11.2026 (Abnahme angenommen) |
 | BUG-041 | Niedrig | Desktop-Raster der öffentlichen Eventseite unwirksam | Behoben am 08.11.2026 |
 | BUG-076 | Mittel | Kalenderexport verschiebt Startzeit und setzt feste Dreistundendauer | Behoben am 08.11.2026 (0.50.96) |
 
-**Stand:** 08.11.2026. BUG-055, BUG-056, BUG-075 und BUG-076 sind geschlossen; eine spätere
+**Stand:** 09.11.2026. BUG-038, BUG-055, BUG-056, BUG-075 und BUG-076 sind geschlossen; eine spätere
 Monitoring-Einrichtung ist als FEAT-030 erfasst. Die vollständigen Feature-Spezifikationen,
 Implementierungsnachweise und historischen Abschnitte A bis I folgen unterhalb
 als Detailarchiv. Statusänderungen werden in dieser Übersicht und im jeweiligen

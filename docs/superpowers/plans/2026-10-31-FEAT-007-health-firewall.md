@@ -1,5 +1,11 @@
 # FEAT-007 – Vercel-Firewall für den Health-Endpoint
 
+## Aktualitätsprüfung 09.11.2026
+
+- Die letzte lesende Firewall-Konfigurationsantwort für das Projekt enthielt `active: null`, `draft: null` und keine Versionen. Ein erneuter Abruf aus der lokalen Pipelinekonfiguration war nicht möglich, weil Token-/Projekt-/Team-Scope dort nicht vollständig gesetzt ist.
+- Externe Health-Monitore, gemeinsame Ausgangs-IP-Adressen, legitime Peaks und ein vollständiges 24-Stunden-Logfenster sind weiterhin nicht inventarisiert. Daher ist keine sichere Schwelle oder Ausnahme ableitbar.
+- Keine Firewall-Regel angelegt, veröffentlicht oder geändert. Umsetzung bleibt vom tatsächlichen Kontozugriff und Monitorinventar abhängig.
+
 **Status:** Lesende Vorprüfung am 01.11.2026 aktualisiert. Kein Dashboardzugriff auf Firewall/Monitore; keine Regel geändert. Veröffentlichung und Produktionsabnahme bleiben offen.
 
 **Ziel:** Anfragefluten auf /api/health werden vor der Anwendung gedrosselt, legitime Monitore funktionieren weiter und das Vorgehen im Angriffsfall ist dokumentiert.

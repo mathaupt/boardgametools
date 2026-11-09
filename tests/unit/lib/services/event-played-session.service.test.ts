@@ -3,6 +3,8 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const mocks = vi.hoisted(() => ({
   eventFindFirst: vi.fn(),
   proposalFindFirst: vi.fn(),
+  gameFindFirst: vi.fn(),
+  fetchBGGGame: vi.fn(),
   playedFindUnique: vi.fn(),
   playedCreate: vi.fn(),
   createFromEvent: vi.fn(),
@@ -14,11 +16,13 @@ vi.mock("@/lib/db", () => {
   const tx = {
     event: { findFirst: mocks.eventFindFirst },
     gameProposal: { findFirst: mocks.proposalFindFirst },
+    game: { findFirst: mocks.gameFindFirst },
     eventPlayedSession: { findUnique: mocks.playedFindUnique, create: mocks.playedCreate },
   };
   return { default: { ...tx, $transaction: mocks.transaction } };
 });
 vi.mock("@/lib/cache", () => ({ invalidateTag: vi.fn() }));
+vi.mock("@/lib/bgg", () => ({ fetchBGGGame: mocks.fetchBGGGame }));
 vi.mock("@/lib/cache-tags", () => ({ CacheTags: { userSessions: () => "sessions", userStats: () => "stats", userDashboard: () => "dashboard", userEvents: () => "events" } }));
 vi.mock("@/lib/services/session.service", () => ({ SessionService: { createFromEvent: mocks.createFromEvent, _invalidateSessionCaches: mocks.invalidateSessionCaches } }));
 vi.mock("@/lib/require-auth", () => ({ ApiError: class ApiError extends Error { statusCode: number; constructor(statusCode: number, message: string) { super(message); this.statusCode = statusCode; } } }));
@@ -31,6 +35,7 @@ describe("EventPlayedSessionService", () => {
     mocks.transaction.mockImplementation(async (callback: (tx: unknown) => Promise<unknown>) => callback({
       event: { findFirst: mocks.eventFindFirst },
       gameProposal: { findFirst: mocks.proposalFindFirst },
+      game: { findFirst: mocks.gameFindFirst },
       eventPlayedSession: { findUnique: mocks.playedFindUnique, create: mocks.playedCreate },
     }));
     mocks.eventFindFirst.mockResolvedValue({
@@ -39,6 +44,8 @@ describe("EventPlayedSessionService", () => {
       guestParticipants: [{ id: "guest-1", nickname: "Mia" }],
     });
     mocks.playedFindUnique.mockResolvedValue(null);
+    mocks.gameFindFirst.mockResolvedValue(null);
+    mocks.fetchBGGGame.mockResolvedValue({ bggId: "42", name: "BGG-Abenteuer", imageUrl: "https://cf.geekdo-images.com/game.jpg", minPlayers: 2, maxPlayers: 5, playTimeMinutes: 75, complexity: 2.3, description: "Beschreibung" });
     mocks.proposalFindFirst.mockResolvedValue({
       id: "proposal-1", eventId: "event-1", gameId: null, bggId: "42", bggName: "BGG-Abenteuer",
       bggImageUrl: "https://cf.geekdo-images.com/game.jpg", bggMinPlayers: 2, bggMaxPlayers: 5,
@@ -60,7 +67,7 @@ describe("EventPlayedSessionService", () => {
     if (!featureModule) return;
 
     const result = await featureModule.EventPlayedSessionService.create("owner", "event-1", {
-      proposalId: "proposal-1", operationId: "operation-1", playedAt: "2026-11-04T18:00:00.000Z",
+      source: { type: "proposal", proposalId: "proposal-1" }, operationId: "operation-1", playedAt: "2026-11-04T18:00:00.000Z",
       durationMinutes: 80, notes: "Notiz", players: [{ userId: "invitee", score: 8, placement: 1, isWinner: true }],
       guestPlayers: [{ guestId: "guest-1", score: 6, placement: 2 }],
     } as never);
@@ -91,7 +98,7 @@ describe("EventPlayedSessionService", () => {
     const featureModule = await loadService();
     if (!featureModule) return;
     await expect(featureModule.EventPlayedSessionService.create("owner", "event-1", {
-      proposalId: "proposal-1", operationId: "operation-123", playedAt: "2026-11-04T18:00:00.000Z",
+      source: { type: "proposal", proposalId: "proposal-1" }, operationId: "operation-123", playedAt: "2026-11-04T18:00:00.000Z",
       players: [{ userId: "stranger" }], guestPlayers: [],
     } as never)).rejects.toMatchObject({ statusCode: 400 });
     expect(mocks.transaction).not.toHaveBeenCalled();
@@ -102,7 +109,7 @@ describe("EventPlayedSessionService", () => {
     if (!featureModule) return;
     mocks.proposalFindFirst.mockResolvedValueOnce(null);
     await expect(featureModule.EventPlayedSessionService.create("owner", "event-1", {
-      proposalId: "foreign-proposal", operationId: "operation-123", playedAt: "2026-11-04T18:00:00.000Z",
+      source: { type: "proposal", proposalId: "foreign-proposal" }, operationId: "operation-123", playedAt: "2026-11-04T18:00:00.000Z",
       players: [{ userId: "invitee" }], guestPlayers: [],
     } as never)).rejects.toMatchObject({ statusCode: 404 });
     expect(mocks.transaction).not.toHaveBeenCalled();
@@ -114,7 +121,7 @@ describe("EventPlayedSessionService", () => {
     mocks.playedFindUnique.mockResolvedValueOnce({ session: { id: "existing-session", deletedAt: null } });
 
     const result = await featureModule.EventPlayedSessionService.create("owner", "event-1", {
-      proposalId: "proposal-1", operationId: "operation-1",
+      source: { type: "proposal", proposalId: "proposal-1" }, operationId: "operation-1",
     } as never);
 
     expect(result).toMatchObject({ session: { id: "existing-session" }, duplicate: true });
@@ -135,9 +142,9 @@ describe("EventPlayedSessionService", () => {
   it("validates required data, dates, duration, notes, participant bounds, and duplicates", async () => {
     const featureModule = await loadService();
     if (!featureModule) return;
-    const valid = { proposalId: "proposal-1", operationId: "operation-123", playedAt: "2026-11-04T18:00:00.000Z", players: [{ userId: "owner" }], guestPlayers: [] };
+    const valid = { source: { type: "proposal", proposalId: "proposal-1" }, operationId: "operation-123", playedAt: "2026-11-04T18:00:00.000Z", players: [{ userId: "owner" }], guestPlayers: [] };
     const invalidInputs = [
-      { ...valid, proposalId: "", players: [] },
+      { ...valid, source: { type: "proposal", proposalId: "" }, players: [] },
       { ...valid, playedAt: "not-a-date" },
       { ...valid, durationMinutes: 0 },
       { ...valid, durationMinutes: 1441 },
@@ -157,14 +164,52 @@ describe("EventPlayedSessionService", () => {
     const featureModule = await loadService();
     if (!featureModule) return;
     await expect(featureModule.EventPlayedSessionService.create("owner", "event-1", {
-      proposalId: "proposal-1", operationId: "operation-123", playedAt: "2026-11-04T18:00:00.000Z",
+      source: { type: "proposal", proposalId: "proposal-1" }, operationId: "operation-123", playedAt: "2026-11-04T18:00:00.000Z",
       players: [{ userId: "owner" }], guestPlayers: [{ guestId: "not-here" }],
     } as never)).rejects.toMatchObject({ statusCode: 400 });
     mocks.proposalFindFirst.mockResolvedValueOnce({ id: "proposal-1", bggId: null, bggName: null, game: { id: "game-1", ownerId: "owner", deletedAt: null, name: "  Catan  ", bggId: "13", imageUrl: null, minPlayers: null, maxPlayers: null, playTimeMinutes: null, complexity: null } });
     await featureModule.EventPlayedSessionService.create("owner", "event-1", {
-      proposalId: "proposal-1", operationId: "operation-124", playedAt: "2026-11-04T18:00:00.000Z",
+      source: { type: "proposal", proposalId: "proposal-1" }, operationId: "operation-124", playedAt: "2026-11-04T18:00:00.000Z",
       players: [{ userId: "owner" }], guestPlayers: [],
     } as never);
     expect(mocks.createFromEvent).toHaveBeenLastCalledWith(expect.any(Object), "owner", expect.objectContaining({ gameId: "game-1", gameNameSnapshot: "  Catan  ", gameBggIdSnapshot: "13", gameMinPlayersSnapshot: undefined, notes: null }));
+  });
+
+  it("snapshots an owned collection game and creates an unproposed event link", async () => {
+    const featureModule = await loadService();
+    if (!featureModule) return;
+    mocks.gameFindFirst.mockResolvedValueOnce({ id: "game-1", ownerId: "owner", deletedAt: null, name: "Catan", bggId: "13", imageUrl: null, minPlayers: 3, maxPlayers: 4, playTimeMinutes: 60, complexity: 2 });
+    await featureModule.EventPlayedSessionService.create("owner", "event-1", {
+      source: { type: "collection", collectionGameId: "game-1" }, operationId: "operation-125", playedAt: "2026-11-04T18:00:00.000Z", players: [{ userId: "owner" }], guestPlayers: [],
+    } as never);
+    expect(mocks.gameFindFirst).toHaveBeenCalledWith(expect.objectContaining({ where: { id: "game-1", ownerId: "owner", deletedAt: null } }));
+    expect(mocks.createFromEvent).toHaveBeenCalledWith(expect.any(Object), "owner", expect.objectContaining({ gameId: "game-1", gameNameSnapshot: "Catan" }));
+    expect(mocks.playedCreate).toHaveBeenCalledWith(expect.objectContaining({ data: expect.objectContaining({ proposalId: null }) }));
+  });
+
+  it("hides collection games that are foreign or soft-deleted", async () => {
+    const featureModule = await loadService();
+    if (!featureModule) return;
+    mocks.gameFindFirst.mockResolvedValueOnce(null);
+    await expect(featureModule.EventPlayedSessionService.create("owner", "event-1", {
+      source: { type: "collection", collectionGameId: "foreign" }, operationId: "operation-128", playedAt: "2026-11-04T18:00:00.000Z", players: [{ userId: "owner" }], guestPlayers: [],
+    } as never)).rejects.toMatchObject({ statusCode: 404 });
+    expect(mocks.transaction).not.toHaveBeenCalled();
+  });
+
+  it("resolves BGG metadata server-side and rejects unknown IDs without writing", async () => {
+    const featureModule = await loadService();
+    if (!featureModule) return;
+    await featureModule.EventPlayedSessionService.create("owner", "event-1", {
+      source: { type: "bgg", bggId: "42" }, operationId: "operation-126", playedAt: "2026-11-04T18:00:00.000Z", players: [{ userId: "owner" }], guestPlayers: [],
+    } as never);
+    expect(mocks.fetchBGGGame).toHaveBeenCalledWith("42");
+    expect(mocks.createFromEvent).toHaveBeenCalledWith(expect.any(Object), "owner", expect.objectContaining({ gameId: null, gameNameSnapshot: "BGG-Abenteuer", gameBggIdSnapshot: "42" }));
+    expect(mocks.playedCreate).toHaveBeenLastCalledWith(expect.objectContaining({ data: expect.objectContaining({ proposalId: null }) }));
+    mocks.fetchBGGGame.mockResolvedValueOnce(null);
+    await expect(featureModule.EventPlayedSessionService.create("owner", "event-1", {
+      source: { type: "bgg", bggId: "404" }, operationId: "operation-127", playedAt: "2026-11-04T18:00:00.000Z", players: [{ userId: "owner" }], guestPlayers: [],
+    } as never)).rejects.toMatchObject({ statusCode: 404 });
+    expect(mocks.transaction).toHaveBeenCalledTimes(1);
   });
 });

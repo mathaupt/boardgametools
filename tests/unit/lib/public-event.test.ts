@@ -60,7 +60,7 @@ describe("buildPublicEventInclude", () => {
     expect(include).toHaveProperty("proposals");
     expect(include).toHaveProperty("guestParticipants");
     expect(include).toHaveProperty("dateProposals");
-    expect(include.playedSessions).toEqual({ where: { session: { deletedAt: null } }, select: { proposalId: true } });
+    expect(include.playedSessions).toEqual({ where: { session: { deletedAt: null } }, select: { proposalId: true, session: { select: { gameNameSnapshot: true, game: { select: { name: true } } } } } });
     expect(include.guestParticipants).toEqual({
       select: {
         id: true,
@@ -70,6 +70,19 @@ describe("buildPublicEventInclude", () => {
       },
       orderBy: { createdAt: "asc" },
     });
+  });
+
+  it("projects proposal-less played sessions as game titles only", () => {
+    const serialized = serializePublicEvent(makeEvent({
+      playedSessions: [
+        { proposalId: "prop-1" },
+        { proposalId: null, session: { gameNameSnapshot: "Azul", game: null, id: "private-session", notes: "secret", durationMinutes: 90, players: [{ name: "private-player" }] } },
+      ],
+    }) as never, null);
+    expect(serialized.playedGamesWithoutProposal).toEqual(["Azul"]);
+    expect(JSON.stringify(serialized)).not.toContain("private-session");
+    expect(JSON.stringify(serialized)).not.toContain("secret");
+    expect(JSON.stringify(serialized)).not.toContain("private-player");
   });
 
   it("includes userId-scoped votes when userId is provided", () => {

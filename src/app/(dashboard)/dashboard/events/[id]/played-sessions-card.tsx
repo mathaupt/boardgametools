@@ -26,6 +26,7 @@ interface PlayedSessionsCardProps {
   eventId: string;
   eventDate: string;
   proposals: PlayedProposal[];
+  otherSessions: { id: string; gameName: string; session: PlayedSession }[];
   participants: EventParticipantOption[];
   isCreator: boolean;
 }
@@ -39,9 +40,9 @@ function ResultSummary({ name, score, placement, isWinner }: { name: string; sco
   </li>;
 }
 
-export function PlayedSessionsCard({ eventId, eventDate, proposals, participants, isCreator }: PlayedSessionsCardProps) {
+export function PlayedSessionsCard({ eventId, eventDate, proposals, otherSessions, participants, isCreator }: PlayedSessionsCardProps) {
   const [formOpen, setFormOpen] = useState(false);
-  const sessionCount = proposals.reduce((total, proposal) => total + proposal.playedSessions.length, 0);
+  const sessionCount = proposals.reduce((total, proposal) => total + proposal.playedSessions.length, 0) + otherSessions.length;
 
   return (
     <Card aria-labelledby="played-sessions-title">
@@ -50,14 +51,14 @@ export function PlayedSessionsCard({ eventId, eventDate, proposals, participants
           <CardTitle id="played-sessions-title" as="h2">Gespielte Partien</CardTitle>
           <CardDescription>{sessionCount === 0 ? "Halte fest, welche Vorschläge tatsächlich auf dem Tisch lagen." : `${sessionCount} ${sessionCount === 1 ? "Partie" : "Partien"} erfasst`}</CardDescription>
         </div>
-        {isCreator && proposals.length > 0 && !formOpen && (
+        {isCreator && !formOpen && (
           <Button type="button" className="min-h-11" onClick={() => setFormOpen(true)}>
             <Plus className="mr-2 h-4 w-4" aria-hidden="true" />Partie erfassen
           </Button>
         )}
       </CardHeader>
       <CardContent className="space-y-4">
-        {proposals.length === 0 ? (
+        {proposals.length === 0 && otherSessions.length === 0 ? (
           <p className="rounded-md border border-dashed border-border p-4 text-sm text-muted-foreground">Für dieses Event gibt es noch keine Spielvorschläge.</p>
         ) : sessionCount === 0 ? (
           <p className="rounded-md border border-dashed border-border p-4 text-sm text-muted-foreground">Noch keine Partie als gespielt erfasst.</p>
@@ -90,6 +91,14 @@ export function PlayedSessionsCard({ eventId, eventDate, proposals, participants
             ))}
           </ul>
         )}
+        {otherSessions.length > 0 && <section aria-labelledby="other-played-games" className="border-t border-border pt-4">
+          <h3 id="other-played-games" className="mb-3 font-semibold">Weitere gespielte Spiele</h3>
+          <ul className="space-y-3">{otherSessions.map(({ id, gameName, session }) => <li key={id} className="border-t border-border/70 pt-3 first:border-0 first:pt-0">
+            <div className="mb-2 flex flex-wrap items-center gap-2"><span className="font-semibold">{gameName}</span><span className="rounded-full bg-success/15 px-2.5 py-1 text-xs font-semibold text-foreground">Gespielt</span></div>
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground"><span className="inline-flex items-center gap-1.5"><CalendarDays className="h-4 w-4" aria-hidden="true" />{formatDate(session.playedAt)}</span>{session.durationMinutes != null && <span className="inline-flex items-center gap-1.5"><Clock3 className="h-4 w-4" aria-hidden="true" />{session.durationMinutes} Min.</span>}{isCreator && <Link className="min-h-11 inline-flex items-center font-medium text-primary underline-offset-4 hover:underline" href={`/dashboard/sessions/${session.id}`}>Sessiondetails und Bearbeitung</Link>}</div>
+            {session.notes && <p className="mt-2 whitespace-pre-wrap text-sm text-muted-foreground">{session.notes}</p>}
+          </li>)}</ul>
+        </section>}
         {isCreator && formOpen && (
           <PlayedSessionForm
             eventId={eventId}

@@ -30,6 +30,15 @@ export default async function EventDetailPage({
   const event = await prisma.event.findFirst({
     where: { id, deletedAt: null, ...privateEventAccessFilter(userId) },
     include: {
+      playedSessions: {
+        where: { proposalId: null, session: { deletedAt: null } },
+        select: { id: true, session: { select: {
+          id: true, gameNameSnapshot: true, playedAt: true, durationMinutes: true, notes: true,
+          game: { select: { name: true } },
+          players: { select: { score: true, placement: true, isWinner: true, user: { select: { name: true } } } },
+          guestPlayers: { select: { name: true, score: true, placement: true, isWinner: true } },
+        } } },
+      },
       createdBy: { select: { id: true, name: true, email: true } },
       invites: {
         include: { user: { select: { id: true, name: true, email: true } } }
@@ -140,6 +149,11 @@ export default async function EventDetailPage({
       id: link.id,
       session: { ...link.session, playedAt: link.session.playedAt.toISOString() },
     })),
+  }));
+  const otherPlayedSessions = event.playedSessions.map((link) => ({
+    id: link.id,
+    gameName: gameTextForRead(link.session.gameNameSnapshot ?? link.session.game?.name ?? "Unbekanntes Spiel"),
+    session: { ...link.session, playedAt: link.session.playedAt.toISOString() },
   }));
   const sessionParticipants = [
     { id: event.createdBy.id, name: event.createdBy.name ?? "Organisator", kind: "user" as const },
@@ -259,6 +273,7 @@ export default async function EventDetailPage({
         eventId={event.id}
         eventDate={event.eventDate.toISOString()}
         proposals={playedSessionProposals}
+        otherSessions={otherPlayedSessions}
         participants={sessionParticipants}
         isCreator={isCreator}
       />

@@ -42,7 +42,12 @@ function toLocalInputValue(iso: string) {
 export function PlayedSessionForm({ eventId, proposals, participants, defaultPlayedAt, onCancel, onCreated }: PlayedSessionFormProps) {
   const router = useRouter();
   const operationId = useRef(crypto.randomUUID());
-  const [proposalId, setProposalId] = useState(proposals[0]?.id ?? "");
+  const [sourceType, setSourceType] = useState<"proposal" | "collection" | "bgg">(proposals.length ? "proposal" : "collection");
+  const [selectedGame, setSelectedGame] = useState<{ id: string; name: string } | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState<{ id: string; name: string }[]>([]);
+  const [searchCompleted, setSearchCompleted] = useState(false);
+  const [searching, setSearching] = useState(false);
   const [playedAt, setPlayedAt] = useState(toLocalInputValue(defaultPlayedAt));
   const [durationMinutes, setDurationMinutes] = useState("");
   const [notes, setNotes] = useState("");
@@ -58,6 +63,31 @@ export function PlayedSessionForm({ eventId, proposals, participants, defaultPla
 
   const updateResult = (key: string, values: Partial<ResultFields>) => {
     setResults((current) => ({ ...current, [key]: { ...(current[key] ?? { score: "", placement: "", isWinner: false }), ...values } }));
+  };
+
+  const searchGames = async () => {
+    const query = searchQuery.trim();
+    if (query.length < 2) return;
+    setSearching(true);
+    setError(null);
+    try {
+      const endpoint = sourceType === "collection"
+        ? `/api/games?page=1&limit=8&q=${encodeURIComponent(query)}`
+        : `/api/bgg/search?q=${encodeURIComponent(query)}`;
+      const response = await fetch(endpoint);
+      const body = await response.json();
+      if (!response.ok) throw new Error(body.error || "Die Suche ist fehlgeschlagen.");
+      const rows = sourceType === "collection" ? body.data ?? [] : body;
+      setSearchResults(rows.map((game: { id?: string; bggId?: string; name: string }) => ({ id: sourceType === "collection" ? game.id! : game.bggId!, name: game.name })));
+      setSelectedGame(null);
+      setSearchCompleted(true);
+    } catch (searchError) {
+      setError(searchError instanceof Error ? searchError.message : "Die Suche ist fehlgeschlagen.");
+      setSearchResults([]);
+      setSearchCompleted(false);
+    } finally {
+      setSearching(false);
+    }
   };
 
   const submit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -78,7 +108,11 @@ export function PlayedSessionForm({ eventId, proposals, participants, defaultPla
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          proposalId,
+          source: sourceType === "proposal"
+            ? { type: "proposal", proposalId: selectedGame?.id ?? proposals[0]?.id }
+            : sourceType === "collection"
+              ? { type: "collection", collectionGameId: selectedGame?.id }
+              : { type: "bgg", bggId: selectedGame?.id },
           operationId: operationId.current,
           playedAt: new Date(playedAt).toISOString(),
           durationMinutes: durationMinutes ? Number(durationMinutes) : null,
@@ -108,10 +142,23 @@ export function PlayedSessionForm({ eventId, proposals, participants, defaultPla
     <form onSubmit={submit} className="space-y-4 rounded-lg border border-border bg-muted/30 p-4" aria-label="Gespielte Partie erfassen">
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-2">
-          <Label htmlFor="played-proposal">Gespieltes Spiel</Label>
-          <select id="played-proposal" className="min-h-11 w-full rounded-md border border-input bg-background px-3 text-sm" value={proposalId} onChange={(event) => setProposalId(event.target.value)} required>
-            {proposals.map((proposal) => <option key={proposal.id} value={proposal.id}>{proposal.gameName}</option>)}
+          <Label htmlFor="played-source">Spielquelle</Label>
+          <select id="played-source" className="min-h-11 w-full rounded-md border border-input bg-background px-3 text-sm" value={sourceType} onChange={(event) => { setSourceType(event.target.value as typeof sourceType); setSelectedGame(null); setSearchResults([]); setSearchCompleted(false); }}>
+            {proposals.length > 0 && <option value="proposal">Eventspiele</option>}
+            <option value="collection">Meine Sammlung</option><option value="bgg">BoardGameGeek</option>
           </select>
+          {sourceType === "proposal" ? (
+            <select aria-label="Gespieltes Eventspiel" className="min-h-11 w-full rounded-md border border-input bg-background px-3 text-sm" value={selectedGame?.id ?? proposals[0]?.id ?? ""} onChange={(event) => setSelectedGame({ id: event.target.value, name: proposals.find((proposal) => proposal.id === event.target.value)?.gameName ?? "" })} required>
+              {proposals.map((proposal) => <option key={proposal.id} value={proposal.id}>{proposal.gameName}</option>)}
+            </select>
+          ) : <div className="space-y-2">
+            <div className="flex gap-2"><Input aria-label={sourceType === "collection" ? "Sammlung durchsuchen" : "BoardGameGeek durchsuchen"} value={searchQuery} onChange={(event) => { setSearchQuery(event.target.value); setSearchCompleted(false); setSearchResults([]); setSelectedGame(null); }} onKeyDown={(event) => { if (event.key === "Enter") { event.preventDefault(); void searchGames(); } }} placeholder="Mindestens 2 Zeichen" />
+              <Button type="button" variant="outline" className="min-h-11 shrink-0" disabled={searching || searchQuery.trim().length < 2} onClick={() => void searchGames()}>{searching ? "Sucht …" : "Suchen"}</Button>
+            </div>
+            {searchResults.length > 0 && <select aria-label="Suchergebnis auswählen" className="min-h-11 w-full rounded-md border border-input bg-background px-3 text-sm" value={selectedGame?.id ?? ""} onChange={(event) => setSelectedGame(searchResults.find((game) => game.id === event.target.value) ?? null)}><option value="">Spiel auswählen</option>{searchResults.map((game) => <option key={game.id} value={game.id}>{game.name}</option>)}</select>}
+            {searchCompleted && searchResults.length === 0 && <p role="status" className="text-sm text-muted-foreground">Keine Spiele gefunden. Prüfe den Suchbegriff oder versuche es erneut.</p>}
+            {selectedGame && <p role="status" className="text-sm text-muted-foreground">Ausgewählt: {selectedGame.name}</p>}
+          </div>}
         </div>
         <div className="space-y-2">
           <Label htmlFor="played-at">Gespielt am</Label>
@@ -161,7 +208,7 @@ export function PlayedSessionForm({ eventId, proposals, participants, defaultPla
       {error && <p role="alert" className="text-sm font-medium text-destructive">{error}</p>}
       <div className="flex flex-wrap justify-end gap-2">
         <Button type="button" variant="outline" className="min-h-11" onClick={onCancel} disabled={saving}>Abbrechen</Button>
-        <Button type="submit" className="min-h-11" disabled={saving || proposals.length === 0}>{saving ? "Wird gespeichert …" : "Partie speichern"}</Button>
+        <Button type="submit" className="min-h-11" disabled={saving || (sourceType !== "proposal" && !selectedGame)}>{saving ? "Wird gespeichert …" : "Partie speichern"}</Button>
       </div>
     </form>
   );

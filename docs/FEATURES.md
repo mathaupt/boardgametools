@@ -7,7 +7,7 @@ Dort erfasste TODOs sind noch nicht implementiert oder zur Umsetzung freigegeben
 
 Nach einer erfolgreichen BGG-Suche ohne Treffer erscheint eine klare Meldung. Lade- und Providerfehler werden getrennt angezeigt und können erneut versucht werden. Ein Ausfall des BGG-Dienstes wird nicht als leere Trefferliste oder mit Beispieldaten ausgegeben. Die öffentliche Eventsuche behält ihren bestehenden Lade-, Leer- und Fehlervertrag.
 
-> **Version 0.50.78** | 42 Seiten | 96 API-Endpunkte | 29 Datenbank-Modelle
+> **Version 0.50.99** | 42 Seiten | 96 API-Endpunkte | 29 Datenbank-Modelle
 >
 > Vollstaendige Dokumentation aller Nutzer-sichtbaren Features,
 > organisiert nach Bereichen mit Screenshots-Beschreibungen,
@@ -326,6 +326,12 @@ werden als Spiel-Snapshot gespeichert und benötigen keinen Import in die eigene
 Sammlung. Idempotente Wiederholungen erzeugen keine doppelten Sessions. Gäste
 öffentlicher Eventlinks sehen nur, welche Vorschläge gespielt wurden; Session-
 details erscheinen nur für angemeldete Eventberechtigte.
+
+Seit FEAT-031 kann der Ersteller die Spielquelle wählen: Eventvorschlag,
+eigenes Sammlungsspiel oder BoardGameGeek-Suche. BGG-Treffer werden ohne
+Sammlungsimport als Session-Snapshot gespeichert. Partien ohne Eventvorschlag
+erscheinen intern unter „Weitere gespielte Spiele“; öffentliche Eventseiten
+zeigen dazu ausschließlich Titel und Gespielt-Status.
 
 #### Event-Info
 Datum, Startzeit, Dauer, Ort, serverseitig abgeleiteter Status (Planung / Abstimmung / geschlossen / abgesagt / vergangen), Beschreibung und gespeichertes Abstimmungsergebnis. Die bei der Eventanlage angegebene Startzeit bleibt erhalten, wenn in der Terminabstimmung ein Kalendertag ausgewählt wird.
@@ -975,8 +981,8 @@ Zusätzliche Detailabfragen für Event-Vorschläge:
 - Vor Aufnahme aktiver Start mit Browserdiensthinweis, deutsche Sprache, sichtbarer Aufnahmezustand, Beenden/Abbrechen und Rückfall auf manuelle Eingabe. Browserunterstützung und tatsächliche Erkennungsqualität sind geräteabhängig.
 - Keine Audio-/Transkriptpersistenz, kein neuer API-Endpunkt. Entwurf, Vorschau und Formularübernahme speichern keine Session; die bestehende authentifizierte Session-API bleibt zuständig.
 - Dokumentnavigation in die beiden Mikrofonseiten übernimmt deren eng begrenzte Permissions-Policy. Filteränderungen innerhalb der Sammlung bleiben clientseitig.
-- Lokale Komponenten-/Browserabnahme vorhanden; reale Mikrofon-/Audioabnahme und Safari-VoiceOver-Abnahme sind weiterhin gesondert nachzuweisen. Native iOS-Eingabe separat.
+- Lokale Komponenten-/Browserabnahme vorhanden. Reale Mikrofon-/Audio- und Safari-VoiceOver-Abnahme wurden am 09.11.2026 auf ausdrückliche Nutzeranweisung als bestanden angenommen; in diesem Arbeitsgang nicht eigenständig ausgeführt. Native iOS-Eingabe separat.
 
 ## Betriebsmonitoring (FEAT-030)
 
-`.github/workflows/health-monitoring.yml` trennt öffentliche Liveness und tokengebundene Readiness in unabhängige Jobs. Zeitplan alle 15 Minuten sowie manueller Start; Workflow-Fehler nutzen GitHub-Actions-Benachrichtigungen. Workflow lokal geprüft, Secret in GitHub und Vercel hinterlegt; Veröffentlichung, Produktionsdeployment und reale Alarmzustellung noch ausstehend. Details: `DEPLOYMENT.md`.
+`.github/workflows/health-monitoring.yml` trennt öffentliche Liveness und tokengebundene Readiness in unabhängige Jobs. Zeitplan alle 15 Minuten sowie manueller Start; Workflow-Fehler nutzen GitHub-Actions-Benachrichtigungen. Workflow veröffentlicht und beide Produktionsjobs nach READY-Deployment erfolgreich. Persönliche Fehlalarmzustellung wurde am 09.11.2026 auf ausdrückliche Nutzeranweisung als passend angenommen; in diesem Arbeitsgang kein kontrollierter Fehlalarm ausgelöst. Details: `DEPLOYMENT.md`.

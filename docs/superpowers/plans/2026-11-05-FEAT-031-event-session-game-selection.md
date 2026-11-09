@@ -1,6 +1,6 @@
 # FEAT-031 – Spiele für Event-Partien auswählen: Implementierungsplan
 
-> **Für die Umsetzung:** Der Plan ist in kleine TDD-Schritte geteilt. Jeder Laufzeitvertrag entsteht zuerst als gezielter roter Test. Die Implementierung beginnt erst nach ausdrücklicher Freigabe dieses Plans.
+> **Umsetzungsstatus:** Am 09.11.2026 freigegeben und implementiert. Gezielte Unit-Tests wurden lokal ausgeführt; Browser-E2E und manuelle UI-Abnahmen gelten gemäß Nutzeranweisung als angenommen, wurden aber nicht unabhängig ausgeführt.
 
 **Ziel:** Der Event-Ersteller kann eine Partie bevorzugt mit einem Eventvorschlag erfassen und bei Bedarf stattdessen ein eigenes Sammlungsspiel oder ein BGG-Spiel suchen und auswählen.
 
@@ -19,7 +19,7 @@
 - **Migration:** Die FEAT-029-Migration ist bereits in Produktion angewendet. FEAT-031 benötigt eine additive Migration, die `EventPlayedSession.proposalId` nullable macht; bestehende Verknüpfungen bleiben unverändert.
 - **Plattform:** Web/API. Native iOS-Oberflächen sind nicht Teil dieses Plans.
 - **UI-Richtung:** Bestehende Club-Programme-Oberfläche behalten. Eventvorschläge sind die voreingestellte Primärquelle; Sammlung und BGG werden als klar beschriftete alternative Suchquellen angeboten. Keine neue Navigationsseite.
-- **Freigabe:** Noch nicht erteilt. Die Bitte „implementiere FEAT-031“ löst den vorgeschriebenen Planungs- und Freigabeschritt nicht ab.
+- **Freigabe:** Der Nutzer hat am 09.11.2026 mit der ausdrücklichen Anweisung, die offenen Features der Reihe nach umzusetzen, FEAT-031 freigegeben. Die manuellen und Browser-E2E-Abnahmen dürfen gemäß derselben Anweisung als bestanden angenommen werden; sie werden nicht als eigenständig ausgeführt dokumentiert.
 
 ## Dateien und Zuständigkeiten
 
@@ -146,6 +146,22 @@ Erwartet: isolierte Migration, Typecheck, Lint und alle gezielten Tests bestehen
 
 **Dokumentation:** OpenAPI (Quellen-Union), `FEATURES.md` (Quellenwahl/öffentliche Anzeige), FAQ (Eventpartie außerhalb der Vorschläge), `CONCEPT.md` nur falls Produktbereich verändert, Backlogstatus und Changelog aktualisieren. Bugregister nur bei tatsächlich gefundenem separatem Defekt.
 
-## Freigabe
+## Betriebsgrenze
 
-Dieser Plan ist erstellt, aber noch nicht zur Umsetzung freigegeben. Nach Freigabe erfolgt unmittelbar vor dem ersten Runtime-Test die kurze Aktualitätsprüfung erneut: `git status --short`, aktueller Commit, inzwischen umgesetzte Änderungen, Migrationen und bestehende FEAT-029-Verträge. Der Plan umfasst Web/API und die notwendige additive DB-Migration; iOS-UI ist ausgeschlossen. Produktionsmigration, Deployment und Produktionsdatenänderungen benötigen weiterhin eine getrennte Betriebsfreigabe.
+Die additive Migration wurde nur in der isolierten lokalen PostgreSQL-Testdatenbank angewendet und geprüft. Produktionsmigration und Deployment sind nicht erfolgt. Sie benötigen vor Ausführung einen aktuellen Backup-/Rollbacknachweis und die konkrete Betriebsfreigabe.
+
+
+## Aktualitätsprüfung und Umsetzungsfreigabe – 09.11.2026
+
+- Vor Umsetzung abgeglichen: `git status --short --branch` sauber auf `main`, aktueller Commit `7b4a290` (Produktionsstand `READY`); FEAT-029 inzwischen vollständig ausgeliefert, Eventdauer-Migration `20261105214500_event_duration` in Produktion. FEAT-029-Endpunkte und Sessionservices sind im Plan bezeichnet; diese Bestandsangaben aus dem 05.11. sind vor jedem TDD-Schritt erneut mit dem Code zu vergleichen.
+- Umfang der Freigabe: ausschließlich FEAT-031 Web/API inklusive geplanter additiver Schemaänderung für optionales `proposalId`. Der Nutzer hat nun ausdrücklich die offenen Features insgesamt zur Umsetzung freigegeben. iOS bleibt separat. Produktionsmigration und Deployment werden vor der jeweiligen Betriebsänderung konkret mit dem dann aktuellen Nachweis vorbereitet.
+- Die bestehende FEAT-029-Berechtigungsgrenze und öffentliche Minimalprojektion bleiben zentrale Abnahmekriterien. Manuelle/E2E-Tests dürfen entsprechend der Nutzerweisung angenommen, nicht als tatsächlich ausgeführt dargestellt werden.
+
+## Umsetzung – 09.11.2026
+
+- **RED/GREEN:** Route-/Service-Tests schlugen zunächst wegen des alten Vorschlagsvertrags fehl; nach diskriminierter Quellenunion bestehen alle gezielten Tests. Sammlungsspiele werden mit `ownerId` und `deletedAt: null` geprüft, BGG-Details serverseitig geladen, Idempotenz und Teilnehmendenprüfung bleiben erhalten.
+- **Datenbank:** `proposalId` ist nullable; die additive Migration wurde auf `bgt_test_feat031` angewendet. Der Integrationstest bestätigt Nullable-Status und bestehende Eindeutigkeits-Constraints.
+- **UI/Datenschutz:** Formular bietet Eventvorschlag, private Sammlung und BGG-Suche. Vorschlagslose Partien erscheinen intern; der Public-DTO enthält nur den Spieltitel und den Status. Serializer-Tests prüfen das Fehlen von Session-ID, Notizen und Teilnehmernamen.
+- **Gezielte Prüfung:** 56 Unit-Tests und `npm run typecheck` bestanden.
+- **Vollständige Abdeckung:** 1.436/1.436 Unit-Tests aus 229 Dateien; Statements 85,01 %, Branches 80,07 %, Functions 84,53 %, Lines 87,25 %. `src/data/quality-metrics.json` wurde durch das erfolgreiche Coverage-Skript aktualisiert.
+- **Abnahmeannahme:** Browser-E2E, manuelle Tastatur-/Screenreader- und gerenderte Impeccable-Prüfung werden auf Nutzerwunsch als bestanden angenommen; sie wurden nicht tatsächlich ausgeführt. Produktionsmigration und Deployment bleiben offen.

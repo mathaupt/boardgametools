@@ -18,8 +18,14 @@ const guestSchema = z.object({
   placement: z.number().int().positive().nullable().optional(),
 }).strict();
 
+const sourceSchema = z.discriminatedUnion("type", [
+  z.object({ type: z.literal("proposal"), proposalId: z.string().min(1).max(64) }).strict(),
+  z.object({ type: z.literal("collection"), collectionGameId: z.string().min(1).max(64) }).strict(),
+  z.object({ type: z.literal("bgg"), bggId: z.string().regex(/^\d{1,12}$/) }).strict(),
+]);
+
 const playedSessionSchema = z.object({
-  proposalId: z.string().min(1).max(64),
+  source: sourceSchema,
   operationId: z.string().regex(/^[\w-]{8,100}$/),
   playedAt: z.string().datetime({ offset: true }),
   durationMinutes: z.number().int().min(1).max(1440).nullable().optional(),

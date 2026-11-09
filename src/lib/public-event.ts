@@ -60,7 +60,7 @@ interface PublicEventRaw {
     votes?: Array<{ id: string }>;
     _count: { votes: number; guestVotes: number };
   }>;
-  playedSessions?: Array<{ proposalId: string }>;
+  playedSessions?: Array<{ proposalId: string | null; session?: { gameNameSnapshot: string | null; game: { name: string } | null } }>;
   guestParticipants: Array<{
     id: string;
     nickname: string;
@@ -148,7 +148,7 @@ export const buildPublicEventInclude = (userId?: string | null) => ({
     },
     orderBy: { createdAt: "asc" as const },
   },
-  playedSessions: { where: { session: { deletedAt: null } }, select: { proposalId: true } },
+  playedSessions: { where: { session: { deletedAt: null } }, select: { proposalId: true, session: { select: { gameNameSnapshot: true, game: { select: { name: true } } } } } },
   guestParticipants: {
     select: {
       id: true,
@@ -216,6 +216,7 @@ export interface SerializedPublicEvent {
     userHasVoted: boolean;
     played: boolean;
   }>;
+  playedGamesWithoutProposal: string[];
   guestParticipants: PublicGuest[];
   dateProposals: Array<{
     id: string;
@@ -250,7 +251,10 @@ export function serializePublicEvent(
   now = new Date(),
   currentUserName: string | null = null
 ): SerializedPublicEvent {
-  const playedProposalIds = new Set((event.playedSessions ?? []).map((link) => link.proposalId));
+  const playedProposalIds = new Set((event.playedSessions ?? []).flatMap((link) => link.proposalId ? [link.proposalId] : []));
+  const playedGamesWithoutProposal = (event.playedSessions ?? []).flatMap((link) => link.proposalId === null && link.session
+    ? [gameTextForRead(link.session.gameNameSnapshot || link.session.game?.name || "Unbekanntes Spiel")]
+    : []);
   return {
     id: event.id,
     title: event.title,
@@ -322,6 +326,7 @@ export function serializePublicEvent(
         userHasVoted,
       };
     }),
+    playedGamesWithoutProposal,
     guestParticipants: event.guestParticipants.map((guest: PublicEventRaw["guestParticipants"][number]) => ({
       id: guest.id,
       nickname: guest.nickname,
