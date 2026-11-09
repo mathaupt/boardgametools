@@ -21,6 +21,7 @@ Web-/API-Umfang.
 | FEAT-026 | Seitennavigation in der Spielesammlung | Web umgesetzt, Version 0.50.77; [Plan](superpowers/plans/2026-11-03-FEAT-026-spielesammlung-pager.md) |
 | FEAT-027 | Eindeutige Meldung bei leeren BGG-Suchen | Web umgesetzt, Version 0.50.70; [Plan](superpowers/plans/2026-11-03-FEAT-027-bgg-leerzustand.md) |
 | FEAT-028 | Persönliche Abzeichen und gemeinsame Ziele | Web-Umsetzung abgeschlossen; [Konzept](superpowers/specs/2026-11-03-FEAT-028-gamification-design.md), [Plan](superpowers/plans/2026-11-04-FEAT-028-gamification.md) |
+| FEAT-008 | Vercel-Ausgabenbegrenzung | Nutzer bestätigt Hobby-Tarif und 0 USD; kostenlose Nutzungslimits mit automatischer Pausierung werden als passende Plattformabsicherung akzeptiert. Kein separates Spend-Management-Budget verfügbar; [Plan](superpowers/plans/2026-10-31-FEAT-008-spend-management.md) |
 
 | FEAT-004 | Voting-Vorschläge löschen | Web umgesetzt; VoiceOver-Abnahme auf Nutzerannahme vom 09.11.2026 abgeschlossen | [Plan 001–004](superpowers/plans/2026-10-30-FEAT-001-004-voting.md) |
 | FEAT-011 | Barrierefreie Terminabstimmung | Web abgeschlossen; VoiceOver auf Nutzerannahme vom 09.11.2026 abgeschlossen | [Plan](superpowers/plans/2026-10-31-FEAT-011-terminabstimmung-barrierefrei.md) |
@@ -44,7 +45,6 @@ Abnahmen vorläufig als bestanden anzunehmen. Diese Annahmen sind keine selbst a
 | ID | Feature | Offener Punkt | Plan / Konzept |
 |---|---|---|---|
 | FEAT-007 | Vercel-Firewall für `/api/health` | Firewall-API ohne aktive Konfiguration; externe Monitore, Trafficpeak und 24-h-Beobachtung offen | [Plan](superpowers/plans/2026-10-31-FEAT-007-health-firewall.md) |
-| FEAT-008 | Spend-Management-Obergrenze | Billingzugriff, konkreter Grenzwert und Team-Pausenentscheidung fehlen | [Plan](superpowers/plans/2026-10-31-FEAT-008-spend-management.md) |
 | FEAT-009 | HTML-Entities in Spieldaten | Wartungszugang fehlt; Produktionsmanifest, frisches Backup und separate Apply-Freigabe offen | [Plan](superpowers/plans/2026-10-31-FEAT-009-spieldaten-entities.md) |
 | FEAT-031 | Bei Event-Partien Spiele aus Vorschlägen, Sammlung oder BGG wählen | Code gepusht; Produktionsmigration verifiziert; Vercel-Deployment noch `pending` | [Plan](superpowers/plans/2026-11-05-FEAT-031-event-session-game-selection.md) |
 

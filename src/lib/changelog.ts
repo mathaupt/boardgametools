@@ -21,6 +21,7 @@ export const changelog: ChangelogEntry[] = [
       { type: "improvement", text: "Vorschlagslose Eventpartien erscheinen in der internen Historie; öffentliche Events zeigen davon nur Spieltitel und Gespielt-Status." },
       { type: "internal", text: "Optionale Eventvorschlagsverknüpfung ergänzt; bestehende Partien bleiben verknüpft. FEAT-031-Produktionsmigration nach verifiziertem Backup und vollständiger isolierter Wiederherstellung angewendet." },
       { type: "internal", text: "Offene Betriebsbedingungen für FEAT-007/008/009 dokumentiert. Die FEAT-031-Produktionsmigration wurde nach verifiziertem Backup angewendet; der Vercel-Code-Deploy ist gestartet und noch nicht als bereit bestätigt." },
+      { type: "internal", text: "FEAT-008 für den vom Nutzer bestätigten Hobby-Tarif eingeordnet: kein separates Vercel-Spend-Management-Budget; kostenlose Kontingente und automatische Pausierung gelten als gewünschter Schutz." },
     ],
   },
   {

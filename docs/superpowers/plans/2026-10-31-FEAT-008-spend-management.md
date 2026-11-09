@@ -2,11 +2,11 @@
 
 ## Aktualitätsprüfung 09.11.2026
 
-- Die offizielle Vercel-Dokumentation bestätigt weiterhin Budget pro Team-Abrechnungsperiode, Benachrichtigungen und die optionale Pause aller Produktionsprojekte. Das Setzen eines Betrags unter dem bereits ausgegebenen Verbrauch kann die konfigurierten Aktionen unmittelbar auslösen.
-- Die lesbare Vercel-Billing-API ist vorhanden; lokal ist keine verknüpfte Vercel-CLI verfügbar und der Pipelinezugang enthält keinen vollständigen Team-/Projekt-Scope für Billing. Tarif, aktueller Verbrauch, bestehender Grenzwert und Empfänger wurden daher nicht aus dem Konto verifiziert.
-- Kein Budget gesetzt und keine Benachrichtigung-/Pausenaktion verändert. Betrag sowie Pausenwunsch sind Betreiberentscheidungen und müssen vor der Konfiguration konkret feststehen.
+- Nutzer bestätigt Hobby-Tarif und Ziel von 0 USD. Spend Management ist laut offizieller Vercel-Dokumentation nur für Pro/Enterprise Flexible Commitment verfügbar; Hobby-Projekte werden bei Überschreitung enthaltener Gratislimits automatisch pausiert.
+- Tarif und Nutzung wurden nicht im Vercel-Konto zurückgelesen. Kein Budget gesetzt und keine Billingeinstellung geändert.
+- Quellen: [Spend Management](https://vercel.com/docs/spend-management), [Hobby Plan](https://vercel.com/docs/plans/hobby), [Account Plans](https://vercel.com/docs/plans).
 
-**Status:** Lesende Vorprüfung am 01.11.2026 aktualisiert. Kein Billingzugriff auf Tarif, Budget oder Verbrauch; kein Betrag festgelegt. Keine Einstellung geändert.
+**Status:** FEAT-008 gemäß Nutzerbestätigung Hobby/0 USD abgeschlossen. Die eingebaute Hobby-Limit-Pause wird akzeptiert; Kontoreadback und benutzerdefiniertes Spend-Management-Budget sind für diesen Tarif nicht verfügbar.
 
 **Ziel:** Ein vom Betreiber bestätigtes Budget für variable Vercel-Nutzung löst rechtzeitig Warnungen und ein bewusst gewähltes Begrenzungsverhalten aus.
 
@@ -18,11 +18,11 @@
 
 ## 0. Aktualität unmittelbar vor Umsetzung prüfen
 
-- [ ] Tatsächlicher Vercel-Tarif, Teamumfang, Abrechnungsperiode, Verbrauch und bestehender Budgetzustand bleiben mangels Billing-Dashboardzugriff ungeprüft. Der vorhandene Pipeline-Provider gibt ausschließlich den letzten Production-Deploymentstatus zurück.
+- [x] Nutzerangabe: Hobby und 0 USD. Konto-Readback wurde mangels erreichbarem Billingzugriff nicht ausgeführt.
 - [x] FEAT-006-Code wurde am 01.11.2026 committed, aber der zuletzt gelesene Production-Deploy (`READY`, 21:21:57 Europe/Berlin) liegt vor diesem Commit. Die neue Healthsemantik und Trafficwirkung sind in der Kostenbasis noch nicht als produktiv anzurechnen. FEAT-007-Regel ist nicht eingerichtet.
 - [x] Offizielle Vercel-Funktion am 01.11.2026 erneut geprüft; seit 23.10.2026 gibt es zusätzlich `vercel budgets` und `vercel budgets alerts` für lesende Budget-/Warnungsabfragen. Die CLI ist lokal nicht installiert. Es gibt daher keinen gelesenen Konto-/Tarif-/Verbrauchsbeleg. Quelle: [Spend Management](https://vercel.com/docs/spend-management), [Vercel CLI Spend-Management](https://vercel.com/changelog/vercel-cli-adds-spend-management).
-- [x] Aktuelle Plattformgrenzen notiert: Spend Management ist für Pro und Enterprise Flexible Commitment dokumentiert und erfordert Owner-/Billingrolle. Nutzung wird teamweit oberhalb der Plancredits gezählt; Warnungen liegen standardmäßig bei 50/75/100 Prozent und die Prüfung erfolgt alle paar Minuten. Bei gewählter Pause pausieren alle Production Deployments des Teams; Wiederaufnahme ist projektweise manuell.
-- [x] Vorprüfungsdatum und Live-Deploymentzeitpunkt eingetragen. Team, Betrag, Benachrichtigungsempfänger und Reaktion bleiben konkrete Betreiberentscheidungen.
+- [x] Plattformgrenzen am 09.11.2026 erneut geprüft: Spend Management für Pro/Enterprise Flexible Commitment; Hobby pausiert Projekte automatisch bei Überschreitung der enthaltenen Gratislimits. Ein konfigurierbares Team-Budget und eigener 100-%-Trigger sind für Hobby nicht verfügbar.
+- [x] Nutzerziel 0 USD und Annahme der Hobby-Standardbegrenzung dokumentiert. Kein Upgrade und keine externe Kontoänderung.
 
 ## 1. Offizieller Funktionsumfang und Grenzen
 
