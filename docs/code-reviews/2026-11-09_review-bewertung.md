@@ -3,7 +3,7 @@
 | Stand | Gesamt | Sicherheit | Regressionen |
 |---|---:|---:|---|
 | Vor Umsetzung, 08.11.2026 | 9,9/10 | 10/10 | Keine |
-| Nach FEAT-031, Registrycheck 13:12 | 9,9/10 | 10/10 | Keine |
+| Nach FEAT-031, Registrycheck 13:29 | 9,9/10 | 10/10 | Keine |
 
 Die Änderung hält den Session- und Event-Schreibpfad serverseitig autorisiert,
 prüft Sammlungseigentum einschließlich Soft-Delete-Status und lädt BGG-Daten
