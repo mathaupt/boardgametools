@@ -20,7 +20,7 @@ export const changelog: ChangelogEntry[] = [
       { type: "feature", text: "FEAT-031: Event-Ersteller können als Spielquelle einen Eventvorschlag, ein eigenes Sammlungsspiel oder ein BGG-Spiel wählen." },
       { type: "improvement", text: "Vorschlagslose Eventpartien erscheinen in der internen Historie; öffentliche Events zeigen davon nur Spieltitel und Gespielt-Status." },
       { type: "internal", text: "Optionale Eventvorschlagsverknüpfung ergänzt; bestehende Partien bleiben verknüpft. FEAT-031-Produktionsmigration nach verifiziertem Backup und vollständiger isolierter Wiederherstellung angewendet." },
-      { type: "internal", text: "Offene Betriebsbedingungen für FEAT-007/008/009 sowie der Produktionsrollout von FEAT-031 in Plänen und Backlog dokumentiert; keine externe Konfiguration oder Produktionsdaten geändert." },
+      { type: "internal", text: "Offene Betriebsbedingungen für FEAT-007/008/009 dokumentiert. Die FEAT-031-Produktionsmigration wurde nach verifiziertem Backup angewendet; der Vercel-Code-Deploy ist gestartet und noch nicht als bereit bestätigt." },
     ],
   },
   {

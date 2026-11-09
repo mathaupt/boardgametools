@@ -46,7 +46,7 @@ Abnahmen vorläufig als bestanden anzunehmen. Diese Annahmen sind keine selbst a
 | FEAT-007 | Vercel-Firewall für `/api/health` | Firewall-API ohne aktive Konfiguration; externe Monitore, Trafficpeak und 24-h-Beobachtung offen | [Plan](superpowers/plans/2026-10-31-FEAT-007-health-firewall.md) |
 | FEAT-008 | Spend-Management-Obergrenze | Billingzugriff, konkreter Grenzwert und Team-Pausenentscheidung fehlen | [Plan](superpowers/plans/2026-10-31-FEAT-008-spend-management.md) |
 | FEAT-009 | HTML-Entities in Spieldaten | Wartungszugang fehlt; Produktionsmanifest, frisches Backup und separate Apply-Freigabe offen | [Plan](superpowers/plans/2026-10-31-FEAT-009-spieldaten-entities.md) |
-| FEAT-031 | Bei Event-Partien Spiele aus Vorschlägen, Sammlung oder BGG wählen | Code umgesetzt und lokal geprüft; Produktionsmigration/Deployment offen | [Plan](superpowers/plans/2026-11-05-FEAT-031-event-session-game-selection.md) |
+| FEAT-031 | Bei Event-Partien Spiele aus Vorschlägen, Sammlung oder BGG wählen | Code gepusht; Produktionsmigration verifiziert; Vercel-Deployment noch `pending` | [Plan](superpowers/plans/2026-11-05-FEAT-031-event-session-game-selection.md) |
 
 ## Offene Bugs
 
