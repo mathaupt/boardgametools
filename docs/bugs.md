@@ -2197,10 +2197,85 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 ---
 
+### [BUG-079] iOS-Sessions mit Snapshot ohne Sammlungs-ID können nicht dekodiert werden
+
+**Status:** `open`
+**Schweregrad:** `high`
+**Entdeckt:** 2026-11-16
+**Test geschrieben:** Nein – Auditbefund; gezielter Regressionstest vor dem Fix vorgesehen.
+
+**Beschreibung:** iOS-Sessions mit Snapshot ohne Sammlungs-ID können nicht dekodiert werden.
+**Reproduktion:** Eine gültige Session-API-Antwort mit gameId null, gameNameSnapshot und Gastmitspielern mit dem echten SessionDTO dekodieren.
+**Erwartetes Verhalten:** Snapshotpartien und Gäste werden verlustfrei synchronisiert.
+**Tatsächliches Verhalten:** Der Swift-Decoder bricht mit valueNotFound(Swift.String) am Feld gameId ab.
+**Ursache:** SessionDTO und LocalSession verlangen eine Spiel-ID und bilden die neuen Snapshot-/Gastfelder nicht ab.
+**Lösung:** Geplant: Optionalen Spielbezug und vollständigen DTO-/SwiftData-Roundtrip gemäß FEAT-033 ergänzen.
+**Referenz im Changelog:** Version 0.50.100 – Bestandsprüfung und Nachzugsplanung; noch kein Fix.
+
+### [BUG-080] Web-Sessions über die ersten 20 Einträge hinaus sind nicht erreichbar
+
+**Status:** `open`
+**Schweregrad:** `medium`
+**Entdeckt:** 2026-11-16
+**Test geschrieben:** Nein – Auditbefund; gezielter Regressionstest vor dem Fix vorgesehen.
+
+**Beschreibung:** Web-Sessions über die ersten 20 Einträge hinaus sind nicht erreichbar.
+**Reproduktion:** Mehr als 20 Sessions besitzen und /dashboard/sessions öffnen.
+**Erwartetes Verhalten:** Alle eigenen Sessions sind über eine Seitennavigation erreichbar.
+**Tatsächliches Verhalten:** Die Abfrage lädt nur 20 Einträge; eine weitere Seite wird nicht angeboten.
+**Ursache:** Festes take: 20 ohne URL-Pagination in der Sessions-Seite.
+**Lösung:** Geplant: Kontogebundene Seitennavigation mit stabiler Reihenfolge gemäß FEAT-034 ergänzen.
+**Referenz im Changelog:** Version 0.50.100 – Bestandsprüfung und Nachzugsplanung; noch kein Fix.
+
+### [BUG-081] Eventübersicht zählt Gaststimmen nicht mit
+
+**Status:** `open`
+**Schweregrad:** `medium`
+**Entdeckt:** 2026-11-16
+**Test geschrieben:** Nein – Auditbefund; gezielter Regressionstest vor dem Fix vorgesehen.
+
+**Beschreibung:** Eventübersicht zählt Gaststimmen nicht mit.
+**Reproduktion:** Ein Event mit einer Kontostimme und zwei Gaststimmen in /dashboard/events ansehen.
+**Erwartetes Verhalten:** Der Vorschlag zeigt drei Stimmen wie im Voting und Dashboard.
+**Tatsächliches Verhalten:** Die Eventübersicht zeigt nur die eine Kontostimme.
+**Ursache:** Die Serverquery und EventsOverview verwenden ausschließlich _count.votes.
+**Lösung:** Geplant: Gesamtstimmen aus Konto- und Gaststimmen gemäß FEAT-034 bilden.
+**Referenz im Changelog:** Version 0.50.100 – Bestandsprüfung und Nachzugsplanung; noch kein Fix.
+
+### [BUG-082] Event-Vertragstests schlagen nach Ablauf ihrer Fixturetermine fehl
+
+**Status:** `open`
+**Schweregrad:** `medium`
+**Entdeckt:** 2026-11-16
+**Test geschrieben:** Nein – Auditbefund; gezielter Regressionstest vor dem Fix vorgesehen.
+
+**Beschreibung:** Event-Vertragstests schlagen nach Ablauf ihrer Fixturetermine fehl.
+**Reproduktion:** npm run test am 16.11.2026 ausführen.
+**Erwartetes Verhalten:** Tests für offene zukünftige Events bleiben unabhängig vom Ausführungsdatum stabil.
+**Tatsächliches Verhalten:** 19 Tests in drei Dateien scheitern an korrekten 409-Antworten für vergangene Events.
+**Ursache:** Feste Fixturetermine am 10./15.11.2026 werden ohne kontrollierte Systemzeit verwendet.
+**Lösung:** Geplant: Testuhr pro Suite setzen und wiederherstellen; explizite Vergangenheitstests erhalten.
+**Referenz im Changelog:** Version 0.50.100 – Bestandsprüfung und Nachzugsplanung; noch kein Fix.
+
+### [BUG-083] Mobile BGG-Importe umgehen die atomare Bestandswiederverwendung
+
+**Status:** `open`
+**Schweregrad:** `medium`
+**Entdeckt:** 2026-11-16
+**Test geschrieben:** Nein – Auditbefund; gezielter Regressionstest vor dem Fix vorgesehen.
+
+**Beschreibung:** Mobile BGG-Importe umgehen die atomare Bestandswiederverwendung.
+**Reproduktion:** Dasselbe BGG-Spiel zweimal über POST /api/mobile/v1/bgg/import importieren; ausschließlich isolierte Testdaten verwenden.
+**Erwartetes Verhalten:** Ein bestehendes aktives Spiel desselben Kontos wird ohne Überschreiben seiner Nutzerdaten wiederverwendet.
+**Tatsächliches Verhalten:** Der Mobilepfad legt über GameService.create einen weiteren Datensatz an.
+**Ursache:** Der Mobilehandler verwendet nicht den serialisierbaren createOrReuseBggGame-Weg des Webimports.
+**Lösung:** Geplant: Gemeinsamen Importvertrag und Tests für wiederholte sowie parallele Aufrufe gemäß FEAT-033 ergänzen.
+**Referenz im Changelog:** Version 0.50.100 – Bestandsprüfung und Nachzugsplanung; noch kein Fix.
+
 ## Statistik
 
-- **Offene Bugs:** 0
+- **Offene Bugs:** 5
 - **In Bearbeitung:** 0
 - **Behoben:** 78
 - **Wontfix:** 0
-- **Gesamt:** 78
+- **Gesamt:** 83

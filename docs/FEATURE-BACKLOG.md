@@ -994,3 +994,20 @@ danach können FEAT-026 und FEAT-027 unabhängig geplant umgesetzt werden.
 **Ziel:** Beim Eintragen einer Partie in einem Event zuerst die Spiele anbieten, die für dieses Event ausgewählt beziehungsweise vorgeschlagen wurden. Falls das gespielte Spiel dort nicht enthalten ist, soll es alternativ in der eigenen Sammlung oder über die BoardGameGeek-Suche gefunden werden können.
 **Abnahmekriterien:** Eventspiele sind die primäre Auswahlquelle. Sammlungssuche und BGG-Suche stehen als Alternativen zur Verfügung, ohne die vorhandene Auswahl unnötig zu überladen. Der Plan klärt, wie BGG-Treffer ohne Sammlungsimport als Session gespeichert werden, welche Spieldaten übernommen werden und welche Berechtigungs-/Datenschutzregeln gelten.
 **Implementierungsplan:** [Event-Partie-Spieleauswahl](superpowers/plans/2026-11-05-FEAT-031-event-session-game-selection.md). Der Plan umfasst Web/API und eine additive Migration; vor jeder Runtime-Änderung ist eine erneute Aktualitätsprüfung vorgeschrieben. Umsetzung erst nach ausdrücklicher Planfreigabe.
+
+
+## FEAT-033 – Nativen iOS-Client an den Webstand angleichen
+
+**Status:** Auftrag vom 16.11.2026 aufgenommen, Bestandsprüfung und konkreter gestufter Plan erstellt; Planfreigabe ausstehend.
+**Ziel:** Aktuelle Serververträge verlustfrei verarbeiten und bestätigte Webfunktionen nativ nachziehen.
+**Plan:** [iOS-Nachzug und Weboptimierung](superpowers/plans/2026-11-16-FEAT-033-ios-nachzug.md).
+**Prüfung:** [Web-/iOS-Abgleich](audits/2026-11-16-web-ios-abgleich.md).
+**Reihenfolge:** Zuerst BUG-079/082; danach native Sessions/Voting, BGG/Reihen; Eventpartien, öffentliche Teilnahme, Abzeichen und Sprache als weitere konkret abzunehmende Pakete.
+**Abnahmekriterien:** Keine Dekodierungsabbrüche bei Snapshotpartien; Gäste und Snapshots bleiben nach lokalem Roundtrip erhalten; neue Oberflächen mit testgetriebenen Verträgen, Simulatorbelegen, Dynamic Type und dokumentierter VoiceOver-Prüfung. Gastbesitznachweis und Kontoisolation erhalten. Keine neue Audioverarbeitung ohne gesondertes Plattformkonzept.
+
+## FEAT-034 – Belegte Webprobleme und Datenabfragen verbessern
+
+**Status:** Prüfung beauftragt und am 16.11.2026 durchgeführt; Umsetzung des konkreten Plans ausstehend.
+**Ziel:** Ältere Sessions erreichbar machen, Gesamtstimmen konsistent anzeigen und unnötige Abfragedaten reduzieren.
+**Plan und Prüfbasis:** Gemeinsamer [Plan FEAT-033/034](superpowers/plans/2026-11-16-FEAT-033-ios-nachzug.md), [Auditbericht](audits/2026-11-16-web-ios-abgleich.md).
+**Abnahmekriterien:** Mindestens 21 Sessions vollständig erreichbar; Konto- und Gaststimmen in Eventübersicht korrekt; reduzierte Queryfelder ohne Verlust sichtbarer Inhalte; gezielte Tests und gerenderte Abnahme bei 320/390/768/1440 px in beiden Themes. Werkzeugwarnungen und Entwicklungsabhängigkeiten gezielt behandeln. Bestehende Produktionsdaten bleiben unberührt.

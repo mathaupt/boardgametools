@@ -12,6 +12,17 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.100",
+    date: "2026-11-16",
+    title: "iOS-Nachzug und Webverbesserungen geprüft",
+    description: "Der Abgleich dokumentiert fehlende native Funktionen und konkrete Verbesserungen für Sessions, Abstimmungen und Importe.",
+    changes: [
+      { type: "internal", text: "FEAT-033/034: Gestuften iOS-Nachzug und Weboptimierungen mit Tests und Abnahmekriterien geplant; konkrete Planfreigabe steht aus." },
+      { type: "internal", text: "BUG-079 bis BUG-083 erfasst: Snapshot-Sessions im iOS-Client, fehlende Session-Seitennavigation, Gaststimmen in der Eventübersicht, datumsabhängige Tests und Mobile-BGG-Importe. Noch keine Laufzeitkorrekturen." },
+      { type: "internal", text: "TypeScript- und Swift-Verträge geprüft; vollständiger Webtestlauf zeigt 19 datumsabhängige Fehler. Produktionsaudit ohne Befund, Entwicklungsabhängigkeiten mit zwei moderaten und drei niedrigen Befunden." },
+    ],
+  },
+  {
     version: "0.50.99",
     date: "2026-11-09",
     title: "Gespielte Eventpartien flexibel erfassen",

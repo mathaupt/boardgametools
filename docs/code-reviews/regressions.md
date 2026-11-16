@@ -640,3 +640,17 @@ Jeder Eintrag enthält Felder für Root-Cause-Analyse und Gegenmaßnahmen (manue
 **Verantwortlich:** <!-- Manuell ausfüllen -->
 
 ---
+
+## 2026-11-16 16:57:59
+
+| Finding | Priorität | Vorher | Jetzt | Detail |
+|---------|-----------|--------|-------|--------|
+| SEC-45: npm audit: Bekannte Vulnerabilities | P2 | resolved | open | npm audit lieferte keine gültigen Prüfdaten |
+
+**Root-Cause:** Der initiale Evaluatorlauf hatte in der Sandbox keinen Registryzugriff; gültige npm-Auditdaten fehlten. Kein Dependency- oder Laufzeitcode wurde geändert.
+**Gegenmaßnahme:** Registryabgleich außerhalb der Sandbox ausgeführt: Produktionsaudit 0 Befunde; Entwicklungsaudit zwei moderate und drei niedrige Befunde. Entwicklungspfad über CodeceptJS/Hono gezielt prüfen; keine automatische Major-Rückstufung von shadcn. Siehe `docs/audits/2026-11-16-web-ios-abgleich.md`.
+**Verantwortlich:** Projektwartung; im Auftrag vom 16.11.2026 erfasst.
+
+---
+
+**Auflösung 16.11.2026:** Evaluator mit Registryzugriff: 9,9/10, Sicherheit 10/10, keine Regression; Snapshot `history/2026-11-16_1802.json`. Die neuen Entwicklungsbefunde bleiben im Auditbericht dokumentiert.
