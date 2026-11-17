@@ -162,4 +162,12 @@ Swift-Tests im echten Simulator-Testziel. Die native Prüfung verwendet eine sep
 mit echten Views, In-Memory-SwiftData und ausschließlich synthetischen lokalen
 API-Antworten. Kein Produktionskonto und keine Produktionsdatenbank verwendet.
 
-**Abschlussstand 17.11.2026:** Webbuild und Xcode-Testziel erfolgreich; elf gezielte Changelog-/FAQ-Tests nach Dokumentationspflege bestanden. Globale ESLint-Prüfung ohne Fehler mit 652 bestehenden Werkzeugwarnungen; Securityprüfung ohne Fehler, Review-Regressionscheck 10/10 ohne Regression. Vollständige Hardware-/VoiceOver-Abnahme sowie Veröffentlichung bleiben ausdrücklich offen.
+**Abschlussstand 17.11.2026:** Webbuild und Xcode-Testziel erfolgreich; elf gezielte Changelog-/FAQ-Tests nach Dokumentationspflege bestanden. Globale ESLint-Prüfung ohne Fehler mit 652 bestehenden Werkzeugwarnungen; Securityprüfung ohne Fehler, Review-Regressionscheck 9,9/10 ohne Regression. Vollständige Hardware-/VoiceOver-Abnahme sowie Veröffentlichung bleiben ausdrücklich offen.
+
+
+**Finaler Reviewhinweis:** Commit `460ab89` und Nachlauf bestätigen keine
+Regression. Der Evaluator meldet „Coverage Regression Tracking“ wegen fehlender
+Coveragefelder in älteren Review-History-Snapshots; dadurch 9,9/10 statt des
+vorläufigen 10/10. Die realen aktuellen Coveragewerte sind separat vollständig
+gemessen und in `src/data/quality-metrics.json` enthalten. Historische Werte
+werden nicht erfunden oder nachträglich hochgesetzt.

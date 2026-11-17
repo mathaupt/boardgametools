@@ -23,6 +23,7 @@ export const changelog: ChangelogEntry[] = [
       { type: "fix", text: "BUG-083: Mobile BGG-Importe verwenden vorhandene eigene Spiele atomar weiter, ohne persönliche Angaben zu überschreiben.", bugRef: "BUG-083" },
       { type: "fix", text: "BUG-084/085: Native Fehler bieten deutsche Wiederherstellungshinweise; die Stimmenanzeige unterscheidet eine Stimme und mehrere Stimmen." },
       { type: "fix", text: "BUG-087: Native Spielsuchfelder bleiben auch mit sehr großer Schrift vollständig in der scrollbaren Liste sichtbar.", bugRef: "BUG-087" },
+      { type: "internal", text: "Vollständiger Abschlusslauf: 1.461 Webtests und zehn Xcode-Simulatortests bestanden. Review-Nachlauf ohne Regression bei 9,9/10; fehlende Coveragefelder älterer Review-History-Snapshots bleiben als Prüfhinweis dokumentiert." },
       { type: "internal", text: "BUG-082: Eventtests verwenden eine feste Testuhr und bleiben unabhängig vom Tagesdatum stabil.", bugRef: "BUG-082" },
     ],
   },

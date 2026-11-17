@@ -17,9 +17,9 @@ Plattformpakete bleiben separat. Kein Produktions-/Store-Release.
 | Globales ESLint | 0 Fehler, 652 bestehende Warnungen aus Werkzeug-/Skilldateien |
 | Produktionsbuild | Erfolgreich; keine Migration ausgeführt |
 | Security-Check | 0 Fehler, 2 bestehende Hinweise |
-| Review-Regressionscheck | 10/10, keine Regression; `history/2026-11-17_1138.json` |
+| Review-Regressionscheck | 9,9/10, keine Regression; `history/2026-11-17_1145.json` |
 
-Scoreverlauf: 9,9/10 vor Umsetzung → 10/10 im Abschlusscheck. Generierte
+Scoreverlauf: 9,9/10 vor Umsetzung → 10/10 im Vorabschluss → 9,9/10 im Commit-/Nachlauf. Generierte
 Coveragewerte stammen ausschließlich aus dem erfolgreichen vollständigen Lauf.
 Elf zusätzliche Changelog-/FAQ-Prüfungen nach der Dokumentationspflege bestanden.
 
@@ -56,3 +56,11 @@ Grenzen: keine vollständig gesprochene VoiceOver-Abnahme auf echter Hardware,
 keine Hardware-Performancemessung und kein Produktions-End-to-End-Test.
 BUG-086 dokumentiert vier ältere fehlende OpenAPI-Komponenten; die neuen A–C-
 Fehlerreferenzen sind auflösbar. Keine pauschale vollständige API-Spec-Abnahme.
+
+
+**Finaler Reviewhinweis:** Commit `460ab89` und Nachlauf bestätigen keine
+Regression. Der Evaluator meldet „Coverage Regression Tracking“ wegen fehlender
+Coveragefelder in älteren Review-History-Snapshots; dadurch 9,9/10 statt des
+vorläufigen 10/10. Die realen aktuellen Coveragewerte sind separat vollständig
+gemessen und in `src/data/quality-metrics.json` enthalten. Historische Werte
+werden nicht erfunden oder nachträglich hochgesetzt.

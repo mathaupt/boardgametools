@@ -2,7 +2,7 @@
 
 Der Nachzug stellt zuerst verlustfreie Server-/SwiftData-Verträge her und ergänzt
 danach native Bedienung. Die vorher fehlschlagende Websuite ist wieder vollständig
-grün. Der Evaluatorscore steigt von 9,9 auf 10/10; die echten Test-/Coverage- und
+grün. Der Evaluatorscore liegt im Commit-/Nachlauf bei 9,9/10 ohne Regression; die echten Test-/Coverage- und
 Simulatornachweise werden unabhängig davon dokumentiert.
 
 | Bereich | Vorher | Nachher |
@@ -18,3 +18,11 @@ Simulatornachweise werden unabhängig davon dokumentiert.
 Keine neue Schema-/Credential-/Gastfreigabe. Gastteilnahme, Abzeichen, Sprache,
 Eventpartien-Anlage und Webpaket FEAT-034 bleiben außerhalb dieses Auftrags.
 Manuelle Hardware-/VoiceOver-Abnahme und Veröffentlichung sind weiterhin offen.
+
+
+**Finaler Reviewhinweis:** Commit `460ab89` und Nachlauf bestätigen keine
+Regression. Der Evaluator meldet „Coverage Regression Tracking“ wegen fehlender
+Coveragefelder in älteren Review-History-Snapshots; dadurch 9,9/10 statt des
+vorläufigen 10/10. Die realen aktuellen Coveragewerte sind separat vollständig
+gemessen und in `src/data/quality-metrics.json` enthalten. Historische Werte
+werden nicht erfunden oder nachträglich hochgesetzt.

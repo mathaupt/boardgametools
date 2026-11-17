@@ -15,4 +15,12 @@
 - [ ] BUG-086: historische OpenAPI-Komponenten separat vervollständigen.
 
 Erfolgsmessung: 1.461 erfolgreiche Webtests, zehn erfolgreiche Xcode-Tests,
-alle globalen und `src/lib`-Coverage-Gates bestanden, Evaluator 10/10 ohne Regression.
+alle globalen und `src/lib`-Coverage-Gates bestanden, Evaluator 9,9/10 ohne Regression.
+
+
+**Finaler Reviewhinweis:** Commit `460ab89` und Nachlauf bestätigen keine
+Regression. Der Evaluator meldet „Coverage Regression Tracking“ wegen fehlender
+Coveragefelder in älteren Review-History-Snapshots; dadurch 9,9/10 statt des
+vorläufigen 10/10. Die realen aktuellen Coveragewerte sind separat vollständig
+gemessen und in `src/data/quality-metrics.json` enthalten. Historische Werte
+werden nicht erfunden oder nachträglich hochgesetzt.
