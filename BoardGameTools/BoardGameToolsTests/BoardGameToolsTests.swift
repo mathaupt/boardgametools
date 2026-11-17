@@ -6,11 +6,11 @@ import Testing
 @testable import BoardGameTools
 #endif
 
-private enum RegressionFailure: Error {
+enum RegressionFailure: Error {
     case failed(String)
 }
 
-private func require(_ condition: @autoclosure () throws -> Bool, _ message: String) throws {
+func require(_ condition: @autoclosure () throws -> Bool, _ message: String) throws {
     if try !condition() { throw RegressionFailure.failed(message) }
 }
 
@@ -257,6 +257,11 @@ private func expectUnauthorized(_ api: APIClient) async throws {
 @main struct ContractTestRunner {
     @MainActor static func main() async throws {
         try checkContracts()
+        try checkSnapshotSessions()
+        try checkNativeDetailContracts()
+        try checkNativeRules()
+        try await checkBGGSearchStates()
+        try await checkSeriesWorkflow()
         try checkDashboardContent()
         print("PASS: next evening and recent session selection")
         print("PASS: refresh, series, upload and strict login contracts")
@@ -270,6 +275,11 @@ private func expectUnauthorized(_ api: APIClient) async throws {
 }
 #else
 struct BoardGameToolsTests {
+    @Test @MainActor func snapshotSessions() throws { try checkSnapshotSessions() }
+    @Test @MainActor func nativeDetails() throws { try checkNativeDetailContracts() }
+    @Test @MainActor func bggStates() async throws { try await checkBGGSearchStates() }
+    @Test @MainActor func seriesWorkflow() async throws { try await checkSeriesWorkflow() }
+    @Test func nativeRules() throws { try checkNativeRules() }
     @Test func dashboardContent() throws { try checkDashboardContent() }
     @Test func mobileResponseContracts() throws { try checkContracts() }
     @Test @MainActor func accountCacheIsolation() throws { try checkAccountIsolation() }

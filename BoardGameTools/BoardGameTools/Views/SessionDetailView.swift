@@ -1,7 +1,9 @@
 import SwiftUI
+import SwiftData
 
 struct SessionDetailView: View {
     @Environment(SyncEngine.self) private var syncEngine
+    @Query private var games: [LocalGame]
     let session: SessionDTO
 
     @State private var isEditing = false
@@ -12,18 +14,11 @@ struct SessionDetailView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
                 HStack(spacing: 16) {
-                    ZStack {
-                        Theme.warmGradient
-                            .overlay(
-                                Image(systemName: "dice.gamedots")
-                                    .font(.title2)
-                                    .foregroundStyle(.white.opacity(0.8))
-                            )
-                    }
-                    .frame(width: 64, height: 64)
-                    .clipShape(.rect(cornerRadius: 16))
+                    GameCover(imageUrl: session.imageURL(in: games.map { $0.toDTO() }), name: session.gameName(in: games.map { $0.toDTO() }))
+                        .frame(width: 56, height: 70)
 
                     VStack(alignment: .leading, spacing: 4) {
+                        Text(session.gameName(in: games.map { $0.toDTO() })).font(.headline)
                         Text(session.playedAt.formattedISO8601() ?? session.playedAt)
                             .font(.title2)
                             .fontWeight(.bold)
@@ -48,12 +43,25 @@ struct SessionDetailView: View {
                     }
                 }
 
+                ForEach(session.guestPlayers ?? [], id: \.id) { guest in
+                    VStack(alignment: .leading) {
+                        Text(guest.name).font(.headline)
+                        if let score = guest.score { Text("\(score) Punkte") }
+                        if guest.isWinner { Label("Gewonnen", systemImage: "trophy") }
+                    }
+                }
+                if !session.canEditInNativeForm {
+                    Text("Diese Eventpartie kannst du hier ansehen. Zum Bearbeiten öffne sie in der Web-App.")
+                        .foregroundStyle(.secondary)
+                }
                 HStack(spacing: 12) {
+                    if session.canEditInNativeForm {
                     Button("Bearbeiten") {
                         isEditing = true
                     }
                     .buttonStyle(.borderedProminent)
-                    .tint(Theme.primary)
+                    .tint(ClubTheme.tint)
+                    }
 
                     Button("Löschen") {
                         isDeleting = true
@@ -69,7 +77,7 @@ struct SessionDetailView: View {
             }
             .padding()
         }
-        .background(Theme.background.ignoresSafeArea())
+        .background(ClubTheme.background.ignoresSafeArea())
         .navigationTitle("Session")
         .navigationBarTitleDisplayMode(.inline)
         .sheet(isPresented: $isEditing) {
@@ -126,7 +134,7 @@ struct PlayerRow: View {
             }
         }
         .padding()
-        .background(Theme.cardBackground)
+        .background(ClubTheme.surface)
         .clipShape(.rect(cornerRadius: 12))
     }
 }

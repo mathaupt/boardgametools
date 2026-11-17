@@ -202,7 +202,7 @@ Club Programme überträgt die Klarheit eines Veranstaltungsprogramms auf die ge
 
 Die Oberflächen bleiben ruhig und überwiegend flach. Datumsblöcke, Trennlinien und beschriftete Aktionen führen durch Termine, Sammlung und Spielhistorie. Die Gestaltung verwendet Code und vorhandene Spielcover; zusätzliche Rastergrafiken gehören nicht zur visuellen Grundausstattung.
 
-Die native iOS-Adaption gilt zunächst für Übersicht, Hauptnavigation, Sammlung und Spieleabende. Sie übernimmt die Farbrollen und das Datumsmotiv von Club Programme mit SF-Systemschrift, Dynamic Type, SF Symbols und systemgeführten Navigationen, Listen und Sheets ab iOS 17. Die Webgestaltung bleibt eigenständig erhalten; die nativen Rollen tragen das Präfix `ios-`.
+Die native iOS-Adaption gilt für Übersicht, Hauptnavigation, Sammlung und Spieleabende; FEAT-033 A–C erweitert sie am 17.11.2026 auf neue Session-Spielauswahl, Eventvoting, BGG-Import und Reihen-Auswahl. Sie übernimmt die Farbrollen und das Datumsmotiv von Club Programme mit SF-Systemschrift, Dynamic Type, SF Symbols und systemgeführten Navigationen, Listen und Sheets ab iOS 17. Die Webgestaltung bleibt eigenständig erhalten; die nativen Rollen tragen das Präfix `ios-`.
 
 **Key Characteristics:**
 - Kobaltblaue Navigation mit sichtbaren Textbezeichnungen.

@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
 // ── Auth/Next mocks (prevent ESM import chain from require-auth) ─
 vi.mock("@/lib/auth", () => ({ auth: vi.fn() }));
@@ -98,7 +98,10 @@ function mockEventTransaction(event: typeof fakeEvent | null = fakeEvent) {
 // ── Tests ────────────────────────────────────────────────────────
 
 describe("EventService", () => {
+  afterEach(() => vi.useRealTimers());
   beforeEach(() => {
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(new Date("2026-11-01T12:00:00Z"));
     vi.clearAllMocks();
   });
 

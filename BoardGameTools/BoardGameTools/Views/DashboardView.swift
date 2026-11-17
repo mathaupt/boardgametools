@@ -102,7 +102,7 @@ struct DashboardView: View {
                     ForEach(recent) { session in
                         NavigationLink(destination: SessionDetailView(session: session)) {
                             VStack(alignment: .leading, spacing: 6) {
-                                Text(games.first { $0.id == session.gameId }?.name ?? "Spielsession")
+                                Text(session.gameName(in: games.map { $0.toDTO() }))
                                     .font(.headline)
                                     .foregroundStyle(ClubTheme.ink)
                                 if let date = ClubContent.date(session.playedAt) {

@@ -124,11 +124,16 @@ final class RemoteDataSource {
         return try await APIClient.shared.request(method: .post, endpoint: .bggLookup, body: Body(ean: ean))
     }
 
-    func bggImport(bggId: String) async throws -> GameDTO {
+    func bggImport(bggId: String, versionId: String? = nil) async throws -> GameDTO {
+        let matches = try await bggPresence(ids: [bggId])
+        if let match = matches[bggId] ?? nil {
+            return try await APIClient.shared.request(method: .get, endpoint: .game(match.id))
+        }
         struct Body: Encodable, Sendable {
             let bggId: String
+            let versionId: String?
         }
-        return try await APIClient.shared.request(method: .post, endpoint: .bggImport, body: Body(bggId: bggId))
+        return try await APIClient.shared.request(method: .post, endpoint: .bggImport, body: Body(bggId: bggId, versionId: versionId))
     }
 
     func registerDevice(token: String, platform: String = "ios") async throws {

@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { NextRequest } from "next/server";
 
 vi.mock("@/lib/db", () => ({
@@ -182,7 +182,10 @@ const sampleDateVote = {
 };
 
 describe("Mobile Event Routes", () => {
+  afterEach(() => vi.useRealTimers());
   beforeEach(() => {
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(new Date("2026-11-01T12:00:00Z"));
     vi.clearAllMocks();
     mockedEventFindFirst.mockResolvedValue({ id: "e1", ...baseEventFields, createdById: "u1", invites: [] } as never);
     const lockedEvent = {

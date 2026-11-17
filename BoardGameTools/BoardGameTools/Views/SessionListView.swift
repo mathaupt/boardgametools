@@ -64,25 +64,19 @@ struct SessionListView: View {
 
 struct SessionRow: View {
     let session: LocalSession
+    @Query private var games: [LocalGame]
 
     var body: some View {
         HStack(spacing: 16) {
-            ZStack {
-                Theme.warmGradient
-                Image("SessionIcon")
-                    .resizable()
-                    .scaledToFit()
-                    .padding(12)
-            }
-            .frame(width: 56, height: 56)
-            .clipShape(.rect(cornerRadius: 14))
+            GameCover(imageUrl: session.toDTO().imageURL(in: games.map { $0.toDTO() }), name: session.toDTO().gameName(in: games.map { $0.toDTO() }))
+                .frame(width: 48, height: 60)
 
             VStack(alignment: .leading, spacing: 4) {
-                Text(session.playedAt.formattedISO8601() ?? session.playedAt)
-                    .font(.headline)
+                Text(session.toDTO().gameName(in: games.map { $0.toDTO() })).font(.headline)
+                Text(session.playedAt.formattedISO8601() ?? session.playedAt).font(.subheadline)
                 HStack(spacing: 4) {
                     Image(systemName: "person.2")
-                    Text("\(session.players?.count ?? 0) Spieler")
+                    Text("\((session.players?.count ?? 0) + session.guestPlayers.count) Spieler")
                     if let duration = session.durationMinutes {
                         Text("·")
                         Image(systemName: "clock")

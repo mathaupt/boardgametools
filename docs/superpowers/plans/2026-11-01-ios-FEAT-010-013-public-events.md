@@ -1,5 +1,12 @@
 # Native iOS-Implementierungsplan FEAT-010 bis FEAT-013 – Öffentliche Spieleabende
 
+**Aktualisierung 17.11.2026:** Der konkret freigegebene Nachzug steht in
+[FEAT-033 A–C](2026-11-16-FEAT-033-ios-nachzug.md). Authentifiziertes natives
+Voting ist dort umgesetzt. BUG-053 ist inzwischen serverseitig behoben; der
+native Cookie-/Gastpfad bleibt separat zu planen und ist nicht durch A–C
+freigegeben. Ältere Blockertexte dieses Plans sind historischer Planungsstand.
+
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Der native iOS-Client zeigt Eventstatus und Ergebnis korrekt, bietet zugängliche Terminantworten und macht öffentliche Teilnahme sowie aktive Identität verständlich.

@@ -6,6 +6,18 @@ final class LocalGameSeriesEntry {
     @Attribute(.unique) var id: String
     var seriesId: String
     var gameId: String
+    var collectionGameId: String?
+    var gameName: String?
+    var gameDescription: String?
+    var gameImageUrl: String?
+    var minPlayers: Int?
+    var maxPlayers: Int?
+    var gamePlayTimeMinutes: Int?
+    var complexity: Int?
+    var bggId: String?
+    var source: String?
+    var temporaryReason: String?
+
     var sortOrder: Int
     var played: Bool
     var playedAt: String?
@@ -26,6 +38,18 @@ final class LocalGameSeriesEntry {
         self.id = dto.id
         self.seriesId = dto.seriesId
         self.gameId = dto.gameId
+        self.collectionGameId = dto.collectionGameId
+        self.gameName = dto.gameName
+        self.gameDescription = dto.gameDescription
+        self.gameImageUrl = dto.gameImageUrl
+        self.minPlayers = dto.minPlayers
+        self.maxPlayers = dto.maxPlayers
+        self.gamePlayTimeMinutes = dto.gamePlayTimeMinutes
+        self.complexity = dto.complexity
+        self.bggId = dto.bggId
+        self.source = dto.source
+        self.temporaryReason = dto.temporaryReason
+
         self.sortOrder = dto.sortOrder
         self.played = dto.played
         self.playedAt = dto.playedAt
@@ -42,6 +66,18 @@ final class LocalGameSeriesEntry {
     func update(from dto: SeriesEntryDTO) {
         seriesId = dto.seriesId
         gameId = dto.gameId
+        collectionGameId = dto.collectionGameId
+        gameName = dto.gameName
+        gameDescription = dto.gameDescription
+        gameImageUrl = dto.gameImageUrl
+        minPlayers = dto.minPlayers
+        maxPlayers = dto.maxPlayers
+        gamePlayTimeMinutes = dto.gamePlayTimeMinutes
+        complexity = dto.complexity
+        bggId = dto.bggId
+        source = dto.source
+        temporaryReason = dto.temporaryReason
+
         sortOrder = dto.sortOrder
         played = dto.played
         playedAt = dto.playedAt
@@ -60,6 +96,18 @@ final class LocalGameSeriesEntry {
             id: id,
             seriesId: seriesId,
             gameId: gameId,
+            collectionGameId: collectionGameId,
+            gameName: gameName,
+            gameDescription: gameDescription,
+            gameImageUrl: gameImageUrl,
+            minPlayers: minPlayers,
+            maxPlayers: maxPlayers,
+            gamePlayTimeMinutes: gamePlayTimeMinutes,
+            complexity: complexity,
+            bggId: bggId,
+            source: source,
+            temporaryReason: temporaryReason,
+
             sortOrder: sortOrder,
             played: played,
             playedAt: playedAt,

@@ -298,3 +298,21 @@ Am 08.11.2026 wurde vor dem Release ein konsistenter Snapshot der 35 Tabellen un
 ### Produktionsstand FEAT-031 Eventpartien
 
 Am 09.11.2026 wurde vor dem Rollout ein konsistenter `REPEATABLE READ READ ONLY`-Snapshot mit 34 Anwendungstabellen und 987 Zeilen unter `backups/boardgametools_20261109_pre_feat031.snapshot.json.gz` erstellt (SHA-256 `c913312df7ab7508e9a7fa634f04c8d12d72b4b6b56c9a656610e80c584b10d8`, Dateimodus 0600). Der Snapshot wurde vollständig in `bgt_test_feat031_restore_20261109` wiederhergestellt; sämtliche Tabellenzeilenzahlen stimmen. Vor der Migration waren 19 Migrationen angewendet, genau die FEAT-031-Migration ausstehend, `EventPlayedSession.proposalId` `NOT NULL` und 2 Eventverknüpfungen vorhanden. Danach wurde ausschließlich `20261109124500_feat031_optional_event_proposal` mit `npm run prisma:deploy` angewendet. Read-only verifiziert: `proposalId` ist nullable, beide vorhandenen Verknüpfungen bestehen, 20 Migrationen sind abgeschlossen und `prisma migrate status` meldet „up to date“. Commits `bb84e33` und `aa52f75` wurden gepusht; Vercel meldet den zugehörigen Deployment-Check aktuell `pending`. Die Vercel-API-/Produktions-Health-Prüfung ist aus dieser Umgebung nicht erreichbar.
+
+
+## FEAT-033 A–C – Backend vor nativer Veröffentlichung
+
+Die neue iOS-Version benötigt die privaten Mobile-Routen für BGG-Bestandsprüfung,
+deutsche Ausgaben und Sammlungsübernahme von Reihenspielen. Zuerst das geprüfte
+Backend mit `npm run build` veröffentlichen und die Routen mit einem isolierten
+Prüfkonto verifizieren; danach den nativen Client verteilen. A–C benötigen keine
+neue Datenbankmigration und keine zusätzlichen Umgebungsvariablen. Der Build
+führt keine Migration aus.
+
+Vor dem nativen Release `npm run test:ios:contracts` sowie das Xcode-Testziel
+prüfen. Das Xcode-Projekt muss sämtliche neuen Netzwerk-, View- und Testdateien
+enthalten. Bestehende Personal-Team-Entitlements bei XcodeGen nicht unbeabsichtigt
+durch Release-Capabilities ersetzen. Vollständige VoiceOver-Abnahme auf echter
+Hardware und Store-/Produktionsveröffentlichung sind separate Abnahmeschritte.
+Dieser Arbeitslauf hat weder ein Produktionsdeployment noch einen Store-Release
+ausgeführt.

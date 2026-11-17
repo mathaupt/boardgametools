@@ -2,118 +2,69 @@ import SwiftUI
 
 struct BGGSearchView: View {
     @Environment(\.dismiss) private var dismiss
-    @Environment(SyncEngine.self) private var syncEngine
-
-    @State private var query = ""
-    @State private var results: [BGGSearchResult] = []
-    @State private var isSearching = false
-    @State private var errorMessage: String?
+    @State private var selected: BGGSearchResult?
 
     var body: some View {
         NavigationStack {
-            VStack(spacing: 0) {
-                HStack(spacing: 12) {
-                    TextField("Spielname suchen...", text: $query)
-                        .autocapitalization(.none)
-                        .textFieldStyle(.roundedBorder)
-                        .onSubmit {
-                            Task { await search() }
-                        }
-
-                    Button {
-                        Task { await search() }
-                    } label: {
-                        Image(systemName: "magnifyingglass")
-                            .font(.headline)
-                            .foregroundStyle(.white)
-                            .padding(10)
-                            .background(Theme.primaryGradient)
-                            .clipShape(.circle)
-                    }
-                    .disabled(query.count < 2 || isSearching)
+            BGGSearchPanel(onSelect: { selected = $0 })
+                .navigationTitle("BGG-Import")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar { ToolbarItem(placement: .cancellationAction) { Button("Fertig") { dismiss() } } }
+                .sheet(item: $selected) { result in
+                    BGGImportSheet(result: result) { dismiss() }
                 }
-                .padding()
+        }.tint(ClubTheme.tint)
+    }
+}
 
-                if isSearching && results.isEmpty {
-                    Spacer()
-                    LoadingOverlay(message: "Suche auf BGG...")
-                    Spacer()
-                } else if let errorMessage = errorMessage {
-                    Spacer()
-                    EmptyStateView(icon: "exclamationmark.triangle", title: "Fehler", subtitle: errorMessage)
-                    Spacer()
-                } else if results.isEmpty {
-                    Spacer()
-                    EmptyStateView(icon: "magnifyingglass", title: "BGG durchsuchen", subtitle: "Gib mindestens 2 Zeichen ein, um ein Spiel bei BoardGameGeek zu finden.")
-                    Spacer()
-                } else {
-                    List(results) { result in
-                        Button {
-                            Task { await importGame(bggId: result.bggId) }
-                        } label: {
-                            HStack {
-                                VStack(alignment: .leading, spacing: 4) {
-                                    Text(result.name)
-                                        .font(.headline)
-                                        .foregroundStyle(.primary)
-                                    if let year = result.yearPublished {
-                                        Text("\(year)")
-                                            .font(.caption)
-                                            .foregroundStyle(.secondary)
-                                    }
-                                }
-                                Spacer()
-                                if isSearching {
-                                    ProgressView()
-                                } else {
-                                    Image(systemName: "plus.circle.fill")
-                                        .font(.title3)
-                                        .foregroundStyle(Theme.primaryGradient)
-                                }
-                            }
+struct BGGSearchPanel: View {
+    let onSelect: (BGGSearchResult) -> Void
+    var selectedIDs: Set<String> = []
+    @State private var query = ""
+    @State private var search = NativeBGGSearch()
+
+    var body: some View {
+        List {
+            Section {
+                TextField("Spiel auf BoardGameGeek suchen", text: $query)
+                    .textInputAutocapitalization(.never)
+                    .submitLabel(.search)
+                    .onSubmit { submit() }
+                    .onChange(of: query) { _, _ in search.reset() }
+                    .accessibilityLabel("Spiel auf BoardGameGeek suchen")
+                Button("Suchen", systemImage: "magnifyingglass") { submit() }
+                    .frame(minHeight: 44)
+                    .disabled(query.trimmingCharacters(in: .whitespacesAndNewlines).count < 2 || query.count > 200 || search.state == .loading)
+            }
+            switch search.state {
+            case .idle:
+                Text("Gib mindestens zwei Zeichen ein und starte die Suche.").foregroundStyle(.secondary)
+            case .loading:
+                ProgressView("Suche auf BoardGameGeek …")
+            case .empty:
+                ContentUnavailableView("Keine Spiele gefunden", systemImage: "magnifyingglass", description: Text("Versuche einen anderen Spielnamen."))
+            case .error:
+                Text(search.errorMessage ?? "Suche fehlgeschlagen.").foregroundStyle(.red)
+                Button("Erneut versuchen") { submit() }.frame(minHeight: 44)
+            case .results:
+                Section("\(search.results.count) Ergebnisse") {
+                    ForEach(search.results) { result in
+                        Button { onSelect(result) } label: {
+                            VStack(alignment: .leading, spacing: 4) {
+                                Label(result.name, systemImage: selectedIDs.contains(result.bggId) ? "checkmark.circle.fill" : "plus.circle").foregroundStyle(ClubTheme.ink)
+                                if let year = result.yearPublished { Text(String(year)).font(.subheadline).foregroundStyle(.secondary) }
+                            }.frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
                         }
-                        .listRowBackground(Theme.cardBackground)
                     }
-                    .listStyle(.plain)
                 }
             }
-            .background(Theme.background.ignoresSafeArea())
-            .navigationTitle("BGG-Import")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Fertig") { dismiss() }
-                }
-            }
+            Section { Link("Spieldaten von BoardGameGeek", destination: URL(string: "https://boardgamegeek.com")!).font(.footnote) }
         }
+        .scrollContentBackground(.hidden).background(ClubTheme.background)
+        .onDisappear { search.reset() }
     }
 
-    private func search() async {
-        guard query.count >= 2 else { return }
-        isSearching = true
-        errorMessage = nil
-        do {
-            results = try await RemoteDataSource.shared.bggSearch(query: query)
-        } catch let error as APIError {
-            errorMessage = error.message
-        } catch {
-            errorMessage = error.localizedDescription
-        }
-        isSearching = false
-    }
-
-    private func importGame(bggId: String) async {
-        isSearching = true
-        errorMessage = nil
-        do {
-            _ = try await RemoteDataSource.shared.bggImport(bggId: bggId)
-            await syncEngine.sync()
-            dismiss()
-        } catch let error as APIError {
-            errorMessage = error.message
-        } catch {
-            errorMessage = error.localizedDescription
-        }
-        isSearching = false
+    private func submit() {
+        Task { await search.search(query) { try await RemoteDataSource.shared.bggSearch(query: $0) } }
     }
 }

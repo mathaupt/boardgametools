@@ -12,6 +12,21 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.101",
+    date: "2026-11-17",
+    title: "Native Sessions, Abstimmungen und Spielereihen erweitert",
+    description: "Die iOS-App verarbeitet Eventpartien mit Spiel-Snapshots und bietet durchsuchbare Spielauswahl, natives Voting sowie erweiterte BGG- und Reihenfunktionen.",
+    changes: [
+      { type: "fix", text: "BUG-079: Eventpartien ohne Sammlungsbezug und ihre Gastmitspieler bleiben beim Synchronisieren erhalten.", bugRef: "BUG-079" },
+      { type: "feature", text: "FEAT-033 A–B: Native Session-Spielsuche, Titel und Cover sowie Eventvorschläge mit Details, Sortierung, Abstimmen und berechtigtem Löschen ergänzt." },
+      { type: "feature", text: "FEAT-033 C: Deutsche BGG-Ausgaben wählen, den eigenen Bestand prüfen und mehrere Spiele aus Sammlung oder BGG zu einer Reihe hinzufügen. Temporäre Spiele bleiben außerhalb der Sammlung und können später übernommen werden." },
+      { type: "fix", text: "BUG-083: Mobile BGG-Importe verwenden vorhandene eigene Spiele atomar weiter, ohne persönliche Angaben zu überschreiben.", bugRef: "BUG-083" },
+      { type: "fix", text: "BUG-084/085: Native Fehler bieten deutsche Wiederherstellungshinweise; die Stimmenanzeige unterscheidet eine Stimme und mehrere Stimmen." },
+      { type: "fix", text: "BUG-087: Native Spielsuchfelder bleiben auch mit sehr großer Schrift vollständig in der scrollbaren Liste sichtbar.", bugRef: "BUG-087" },
+      { type: "internal", text: "BUG-082: Eventtests verwenden eine feste Testuhr und bleiben unabhängig vom Tagesdatum stabil.", bugRef: "BUG-082" },
+    ],
+  },
+  {
     version: "0.50.100",
     date: "2026-11-16",
     title: "iOS-Nachzug und Webverbesserungen geprüft",

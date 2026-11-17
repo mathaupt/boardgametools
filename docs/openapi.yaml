@@ -13,7 +13,7 @@ info:
 
     ## Rate Limiting
     Oeffentliche Endpunkte sind per IP rate-limited (Upstash Redis + In-Memory Fallback).
-  version: 0.40.1
+  version: 0.50.101
   contact:
     name: BoardGameTools
   license:
@@ -72,6 +72,17 @@ tags:
     description: Health-Check, DB-Init
 
 components:
+  responses:
+    Unauthorized:
+      description: Nicht angemeldet oder Anmeldung abgelaufen
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    BadRequest:
+      description: Ungültige Eingabe
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
   schemas:
     QualityCoverage:
       type: object
@@ -993,20 +1004,72 @@ paths:
         required: true
         schema: { type: string }
     post:
-      tags: [Mobile Series]
-      summary: Mobile - Spiel zur Reihe hinzufuegen
+      tags: [Series]
+      summary: Mobile – Sammlungsspiel oder BGG-Spiel zur Reihe hinzufügen
+      security: [ bearerAuth: [] ]
+      description: Nur eigene aktive Reihen. Temporäre BGG-Spiele erzeugen keinen Sammlungsbesitz; doppelte Spiel- oder BGG-Identitäten führen zu 409. Die Antwort enthält Snapshotfelder, collectionGameId und für temporäre Einträge eine stabile gameId im Format temporary:Eintrags-ID.
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
-              required: [gameId]
+              anyOf:
+                - required: [gameId]
+                - required: [bggId]
               properties:
-                gameId: { type: string }
-                sortOrder: { type: integer }
+                gameId: { type: string, maxLength: 100 }
+                bggId: { type: string, pattern: '^[1-9]\d{0,11}$' }
+                kind: { type: string, enum: [collection, temporary], default: collection }
+                reason: { type: string, enum: [BORROWED, BROUGHT_BY_SOMEONE, NO_LONGER_OWNED, OTHER] }
+                sortOrder: { type: integer, minimum: 0, maximum: 9999 }
+                difficulty: { type: string, maxLength: 100 }
       responses:
-        '201': { description: Eintrag erstellt }
+        '201': { description: Eintrag mit Snapshot und optionalem Sammlungsbezug erstellt }
+        '400':
+          description: Ungültige Angaben oder unzulässige Quellenkombination
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404':
+          description: Eigene Reihe oder gewähltes Spiel nicht gefunden
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '409':
+          description: Spiel bereits in der Reihe; Liste vor Abschluss erneut laden
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+
+  /api/mobile/v1/series/{id}/entries/{entryId}/collection:
+    parameters:
+      - { name: id, in: path, required: true, schema: { type: string } }
+      - { name: entryId, in: path, required: true, schema: { type: string } }
+    post:
+      tags: [Series]
+      summary: Mobile – Temporäres Reihenspiel in die eigene Sammlung übernehmen
+      security: [ bearerAuth: [] ]
+      description: Verwendet ein eigenes aktives Spiel mit gleicher BGG-ID weiter oder erstellt es aus dem Reihensnapshot. Verknüpft den Eintrag mit der Sammlung; Fortschritt, Bewertung und Spielergebnis bleiben unverändert. Kein Requestbody erforderlich.
+      responses:
+        '200': { description: Sammlungsverknüpfung hergestellt oder bereits vorhanden }
+        '400':
+          description: BGG-ID fehlt
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404':
+          description: Eintrag nicht in einer eigenen aktiven Reihe gefunden
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '409':
+          description: Sammlungsspiel bereits anderweitig mit dieser Reihe verknüpft
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
 
   /api/mobile/v1/series/{id}/entries/{entryId}:
     parameters:
@@ -3181,20 +3244,134 @@ paths:
 
   /api/mobile/v1/bgg/import:
     post:
-      tags: [Mobile BGG]
-      summary: Spiel aus BGG importieren
+      tags: [BGG]
+      summary: Mobile – BGG-Spiel atomar importieren oder eigenes Spiel weiterverwenden
       security: [ bearerAuth: [] ]
+      description: Prüft innerhalb einer serialisierbaren Transaktion erneut auf aktive eigene Spiele mit derselben BGG-ID. Bestehende Angaben und Tags werden nicht überschrieben. Optionale deutsche Ausgabe muss zum Hauptspiel gehören. Begrenzung auf 20 Aufrufe pro Minute und Konto.
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
+              required: [bggId]
               properties:
-                bggId: { type: string }
+                bggId: { type: string, pattern: '^[1-9]\d{0,11}$' }
+                versionId: { type: string, pattern: '^[1-9]\d{0,11}$' }
       responses:
-        '201': { description: Importiertes Spiel }
+        '200': { description: Bestehendes eigenes Spiel unverändert als Mobile-GameDTO zurückgegeben }
+        '201': { description: Neues eigenes Spiel als Mobile-GameDTO zurückgegeben }
+        '400':
+          description: Ungültige Angaben oder Ausgabe gehört nicht zum gewählten Hauptspiel
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
         '401': { $ref: '#/components/responses/Unauthorized' }
+        '404':
+          description: BGG-Spiel nicht gefunden
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '429':
+          description: Zu viele Anfragen; Retry-After beachten
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '503':
+          description: Import derzeit nicht möglich; später erneut versuchen
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+
+  /api/mobile/v1/bgg/presence:
+    post:
+      tags: [BGG]
+      summary: Mobile – BGG-IDs mit der eigenen aktiven Sammlung abgleichen
+      security: [ bearerAuth: [] ]
+      description: Private Antwort mit Cache-Control private, no-store. Ausschließlich eigene aktive Spiele; für jede angefragte ID wird ausdrücklich ein Treffer oder null geliefert. Begrenzung auf 60 Aufrufe pro Minute und Konto.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [bggIds]
+              properties:
+                bggIds:
+                  type: array
+                  minItems: 1
+                  maxItems: 50
+                  items: { type: string, pattern: '^[1-9]\d{0,11}$' }
+      responses:
+        '200':
+          description: Vollständige Zuordnung aus BGG-ID und eigenem Spiel oder null
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [matches]
+                properties:
+                  matches:
+                    type: object
+                    additionalProperties:
+                      oneOf:
+                        - type: 'null'
+                        - type: object
+                          required: [id, name]
+                          properties:
+                            id: { type: string }
+                            name: { type: string }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '429':
+          description: Zu viele Anfragen; Retry-After beachten
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '500':
+          description: Sammlung konnte nicht geprüft werden; keine Bestandsdetails im Fehler
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+
+  /api/mobile/v1/bgg/{id}/versions:
+    parameters:
+      - { name: id, in: path, required: true, schema: { type: string, pattern: '^[1-9]\d{0,11}$' } }
+    get:
+      tags: [BGG]
+      summary: Mobile – Verifizierte deutsche BGG-Ausgaben abrufen
+      security: [ bearerAuth: [] ]
+      description: Nur dem Hauptspiel zugeordnete deutschsprachige Ausgaben mit geprüften BGG-Bildquellen. Private, nicht cachebare Antwort; 20 Aufrufe pro Minute und Konto.
+      responses:
+        '200':
+          description: Ausgabenliste, gegebenenfalls leer
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  required: [versionId, name, languages, publishers]
+                  properties:
+                    versionId: { type: string }
+                    name: { type: string }
+                    languages: { type: array, items: { type: string } }
+                    publishers: { type: array, items: { type: string } }
+                    yearPublished: { type: [integer, 'null'] }
+                    imageUrl: { type: [string, 'null'], format: uri }
+                    thumbnailUrl: { type: [string, 'null'], format: uri }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '429':
+          description: Zu viele Anfragen; Retry-After beachten
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '502':
+          description: Ungültige Antwort von BoardGameGeek
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
 
   /api/mobile/v1/uploads:
     post:

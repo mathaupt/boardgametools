@@ -19,6 +19,10 @@ export const faqSections: FaqSection[] = [
     description: "So startest du mit BoardGameTools.",
     items: [
       {
+        question: "Was kann die iOS-App bei Sessions, Abstimmungen und Reihen?",
+        answer: "Du kannst Sammlungsspiele bei der Sessionanlage suchen, Spieltitel und Cover in der Historie sehen und an Eventabstimmungen teilnehmen. In einer Reihe lassen sich mehrere Sammlungsspiele oder BGG-Spiele auswählen. Mit Nur in dieser Reihe entsteht kein Sammlungsbesitz; eine spätere Übernahme bewahrt den Reihenfortschritt. Die BGG-Suche prüft deinen Bestand und bietet verfügbare deutsche Ausgaben. Partien mit Gastmitspielern oder ohne Sammlungsbezug sind nativ lesbar; zum Bearbeiten verwendest du vorerst die Web-App.",
+      },
+      {
         question: "Wie verwende ich Spracheingabe für Suche und Sessions?",
         answer: "Nutze Suche diktieren in der Sammlung, Spielsuche diktieren in der Session-Spielauswahl oder Notizen diktieren. Vor dem Start erscheint der Hinweis, dass dein Browser Audio an seinen Spracherkennungsdienst übertragen kann. Prüfe und bearbeite den erkannten Text, bevor du ihn übernimmst. Bei fehlender Unterstützung oder verweigerter Mikrofonfreigabe kannst du normal tippen. BoardGameTools speichert keine Audioaufnahme.",
       },

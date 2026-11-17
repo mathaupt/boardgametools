@@ -28,6 +28,8 @@ enum Endpoint: Sendable, Equatable {
     case closeEvent(String)
     case eventProposals(String)
     case eventVotes(String)
+    case eventVote(String, String)
+    case eventProposal(String, String)
     case eventDateProposals(String)
     case eventDateVotes(String)
 
@@ -50,6 +52,9 @@ enum Endpoint: Sendable, Equatable {
     case bggSearch(query: String)
     case bggLookup
     case bggImport
+    case bggPresence
+    case bggVersions(String)
+    case seriesEntryCollection(String, String)
 
     // Upload / Devices
     case upload
@@ -79,6 +84,8 @@ enum Endpoint: Sendable, Equatable {
         case .event(let id): return "/api/mobile/v1/events/\(id)"
         case .closeEvent(let id): return "/api/mobile/v1/events/\(id)/close"
         case .eventProposals(let id): return "/api/mobile/v1/events/\(id)/proposals"
+        case .eventVote(let id, _): return "/api/mobile/v1/events/\(id)/votes"
+        case .eventProposal(let id, _): return "/api/mobile/v1/events/\(id)/proposals"
         case .eventVotes(let id): return "/api/mobile/v1/events/\(id)/votes"
         case .eventDateProposals(let id): return "/api/mobile/v1/events/\(id)/date-proposals"
         case .eventDateVotes(let id): return "/api/mobile/v1/events/\(id)/date-proposals/vote"
@@ -95,6 +102,9 @@ enum Endpoint: Sendable, Equatable {
         case .seriesEntriesReorder(let id): return "/api/mobile/v1/series/\(id)/entries/reorder"
         case .bggSearch: return "/api/mobile/v1/bgg/search"
         case .bggLookup: return "/api/mobile/v1/bgg/lookup"
+        case .bggPresence: return "/api/mobile/v1/bgg/presence"
+        case .bggVersions(let id): return "/api/mobile/v1/bgg/\(id)/versions"
+        case .seriesEntryCollection(let seriesID, let entryID): return "/api/mobile/v1/series/\(seriesID)/entries/\(entryID)/collection"
         case .bggImport: return "/api/mobile/v1/bgg/import"
         case .upload: return "/api/mobile/v1/uploads"
         case .devices: return "/api/mobile/v1/devices"
@@ -106,6 +116,8 @@ enum Endpoint: Sendable, Equatable {
 
     var queryItems: [URLQueryItem]? {
         switch self {
+        case .eventVote(_, let proposalID), .eventProposal(_, let proposalID):
+            return [URLQueryItem(name: "proposalId", value: proposalID)]
         case .bggSearch(let query):
             return [URLQueryItem(name: "q", value: query)]
         default:

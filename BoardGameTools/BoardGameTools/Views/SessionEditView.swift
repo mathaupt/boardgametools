@@ -24,7 +24,7 @@ struct SessionEditView: View {
     @State private var players: [EditablePlayer] = []
     @State private var isSaving = false
     @State private var errorMessage: String?
-    @State private var showNewPlayerField = false
+    @State private var showGamePicker = false
     @State private var newPlayerUserId = ""
 
     private var isValid: Bool {
@@ -35,11 +35,14 @@ struct SessionEditView: View {
         NavigationStack {
             Form {
                 Section("Spiel") {
-                    Picker("Spiel", selection: $selectedGameId) {
-                        Text("Bitte wählen").tag("")
-                        ForEach(localGames) { game in
-                            Text(game.name).tag(game.id)
-                        }
+                    Button {
+                        showGamePicker = true
+                    } label: {
+                        HStack {
+                            Text(localGames.first { $0.id == selectedGameId }?.name ?? "Spiel auswählen")
+                            Spacer()
+                            Image(systemName: "magnifyingglass")
+                        }.frame(minHeight: 44)
                     }
                 }
 
@@ -106,9 +109,12 @@ struct SessionEditView: View {
                     .disabled(!isValid || isSaving)
                 }
             }
+            .sheet(isPresented: $showGamePicker) {
+                SessionGamePicker(games: localGames.map { $0.toDTO() }) { selectedGameId = $0 }
+            }
             .task {
                 if let session = existingSession {
-                    selectedGameId = session.gameId
+                    selectedGameId = session.gameId ?? ""
                     playedAt = session.playedAt.iso8601Date() ?? Date()
                     durationMinutes = session.durationMinutes.map(String.init) ?? ""
                     notes = session.notes ?? ""
@@ -151,6 +157,7 @@ struct SessionEditView: View {
     }
 
     private func save() async {
+        guard existingSession?.canEditInNativeForm != false else { return }
         isSaving = true
         errorMessage = nil
         do {

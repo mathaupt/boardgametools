@@ -998,7 +998,7 @@ danach können FEAT-026 und FEAT-027 unabhängig geplant umgesetzt werden.
 
 ## FEAT-033 – Nativen iOS-Client an den Webstand angleichen
 
-**Status:** Auftrag vom 16.11.2026 aufgenommen, Bestandsprüfung und konkreter gestufter Plan erstellt; Planfreigabe ausstehend.
+**Status:** Paket A–C am 16.11.2026 durch „Umsetzung A-C“ freigegeben und am 17.11.2026 implementiert. Websuite mit 1.461 Tests, Coverage-Gates, Swift-Verträge, Xcode-Simulatortests und gerenderte iPhone-/iPad-Prüfung bestanden. Eine vollständige gesprochene VoiceOver-Abnahme auf echter Hardware bleibt offen. Weitere Plattformpakete und FEAT-034 nicht umfasst; kein Produktions- oder Store-Release ausgeführt.
 **Ziel:** Aktuelle Serververträge verlustfrei verarbeiten und bestätigte Webfunktionen nativ nachziehen.
 **Plan:** [iOS-Nachzug und Weboptimierung](superpowers/plans/2026-11-16-FEAT-033-ios-nachzug.md).
 **Prüfung:** [Web-/iOS-Abgleich](audits/2026-11-16-web-ios-abgleich.md).

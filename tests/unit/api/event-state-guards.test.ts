@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import prisma from "@/lib/db";
 import { withEventMutation } from "@/lib/services/event-mutation.service";
 
@@ -38,7 +38,12 @@ function transactionMock(overrides: Record<string, unknown> = {}) {
 }
 
 describe("withEventMutation", () => {
-  beforeEach(() => vi.clearAllMocks());
+  beforeEach(() => {
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(new Date("2026-11-01T12:00:00Z"));
+    vi.clearAllMocks();
+  });
+  afterEach(() => vi.useRealTimers());
 
   it("locks and reloads the event before executing an allowed write", async () => {
     const tx = transactionMock();

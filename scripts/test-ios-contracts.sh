@@ -16,6 +16,6 @@ swiftc -D CONTRACT_TEST_RUNNER -parse-as-library -swift-version 6 \
   BoardGameTools/BoardGameTools/Data/RemoteDataSource.swift \
   BoardGameTools/BoardGameTools/Models/*.swift \
   BoardGameTools/BoardGameTools/Data/PersistenceController.swift \
-  BoardGameTools/BoardGameToolsTests/BoardGameToolsTests.swift \
+  BoardGameTools/BoardGameToolsTests/*.swift \
   -o "$build_dir/contracts"
 "$build_dir/contracts"

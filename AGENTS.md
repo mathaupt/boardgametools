@@ -55,6 +55,13 @@ Die Impeccable-Design-Hooks sind für das Projekt aktiviert. Sie melden nach Än
   für Gruppen, Spielereihen und Einstellungen; diese Ziele erzeugen keinen eigenen Stack.
 - Die Auswahltests gehören zum Swift-Vertragstest-Runner (`npm run test:ios:contracts`).
 
+## iOS-Nachzug FEAT-033 A–C
+
+- Native Verträge sind nach Domäne in `Networking/SessionDTOs.swift`, `EventDTOs.swift` und `SeriesDTOs.swift` aufgeteilt. Der Swift-Runner kompiliert sämtliche Netzwerk- und Testdateien; neue Dateien müssen auch im Xcode-Projekt enthalten sein.
+- `NativeRules`, `NativeBGGSearch` und `NativeSeriesAddWorkflow` kapseln Suche, Sortierung und verifizierte Mutationszustände. Reihen-409 gilt erst nach bestätigtem serverseitigem Listenabgleich als erledigt.
+- `LocalSession` bewahrt optionale Spielbezüge, Snapshots und Gastmitspieler; das bisherige native Bearbeitungsformular darf diese Daten nicht verwerfen. Snapshot-/Gastpartien bleiben dort deshalb lesbar.
+- `src/lib/series/create-entry-response.ts` enthält die gemeinsame validierte Web-/Mobile-Anlage; die äußeren Routen prüfen ihre jeweilige Authentifizierung. Mobile BGG-Importe verwenden `createOrReuseBggGame`.
+
 ## Tech Stack
 
 - **Framework**: Next.js 16.4.3 (App Router, Turbopack dev, Webpack prod)

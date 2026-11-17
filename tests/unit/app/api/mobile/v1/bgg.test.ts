@@ -16,9 +16,10 @@ vi.mock("@/lib/bgg", () => ({
   searchBGGGames: vi.fn(),
   fetchBGGGame: vi.fn(),
 }));
-vi.mock("@/lib/services/game.service", () => ({
-  GameService: { create: vi.fn() },
-}));
+vi.mock("@/lib/bgg-import-game", () => ({ createOrReuseBggGame: vi.fn() }));
+vi.mock("@/lib/services", () => ({ TagService: { syncTags: vi.fn() } }));
+vi.mock("@/lib/cache", () => ({ invalidateTag: vi.fn() }));
+vi.mock("@/lib/rate-limit", () => ({ checkRateLimitAsync: vi.fn().mockResolvedValue({ allowed: true }) }));
 vi.mock("@/lib/storage", () => ({
   storage: { upload: vi.fn() },
   generateFileName: vi.fn((name: string) => `prefixed-${name}`),
@@ -31,14 +32,14 @@ import { POST as uploadImage } from "@/app/api/mobile/v1/uploads/route";
 import { POST as registerDevice } from "@/app/api/mobile/v1/devices/route";
 import { apiAuth } from "@/lib/api-auth";
 import { searchBGGGames, fetchBGGGame } from "@/lib/bgg";
-import { GameService } from "@/lib/services/game.service";
+import { createOrReuseBggGame } from "@/lib/bgg-import-game";
 import prisma from "@/lib/db";
 import { storage } from "@/lib/storage";
 
 const mockedApiAuth = vi.mocked(apiAuth);
 const mockedSearch = vi.mocked(searchBGGGames);
 const mockedFetch = vi.mocked(fetchBGGGame);
-const mockedCreate = vi.mocked(GameService.create);
+const mockedCreate = vi.mocked(createOrReuseBggGame);
 const mockedUpload = vi.mocked(storage.upload);
 const mockedUploadCreate = vi.mocked(prisma.upload.create);
 const mockedUpsert = vi.mocked(prisma.pushDevice.upsert);
@@ -91,7 +92,7 @@ describe("Mobile BGG & Upload Routes", () => {
       imageUrl: "http://img",
       categories: ["Strategy"],
     } as never);
-    mockedCreate.mockResolvedValue({
+    mockedCreate.mockResolvedValue({ created: true, game: {
       id: "g1",
       name: "Catan",
       description: "Desc",
@@ -107,7 +108,7 @@ describe("Mobile BGG & Upload Routes", () => {
       updatedAt: new Date("2024-01-01"),
       deletedAt: null,
       tags: [],
-    } as never);
+    } } as never);
 
     const res = await importBgg(
       new NextRequest("http://localhost:3000/api/mobile/v1/bgg/import", {

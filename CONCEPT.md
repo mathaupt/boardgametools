@@ -198,6 +198,18 @@ und den Gespielt-Status, keine Session-, Ergebnis- oder Teilnehmerdetails.
 
 ---
 
+## iOS-Nachzug A–C (FEAT-033, 17.11.2026)
+
+Der native Client bewahrt Session-Snapshots und Gastmitspieler, bietet eine
+suchbare Sammlungsauswahl für neue Sessions und authentifiziertes Eventvoting
+mit serverseitigen Lifecycle- und Berechtigungsverträgen. BGG-Importe prüfen den
+eigenen Bestand, erlauben verifizierte deutsche Ausgaben und verwenden den
+atomaren gemeinsamen Wiederverwendungsweg. Web und Mobile teilen die validierte
+Reihenspiel-Anlage in `src/lib/series/create-entry-response.ts`. Native Reihen
+bieten Mehrfachauswahl, temporäre Nutzung und spätere Sammlungsübernahme bei
+unverändertem Fortschritt. Neue private Mobile-Routen verwenden Bearer-Auth und
+kontogebundene Abfragen. Kein Datenbankschemawechsel erforderlich.
+
 ## Native iOS-App
 
 Das Mobile-API-Backend für die native iOS-Companion-App (SwiftUI + SwiftData) ist

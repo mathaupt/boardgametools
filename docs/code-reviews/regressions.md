@@ -654,3 +654,15 @@ Jeder Eintrag enthält Felder für Root-Cause-Analyse und Gegenmaßnahmen (manue
 ---
 
 **Auflösung 16.11.2026:** Evaluator mit Registryzugriff: 9,9/10, Sicherheit 10/10, keine Regression; Snapshot `history/2026-11-16_1802.json`. Die neuen Entwicklungsbefunde bleiben im Auditbericht dokumentiert.
+
+## 2026-11-16 17:05:57
+
+| Finding | Priorität | Vorher | Jetzt | Detail |
+|---------|-----------|--------|-------|--------|
+| SEC-45: npm audit: Bekannte Vulnerabilities | P2 | resolved | open | npm audit lieferte keine gültigen Prüfdaten |
+
+**Root-Cause:** Der Vorlauf zur freigegebenen Umsetzung hatte in der Sandbox keine gültigen Registrydaten. Kein Laufzeit- oder Dependency-Rückschritt.
+**Gegenmaßnahme:** Abschlusslauf mit Registryzugriff und getrennte Auswertung der Produktions- und Entwicklungsbefunde.
+**Verantwortlich:** Projektwartung, Umsetzung FEAT-033 A–C.
+
+---

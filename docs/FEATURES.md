@@ -3,11 +3,21 @@
 Geplante Erweiterungen stehen separat im [nummerierten Feature-Backlog](FEATURE-BACKLOG.md).
 Dort erfasste TODOs sind noch nicht implementiert oder zur Umsetzung freigegeben.
 
+## Native iOS-Erweiterungen (FEAT-033, Paket A–C)
+
+- Session-Synchronisation bewahrt optionale Spielbezüge, vollständige Spiel-Snapshots und Gastmitspieler. Übersicht, Liste und Details lösen Spieltitel und Cover aus Sammlung oder Snapshot auf.
+- Die Sessionanlage sucht in vorhandenen Sammlungsspielen und übernimmt eine eindeutige ID. Snapshotpartien und Partien mit Gastmitspielern sind nativ lesbar; ihre Bearbeitung erfolgt vorerst im Web, damit das ältere native Formular keine Angaben verliert.
+- Angemeldete Teilnehmende sehen Eventvorschläge mit Details, Gesamtstimmen, eigener Stimme und Sortierung. Stimmen und berechtigtes Löschen folgen den Serverrechten und dem Eventstatus. Nach Änderungen wird der bestätigte Stand geladen; Fehler und erneutes Laden bleiben sichtbar.
+- BGG-Suche trennt Einstieg, Laden, keine Treffer, Ergebnisse und Fehler und verwirft verspätete Antworten. Die private Bestandsprüfung muss vollständig gelingen. Deutsche Ausgaben werden gegen das Hauptspiel geprüft. Wiederholte und parallele Mobileimporte verwenden vorhandene eigene Spiele weiter, ohne persönliche Angaben oder Tags zu überschreiben.
+- Spielereihen unterstützen bis zu 50 ausgewählte Spiele aus Sammlung und BGG. BGG-Spiele können bewusst nur in der Reihe verbleiben oder zugleich in die Sammlung aufgenommen werden. Nach jeder Anlage und bei 409 wird die Reihe nachgeladen und die Identität geprüft. Bei ungeklärten Konflikten bleibt der Dialog offen. Temporäre Einträge lassen sich später mit erhaltenem Fortschritt und erhaltener Bewertung in die Sammlung übernehmen.
+- Neue private Mobile-Endpunkte: `POST /api/mobile/v1/bgg/presence`, `GET /api/mobile/v1/bgg/{id}/versions`, `POST /api/mobile/v1/series/{id}/entries/{entryId}/collection`. Der bestehende Mobile-Reihenendpunkt unterstützt jetzt dieselben Quellen und Prüfungen wie im Web.
+- Weitere Eventpartien-Anlage, öffentliche Gastteilnahme, Abzeichen, Sprache und Webpaket FEAT-034 sind nicht Teil von A–C. Produktionsdeployment und Store-Veröffentlichung folgen separat.
+
 ## BGG-Suche: eindeutige Leer- und Fehlerzustände (FEAT-027)
 
 Nach einer erfolgreichen BGG-Suche ohne Treffer erscheint eine klare Meldung. Lade- und Providerfehler werden getrennt angezeigt und können erneut versucht werden. Ein Ausfall des BGG-Dienstes wird nicht als leere Trefferliste oder mit Beispieldaten ausgegeben. Die öffentliche Eventsuche behält ihren bestehenden Lade-, Leer- und Fehlervertrag.
 
-> **Version 0.50.99** | 42 Seiten | 96 API-Endpunkte | 29 Datenbank-Modelle
+> **Version 0.50.101** | Dokumentierter Web- und iOS-Funktionsumfang
 >
 > Vollstaendige Dokumentation aller Nutzer-sichtbaren Features,
 > organisiert nach Bereichen mit Screenshots-Beschreibungen,

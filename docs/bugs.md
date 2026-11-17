@@ -2199,18 +2199,20 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 ### [BUG-079] iOS-Sessions mit Snapshot ohne Sammlungs-ID können nicht dekodiert werden
 
-**Status:** `open`
+**Status:** `fixed`
 **Schweregrad:** `high`
 **Entdeckt:** 2026-11-16
-**Test geschrieben:** Nein – Auditbefund; gezielter Regressionstest vor dem Fix vorgesehen.
+**Behoben:** 2026-11-17
+**Behoben in Version:** 0.50.101
+**Test geschrieben:** Ja – `BoardGameToolsTests/NativeParityTests.swift` – echte DTO-Dekodierung, SwiftData-Roundtrip und alte Antworten.
 
 **Beschreibung:** iOS-Sessions mit Snapshot ohne Sammlungs-ID können nicht dekodiert werden.
 **Reproduktion:** Eine gültige Session-API-Antwort mit gameId null, gameNameSnapshot und Gastmitspielern mit dem echten SessionDTO dekodieren.
 **Erwartetes Verhalten:** Snapshotpartien und Gäste werden verlustfrei synchronisiert.
 **Tatsächliches Verhalten:** Der Swift-Decoder bricht mit valueNotFound(Swift.String) am Feld gameId ab.
 **Ursache:** SessionDTO und LocalSession verlangen eine Spiel-ID und bilden die neuen Snapshot-/Gastfelder nicht ab.
-**Lösung:** Geplant: Optionalen Spielbezug und vollständigen DTO-/SwiftData-Roundtrip gemäß FEAT-033 ergänzen.
-**Referenz im Changelog:** Version 0.50.100 – Bestandsprüfung und Nachzugsplanung; noch kein Fix.
+**Lösung:** Umgesetzt: Optionalen Spielbezug und vollständigen DTO-/SwiftData-Roundtrip gemäß FEAT-033 ergänzen.
+**Referenz im Changelog:** Version 0.50.101 – FEAT-033 A–C.
 
 ### [BUG-080] Web-Sessions über die ersten 20 Einträge hinaus sind nicht erreichbar
 
@@ -2244,38 +2246,108 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 ### [BUG-082] Event-Vertragstests schlagen nach Ablauf ihrer Fixturetermine fehl
 
-**Status:** `open`
+**Status:** `fixed`
 **Schweregrad:** `medium`
 **Entdeckt:** 2026-11-16
-**Test geschrieben:** Nein – Auditbefund; gezielter Regressionstest vor dem Fix vorgesehen.
+**Behoben:** 2026-11-17
+**Behoben in Version:** 0.50.101
+**Test geschrieben:** Ja – Die drei betroffenen Event-Suiten: 69 Tests mit fester Date-Uhr und Cleanup.
 
 **Beschreibung:** Event-Vertragstests schlagen nach Ablauf ihrer Fixturetermine fehl.
 **Reproduktion:** npm run test am 16.11.2026 ausführen.
 **Erwartetes Verhalten:** Tests für offene zukünftige Events bleiben unabhängig vom Ausführungsdatum stabil.
 **Tatsächliches Verhalten:** 19 Tests in drei Dateien scheitern an korrekten 409-Antworten für vergangene Events.
 **Ursache:** Feste Fixturetermine am 10./15.11.2026 werden ohne kontrollierte Systemzeit verwendet.
-**Lösung:** Geplant: Testuhr pro Suite setzen und wiederherstellen; explizite Vergangenheitstests erhalten.
-**Referenz im Changelog:** Version 0.50.100 – Bestandsprüfung und Nachzugsplanung; noch kein Fix.
+**Lösung:** Umgesetzt: Testuhr pro Suite setzen und wiederherstellen; explizite Vergangenheitstests erhalten.
+**Referenz im Changelog:** Version 0.50.101 – FEAT-033 A–C.
 
 ### [BUG-083] Mobile BGG-Importe umgehen die atomare Bestandswiederverwendung
 
-**Status:** `open`
+**Status:** `fixed`
 **Schweregrad:** `medium`
 **Entdeckt:** 2026-11-16
-**Test geschrieben:** Nein – Auditbefund; gezielter Regressionstest vor dem Fix vorgesehen.
+**Behoben:** 2026-11-17
+**Behoben in Version:** 0.50.101
+**Test geschrieben:** Ja – `tests/unit/api/mobile-bgg-import-contract.test.ts` und `tests/unit/lib/bgg-import-game.test.ts`: Wiederverwendung, Ausgabenbindung, serverseitige Kontoidentität und serialisierbare Konfliktwiederholung.
 
 **Beschreibung:** Mobile BGG-Importe umgehen die atomare Bestandswiederverwendung.
 **Reproduktion:** Dasselbe BGG-Spiel zweimal über POST /api/mobile/v1/bgg/import importieren; ausschließlich isolierte Testdaten verwenden.
 **Erwartetes Verhalten:** Ein bestehendes aktives Spiel desselben Kontos wird ohne Überschreiben seiner Nutzerdaten wiederverwendet.
 **Tatsächliches Verhalten:** Der Mobilepfad legt über GameService.create einen weiteren Datensatz an.
 **Ursache:** Der Mobilehandler verwendet nicht den serialisierbaren createOrReuseBggGame-Weg des Webimports.
-**Lösung:** Geplant: Gemeinsamen Importvertrag und Tests für wiederholte sowie parallele Aufrufe gemäß FEAT-033 ergänzen.
-**Referenz im Changelog:** Version 0.50.100 – Bestandsprüfung und Nachzugsplanung; noch kein Fix.
+**Lösung:** Umgesetzt: Gemeinsamen Importvertrag und Tests für wiederholte sowie parallele Aufrufe gemäß FEAT-033 ergänzen.
+**Referenz im Changelog:** Version 0.50.101 – FEAT-033 A–C.
+
+### [BUG-084] Native Netzwerkfehler zeigen teilweise englische Systemtexte
+
+**Status:** `fixed`
+**Schweregrad:** `low`
+**Entdeckt:** 2026-11-17
+**Behoben:** 2026-11-17
+**Behoben in Version:** 0.50.101
+**Test geschrieben:** Ja – `NativeParityTests.swift`, checkSeriesWorkflow mit URLError(.notConnectedToInternet); erwarteter RED vor Korrektur bestätigt.
+
+**Beschreibung:** Native Netzwerkfehler zeigen teilweise englische Systemtexte.
+**Reproduktion:** In der nativen Reihenanlage eine fehlende Netzwerkverbindung simulieren.
+**Erwartetes Verhalten:** Die Meldung erklärt auf Deutsch den Fehler und die erneute Verbindung.
+**Tatsächliches Verhalten vor Fix:** Unbekannte Fehler wurden direkt über localizedDescription angezeigt.
+**Ursache:** Darstellung verwendete ungeprüfte Systemtexte beziehungsweise eine feste Mehrzahl.
+**Lösung:** Neue native Abläufe verwenden NativeRules.errorMessage mit deutschem Wiederherstellungshinweis.
+**Referenz im Changelog:** Version 0.50.101 – Native Rückmeldungen und Beschriftungen.
+
+### [BUG-085] Native Abstimmung zeigt bei einer Stimme die Mehrzahl
+
+**Status:** `fixed`
+**Schweregrad:** `low`
+**Entdeckt:** 2026-11-17
+**Behoben:** 2026-11-17
+**Behoben in Version:** 0.50.101
+**Test geschrieben:** Ja – `NativeParityTests.swift`, checkNativeRules prüft eine und drei Stimmen; erwarteter RED vor Korrektur bestätigt.
+
+**Beschreibung:** Native Abstimmung zeigt bei einer Stimme die Mehrzahl.
+**Reproduktion:** Einen nativen Vorschlag mit voteCount 1 öffnen.
+**Erwartetes Verhalten:** Die Anzeige lautet „1 Stimme“.
+**Tatsächliches Verhalten vor Fix:** Die Anzeige lautete „1 Stimmen“.
+**Ursache:** Darstellung verwendete ungeprüfte Systemtexte beziehungsweise eine feste Mehrzahl.
+**Lösung:** NativeRules.votesLabel unterscheidet Singular und Plural in Liste und Details.
+**Referenz im Changelog:** Version 0.50.101 – Native Rückmeldungen und Beschriftungen.
+
+### [BUG-086] Ältere OpenAPI-Endpunkte referenzieren fehlende Komponenten
+
+**Status:** `open`
+**Schweregrad:** `low`
+**Entdeckt:** 2026-11-17
+**Test geschrieben:** Nein – Dokumentationsbefund, lokale Referenzprüfung durchgeführt.
+
+**Beschreibung:** Die vorhandene OpenAPI-Datei referenziert NotFound, IdParam, Session und GroupPoll ohne zugehörige Komponentendefinition. Die für A–C verwendeten Unauthorized- und BadRequest-Antworten wurden ergänzt und sind auflösbar.
+**Reproduktion:** Alle lokalen $ref-Ziele in docs/openapi.yaml gegen die Datei auflösen.
+**Erwartetes Verhalten:** Jede lokale Referenz besitzt eine passende Definition.
+**Tatsächliches Verhalten:** Vier ältere Referenzziele fehlen weiterhin.
+**Ursache:** Historische Erweiterungen ohne vollständige Referenzvalidierung.
+**Lösung:** Offen: bestehende API-Antworten gegen Implementierung abgleichen und fehlende Definitionen separat vervollständigen.
+**Referenz im Changelog:** Version 0.50.101 – Prüfgrenze dokumentiert; kein vollständiger Fix.
+
+### [BUG-087] Native Suchleiste schneidet das Suchsymbol bei größter Schrift ab
+
+**Status:** `fixed`
+**Schweregrad:** `low`
+**Entdeckt:** 2026-11-17
+**Behoben:** 2026-11-17
+**Behoben in Version:** 0.50.101
+**Test geschrieben:** Ja – dokumentierter visueller E2E-Prüffall mit Simulator-Vorher-/Nachherbildern; Suchlogik und ID-Auswahl durch `checkNativeRules` abgesichert. Kein automatisierter Pixelvergleich.
+
+**Beschreibung:** Die native Toolbar-Suchleiste der neuen Reihen- und Sessionauswahl behält bei größter Dynamic-Type-Stufe eine zu geringe Höhe für das skalierte Symbol.
+**Reproduktion:** Reihenanlage im iPad-Simulator öffnen und die größte Accessibility-Schriftstufe aktivieren.
+**Erwartetes Verhalten:** Suchfeld und Suchhinweis bleiben vollständig sichtbar und erreichbar.
+**Tatsächliches Verhalten vor Fix:** Das Symbol der Toolbar-Suche wurde vertikal abgeschnitten.
+**Ursache:** Feste native Toolbar-Suchhöhe nach der Laufzeitänderung der Schriftstufe.
+**Lösung:** Standard-Textfelder in der scrollbaren nativen Liste mit mindestens 44 pt Höhe; Suche und ID-Auswahl bleiben unverändert. Vorher-/Nachherbelege unter `.impeccable/critique/2026-11-16-ios-ac/`.
+**Referenz im Changelog:** Version 0.50.101 – Native Suchfelder bei großer Schrift.
 
 ## Statistik
 
-- **Offene Bugs:** 5
+- **Offene Bugs:** 3
 - **In Bearbeitung:** 0
-- **Behoben:** 78
+- **Behoben:** 84
 - **Wontfix:** 0
-- **Gesamt:** 83
+- **Gesamt:** 87

@@ -3,8 +3,7 @@
 **Ziel:** Den nativen Client schrittweise an den bestätigten Webumfang angleichen
 und die im Audit belegten Webprobleme beheben.
 
-**Status:** Zur konkreten Freigabe vorgelegt. Der Auftrag vom 16.11.2026 ist
-erfasst; die nach Projektregel erforderliche Freigabe dieses neuen Plans steht aus.
+**Status:** Paket A–C am 16.11.2026 durch „Umsetzung A-C“ ausdrücklich freigegeben. Webpaket FEAT-034 und weitere Plattformpakete sind nicht Teil dieser Freigabe.
 **Ausführung:** Schrittweise in derselben Sitzung, ohne Agentendelegation.
 **Architektur:** SwiftUI → RemoteDataSource → authentifizierte Mobile-API;
 SwiftData bewahrt Serverdaten verlustfrei. Der Server entscheidet über Identität,
@@ -22,6 +21,12 @@ Besitz und Eventstatus. Club Programme und native Systemnavigation bleiben beste
 - Vollständige Websuite: 19 Fehler wegen abgelaufener Fixtures; vor einem
   Implementierungscommit beheben. Kein Datenbankschemawechsel für Paket A nötig.
 
+## Aktualitätsprüfung unmittelbar vor Umsetzung
+
+16.11.2026: HEAD `4242e9e`, sauberer Arbeitsbaum; seit Planvorlage nur der
+Audit-/Plancommit hinzugekommen. API-/Swiftverträge unverändert. A–C gelten wie
+vorgelegt. Neue Swiftdateien werden im Vertragsrunner und Xcode-Projekt erfasst.
+
 ## Ansatz und Umfang
 
 Empfohlen ist ein Nachzug in abnehmbaren Paketen. Ein vollständiger Umbau in einem
@@ -34,57 +39,56 @@ Dateien: `Networking/DTOs.swift`, `Models/LocalSession.swift`,
 `BoardGameToolsTests/BoardGameToolsTests.swift`; die drei Testdateien aus BUG-082.
 Pfadpräfix für Swiftdateien: `BoardGameTools/BoardGameTools/`.
 
-- [ ] **RED:** Im tatsächlichen Swift-Runner eine API-Fixture mit `gameId: null`,
+- [x] **RED:** Im tatsächlichen Swift-Runner eine API-Fixture mit `gameId: null`,
   Spiel-Snapshot und Gastmitspielern ergänzen. `npm run test:ios:contracts` muss
   vor Änderung mit `valueNotFound` für `gameId` fehlschlagen.
-- [ ] **GREEN:** `SessionDTO.gameId` und `LocalSession.gameId` optional machen;
+- [x] **GREEN:** `SessionDTO.gameId` und `LocalSession.gameId` optional machen;
   Snapshotfelder und Gastmitspieler gemäß `src/lib/sync-types.ts` abbilden.
   In-Memory-SwiftData speichern, neu laden und `toDTO()` auf identische
   Snapshot-/Gastdaten prüfen. Alte Antworten ohne Zusatzfelder bleiben lesbar.
-- [ ] **REFACTOR:** Gemeinsame Sessionanzeige aus Relation/Snapshot ableiten.
+- [x] **REFACTOR:** Gemeinsame Sessionanzeige aus Relation/Snapshot ableiten.
   `SessionEditView` erhält bei fehlendem Spielbezug keine erfundene ID; bestehende
   Gäste oder Snapshots dürfen beim Bearbeiten nicht unbemerkt verloren gehen.
   Bis der vollständige Bearbeitungsvertrag besteht, solche Sessions nur lesen.
-- [ ] **RED-Nachweis BUG-082:** Die drei betroffenen Dateien einzeln ausführen:
+- [x] **RED-Nachweis BUG-082:** Die drei betroffenen Dateien einzeln ausführen:
   `npx vitest run tests/unit/api/event-state-guards.test.ts tests/unit/lib/services/event.test.ts tests/unit/app/api/mobile/v1/events.test.ts`.
   Erwartet vor Korrektur: 19 lifecyclebedingte Fehler am 16.11.2026.
-- [ ] **GREEN:** Testuhr auf einen definierten Zeitpunkt vor den Fixtureevents
+- [x] **GREEN:** Testuhr auf einen definierten Zeitpunkt vor den Fixtureevents
   setzen (`vi.useFakeTimers({ toFake: ["Date"] })`,
   `vi.setSystemTime(new Date("2026-11-01T12:00:00Z"))`), in `afterEach`
   `vi.useRealTimers()` wiederherstellen. Explizite Past-Event-Fälle beibehalten.
-- [ ] **REFACTOR:** Fixtureuhr statt beweglicher Zukunftsdaten dokumentieren;
+- [x] **REFACTOR:** Fixtureuhr statt beweglicher Zukunftsdaten dokumentieren;
   obigen Befehl und `npm run test` grün nachweisen.
 
 ### Paket B – Native Sessions und Eventvoting
 
-- [ ] Den vorhandenen Plan `2026-11-01-ios-FEAT-001-004-voting.md` aktualisieren:
+- [x] Den vorhandenen Plan `2026-11-01-ios-FEAT-001-004-voting.md` aktualisieren:
   aktuelle Proposalantworten, Bearbeitungsrechte, gespeichertes Ergebnis und
   Mutation nach bestätigtem Nachladen. Eventdetail in kleine Komponenten teilen.
-- [ ] **RED:** Swift-Verträge für Gesamtstimmen, stabile Sortierung, eigene
+- [x] **RED:** Swift-Verträge für Gesamtstimmen, stabile Sortierung, eigene
   Stimme, Löschrechte und geschlossenes Event ergänzen; fehlschlagen lassen.
-- [ ] **GREEN:** Authentifiziertes Voting mit Detailsheet, Sortierauswahl,
+- [x] **GREEN:** Authentifiziertes Voting mit Detailsheet, Sortierauswahl,
   Bestätigung für Löschen, sichtbaren Fehlern und Retry umsetzen.
-- [ ] Session-Spielauswahl in ein suchbares natives Sheet auslagern; ausschließlich
+- [x] Session-Spielauswahl in ein suchbares natives Sheet auslagern; ausschließlich
   vorhandene IDs übernehmen. **RED:** Suchnormalisierung und Auswahlvertrag mit
   leerer Liste und gleichnamigen Spielen testen. **GREEN:** Filter und Auswahl
   ergänzen. **REFACTOR:** Eine gemeinsame aufgelöste Spielansicht für Übersicht,
   Liste und Detail nutzen; Coverfallback und Snapshotdaten berücksichtigen.
-- [ ] `npm run test:ios:contracts`, Simulatorbuild und Screenshots für Hell/Dunkel
-  und große Schrift; VoiceOver-Abnahme für Suche, Details, Votes und Fehler.
+- [x] `npm run test:ios:contracts`, Simulatorbuild und gerenderte Prüfungen für Hell/Dunkel und große Schrift. Accessibility-Baum für Suche, Details und Fehler geprüft; eine vollständige gesprochene VoiceOver-Abnahme auf echter Hardware bleibt als manuelle Abnahme offen.
 
 ### Paket C – BGG und Spielereihen
 
-- [ ] **RED:** Mobile-API-Tests für wiederholten Import, kontofremden Bestand,
+- [x] **RED:** Mobile-API-Tests für wiederholten Import, kontofremden Bestand,
   parallelen Import und Erhalt selbst bearbeiteter Daten (BUG-083).
-- [ ] **GREEN:** Mobileimport an `createOrReuseBggGame` anbinden; optionale
+- [x] **GREEN:** Mobileimport an `createOrReuseBggGame` anbinden; optionale
   BGG-Ausgabenwahl nur mit geprüfter Zuordnung zum Hauptspiel.
-- [ ] **RED/GREEN:** Native Suchzustände idle/loading/empty/results/error und
+- [x] **RED/GREEN:** Native Suchzustände idle/loading/empty/results/error und
   verspätete Antworten testen und implementieren; aktive Importe gegen Doppeltipp
   schützen. Bestandsprüfung muss erfolgreich sein, bevor ein Import freigegeben wird.
-- [ ] Reihen: Mehrfachauswahl, temporäre Nutzung und Sammlungsübernahme gemäß
+- [x] Reihen: Mehrfachauswahl, temporäre Nutzung und Sammlungsübernahme gemäß
   FEAT-024/025; **RED:** DTO-/SwiftData-Roundtrip ohne Sammlungsspiel, Duplikate und
   409 mit anschließendem Listenabgleich. **GREEN:** explizite Auswahlmodi.
-- [ ] **REFACTOR:** Geteilte Such-/Statusregeln ohne zweite Netzwerkimplementierung;
+- [x] **REFACTOR:** Geteilte Such-/Statusregeln ohne zweite Netzwerkimplementierung;
   API-, Swift- und Simulatorprüfungen, OpenAPI und Featuredokumentation aktualisieren.
 
 ### Weitere getrennt abzunehmende Pakete
@@ -131,16 +135,31 @@ ersetzt keine separate Freigabe neuer öffentlicher Datenflüsse oder Audiobearb
 
 ## Gemeinsame Abschlussbedingungen
 
-- [ ] Vor jeder Paketumsetzung HEAD, Arbeitsbaum und API-Verträge erneut prüfen.
-- [ ] UI-Änderungen mit Impeccable prüfen; tatsächliche gerenderte Web-/Simulator-
+- [x] Vor jeder Paketumsetzung HEAD, Arbeitsbaum und API-Verträge erneut prüfen.
+- [x] UI-Änderungen mit Impeccable prüfen; tatsächliche gerenderte Web-/Simulator-
   Belege und Grenzen dokumentieren. Native 44-pt-Ziele und Dynamic Type beachten.
-- [ ] Auth, Objektbindung, Validierung und Datenschutz pro betroffenem API-Pfad
+- [x] Auth, Objektbindung, Validierung und Datenschutz pro betroffenem API-Pfad
   gezielt testen; Serverrechte niemals aus sichtbaren Buttons ableiten.
-- [ ] Changelog, Bugs, Features, Backlog und gegebenenfalls OpenAPI/FAQ/Concept
+- [x] Changelog, Bugs, Features, Backlog und gegebenenfalls OpenAPI/FAQ/Concept
   aktualisieren; Coveragewerte ausschließlich aus vollständiger Messung übernehmen.
-- [ ] `npm run typecheck`, `npm run lint`, `npm run test`,
+- [x] `npm run typecheck`, `npm run lint`, `npm run test`,
   `npm run test:ios:contracts`, `npm run security-check:fast` und
   `npm run review-evaluate:regression` bestehen. Build nach Webruntimeänderungen.
-- [ ] Änderungen committen, Evaluator ausführen und Review-Snapshot, Bewertung
+- [x] Änderungen committen, Evaluator ausführen und Review-Snapshot, Bewertung
   sowie Prozessanpassungen mit tatsächlichen Ergebnissen aktualisieren.
   Veröffentlichung, Migration und Store-Release sind eigene Betriebsaktionen.
+
+
+## Fortsetzung und Abschlussprüfung am 17.11.2026
+
+Die Freigabe A–C besteht fort. HEAD weiterhin `4242e9e`; der Arbeitsbaum enthält
+nur die begonnenen A–C-Änderungen und zugehörige Dokumentation. Kein paralleler
+Produkt-/Deploymentwechsel festgestellt. Der Web-Build ist erfolgreich; die
+vollständige Websuite und Coverage lagen vor dem letzten Kompatibilitätstest bei
+1.456 Tests und 85,07/80,23/84,59/87,38 %. Der abschließende Messlauf nach `sortOrder`-Absicherung besteht mit 1.461 Tests
+in 233 Dateien und 85,08/80,27/84,59/87,39 %. Xcode bestätigt zehn erfolgreiche
+Swift-Tests im echten Simulator-Testziel. Die native Prüfung verwendet eine separate Prüfapp
+mit echten Views, In-Memory-SwiftData und ausschließlich synthetischen lokalen
+API-Antworten. Kein Produktionskonto und keine Produktionsdatenbank verwendet.
+
+**Abschlussstand 17.11.2026:** Webbuild und Xcode-Testziel erfolgreich; elf gezielte Changelog-/FAQ-Tests nach Dokumentationspflege bestanden. Globale ESLint-Prüfung ohne Fehler mit 652 bestehenden Werkzeugwarnungen; Securityprüfung ohne Fehler, Review-Regressionscheck 10/10 ohne Regression. Vollständige Hardware-/VoiceOver-Abnahme sowie Veröffentlichung bleiben ausdrücklich offen.

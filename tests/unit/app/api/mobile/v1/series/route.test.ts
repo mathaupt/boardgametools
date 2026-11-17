@@ -26,6 +26,14 @@ vi.mock("@/lib/services", () => ({
   },
 }));
 
+vi.mock("@/lib/series/create-entry-response", () => ({
+  createSeriesEntryResponse: async (request: NextRequest, id: string, userId: string) => {
+    const { NextResponse } = await import("next/server");
+    const { SeriesService } = await import("@/lib/services");
+    return NextResponse.json(await SeriesService.addEntry(userId, id, await request.json()), { status: 201 });
+  },
+}));
+
 import { GET as listSeries, POST as createSeries } from "@/app/api/mobile/v1/series/route";
 import { GET as getSeries, PUT as updateSeries, DELETE as deleteSeries } from "@/app/api/mobile/v1/series/[id]/route";
 import { POST as addEntry } from "@/app/api/mobile/v1/series/[id]/entries/route";
