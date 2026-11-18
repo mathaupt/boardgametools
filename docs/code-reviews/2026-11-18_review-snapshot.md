@@ -18,7 +18,7 @@ Die Webnavigation zeigt fünf Hauptziele direkt und bündelt drei weitere unter
 | Security-Check | 0 Fehler; zwei bestehende statische Warnungen und moderater Next.js-Befund (BUG-088) |
 | Impeccable | `detect --json` ohne Befunde |
 | Review-Evaluator | 10/10 gesamt, Sicherheit 9,9/10; 49 Findings gelöst, 1 teilweise gelöst, 0 offen |
-| Regressionsevaluator | `npm run review-evaluate:regression` erfolgreich, keine Regression |
+| Regressionsevaluator | `npm run review-evaluate:regression` nach gültigem Registrylauf erfolgreich, keine Regression |
 
 ## Gerenderte UI-Abnahme
 
@@ -40,4 +40,7 @@ ein Frameworkupdate war nicht Teil der freigegebenen FEAT-035-Änderung.
 Außerdem bleiben die vorhandenen Hinweise zu Raw-SQL- und Debug-Routen bestehen.
 Keine API-, Datenmodell-, iOS- oder Berechtigungsänderung.
 
-Review-History: `history/2026-11-18_1159.json`.
+Ein automatischer Commit-Hook ohne gültige Auditdaten meldete SEC-45 einmal
+fail-closed als offen. Der wiederholte Report und Regressionstest mit
+Registryzugriff bestätigten den bestehenden teilweise gelösten Status.
+Review-History: `history/2026-11-18_1202.json`.

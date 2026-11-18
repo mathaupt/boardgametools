@@ -9,6 +9,7 @@
 - [x] Hell/Dunkel und 320/390/768/1440 CSS-Pixel geprüft; kein horizontaler Überlauf.
 - [x] Vollständige Tests, TypeScript, ESLint, Build und Security-Check vor Commit bestanden.
 - [x] Nach Commit Review-Evaluator mit Registryzugriff ausgeführt und Regressionsevaluator bestanden.
+- [x] Fehlenden npm-Registryzugriff im automatischen Hook fail-closed behandelt und durch gültigen Audit- und Regressionlauf aufgelöst.
 - [ ] BUG-088: moderaten Next.js-Befund separat prüfen und ein Frameworkupdate planen.
 
 Erfolgsmessung: 1.474 Webtests in 234 Dateien; Review 10/10 gesamt,

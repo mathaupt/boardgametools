@@ -700,3 +700,17 @@ Jeder Eintrag enthält Felder für Root-Cause-Analyse und Gegenmaßnahmen (manue
 **Auflösung 18.11.2026:** Der Registrylauf bestätigte den bestehenden SEC-45-Status; der vermeintliche Rückfall war umgebungsbedingt.
 
 ---
+
+## 2026-11-18 11:01:35
+
+| Finding | Priorität | Vorher | Jetzt | Detail |
+|---------|-----------|--------|-------|--------|
+| SEC-45: npm audit: Bekannte Vulnerabilities | P2 | partially_resolved | open | npm audit lieferte keine gültigen Prüfdaten |
+
+**Root-Cause:** Der automatische Commit-Hook erhielt keine gültigen npm-Auditdaten und meldete SEC-45 fail-closed als offen. An Abhängigkeiten oder Anwendungscode wurde nichts geändert.
+**Gegenmaßnahme:** Review-Evaluator und Regressionstest nach dem Hook mit gültigem Registryzugriff wiederholen; keine fehlenden Auditdaten als Ergebnis werten.
+**Verantwortlich:** BoardGameTools-Wartung.
+
+**Auflösung 18.11.2026:** Wiederholter `npm run review-evaluate:report` und `npm run review-evaluate:regression` mit Registryzugriff: 10/10 gesamt, SEC-45 teilweise gelöst, keine offenen Findings oder Regressionen. Snapshot `history/2026-11-18_1202.json`.
+
+---
