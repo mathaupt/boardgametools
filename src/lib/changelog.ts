@@ -20,6 +20,7 @@ export const changelog: ChangelogEntry[] = [
       { type: "fix", text: "BUG-089: Fehler bei Einladungsantworten bleiben sichtbar und können erneut versucht werden; erfolgreiche Antworten werden bestätigt.", bugRef: "BUG-089" },
       { type: "improvement", text: "Offene Einladungen erhalten eine passende Dashboard-Aktion. Die Hauptnavigation zeigt fünf Hauptziele direkt und bündelt Reihen, Statistiken und Abzeichen unter Mehr." },
       { type: "improvement", text: "Eventübersicht und Dashboard verwenden verständliche deutsche Bezeichnungen für Spieleabende und Abstimmungen." },
+      { type: "internal", text: "Post-Commit-Review mit 1.474 Tests, 10/10 Gesamtwertung und ohne Regression abgeschlossen; moderate Next.js-Sicherheitslücke separat als BUG-088 dokumentiert." },
     ],
   },
   {

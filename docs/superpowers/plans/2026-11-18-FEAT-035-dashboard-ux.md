@@ -263,8 +263,8 @@
 - [x] `$impeccable harden`, `$impeccable distill`, `$impeccable layout` und `$impeccable clarify` als Prüfleitfaden angewendet. `impeccable detect --json` auf die betroffenen UI-Dateien ausgeführt: keine Befunde.
 - [x] Gerenderte Prüfung mit synthetischen Daten auf einer temporären, ungeschützten Vorschauseite (nachher entfernt), ohne Auth-Bypass auf Produktionsrouten: 320/390/768/1440 CSS-Pixel, Hell und Dunkel. Kein horizontaler Überlauf. 503-Fehler, Wiederholung mit 204-Erfolg, „Mehr“ geöffnet und Einladung leer nach Zusage gerendert. Escape/Fokus und Adminnavigation zusätzlich durch Unit-Tests abgedeckt. Belege: `.impeccable/critique/2026-11-18-feat035/` (Viewport-, Menü-, Fehler- und Erfolgszustände). Der integrierte CUA-Browserhost war nicht verfügbar; Playwright Chromium war verfügbar.
 - [x] Abschlussprüfungen: `npm run test` (234 Dateien, 1.474 Tests bestanden), `npm run typecheck`, gezieltes ESLint mit `--max-warnings=0`, `npm run build` und `npm run security-check` erfolgreich. Sicherheitscheck: zwei bestehende Warnungen (Raw SQL und Debug-Routen) sowie ein moderater Next.js-16.4.3-Auditbefund, separat in BUG-088 dokumentiert.
-- [ ] `npm run review-evaluate` nach dem Implementierungscommit ausführen. Review-Snapshot, Bewertung und Prozessanpassungen in `docs/code-reviews/` aktualisieren; `npm run review-evaluate:regression` muss ohne Regression enden. BUG-089 bleibt nur dann `fixed`, wenn der Regressionstest bestanden ist.
-- [ ] Änderungen gemeinsam committen mit `feat: focus dashboard invitations and navigation`; Changelog/Backlog/Bugstatus im selben Commit enthalten.
+- [x] Post-Commit-Review ausgeführt: Evaluator 10/10 gesamt, Sicherheit 9,9/10; 49 gelöste, 1 teilweise gelöste, 0 offene Findings. `npm run review-evaluate:regression` erfolgreich, keine Regression. Snapshot `history/2026-11-18_1159.json`; Review-Snapshot, Bewertung und Prozessanpassungen dokumentiert.
+- [x] Featureänderungen in Commit `352af3a` (`feat: focus dashboard invitations and navigation`) zusammen mit Changelog, Backlog, Bugstatus und Feature-Dokumentation committet.
 
 ## Sicherheits- und Betriebsprüfung
 
