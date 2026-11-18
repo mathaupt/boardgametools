@@ -17,7 +17,9 @@ Statistiken und Abzeichen sind über „Mehr“ auffindbar.
 
 Der Post-Commit-Evaluator bewertet 49 von 50 Findings als gelöst; SEC-45 bleibt
 teilweise gelöst. Kein Finding ist offen, keine Regression wurde erkannt. Ein
-Commit-Hook ohne gültige Auditdaten meldete SEC-45 kurz fail-closed als offen;
-der anschließende Registrylauf bestätigte den bestehenden Status erneut.
+zusätzlicher Evaluatorlauf ohne gültige Auditdaten meldete SEC-45 kurz
+fail-closed als offen; er wurde unbeabsichtigt durch Shell-Command-Substitution
+in einer Suchabfrage ausgelöst. Der anschließende Registrylauf bestätigte den
+bestehenden Status erneut.
 Der Produktionsaudit weist einen moderaten Next.js-Befund aus, separat als
 BUG-088 dokumentiert. Das Update bleibt außerhalb des FEAT-035-Umfangs.

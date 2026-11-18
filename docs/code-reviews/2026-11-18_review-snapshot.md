@@ -40,7 +40,8 @@ ein Frameworkupdate war nicht Teil der freigegebenen FEAT-035-Änderung.
 Außerdem bleiben die vorhandenen Hinweise zu Raw-SQL- und Debug-Routen bestehen.
 Keine API-, Datenmodell-, iOS- oder Berechtigungsänderung.
 
-Ein automatischer Commit-Hook ohne gültige Auditdaten meldete SEC-45 einmal
-fail-closed als offen. Der wiederholte Report und Regressionstest mit
+Ein zusätzlicher Evaluatorlauf ohne gültige Auditdaten meldete SEC-45 einmal
+fail-closed als offen; er wurde unbeabsichtigt durch Shell-Command-Substitution
+in einer Suchabfrage gestartet. Der wiederholte Report und Regressionstest mit
 Registryzugriff bestätigten den bestehenden teilweise gelösten Status.
 Review-History: `history/2026-11-18_1202.json`.
