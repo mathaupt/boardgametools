@@ -10,6 +10,19 @@ describe("Club dashboard", () => {
     expect(screen.getByRole("link", { name: "Ersten Spieleabend planen" })).toHaveAttribute("href", "/dashboard/events/new");
     expect(screen.getByRole("link", { name: "Erste Partie erfassen" })).toHaveAttribute("href", "/dashboard/sessions/new");
     expect(screen.getByText("Aktuell keine offenen Einladungen.")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "0 Spieleabende" })).toHaveAttribute("href", "/dashboard/events");
+  });
+  it("prioritizes answering pending invitations from the dashboard heading", () => {
+    render(<DashboardOverview {...base} invites={[{
+      id: "invite", eventId: "night", status: "pending",
+      event: { id: "night", title: "Freitagsrunde", eventDate: "2026-11-20T18:00:00Z", location: null, createdBy: { name: "Alex" } },
+    }]} />);
+    expect(screen.getByRole("link", { name: "Einladungen beantworten" })).toHaveAttribute("href", "#dashboard-invites");
+    expect(screen.getByRole("region", { name: "Offene Einladungen" })).toHaveAttribute("id", "dashboard-invites");
+  });
+  it("offers event planning in the dashboard heading when there are no invitations", () => {
+    render(<DashboardOverview {...base} />);
+    expect(screen.getByRole("link", { name: "Spieleabend planen" })).toHaveAttribute("href", "/dashboard/events/new");
   });
   it("shows the actual selected game without inventing a missing vote", () => {
     render(<DashboardOverview {...base} events={[{

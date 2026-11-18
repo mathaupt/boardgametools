@@ -21,13 +21,13 @@ export function EventsOverview({ events, invites }: { events: EventListItem[]; i
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
         <div>
-          <h1 className="font-bold">Events & Voting</h1>
+          <h1 className="font-bold">Spieleabende &amp; Abstimmungen</h1>
           <p className="text-muted-foreground">Deine Spieleabende. Gemeinsam planen, gemeinsam auswählen.</p>
         </div>
         <Button asChild>
           <Link href="/dashboard/events/new">
             <Plus className="h-4 w-4 mr-2" aria-hidden="true" />
-            Event erstellen
+            Spieleabend planen
           </Link>
         </Button>
       </div>
@@ -39,15 +39,15 @@ export function EventsOverview({ events, invites }: { events: EventListItem[]; i
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12">
             <Calendar className="size-10 mb-4 text-primary" aria-hidden="true" />
-            <h2 className="text-lg font-semibold mb-2">Noch keine Events</h2>
+            <h2 className="text-lg font-semibold mb-2">Noch keine Spieleabende</h2>
             <p className="text-muted-foreground mb-4 text-center">
-              Du hast noch keine Spiele-Events erstellt.
-              Erstelle dein erstes Event mit Voting-System!
+              Du hast noch keine Spieleabende geplant.
+              Plane deinen ersten Spieleabend und stimme gemeinsam über Spiele ab.
             </p>
             <Button asChild>
               <Link href="/dashboard/events/new">
                 <Plus className="h-4 w-4 mr-2" aria-hidden="true" />
-                Erstes Event erstellen
+                Ersten Spieleabend planen
               </Link>
             </Button>
           </CardContent>
@@ -94,7 +94,7 @@ export function EventsOverview({ events, invites }: { events: EventListItem[]; i
                     </Button>
                     <Button asChild variant="outline" size="sm">
                       <Link href={`/dashboard/events/${event.id}/voting`}>
-                        Voting
+                        Abstimmung
                       </Link>
                     </Button>
                   </div>
@@ -138,7 +138,7 @@ export function EventsOverview({ events, invites }: { events: EventListItem[]; i
                               />
                             </div>
                           ) : (
-                            <div className="w-6 h-6 flex items-center justify-center rounded bg-muted text-[10px] text-muted-foreground">
+                            <div className="w-6 h-6 flex items-center justify-center rounded bg-muted text-muted-foreground">
                               <Dice6 className="size-4" aria-hidden="true" />
                             </div>
                           )}

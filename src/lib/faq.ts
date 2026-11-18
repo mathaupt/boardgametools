@@ -64,7 +64,7 @@ export const faqSections: FaqSection[] = [
       },
       {
         question: "Wo finde ich die Webnavigation auf dem Smartphone?",
-        answer: "Öffne das Menü oben neben BoardGameTools. Dort findest du Spiele, Sessions, Reihen, Events, Gruppen und Statistiken sowie Hilfe, Profil und Abmelden. Nach der Auswahl eines Bereichs schließt sich das Menü. Auf dem Computer stehen die Bereiche links in der blauen Navigation.",
+        answer: "Öffne das Menü oben neben BoardGameTools. Dashboard, Spiele, Sessions, Spieleabende und Gruppen findest du direkt. Reihen, Statistiken und Abzeichen liegen unter „Mehr“. Hilfe, Profil und Abmelden stehen darunter. Nach der Auswahl eines Bereichs schließt sich das Menü. Auf dem Computer stehen die Bereiche links in der Navigation.",
       },
       {
         question: "Was zeigt die Übersicht in der iOS-App?",

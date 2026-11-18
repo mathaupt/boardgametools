@@ -10,8 +10,9 @@ const event = (overrides: any = {}) => ({ id: "e1", title: "Spieleabend", descri
 describe("EventsOverview", () => {
   it("zeigt den Erstellungszustand und die Zahl offener Einladungen", () => {
     render(<EventsOverview events={[]} invites={[{} as never]} />);
-    expect(screen.getByRole("heading", { name: "Noch keine Events" })).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /Erstes Event erstellen/ })).toHaveAttribute("href", "/dashboard/events/new");
+    expect(screen.getByRole("heading", { name: "Spieleabende & Abstimmungen" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Noch keine Spieleabende" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Ersten Spieleabend planen" })).toHaveAttribute("href", "/dashboard/events/new");
     expect(screen.getByText("1 offene Einladungen")).toBeInTheDocument();
   });
 
@@ -35,6 +36,6 @@ describe("EventsOverview", () => {
     expect(screen.getByText("Unbekannt")).toBeInTheDocument();
     expect(screen.getByText("+1 weitere")).toBeInTheDocument();
     expect(screen.queryByText("Skipped")).not.toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Voting" })).toHaveAttribute("href", "/dashboard/events/e1/voting");
+    expect(screen.getByRole("link", { name: "Abstimmung" })).toHaveAttribute("href", "/dashboard/events/e1/voting");
   });
 });

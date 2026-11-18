@@ -1014,7 +1014,7 @@ danach können FEAT-026 und FEAT-027 unabhängig geplant umgesetzt werden.
 
 ## FEAT-035 – Einladungen und Dashboard-Navigation fokussieren
 
-**Status:** Drei UX-Punkte am 18.11.2026 zur Umsetzung bestätigt. Designfreigabe mit Navigation B erteilt; [Implementierungsplan](superpowers/plans/2026-11-18-FEAT-035-dashboard-ux.md) vorbereitet, Freigabe steht aus.
+**Status:** Abgeschlossen am 18.11.2026 in Version 0.50.103 nach Designfreigabe mit Navigation B und ausdrücklicher Planfreigabe. Gezielte RED/GREEN-Tests und gerenderte Prüfung dokumentiert im [Implementierungsplan](superpowers/plans/2026-11-18-FEAT-035-dashboard-ux.md).
 **Ziel:** Einladungsantworten sichtbar rückmelden, offene Einladungen als nächsten Schritt priorisieren, die Navigation auf fünf direkte Hauptziele plus „Mehr“ fokussieren und die sichtbaren Spieleabend-Bezeichnungen vereinheitlichen.
 **Umfang:** Web-Dashboard, Einladungsinteraktion, gemeinsame Webnavigation und Eventübersicht. Keine iOS-, API-, Datenmodell- oder Berechtigungsänderung.
 **Design:** [Dashboard-UX-Entwurf](superpowers/specs/2026-11-18-dashboard-ux-design.md), Navigation B bestätigt.

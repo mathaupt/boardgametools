@@ -29,4 +29,15 @@ describe("faqSections", () => {
       }
     }
   });
+
+  it("explains the five direct mobile destinations and the Mehr section", () => {
+    const answer = faqSections.flatMap((section) => section.items).find((item) => item.question === "Wo finde ich die Webnavigation auf dem Smartphone?")?.answer;
+    expect(answer).toContain("Dashboard");
+    expect(answer).toContain("Spieleabende");
+    expect(answer).toContain("Gruppen");
+    expect(answer).toContain("unter „Mehr“");
+    expect(answer).toContain("Reihen");
+    expect(answer).toContain("Abzeichen");
+    expect(answer).not.toContain("Events und Statistiken sowie");
+  });
 });

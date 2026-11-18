@@ -2,15 +2,15 @@ import { describe, it, expect } from "vitest";
 import { changelog, currentVersion } from "@/lib/changelog";
 
 describe("changelog", () => {
-  it("starts with the approved dashboard UX planning entry", () => {
+  it("starts with the implemented dashboard UX entry", () => {
     expect(changelog[0]).toMatchObject({
-      version: "0.50.102",
-      title: "Dashboard-Verbesserungen vorbereitet",
+      version: "0.50.103",
+      title: "Einladungen und Navigation fokussiert",
       changes: expect.arrayContaining([
-        expect.objectContaining({ type: "internal", bugRef: "BUG-089" }),
+        expect.objectContaining({ type: "fix", bugRef: "BUG-089" }),
       ]),
     });
-    expect(changelog[0].changes.some((change) => change.text.includes("Implementierungsplan"))).toBe(true);
+    expect(changelog[0].changes.some((change) => change.text.includes("fünf Hauptziele"))).toBe(true);
   });
 
   it("is a non-empty array", () => {

@@ -12,6 +12,17 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.103",
+    date: "2026-11-18",
+    title: "Einladungen und Navigation fokussiert",
+    description: "Einladungsantworten geben klares Feedback, die fünf wichtigsten Bereiche sind direkt erreichbar und Spieleabende sind durchgängig deutsch beschriftet.",
+    changes: [
+      { type: "fix", text: "BUG-089: Fehler bei Einladungsantworten bleiben sichtbar und können erneut versucht werden; erfolgreiche Antworten werden bestätigt.", bugRef: "BUG-089" },
+      { type: "improvement", text: "Offene Einladungen erhalten eine passende Dashboard-Aktion. Die Hauptnavigation zeigt fünf Hauptziele direkt und bündelt Reihen, Statistiken und Abzeichen unter Mehr." },
+      { type: "improvement", text: "Eventübersicht und Dashboard verwenden verständliche deutsche Bezeichnungen für Spieleabende und Abstimmungen." },
+    ],
+  },
+  {
     version: "0.50.102",
     date: "2026-11-18",
     title: "Dashboard-Verbesserungen vorbereitet",

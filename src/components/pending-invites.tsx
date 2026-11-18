@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Calendar, MapPin, Check, X, Mail } from "lucide-react";
 import { formatShortDateTime } from "@/lib/date";
+import { useToast } from "@/components/ui/use-toast";
 
 export interface PendingInvite {
   id: string;
@@ -21,14 +22,17 @@ export interface PendingInvite {
   };
 }
 
-export function PendingInvites({ invites: initialInvites, compact = false, showEmpty = false }: { invites: PendingInvite[]; compact?: boolean; showEmpty?: boolean }) {
+export function PendingInvites({ invites: initialInvites, compact = false, showEmpty = false, id }: { invites: PendingInvite[]; compact?: boolean; showEmpty?: boolean; id?: string }) {
   const [invites, setInvites] = useState(initialInvites);
-  const [loading, setLoading] = useState<string | null>(null);
+  const [loadingEventIds, setLoadingEventIds] = useState<string[]>([]);
+  const [failures, setFailures] = useState<Record<string, { status: "accepted" | "declined"; message: string }>>({});
+  const { toast } = useToast();
 
-  if (invites.length === 0) return showEmpty ? <section className="club-invites"><h2>Deine Einladungen</h2><p className="mt-4 text-muted-foreground">Aktuell keine offenen Einladungen.</p></section> : null;
+  if (invites.length === 0) return showEmpty ? <section id={id} className="club-invites"><h2>Deine Einladungen</h2><p className="mt-4 text-muted-foreground">Aktuell keine offenen Einladungen.</p></section> : null;
 
   async function respond(eventId: string, status: "accepted" | "declined") {
-    setLoading(eventId);
+    setLoadingEventIds((current) => current.includes(eventId) ? current : [...current, eventId]);
+    setFailures((current) => { const next = { ...current }; delete next[eventId]; return next; });
     try {
       const res = await fetch(`/api/events/${eventId}/invites`, {
         method: "PUT",
@@ -37,16 +41,24 @@ export function PendingInvites({ invites: initialInvites, compact = false, showE
       });
       if (res.ok) {
         setInvites((prev) => prev.filter((inv) => inv.eventId !== eventId));
+        toast({ title: "Einladung beantwortet", description: status === "accepted" ? "Du hast für den Spieleabend zugesagt." : "Du hast für den Spieleabend abgesagt." });
+      } else {
+        let message = "Deine Antwort konnte nicht gespeichert werden. Bitte versuche es erneut.";
+        try {
+          const body = await res.json();
+          if (typeof body.error === "string" && body.error.trim()) message = body.error;
+        } catch { /* Die allgemeine Meldung bleibt erhalten, wenn die Antwort kein JSON enthält. */ }
+        setFailures((current) => ({ ...current, [eventId]: { status, message } }));
       }
-    } catch (err) {
-      console.error("Error responding to invite:", err);
+    } catch {
+      setFailures((current) => ({ ...current, [eventId]: { status, message: "Verbindung fehlgeschlagen. Prüfe deine Internetverbindung und versuche es erneut." } }));
     } finally {
-      setLoading(null);
+      setLoadingEventIds((current) => current.filter((id) => id !== eventId));
     }
   }
 
   return (
-    <section className="club-invites" aria-label="Offene Einladungen">
+    <section id={id} className="club-invites" aria-label="Offene Einladungen">
       <div>
         <h2 className="flex items-center gap-2">
           <Mail className="h-4 w-4 text-primary" aria-hidden="true" />
@@ -56,7 +68,9 @@ export function PendingInvites({ invites: initialInvites, compact = false, showE
       </div>
       <div>
         <ul className="club-invites-list">
-          {invites.map((inv) => (
+          {invites.map((inv) => {
+            const failure = failures[inv.eventId];
+            return (
             <li
               key={inv.id}
               className={compact ? "space-y-4" : "flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"}
@@ -82,11 +96,17 @@ export function PendingInvites({ invites: initialInvites, compact = false, showE
                   <span>von {inv.event.createdBy.name}</span>
                 </div>
               </div>
-              <div className="flex items-center gap-2 shrink-0">
+              <div className="flex flex-col items-start gap-2 shrink-0">
+                {loadingEventIds.includes(inv.eventId) && <p role="status" aria-live="polite" className="text-sm text-muted-foreground">Antwort wird gespeichert …</p>}
+                {failure && <div className="flex flex-wrap items-center gap-2" role="alert">
+                  <span className="text-sm text-destructive">{failure.message}</span>
+                  <Button size="sm" variant="outline" disabled={loadingEventIds.includes(inv.eventId)} onClick={() => respond(inv.eventId, failure.status)}>Erneut versuchen</Button>
+                </div>}
+                <div className="flex items-center gap-2">
                 <Button
                   size="sm"
                   variant="default"
-                  disabled={loading === inv.eventId}
+                  disabled={loadingEventIds.includes(inv.eventId)}
                   onClick={() => respond(inv.eventId, "accepted")}
                 >
                   <Check className="h-3.5 w-3.5 mr-1" aria-hidden="true" />
@@ -95,15 +115,17 @@ export function PendingInvites({ invites: initialInvites, compact = false, showE
                 <Button
                   size="sm"
                   variant="outline"
-                  disabled={loading === inv.eventId}
+                  disabled={loadingEventIds.includes(inv.eventId)}
                   onClick={() => respond(inv.eventId, "declined")}
                 >
                   <X className="h-3.5 w-3.5 mr-1" aria-hidden="true" />
                   Absagen
                 </Button>
+                </div>
               </div>
             </li>
-          ))}
+            );
+          })}
         </ul>
       </div>
     </section>

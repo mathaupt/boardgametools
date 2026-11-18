@@ -581,9 +581,11 @@ Jeder Eintrag enthält Felder für Root-Cause-Analyse und Gegenmaßnahmen (manue
 |---------|-----------|--------|-------|--------|
 | SEC-45: npm audit: Bekannte Vulnerabilities | P2 | resolved | open | npm audit lieferte keine gültigen Prüfdaten |
 
-**Root-Cause:** <!-- Manuell ausfüllen: Warum ist das Finding zurückgekehrt? -->
-**Gegenmaßnahme:** <!-- Manuell ausfüllen: Wie wird verhindert, dass es erneut passiert? -->
-**Verantwortlich:** <!-- Manuell ausfüllen -->
+**Root-Cause:** Der lokale Sandbox-Lauf konnte `registry.npmjs.org` wegen DNS-/Netzwerkbeschränkung nicht erreichen. Das Audit gab Fehler-JSON ohne `metadata` zurück, worauf der Evaluator den bekannten SEC-45-Status fälschlich von teilweise gelöst auf offen setzte. An Abhängigkeiten und Anwendungscode wurde nichts geändert.
+**Gegenmaßnahme:** Review-Baselines für SEC-45 nur aus einem gültigen npm-Audit-Ergebnis ableiten. Wiederholung von `npm run review-evaluate:report` im genehmigten Registryzugriff ergab den bestehenden, teilweise gelösten Status und 10/10 Gesamtwertung.
+**Verantwortlich:** BoardGameTools Wartung.
+
+**Auflösung 18.11.2026:** Mit gültigen Auditdaten erneut bewertet; SEC-45 blieb teilweise gelöst, es gab keine offenen Findings. Der vermeintliche Rückfall war umgebungsbedingt und ist aufgelöst.
 
 ---
 
@@ -635,9 +637,11 @@ Jeder Eintrag enthält Felder für Root-Cause-Analyse und Gegenmaßnahmen (manue
 |---------|-----------|--------|-------|--------|
 | SEC-45: npm audit: Bekannte Vulnerabilities | P2 | resolved | open | npm audit lieferte keine gültigen Prüfdaten |
 
-**Root-Cause:** <!-- Manuell ausfüllen: Warum ist das Finding zurückgekehrt? -->
-**Gegenmaßnahme:** <!-- Manuell ausfüllen: Wie wird verhindert, dass es erneut passiert? -->
-**Verantwortlich:** <!-- Manuell ausfüllen -->
+**Root-Cause:** Der Sandboxlauf konnte die npm-Registry nicht erreichen und erhielt keine gültigen Auditdaten. Es gab keine Abhängigkeitsänderung.
+**Gegenmaßnahme:** Review-Baselines nur mit gültigen Auditdaten ausführen. Die Wiederholung mit Registryzugriff lieferte 10/10 und keine offenen Findings.
+**Verantwortlich:** BoardGameTools Wartung.
+
+**Auflösung 18.11.2026:** Wiederholung mit gültigen Auditdaten; SEC-45 blieb teilweise gelöst. Der vermeintliche Rückfall war umgebungsbedingt.
 
 ---
 
@@ -682,3 +686,17 @@ Jeder Eintrag enthält Felder für Root-Cause-Analyse und Gegenmaßnahmen (manue
 ---
 
 **Auflösung 18.11.2026:** Vollständiger Review-Regressionscheck mit gültigen Auditdaten bestanden (Exit 0, 9,9/10). Der moderate Next.js-Befund ist als BUG-088 offen dokumentiert. docs/code-reviews/history/2026-11-18_0806.json.
+
+## 2026-11-18 10:37:23
+
+| Finding | Priorität | Vorher | Jetzt | Detail |
+|---------|-----------|--------|-------|--------|
+| SEC-45: npm audit: Bekannte Vulnerabilities | P2 | partially_resolved | open | npm audit lieferte keine gültigen Prüfdaten |
+
+**Root-Cause:** Der Sandboxlauf konnte registry.npmjs.org nicht erreichen und erhielt keine gültigen Auditdaten. Abhängigkeiten und Anwendungscode wurden nicht geändert.
+**Gegenmaßnahme:** Review-Baselines nur mit gültigen Auditdaten bewerten. Die Wiederholung mit Registryzugriff ergab 10/10 und keine offenen Findings; der tatsächliche moderate Next.js-Befund bleibt als BUG-088 erfasst.
+**Verantwortlich:** BoardGameTools-Wartung.
+
+**Auflösung 18.11.2026:** Der Registrylauf bestätigte den bestehenden SEC-45-Status; der vermeintliche Rückfall war umgebungsbedingt.
+
+---

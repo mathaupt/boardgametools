@@ -2362,25 +2362,25 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 ### [BUG-089] Einladungsantwort im Dashboard meldet Fehler nicht
 
-**Status:** `open`
+**Status:** `fixed`
 **Schweregrad:** `medium`
 **Entdeckt:** 2026-11-18
-**Behoben:** —
-**Behoben in Version:** —
-**Test geschrieben:** Nein – Regressionstest ist vor dem Fix vorgesehen.
+**Behoben:** 2026-11-18
+**Behoben in Version:** 0.50.103
+**Test geschrieben:** Ja – `tests/unit/components/pending-invites.test.tsx` deckt HTTP- und Netzwerkfehler, getrennte Einladungsergebnisse, Wiederholung, Erfolg, Ladezustand sowie parallele und doppelte Antworten ab.
 
 **Beschreibung:** Die Dashboard-Einladung bleibt bei einer nicht erfolgreichen HTTP-Antwort oder einem Netzwerkfehler ohne sichtbare Fehlermeldung stehen. Der Fehler wird nur in die Browserkonsole geschrieben.
 **Reproduktion:** Im Dashboard bei einer offenen Einladung einen Fehler für `PUT /api/events/{id}/invites` auslösen; Zusage oder Absage betätigen.
 **Erwartetes Verhalten:** Die Einladung bleibt erhalten; eine verständliche deutsche Meldung erklärt, dass die Antwort nicht gespeichert wurde, und ein erneuter Versuch ist möglich.
 **Tatsächliches Verhalten:** Bei HTTP-Fehlern gibt es keine Rückmeldung; bei Netzwerkfehlern erscheint nur ein Konsolenfehler.
 **Ursache:** `PendingInvites.respond` behandelt ausschließlich erfolgreiche Antworten sichtbar.
-**Lösung:** Geplant in FEAT-035: Lade-, Erfolgs- und Fehlerfeedback mit Wiederholungsmöglichkeit ergänzen.
-**Referenz im Changelog:** Version 0.50.102 – Dashboard-UX für Einladungen, Navigation und Spieleabende geplant.
+**Lösung:** HTTP- und Netzwerkfehler werden am Einladungseintrag angezeigt. Die ursprüngliche Antwort kann wiederholt werden; erfolgreiche Antworten zeigen eine Bestätigung und entfernen den Eintrag.
+**Referenz im Changelog:** Version 0.50.103 – BUG-089 behoben.
 
 ## Statistik
 
-- **Offene Bugs:** 5
+- **Offene Bugs:** 4
 - **In Bearbeitung:** 0
-- **Behoben:** 84
+- **Behoben:** 85
 - **Wontfix:** 0
 - **Gesamt:** 89

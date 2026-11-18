@@ -54,15 +54,15 @@ Das Dashboard ist die zentrale Startseite nach dem Login.
 
 ### Kommende Spieleabende und Einladungen
 
-Der nächste Spieleabend wird mit einem großen Datumsblock, Uhrzeit, Ort und dem tatsächlichen Stand der Spielauswahl dargestellt. Solange noch kein Spiel festgelegt ist, zeigt „Was kommt auf den Tisch?“ bis zu drei Vorschläge mit den meisten Konto- und Gaststimmen. Rang, Spielname, Stimmenzahl und ein kleines Cover oder Würfel-Fallback bilden eine kompakte Zeilenliste. Bei geschlossenem Voting bleibt diese Übersicht sichtbar, solange noch kein Spiel feststeht. Weitere Termine folgen als kompakte Liste. Offene Einladungen stehen auf dem Desktop daneben und mobil direkt nach den Terminen. Zusagen und Absagen bleiben direkt erreichbar.
+Der nächste Spieleabend wird mit einem großen Datumsblock, Uhrzeit, Ort und dem tatsächlichen Stand der Spielauswahl dargestellt. Solange noch kein Spiel festgelegt ist, zeigt „Was kommt auf den Tisch?“ bis zu drei Vorschläge mit den meisten Konto- und Gaststimmen. Rang, Spielname, Stimmenzahl und ein kleines Cover oder Würfel-Fallback bilden eine kompakte Zeilenliste. Bei geschlossenem Voting bleibt diese Übersicht sichtbar, solange noch kein Spiel feststeht. Weitere Termine folgen als kompakte Liste. Offene Einladungen stehen auf dem Desktop daneben und mobil direkt nach den Terminen. Bei offenen Einladungen springt die Hauptaktion zum Einladungsbereich; ohne offene Einladung führt sie zur Planung eines Spieleabends. Zusagen und Absagen zeigen Lade-, Erfolgs- und Fehlerzustände. Bei Fehlern bleibt die Einladung erhalten und dieselbe Antwort kann erneut gesendet werden.
 
 ### Spielhistorie und Schnellzugriffe
 
-Zuletzt gespielte Partien verlinken auf ihre Detailseiten. Kompakte Links zeigen die Anzahl der Spiele, Sessions, Gruppen und Events. Schnellzugriffe führen zu Spiel hinzufügen, BGG-Import, Session erfassen und Gruppe erstellen; die Hauptaktion plant ein Event. Leere Zustände führen zu den ersten Erstellaktionen.
+Zuletzt gespielte Partien verlinken auf ihre Detailseiten. Kompakte Links zeigen die Anzahl der Spiele, Sessions, Gruppen und Spieleabende. Schnellzugriffe führen zu Spiel hinzufügen, BGG-Import, Session erfassen und Gruppe erstellen; die Hauptaktion plant einen Spieleabend. Leere Zustände führen zu den ersten Erstellaktionen.
 
 ### Navigation und Gestaltung
 
-Seit 0.50.20: kobaltblaue Seitennavigation, hellblaue Arbeitsflächen, Barlow und pfirsichfarbene Datumsblöcke. Auf dem Smartphone öffnet ein beschrifteter Menüschalter die Navigation; Auswahl und Escape schließen sie wieder. Profil, Hilfe, Versionshistorie und Abmelden bleiben erreichbar; Administratoren sehen ihre zusätzlichen Bereiche. Sammlung und Eventübersicht nutzen dieselbe Gestaltung. Spielecover bleiben vollständig sichtbar, Entfernen-Schaltflächen sind auch ohne Hover erreichbar. Filter, Sortierung, Scanner und Import bleiben erhalten.
+Seit 0.50.20: kobaltblaue Seitennavigation, hellblaue Arbeitsflächen, Barlow und pfirsichfarbene Datumsblöcke. Die Hauptnavigation zeigt Dashboard, Spiele, Sessions, Spieleabende und Gruppen direkt; Reihen, Statistiken und Abzeichen liegen unter „Mehr“. Auf dem Smartphone öffnet ein beschrifteter Menüschalter die Navigation. Escape schließt zuerst „Mehr“ und danach das mobile Menü; der Fokus kehrt zum jeweiligen Schalter zurück. Profil, Hilfe, Versionshistorie und Abmelden bleiben erreichbar; Administratoren sehen ihre zusätzlichen Bereiche. Sammlung und Eventübersicht nutzen dieselbe Gestaltung. Spielecover bleiben vollständig sichtbar, Entfernen-Schaltflächen sind auch ohne Hover erreichbar. Filter, Sortierung, Scanner und Import bleiben erhalten.
 
 ---
 
@@ -187,7 +187,7 @@ mit einem Klick importiert werden.
 
 ## 4. Spielsessions
 
-### Uebersicht
+### Übersicht
 
 **Route:** `/dashboard/sessions` | **Zugriff:** Angemeldet
 
@@ -280,7 +280,7 @@ Zeigt alle Eintraege der Reihe mit erweiterten Erfassungsmoeglichkeiten:
 
 ---
 
-## 6. Events & Spieleabende
+## 6. Spieleabende & Abstimmungen
 
 **Konfliktabgleich (BUG-068):** Ist ein Spiel bereits in der Reihe, bleibt der
 Serverstatus 409 bestehen. Die Oberfläche erklärt „Bereits in der Reihe“, lädt
@@ -303,12 +303,12 @@ bis FEAT-025 weiterhin dauerhaft in die Sammlung übernommen.
 
 **Route:** `/dashboard/events` | **Zugriff:** Angemeldet
 
-Liste aller Events des Nutzers. Jede Karte zeigt: Titel, Datum, Ort,
+Liste aller Spieleabende des Nutzers. Jede Karte zeigt: Titel, Datum, Ort,
 Anzahl Einladungen, Spielvorschlaege mit Stimmenanzahl, ausgewaehltes Spiel.
 
-Oben: **Offene Einladungen** mit Zusagen/Absagen-Buttons.
+Oben: **Offene Einladungen** mit Zusagen-/Absagen-Aktionen. Antworten zeigen ihren Ladezustand; HTTP- und Verbindungsfehler bleiben am jeweiligen Eintrag sichtbar und können mit derselben Antwort wiederholt werden. Erfolgreiche Antworten werden bestätigt und aus der offenen Liste entfernt.
 
-### Event erstellen
+### Spieleabend planen
 
 **Route:** `/dashboard/events/new` | **Zugriff:** Angemeldet
 

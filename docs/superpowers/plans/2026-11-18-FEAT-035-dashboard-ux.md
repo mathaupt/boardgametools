@@ -37,13 +37,15 @@
 4. Vor dem ersten Test die verbindliche TDD-Regel, `skills/testing/SKILL.md`, `.agents/skills/next-best-practices/SKILL.md` und `.agents/skills/vercel-react-best-practices/SKILL.md` lesen.
 5. Unmittelbar vor jeder UI-Codeänderung `.agents/skills/impeccable/reference/craft-floor.md` lesen. Scope-Änderungen an Berechtigungen, API, Datenfreigabe oder Betrieb werden nicht stillschweigend ergänzt.
 
+**Aktualitätsprüfung 18.11.2026:** Planfreigabe liegt vor. Gegen `f1d2111` geprüft; davor war der Arbeitsbaum sauber. Die aktuelle Implementierung bestätigte: `PendingInvites` entfernte nur bei erfolgreicher HTTP-Antwort und protokollierte Netzwerkfehler; die Dashboard-Einladungsliste stand bereits vor Schnellzugriffen; acht Hauptziele wurden direkt angezeigt. Keine API-, Datenmodell-, Berechtigungs- oder Plattformänderung seit der Designfreigabe. Der erste Review-Baseline-Lauf ohne Registryzugriff erzeugte SEC-45 fälschlich als offen; der wiederholte Lauf mit gültigen Auditdaten ergab 10/10 und keine offenen Findings. Scope unverändert.
+
 ## Task 1: Einladungsantworten sichtbar und wiederholbar machen
 
 **Dateien:**
 - Erstellen: `tests/unit/components/pending-invites.test.tsx`
 - Ändern: `src/components/pending-invites.tsx`
 
-- [ ] **RED:** Neue Komponententests abdecken: Nicht-OK-HTTP-Antwort zeigt `role="alert"`, Einladung bleibt erhalten und „Erneut versuchen“ wird angezeigt; Netzwerkfehler zeigen dieselbe Meldung; Wiederholung mit erfolgreicher Antwort entfernt nur diese Einladung und ruft `toast` auf; während einer offenen Anfrage ist die doppelte Antwortaktion deaktiviert und ein `role="status"` sichtbar.
+- [x] **RED:** Neue Komponententests abdecken: Nicht-OK-HTTP-Antwort zeigt `role="alert"`, Einladung bleibt erhalten und „Erneut versuchen“ wird angezeigt; Netzwerkfehler zeigen dieselbe Meldung; Wiederholung mit erfolgreicher Antwort entfernt nur diese Einladung und ruft `toast` auf; während einer offenen Anfrage ist die doppelte Antwortaktion deaktiviert und ein `role="status"` sichtbar. Fehlerzustände bleiben getrennt und parallele Antworten auf verschiedene Einladungen stören sich nicht.
 
   Testmuster für den zuerst fehlschlagenden Vertrag:
 
@@ -76,7 +78,7 @@
 
   Erwartung: FAIL, weil `PendingInvites` HTTP-Fehler aktuell still ignoriert, Netzwerkfehler nur protokolliert und keinen Erfolgs-Toast auslöst.
 
-- [ ] **GREEN:** `useToast` aus `@/components/ui/use-toast` verwenden; pro ausstehender Einladung Antwortstatus und fehlgeschlagene Absicht merken. Eine gemeinsame deutsche Meldung „Die Antwort konnte nicht gespeichert werden. Bitte versuche es erneut.“ bei Netzwerkfehler oder `!response.ok` anzeigen. Die Wiederholung sendet dieselbe `status`-Absicht erneut. Ein Eintrag wird erst bei `response.ok` entfernt. Dann einen Erfolgstoast mit statusbezogener Bestätigung auslösen. Lade- und Fehlertext mit `role="status"` beziehungsweise `role="alert"` ausgeben.
+- [x] **GREEN:** `useToast` aus `@/components/ui/use-toast` verwenden; pro ausstehender Einladung Antwortstatus und fehlgeschlagene Absicht merken. Eine gemeinsame deutsche Meldung „Die Antwort konnte nicht gespeichert werden. Bitte versuche es erneut.“ bei Netzwerkfehler oder `!response.ok` anzeigen. Die Wiederholung sendet dieselbe `status`-Absicht erneut. Ein Eintrag wird erst bei `response.ok` entfernt. Dann einen Erfolgstoast mit statusbezogener Bestätigung auslösen. Lade- und Fehlertext mit `role="status"` beziehungsweise `role="alert"` ausgeben.
 
   Zustands-/Fehlervertrag:
 
@@ -126,7 +128,7 @@
 
   Erwartung: PASS mit allen vier Verhaltensfällen.
 
-- [ ] **REFACTOR:** Keine getrennte Toast-Infrastruktur einführen; vorhandenen globalen `Toaster` nutzen. 44-px-Mindesthöhe aus `.club-main [data-slot=button]` erhalten. Testkommando erneut ausführen; Erwartung: PASS, keine doppelten Anfragen und keine ungenutzten Zustände.
+- [x] **REFACTOR:** Keine getrennte Toast-Infrastruktur einführen; vorhandenen globalen `Toaster` nutzen. 44-px-Mindesthöhe aus `.club-main [data-slot=button]` erhalten. Testkommando erneut ausführen; Erwartung: PASS, keine doppelten Anfragen und keine ungenutzten Zustände.
 
 ## Task 2: Kopfaktion an offene Einladungen anpassen
 
@@ -135,7 +137,7 @@
 - Ändern: `src/components/dashboard/dashboard-overview.tsx`
 - Ändern: `src/components/pending-invites.tsx`
 
-- [ ] **RED:** Tests mit null und einer Einladung ergänzen. Ohne Einladung muss der Kopfbutton „Spieleabend planen“ auf `/dashboard/events/new` verweisen. Mit Einladung muss „Einladungen beantworten“ auf `#dashboard-invites` verweisen; die Zielsektion muss die ID tragen und weiterhin vor den Schnellzugriffen stehen.
+- [x] **RED:** Tests mit null und einer Einladung ergänzen. Ohne Einladung muss der Kopfbutton „Spieleabend planen“ auf `/dashboard/events/new` verweisen. Mit Einladung muss „Einladungen beantworten“ auf `#dashboard-invites` verweisen; die Zielsektion muss die ID tragen und weiterhin vor den Schnellzugriffen stehen.
 
   Kernassertion für den neuen Zustand:
 
@@ -149,7 +151,7 @@
 
   Erwartung: FAIL für den kontextuellen Namen, Sprunglink und Anker.
 
-- [ ] **GREEN:** Kopfaktion anhand von `invites.length` umschalten. Bei offenen Einladungen Linkziel `#dashboard-invites`, sonst `/dashboard/events/new`; sichtbare Texte genau wie oben. Ein optionales `id`-Prop an `PendingInvites` ergänzen und vom Dashboard mit `dashboard-invites` setzen. Bestehende DOM-Reihenfolge des Aktionsbereichs beibehalten.
+- [x] **GREEN:** Kopfaktion anhand von `invites.length` umschalten. Bei offenen Einladungen Linkziel `#dashboard-invites`, sonst `/dashboard/events/new`; sichtbare Texte genau wie oben. Ein optionales `id`-Prop an `PendingInvites` ergänzen und vom Dashboard mit `dashboard-invites` setzen. Bestehende DOM-Reihenfolge des Aktionsbereichs beibehalten.
 
   Kopfaktionsvertrag:
 
@@ -163,7 +165,7 @@
 
   Erwartung: PASS für beide Zustände und bestehende Dashboardfälle.
 
-- [ ] **REFACTOR:** CTA semantisch als Link mit bestehender Buttondarstellung belassen; keine Scroll-JavaScript-Logik ergänzen. Test erneut ausführen; Erwartung: PASS und vorhandene leere/volle Eventzustände unverändert.
+- [x] **REFACTOR:** CTA semantisch als Link mit bestehender Buttondarstellung belassen; keine Scroll-JavaScript-Logik ergänzen. Test erneut ausführen; Erwartung: PASS und vorhandene leere/volle Eventzustände unverändert.
 
 ## Task 3: Fünf Hauptziele plus zugängliches „Mehr“
 
@@ -171,7 +173,7 @@
 - Ändern: `tests/unit/components/club-navigation.test.tsx`
 - Ändern: `src/components/layout/navbar.tsx`
 
-- [ ] **RED:** Tests für direkte Ziele Dashboard/Spiele/Sessions/Spieleabende/Gruppen, standardmäßig geschlossenes „Mehr“, sekundäre Ziele Reihen/Statistiken/Abzeichen nach Klick und aktiven Routenstatus eines sekundären Ziels ergänzen. Escape soll zuerst „Mehr“ schließen und den Fokus auf dessen Schalter zurückgeben; ein zweites Escape schließt das mobile Menü und fokussiert den Menütoggle.
+- [x] **RED:** Tests für direkte Ziele Dashboard/Spiele/Sessions/Spieleabende/Gruppen, standardmäßig geschlossenes „Mehr“, sekundäre Ziele Reihen/Statistiken/Abzeichen nach Klick und aktiven Routenstatus eines sekundären Ziels ergänzen. Escape soll zuerst „Mehr“ schließen und den Fokus auf dessen Schalter zurückgeben; ein zweites Escape schließt das mobile Menü und fokussiert den Menütoggle.
 
   Kernassertion für progressive Offenlegung:
 
@@ -187,7 +189,7 @@
 
   Erwartung: FAIL, da `Events` und alle acht Seitenlinks aktuell direkt gerendert werden und kein „Mehr“-Schalter existiert.
 
-- [ ] **GREEN:** Die vorhandene Navigationsliste auf die fünf Hauptziele beschränken. Drei sekundäre Ziele in einer separaten Liste nur bei geöffnetem Mehr-Bereich rendern. Den Schalter als beschrifteten Button mit `aria-expanded` und `aria-controls` ausführen. Wenn die aktuelle Route sekundär ist, „Mehr“ visuell aktiv markieren und seinen zugänglichen Namen um den aktuellen Bereich ergänzen. Escape schließt zuerst den Sekundärbereich und fokussiert dessen Button; danach greift das bestehende Escape-Verhalten des mobilen Menüs. Auswahl eines Sekundärlinks schließt beide Zustände. Adminlinks und Rollenprüfung unverändert lassen.
+- [x] **GREEN:** Die vorhandene Navigationsliste auf die fünf Hauptziele beschränken. Drei sekundäre Ziele in einer separaten Liste nur bei geöffnetem Mehr-Bereich rendern. Den Schalter als beschrifteten Button mit `aria-expanded` und `aria-controls` ausführen. Wenn die aktuelle Route sekundär ist, „Mehr“ visuell aktiv markieren und seinen zugänglichen Namen um den aktuellen Bereich ergänzen. Escape schließt zuerst den Sekundärbereich und fokussiert dessen Button; danach greift das bestehende Escape-Verhalten des mobilen Menüs. Auswahl eines Sekundärlinks schließt beide Zustände. Adminlinks und Rollenprüfung unverändert lassen.
 
   Navigationsdaten:
 
@@ -210,7 +212,7 @@
 
   Erwartung: PASS für Haupt-/Sekundärziele, aktiven Zustand, Escape/Fokus, mobiles Schließen und Adminlinks.
 
-- [ ] **REFACTOR:** State- und Fokusbehandlung in `Navbar` halten; keine neue Abhängigkeit und kein verschachteltes `nav` erzeugen. Test erneut ausführen; Erwartung: PASS ohne Fokusverlust.
+- [x] **REFACTOR:** State- und Fokusbehandlung in `Navbar` halten; keine neue Abhängigkeit und kein verschachteltes `nav` erzeugen. Test erneut ausführen; Erwartung: PASS ohne Fokusverlust.
 
 ## Task 4: Deutsche Spieleabend-Texte und Navigationserklärung
 
@@ -222,13 +224,13 @@
 - Ändern: `src/components/dashboard/dashboard-overview.tsx`
 - Ändern: `src/lib/faq.ts`
 
-- [ ] **RED:** Eventübersichtstests auf „Spieleabende & Abstimmungen“, „Noch keine Spieleabende“, „Ersten Spieleabend planen“, „Spieleabend planen“ und „Abstimmung“ umstellen. Dashboardtest für „Alle Spieleabende“ und Zähler „Spieleabende“ ergänzen. FAQ-Test für die Smartphone-Navigation so erweitern, dass er die fünf direkten Ziele und die sekundären Ziele unter „Mehr“ erwartet.
+- [x] **RED:** Eventübersichtstests auf „Spieleabende & Abstimmungen“, „Noch keine Spieleabende“, „Ersten Spieleabend planen“, „Spieleabend planen“ und „Abstimmung“ umstellen. Dashboardtest für „Alle Spieleabende“ und Zähler „Spieleabende“ ergänzen. FAQ-Test für die Smartphone-Navigation so erweitern, dass er die fünf direkten Ziele und die sekundären Ziele unter „Mehr“ erwartet.
 
   Testkommando: `npx vitest run tests/unit/components/events-overview.test.tsx tests/unit/components/club-dashboard.test.tsx tests/unit/lib/faq.test.ts`
 
   Erwartung: FAIL an den aktuellen englischen beziehungsweise „Event“-Beschriftungen und der FAQ-Aufzählung.
 
-- [ ] **GREEN:** Überschrift, Leertext, Erstellen-/Details-/Abstimmungsaktion in `EventsOverview`, Dashboardkopf, Eventlinks und Ereigniszähler gemäß der Tests in idiomatisches Deutsch übertragen. `src/lib/faq.ts` erklärt, dass das Smartphone-Menü Spiele, Sessions, Spieleabende und Gruppen direkt enthält und Reihen, Statistiken und Abzeichen unter „Mehr“ liegen. Routen und API-Begriffe bleiben unverändert.
+- [x] **GREEN:** Überschrift, Leertext, Erstellen-/Details-/Abstimmungsaktion in `EventsOverview`, Dashboardkopf, Eventlinks und Ereigniszähler gemäß der Tests in idiomatisches Deutsch übertragen. `src/lib/faq.ts` erklärt, dass das Smartphone-Menü Spiele, Sessions, Spieleabende und Gruppen direkt enthält und Reihen, Statistiken und Abzeichen unter „Mehr“ liegen. Routen und API-Begriffe bleiben unverändert.
 
   Verbindliche Textzuordnung:
 
@@ -245,7 +247,7 @@
 
   Erwartung: PASS; Detaildaten und Linkziele bleiben gleich.
 
-- [ ] **REFACTOR:** In den betroffenen Komponenten keine nicht bestätigten Produktversprechen ergänzen. Test erneut ausführen; Erwartung: PASS, deutsche Beschriftungen ohne veraltete englische UI-Texte in diesen Oberflächen.
+- [x] **REFACTOR:** In den betroffenen Komponenten keine nicht bestätigten Produktversprechen ergänzen. Test erneut ausführen; Erwartung: PASS, deutsche Beschriftungen ohne veraltete englische UI-Texte in diesen Oberflächen.
 
 ## Task 5: Impeccable-Abnahme, Dokumentation und Regression
 
@@ -257,10 +259,10 @@
 - Aktualisieren: `src/lib/faq.ts` (bereits Task 4)
 - Keine Änderung: `docs/openapi.yaml`, Datenbankschema, API oder `CONCEPT.md`.
 
-- [ ] **RED/GREEN/REFACTOR:** Vor Abschluss alle neu geschriebenen Verhaltenstests einzeln gelaufen haben. Sammelkommando: `npx vitest run tests/unit/components/pending-invites.test.tsx tests/unit/components/club-dashboard.test.tsx tests/unit/components/club-navigation.test.tsx tests/unit/components/events-overview.test.tsx tests/unit/lib/faq.test.ts tests/unit/lib/changelog.test.ts`. Erwartung nach GREEN/REFACTOR: alle Tests bestanden; während RED müssen die gezielten neuen Erwartungen am alten Code scheitern.
-- [ ] `$impeccable harden`, `$impeccable distill`, `$impeccable layout` und `$impeccable clarify` gegen die betroffenen Komponenten als Prüfleitfaden anwenden. `impeccable detect --json` auf `src/components/pending-invites.tsx`, `src/components/layout/navbar.tsx` und `src/components/dashboard` ausführen; neue Treffer beheben oder nachvollziehbar als nicht zutreffend markieren.
-- [ ] Gerenderte Prüfung mit synthetischen Testdaten und ohne Auth-Bypass in Produktionsrouten bei 320/390/768/1440 CSS-Pixeln in Hell und Dunkel durchführen. Zusage erfolgreich, HTTP-Fehler, Netzwerkfehler, Wiederholung, Einladung ohne Eintrag, „Mehr“ geschlossen/offen, Escape/Fokus und Adminnavigation prüfen. Screenshots unter `.impeccable/critique/2026-11-18-feat035/` ablegen. Falls Browserhost/Dev-Server weiterhin gesperrt ist, konkreten Fehler protokollieren und verfügbare native Chrome-Steuerung mit einem neuen Tab prüfen.
-- [ ] Abschlussprüfungen: `npm run test`, `npm run typecheck`, `npx eslint src/components/pending-invites.tsx src/components/dashboard/dashboard-overview.tsx src/components/layout/navbar.tsx src/components/dashboard/events-overview.tsx src/lib/faq.ts src/lib/changelog.ts --max-warnings=0`, `npm run build`, `npm run security-check`.
+- [x] **RED/GREEN/REFACTOR:** Vor Abschluss alle neu geschriebenen Verhaltenstests einzeln gelaufen haben. Sammelkommando: `npx vitest run tests/unit/components/pending-invites.test.tsx tests/unit/components/club-dashboard.test.tsx tests/unit/components/club-navigation.test.tsx tests/unit/components/events-overview.test.tsx tests/unit/lib/faq.test.ts tests/unit/lib/changelog.test.ts`. Erwartung nach GREEN/REFACTOR: alle Tests bestanden; während RED müssen die gezielten neuen Erwartungen am alten Code scheitern.
+- [x] `$impeccable harden`, `$impeccable distill`, `$impeccable layout` und `$impeccable clarify` als Prüfleitfaden angewendet. `impeccable detect --json` auf die betroffenen UI-Dateien ausgeführt: keine Befunde.
+- [x] Gerenderte Prüfung mit synthetischen Daten auf einer temporären, ungeschützten Vorschauseite (nachher entfernt), ohne Auth-Bypass auf Produktionsrouten: 320/390/768/1440 CSS-Pixel, Hell und Dunkel. Kein horizontaler Überlauf. 503-Fehler, Wiederholung mit 204-Erfolg, „Mehr“ geöffnet und Einladung leer nach Zusage gerendert. Escape/Fokus und Adminnavigation zusätzlich durch Unit-Tests abgedeckt. Belege: `.impeccable/critique/2026-11-18-feat035/` (Viewport-, Menü-, Fehler- und Erfolgszustände). Der integrierte CUA-Browserhost war nicht verfügbar; Playwright Chromium war verfügbar.
+- [x] Abschlussprüfungen: `npm run test` (234 Dateien, 1.474 Tests bestanden), `npm run typecheck`, gezieltes ESLint mit `--max-warnings=0`, `npm run build` und `npm run security-check` erfolgreich. Sicherheitscheck: zwei bestehende Warnungen (Raw SQL und Debug-Routen) sowie ein moderater Next.js-16.4.3-Auditbefund, separat in BUG-088 dokumentiert.
 - [ ] `npm run review-evaluate` nach dem Implementierungscommit ausführen. Review-Snapshot, Bewertung und Prozessanpassungen in `docs/code-reviews/` aktualisieren; `npm run review-evaluate:regression` muss ohne Regression enden. BUG-089 bleibt nur dann `fixed`, wenn der Regressionstest bestanden ist.
 - [ ] Änderungen gemeinsam committen mit `feat: focus dashboard invitations and navigation`; Changelog/Backlog/Bugstatus im selben Commit enthalten.
 
