@@ -17,7 +17,7 @@ Plattformpakete bleiben separat. Kein Produktions-/Store-Release.
 | Globales ESLint | 0 Fehler, 652 bestehende Warnungen aus Werkzeug-/Skilldateien |
 | Produktionsbuild | Erfolgreich; keine Migration ausgeführt |
 | Security-Check | 0 Fehler, 2 bestehende Hinweise |
-| Review-Regressionscheck | 9,9/10, keine Regression; `history/2026-11-17_1145.json` |
+| Review-Regressionscheck | 10/10, keine Regression; `history/2026-11-17_1146.json` |
 
 Scoreverlauf: 9,9/10 vor Umsetzung → 10/10 im Vorabschluss → 9,9/10 im Commit-/Nachlauf. Generierte
 Coveragewerte stammen ausschließlich aus dem erfolgreichen vollständigen Lauf.
@@ -58,9 +58,17 @@ BUG-086 dokumentiert vier ältere fehlende OpenAPI-Komponenten; die neuen A–C-
 Fehlerreferenzen sind auflösbar. Keine pauschale vollständige API-Spec-Abnahme.
 
 
-**Finaler Reviewhinweis:** Commit `460ab89` und Nachlauf bestätigen keine
+**Zwischenstand des Reviews:** Commit `460ab89` und Nachlauf bestätigen keine
 Regression. Der Evaluator meldet „Coverage Regression Tracking“ wegen fehlender
 Coveragefelder in älteren Review-History-Snapshots; dadurch 9,9/10 statt des
 vorläufigen 10/10. Die realen aktuellen Coveragewerte sind separat vollständig
 gemessen und in `src/data/quality-metrics.json` enthalten. Historische Werte
 werden nicht erfunden oder nachträglich hochgesetzt.
+
+
+**Bestätigter letzter Nachlauf:** `history/2026-11-17_1146.json` und das zugehörige Evaluatorprotokoll melden 10/10 ohne Regression und ohne neue Hinweise. Am 18.11.2026 wurde dieser vorhandene Nachweis gegen Commitstand und unveränderten Runtimecode geprüft. Die zuvor dokumentierten 9,9/10 bleiben als historischer Zwischenstand erhalten.
+
+
+**Auditfortschreibung 18.11.2026:** Der Runtimecode ist unverändert. Der aktuelle Produktionsaudit meldet einen moderaten Next.js-Paketbefund (BUG-088), ohne hohe/kritische Produktionsbefunde. Der erfolgreiche Stand vom 17.11.2026 ist ein historischer Nachweis; das erforderliche Framework-Patchupdate bleibt separate Folgearbeit.
+
+Aktueller Review-Regressionscheck am 18.11.2026 bestanden (Exit 0), 9,9/10; docs/code-reviews/history/2026-11-18_0806.json.

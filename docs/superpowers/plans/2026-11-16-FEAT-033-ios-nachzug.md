@@ -165,9 +165,17 @@ API-Antworten. Kein Produktionskonto und keine Produktionsdatenbank verwendet.
 **Abschlussstand 17.11.2026:** Webbuild und Xcode-Testziel erfolgreich; elf gezielte Changelog-/FAQ-Tests nach Dokumentationspflege bestanden. Globale ESLint-Prüfung ohne Fehler mit 652 bestehenden Werkzeugwarnungen; Securityprüfung ohne Fehler, Review-Regressionscheck 9,9/10 ohne Regression. Vollständige Hardware-/VoiceOver-Abnahme sowie Veröffentlichung bleiben ausdrücklich offen.
 
 
-**Finaler Reviewhinweis:** Commit `460ab89` und Nachlauf bestätigen keine
+**Zwischenstand des Reviews:** Commit `460ab89` und Nachlauf bestätigen keine
 Regression. Der Evaluator meldet „Coverage Regression Tracking“ wegen fehlender
 Coveragefelder in älteren Review-History-Snapshots; dadurch 9,9/10 statt des
 vorläufigen 10/10. Die realen aktuellen Coveragewerte sind separat vollständig
 gemessen und in `src/data/quality-metrics.json` enthalten. Historische Werte
 werden nicht erfunden oder nachträglich hochgesetzt.
+
+
+**Bestätigter letzter Nachlauf:** `history/2026-11-17_1146.json` und das zugehörige Evaluatorprotokoll melden 10/10 ohne Regression und ohne neue Hinweise. Am 18.11.2026 wurde dieser vorhandene Nachweis gegen Commitstand und unveränderten Runtimecode geprüft. Die zuvor dokumentierten 9,9/10 bleiben als historischer Zwischenstand erhalten.
+
+
+**Auditfortschreibung 18.11.2026:** Der Runtimecode ist unverändert. Der aktuelle Produktionsaudit meldet einen moderaten Next.js-Paketbefund (BUG-088), ohne hohe/kritische Produktionsbefunde. Der erfolgreiche Stand vom 17.11.2026 ist ein historischer Nachweis; das erforderliche Framework-Patchupdate bleibt separate Folgearbeit.
+
+Aktueller Review-Regressionscheck am 18.11.2026 bestanden (Exit 0), 9,9/10; docs/code-reviews/history/2026-11-18_0806.json.

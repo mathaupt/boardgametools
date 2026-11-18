@@ -2344,10 +2344,26 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 **Lösung:** Standard-Textfelder in der scrollbaren nativen Liste mit mindestens 44 pt Höhe; Suche und ID-Auswahl bleiben unverändert. Vorher-/Nachherbelege unter `.impeccable/critique/2026-11-16-ios-ac/`.
 **Referenz im Changelog:** Version 0.50.101 – Native Suchfelder bei großer Schrift.
 
+### [BUG-088] Aktueller npm-Audit meldet moderate Next.js-Cache-Befunde
+
+**Status:** `open`
+**Schweregrad:** `medium`
+**Entdeckt:** 2026-11-18
+**Test geschrieben:** Nein – Abhängigkeitsbefund, aktueller Registryaudit geprüft.
+
+**Beschreibung:** Der neue Auditstand führt Next.js 16.4.3 als betroffenes Produktionspaket für zwei moderate Cache-Advisories. Eine konkrete Ausnutzbarkeit in dieser Anwendung wurde nicht nachgewiesen.
+**Reproduktion:** `npm audit --omit=dev --json` mit Registryzugriff ausführen.
+**Erwartetes Verhalten:** Produktionsabhängigkeiten ohne bekannte ungepatchte Sicherheitsbefunde.
+**Tatsächliches Verhalten:** Ein moderater Paketbefund zu `next`; keine hohen oder kritischen Produktionsbefunde.
+**Ursache:** Nach dem A–C-Prüflauf aktualisierte Advisorydaten für die unveränderte Frameworkversion.
+**Lösung:** Separat ausstehend: Auswirkungen prüfen und Patchupdate auf mindestens 16.4.5 mit Typprüfung, Lint, vollständigen Tests und Build abnehmen. Keine Dependencyänderung im freigegebenen A–C-Abschluss vorgenommen.
+**Quellen:** [GHSA-mfr8-8qww-v76h](https://github.com/advisories/GHSA-mfr8-8qww-v76h), [GHSA-vc7v-qv4w-wrv8](https://github.com/advisories/GHSA-vc7v-qv4w-wrv8).
+**Referenz im Changelog:** Version 0.50.101 – Aktueller Abhängigkeitsbefund dokumentiert; noch kein Fix.
+
 ## Statistik
 
-- **Offene Bugs:** 3
+- **Offene Bugs:** 4
 - **In Bearbeitung:** 0
 - **Behoben:** 84
 - **Wontfix:** 0
-- **Gesamt:** 87
+- **Gesamt:** 88

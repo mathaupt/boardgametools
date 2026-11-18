@@ -668,3 +668,17 @@ Jeder Eintrag enthält Felder für Root-Cause-Analyse und Gegenmaßnahmen (manue
 ---
 
 **Abschluss 17.11.2026:** Securityprüfung ohne Fehler, Commit- und Review-Nachlauf ohne Regression (9,9/10). Fehlende Coveragefelder älterer Historydateien sind ein separater Evaluatorhinweis; aktuelle Werte wurden vollständig gemessen und nicht manuell geändert. Snapshot `history/2026-11-17_1145.json`.
+
+## 2026-11-18 07:05:28
+
+| Finding | Priorität | Vorher | Jetzt | Detail |
+|---------|-----------|--------|-------|--------|
+| SEC-45: npm audit: Bekannte Vulnerabilities | P2 | partially_resolved | open | npm audit lieferte keine gültigen Prüfdaten |
+
+**Root-Cause:** Der Hook erhielt für den vollständigen Audit innerhalb seines Zeitlimits keine gültigen Daten. Ein direkter Produktionsaudit liefert gültige Daten und meldet nun einen moderaten Next.js-Paketbefund; Abhängigkeiten und Runtimecode sind unverändert.
+**Gegenmaßnahme:** Vollständigen Registryaudit separat wiederholen, aktuellen Stand von historischen Abnahmen trennen und BUG-088 für das erforderliche Framework-Patchupdate erfassen. Hook unverändert aktiv.
+**Verantwortlich:** Projektwartung; Folgearbeit außerhalb des freigegebenen A–C-Umfangs.
+
+---
+
+**Auflösung 18.11.2026:** Vollständiger Review-Regressionscheck mit gültigen Auditdaten bestanden (Exit 0, 9,9/10). Der moderate Next.js-Befund ist als BUG-088 offen dokumentiert. docs/code-reviews/history/2026-11-18_0806.json.
