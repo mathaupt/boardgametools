@@ -1011,3 +1011,11 @@ danach können FEAT-026 und FEAT-027 unabhängig geplant umgesetzt werden.
 **Ziel:** Ältere Sessions erreichbar machen, Gesamtstimmen konsistent anzeigen und unnötige Abfragedaten reduzieren.
 **Plan und Prüfbasis:** Gemeinsamer [Plan FEAT-033/034](superpowers/plans/2026-11-16-FEAT-033-ios-nachzug.md), [Auditbericht](audits/2026-11-16-web-ios-abgleich.md).
 **Abnahmekriterien:** Mindestens 21 Sessions vollständig erreichbar; Konto- und Gaststimmen in Eventübersicht korrekt; reduzierte Queryfelder ohne Verlust sichtbarer Inhalte; gezielte Tests und gerenderte Abnahme bei 320/390/768/1440 px in beiden Themes. Werkzeugwarnungen und Entwicklungsabhängigkeiten gezielt behandeln. Bestehende Produktionsdaten bleiben unberührt.
+
+## FEAT-035 – Einladungen und Dashboard-Navigation fokussieren
+
+**Status:** Drei UX-Punkte am 18.11.2026 zur Umsetzung bestätigt. Designfreigabe mit Navigation B erteilt; Implementierungsplan und dessen Freigabe stehen aus.
+**Ziel:** Einladungsantworten sichtbar rückmelden, offene Einladungen als nächsten Schritt priorisieren, die Navigation auf fünf direkte Hauptziele plus „Mehr“ fokussieren und die sichtbaren Spieleabend-Bezeichnungen vereinheitlichen.
+**Umfang:** Web-Dashboard, Einladungsinteraktion, gemeinsame Webnavigation und Eventübersicht. Keine iOS-, API-, Datenmodell- oder Berechtigungsänderung.
+**Design:** [Dashboard-UX-Entwurf](superpowers/specs/2026-11-18-dashboard-ux-design.md), Navigation B bestätigt.
+**Abnahmekriterien:** Einladungsfehler bleiben am Eintrag sichtbar und wiederholbar; erfolgreiche Antworten werden bestätigt und erst danach entfernt; ausstehende Einladungen erhalten einen kontextuellen Einstieg; fünf Kernziele bleiben direkt sichtbar und drei sekundäre Ziele sind über eine zugängliche „Mehr“-Gruppe erreichbar; betroffene Nutzertexte sind deutsch; Keyboard-, Screenreader- und 44-px-Zielflächen werden berücksichtigt; gerenderte Abnahme bei 320/390/768/1440 CSS-Pixeln in Hell und Dunkel.
