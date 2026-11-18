@@ -17,7 +17,7 @@ export const changelog: ChangelogEntry[] = [
     title: "Dashboard-Verbesserungen vorbereitet",
     description: "Einladungsfeedback, Dashboard-Prioritäten und die Navigation werden gezielt verbessert.",
     changes: [
-      { type: "internal", text: "FEAT-035: Entwurf für sichtbare Einladungsrückmeldungen, fünf Hauptziele plus Mehr und deutsche Spieleabend-Bezeichnungen erstellt; Laufzeitänderungen folgen nach Planfreigabe." },
+      { type: "internal", text: "FEAT-035: Entwurf und Implementierungsplan für Einladungsrückmeldungen, fünf Hauptziele plus Mehr und deutsche Spieleabend-Bezeichnungen erstellt; Laufzeitänderungen warten auf Freigabe." },
       { type: "internal", text: "BUG-089: Fehlendes Fehlerfeedback bei Zusage oder Absage einer Dashboard-Einladung dokumentiert; Regressionstest und Fix stehen aus.", bugRef: "BUG-089" },
     ],
   },

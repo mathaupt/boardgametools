@@ -11,7 +11,7 @@ Das Dashboard soll den nächsten sinnvollen Schritt einer Spielrunde sichtbar ma
 
 Der bestehende „Club Programme“-Entwurf bleibt erhalten: Kobaltnavigation, blaue Arbeitsfläche, Barlow, flache Bereiche und hervorgehobene Datumsblöcke. Für die Navigation wurde Variante B gewählt: Dashboard, Spiele, Sessions, Spieleabende und Gruppen bleiben direkt sichtbar. Reihen, Statistiken und Abzeichen werden in einem zugänglichen „Mehr“-Bereich gebündelt. URLs und Berechtigungen bleiben unverändert.
 
-Die Einladungsliste rückt bei ausstehenden Antworten vor die Schnellzugriffe. Der primäre Kopfbereich bietet dann „Einladungen beantworten“ als Sprung zur Liste; ohne offene Einladungen bleibt „Spieleabend planen“ die primäre Aktion. Zusagen und Absagen bleiben direkt an der jeweiligen Einladung.
+Die Einladungsliste steht bereits vor den Schnellzugriffen und behält diese Position. Bei ausstehenden Antworten bietet der Kopfbereich „Einladungen beantworten“ als Sprung zur Liste; ohne offene Einladungen bleibt „Spieleabend planen“ die primäre Aktion. Zusagen und Absagen bleiben direkt an der jeweiligen Einladung.
 
 ## Einladungszustände
 
@@ -19,7 +19,7 @@ Die Einladungsliste rückt bei ausstehenden Antworten vor die Schnellzugriffe. D
 - Nur eine erfolgreiche Serverantwort entfernt den Eintrag und bestätigt die Antwort über das bestehende globale Toastsystem.
 - Netzwerkfehler und nicht erfolgreiche HTTP-Antworten lassen den Eintrag bestehen, zeigen eine deutsche Fehlermeldung direkt am Eintrag und bieten erneutes Absenden.
 - Statusänderungen sind für Screenreader über geeignete Status-/Fehlerrollen verfügbar.
-- Die Schaltflächen erhalten mindestens 44 px Zielfläche.
+- Die bestehende Mindestzielfläche von 44 px bleibt erhalten und wird bei der gerenderten Prüfung kontrolliert.
 
 ## Deutsche Bezeichnungen
 

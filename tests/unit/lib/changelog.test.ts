@@ -10,6 +10,7 @@ describe("changelog", () => {
         expect.objectContaining({ type: "internal", bugRef: "BUG-089" }),
       ]),
     });
+    expect(changelog[0].changes.some((change) => change.text.includes("Implementierungsplan"))).toBe(true);
   });
 
   it("is a non-empty array", () => {
