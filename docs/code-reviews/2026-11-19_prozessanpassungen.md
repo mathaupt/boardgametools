@@ -22,3 +22,10 @@ Review 10/10; vollständiger npm-Audit ohne Befunde.
 - **Review:** Commit `1ec403f`; Evaluator 10/10, keine Regression. Pre-Commit-Audit mit Registryzugriff fand 0 Vulnerabilities. Der erste Evaluatorlauf ohne Registry wurde als vorübergehender SEC-45-Infrastrukturstatus dokumentiert und nach erfolgreichem Lauf aufgelöst.
 - TypeScript und Build beim ersten Prüflauf nicht parallel ausführen: Build erneuert `.next/types`; isolierter Typecheck nach Build bestand.
 - Erfolgsmessung: Eventkarten laden keine vollständigen Einladungs- oder Stimmenlisten und zeigen bei drei Vorschauen weiterhin die korrekte Zahl weiterer Vorschläge.
+
+## FEAT-034 ESLint und Zustandsabnahme – 0.50.106
+
+- ESLint-RED auf einer Impeccable-Spiegeldatei: 15 Warnungen, Exit 1 mit `--max-warnings=0`.
+- ESLint-GREEN nach exakt begrenzten Pfadausnahmen: gezielter Lauf und globales `npm run lint` mit 0 Warnungen.
+- Visueller Nachweis für gefüllte/leere Events, Laden, Fehler und Paginierung in 320/390/768/1440 px Hell/Dunkel; 200-%-Zoom über halbe CSS-Viewportbreite und Tastaturfokus ohne horizontalen Überlauf.
+- Datenbankzugriff/Testsaat wurde nicht verwendet; die Vorschau besteht aus synthetischen lokalen Fixtures. Isolierte DB-Abnahme bleibt offen.

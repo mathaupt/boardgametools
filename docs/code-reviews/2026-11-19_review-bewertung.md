@@ -32,3 +32,11 @@ Dateien angewachsen. Produktionsbuild, TypeScript und gezieltes ESLint sind
 erfolgreich. Security meldet 0 Vulnerabilities und weiterhin zwei bestehende
 Hinweise zu Raw SQL und Debugrouten. Verlauf: `history/2026-11-19_1047.json`,
 `history/2026-11-19_1048.json`.
+
+## FEAT-034 Qualitätsprüfung – 0.50.106
+
+Die eng begrenzte ESLint-Konfiguration reduziert den globalen Lauf von 652
+Warnungen auf 0. Vollsuite, TypeScript, Build und Security wurden bestätigt;
+die gerenderte UI-Prüfung ergänzt synthetische Zustände. Keine Änderung an
+Review-Scores oder Findings. Eine Datenbankabnahme mit isolierten Testdaten
+bleibt offen.

@@ -17,6 +17,16 @@ const eslintConfig = defineConfig([
     "backups/**",
     "*.sql",
     "*.bak",
+    // Mirrored Impeccable tooling bundles are vendor scripts, not app source.
+    ".agents/skills/impeccable/scripts/**",
+    ".claude/skills/impeccable/scripts/**",
+    ".cursor/skills/impeccable/scripts/**",
+    ".devin/skills/impeccable/scripts/**",
+    ".github/skills/impeccable/scripts/**",
+    ".omp/skills/impeccable/scripts/**",
+    ".pi/skills/impeccable/scripts/**",
+    // Local preview fixtures are synthetic and are not shipped application code.
+    ".impeccable/preview/**",
   ]),
   {
     rules: {

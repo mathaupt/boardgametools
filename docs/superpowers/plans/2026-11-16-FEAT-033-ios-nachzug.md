@@ -133,11 +133,19 @@ ersetzt keine separate Freigabe neuer öffentlicher Datenflüsse oder Audiobearb
   `.impeccable/critique/2026-11-19-feat034/`.
 - [x] Hono-Entwicklungspfad gezielt und ohne `audit fix --force` aktualisieren.
   Hono ist am 19.11.2026 auf `hono@4.13.19` und `@hono/node-server@2.1.9` aktualisiert; vollständiger Installationsaudit meldete danach 0 Befunde (BUG-090).
-- [ ] ESLint-Werkzeugausnahmen eng begrenzen und Runnerwarnungen prüfen; die
-  globale ESLint-Ausgabe enthält aktuell 652 Warnungen und 0 Fehler.
+- [x] ESLint-Werkzeugausnahmen eng begrenzen und Runnerwarnungen prüfen.
+  RED: eine versionierte Impeccable-Kopie hatte 15 Warnungen. GREEN: sieben
+  explizite Spiegelpfade plus `.impeccable/preview/**` ignorieren ausschließlich
+  Werkzeug-/Vorschaudateien; `npm run lint` besteht mit 0 Warnungen.
 - [ ] Gerenderte Webabnahme auf lokaler isolierter Testdatenbank: 320/390/768/1440 px,
   beide Themes, große Schrift, Tastatur, Laden/Fehler/leer und Pagination. Keine
   Testdaten in Produktionsdatenbanken anlegen.
+
+**Rendernachweis 19.11.2026:** Synthetische Vorschau in Chromium für gefüllte
+Eventkarten und Sessions-Laden/Fehler/Leer/Paginierung; 320/390/768/1440 px in
+Hell/Dunkel, 200-%-Zoom mit 195 CSS-Pixeln, große Schrift und Tastaturfokus ohne
+Überlauf. CUA-Browserhost fehlte. Die isolierte Datenbankprüfung bleibt deshalb
+als eigenständige Abschlussbedingung offen.
 
 ## Gemeinsame Abschlussbedingungen
 

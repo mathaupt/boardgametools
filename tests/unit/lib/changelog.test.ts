@@ -4,10 +4,10 @@ import { changelog, currentVersion } from "@/lib/changelog";
 describe("changelog", () => {
   it("starts with the latest release entry", () => {
     expect(changelog[0]).toMatchObject({
-      version: "0.50.105",
-      title: "Eventübersicht lädt nur benötigte Vorschauen",
+      version: "0.50.106",
+      title: "Qualitätsprüfung fokussiert",
       changes: expect.arrayContaining([
-        expect.objectContaining({ type: "improvement", text: expect.stringContaining("FEAT-034") }),
+        expect.objectContaining({ type: "internal", text: expect.stringContaining("FEAT-034") }),
       ]),
     });
   });

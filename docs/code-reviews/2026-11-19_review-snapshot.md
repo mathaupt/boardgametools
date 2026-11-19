@@ -46,3 +46,10 @@ Der Produktions- und vollständige npm-Audit melden 0 Befunde. Review-History:
 - Eventabfrage erhält Eigentümerfilter, Cache-Tags und sichtbare Felder; vollständige Einladungs-/Stimmen-/Spielrelationen entfernt. Maximal drei Vorschläge je Event, Mehr-Hinweis aus `_count`.
 - Gerendert mit synthetischen Daten in Chromium bei 320/390/768/1440 px, Hell/Dunkel, ohne horizontalen Overflow. CUA-Host nicht verfügbar. Belege unter `.impeccable/critique/2026-11-19-feat034/`.
 - Die vollständige FEAT-034-Abnahme und globale ESLint-Werkzeugwarnungen bleiben offen.
+
+## FEAT-034 Qualitätsprüfung – 0.50.106
+
+- Globale ESLint-Prüfung jetzt ohne Warnungen; acht enge Ignorepfade betreffen nur versionierte Werkzeugspiegel und lokale Vorschauen.
+- `npx eslint .agents/skills/impeccable/scripts/live-browser.js --max-warnings=0` war vorher mit 15 Warnungen rot und nach der Konfiguration gezielt ignoriert; `npm run lint` besteht.
+- Gefüllte/leere Eventkarten, Laden, Fehler und Paginierung visuell mit synthetischen Daten geprüft; 320/390/768/1440 px Hell/Dunkel, 200-%-Zoom bei 195 CSS-Pixeln und Tastaturfokus ohne Überlauf.
+- Isolierte Testdatenbankabnahme bleibt offen. Produktionsbuild und TypeScript nach dem Konfigurations-/Changelogstand bestanden.

@@ -12,6 +12,15 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.106",
+    date: "2026-11-19",
+    title: "Qualitätsprüfung fokussiert",
+    description: "Die globale Codeprüfung konzentriert sich jetzt auf Anwendungscode und lässt gebündelte Werkzeugkopien außen vor.",
+    changes: [
+      { type: "internal", text: "FEAT-034: ESLint-Ausnahmen für versionierte Impeccable-Werkzeugkopien und lokale Vorschauartefakte eng begrenzt; der Projektlauf ist warnungsfrei." },
+    ],
+  },
+  {
     version: "0.50.105",
     date: "2026-11-19",
     title: "Eventübersicht lädt nur benötigte Vorschauen",
