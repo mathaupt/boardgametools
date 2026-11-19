@@ -12,30 +12,26 @@ export default async function EventsPage() {
   const events = await cachedQuery(
     () => prisma.event.findMany({
       where: { createdById: userId, deletedAt: null },
-      include: {
-        invites: {
-          include: { user: { select: { id: true, name: true, email: true } } }
-        },
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        eventDate: true,
+        location: true,
+        selectedGame: { select: { name: true } },
+        winningProposal: { select: { bggName: true } },
+        _count: { select: { proposals: true, invites: true } },
         proposals: {
-          include: {
-            game: true,
+          take: 3,
+          orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+          select: {
+            id: true,
+            bggName: true,
+            bggImageUrl: true,
+            game: { select: { name: true, imageUrl: true } },
             _count: { select: { votes: true, guestVotes: true } },
-            votes: {
-              include: {
-                user: {
-                  select: {
-                    id: true,
-                    name: true,
-                    email: true
-                  }
-                }
-              }
-            }
           }
-        },
-        selectedGame: true,
-        winningProposal: true,
-        _count: { select: { proposals: true, invites: true } }
+        }
       },
       orderBy: { eventDate: "desc" },
       take: 20

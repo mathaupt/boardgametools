@@ -2,18 +2,14 @@ import { describe, it, expect } from "vitest";
 import { changelog, currentVersion } from "@/lib/changelog";
 
 describe("changelog", () => {
-  it("starts with the latest bug-fix entry", () => {
+  it("starts with the latest release entry", () => {
     expect(changelog[0]).toMatchObject({
-      version: "0.50.104",
-      title: "Sessions, Gaststimmen und Sicherheit verbessert",
+      version: "0.50.105",
+      title: "Eventübersicht lädt nur benötigte Vorschauen",
       changes: expect.arrayContaining([
-        expect.objectContaining({ type: "fix", bugRef: "BUG-080" }),
-        expect.objectContaining({ type: "fix", bugRef: "BUG-081" }),
-        expect.objectContaining({ type: "fix", bugRef: "BUG-086" }),
-        expect.objectContaining({ type: "fix", bugRef: "BUG-088" }),
+        expect.objectContaining({ type: "improvement", text: expect.stringContaining("FEAT-034") }),
       ]),
     });
-    expect(changelog[0].changes.some((change) => change.bugRef === "BUG-090")).toBe(true);
   });
 
   it("is a non-empty array", () => {

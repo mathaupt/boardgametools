@@ -32,7 +32,6 @@ describe("EventsOverview", () => {
         { id: "p1", bggName: null, bggImageUrl: null, game: { name: "Azul", imageUrl: "https://img.test/azul.jpg" }, _count: { votes: 5, guestVotes: 0 } },
         { id: "p2", bggName: "Carcassonne", bggImageUrl: null, game: null, _count: { votes: 3, guestVotes: 0 } },
         { id: "p3", bggName: null, bggImageUrl: null, game: null, _count: { votes: 2, guestVotes: 0 } },
-        { id: "p4", bggName: "Skipped", bggImageUrl: null, game: null, _count: { votes: 0, guestVotes: 0 } },
       ],
     })]} invites={[]} />);
     expect(screen.getByRole("heading", { name: "Spieleabend" })).toBeInTheDocument();
@@ -43,7 +42,6 @@ describe("EventsOverview", () => {
     expect(screen.getByText("Carcassonne")).toBeInTheDocument();
     expect(screen.getByText("Unbekannt")).toBeInTheDocument();
     expect(screen.getByText("+1 weitere")).toBeInTheDocument();
-    expect(screen.queryByText("Skipped")).not.toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Abstimmung" })).toHaveAttribute("href", "/dashboard/events/e1/voting");
   });
 });

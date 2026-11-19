@@ -151,9 +151,9 @@ export function EventsOverview({ events, invites }: { events: EventListItem[]; i
                         </div>
                         );
                       })}
-                      {event.proposals.length > 3 && (
+                      {event._count.proposals > event.proposals.length && (
                         <span className="text-muted-foreground text-sm">
-                          +{event.proposals.length - 3} weitere
+                          +{event._count.proposals - event.proposals.length} weitere
                         </span>
                       )}
                     </div>

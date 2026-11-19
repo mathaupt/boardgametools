@@ -728,3 +728,15 @@ Jeder Eintrag enthält Felder für Root-Cause-Analyse und Gegenmaßnahmen (manue
 **Auflösung 19.11.2026:** Wiederholter vollständiger `npm audit --json` mit Registryzugriff meldet 0 Befunde. `npm run review-evaluate:report` ergibt 10/10, SEC-45 erledigt und keine offenen Findings oder Regressionen; Snapshot `history/2026-11-19_1010.json`.
 
 ---
+
+## 2026-11-19 09:36:44
+
+| Finding | Priorität | Vorher | Jetzt | Detail |
+|---------|-----------|--------|-------|--------|
+| SEC-45: npm audit: Bekannte Vulnerabilities | P2 | resolved | open | npm audit lieferte keine gültigen Prüfdaten |
+
+**Root-Cause:** <!-- Manuell ausfüllen: Warum ist das Finding zurückgekehrt? -->
+**Gegenmaßnahme:** <!-- Manuell ausfüllen: Wie wird verhindert, dass es erneut passiert? -->
+**Verantwortlich:** <!-- Manuell ausfüllen -->
+
+---

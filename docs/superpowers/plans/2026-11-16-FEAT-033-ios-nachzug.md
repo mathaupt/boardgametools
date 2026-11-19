@@ -122,9 +122,15 @@ ersetzt keine separate Freigabe neuer öffentlicher Datenflüsse oder Audiobearb
   `playedAt`-/ID-Reihenfolge abfragen, URL-Navigation und Gesamtzahl anzeigen;
   **REFACTOR** Paginationdarstellung bei passendem Vertrag wiederverwenden.
   Nachweis 19.11.2026: `npx vitest run tests/unit/components/sessions-page.test.tsx` bestanden; Seitengrenzen, Eigentümerfilter, seitengetrennte Cache-Schlüssel und Navigation in beide Richtungen abgedeckt. Browserbelege für 320/390/768/1440 px in Hell und Dunkel: `.impeccable/critique/2026-11-19-sessions-pagination/` (emulierte Viewports, Chromium; keine Screenreader-Hardwareabnahme).
-- [ ] Eventlistenquery auf tatsächlich benötigte Felder reduzieren; **RED**
-  Queryvertrag und sichtbare Teilnehmer-/Vorschlagszahlen testen, **GREEN** `select`
-  und begrenzte Vorschau, **REFACTOR** gemeinsame Summarytypen.
+- [x] Eventlistenquery auf tatsächlich benötigte Felder reduzieren; **RED**
+  Queryvertrag und sichtbare Vorschlagszahlen testen, **GREEN** `select` und
+  begrenzte Vorschau, **REFACTOR** keine zusätzlichen Summarytypen nötig. Nachweis
+  19.11.2026: `npx vitest run tests/unit/components/events-overview.test.tsx
+  tests/unit/components/events-page-query.test.tsx` plus
+  `tests/unit/lib/changelog.test.ts`; die vollständige Suite besteht mit 1.479
+  Tests in 235 Dateien. Typprüfung, gezielter ESLint, Securitycheck und Build
+  bestanden. Renderbelege für 320/390/768/1440 px in Hell und Dunkel unter
+  `.impeccable/critique/2026-11-19-feat034/`.
 - [x] Hono-Entwicklungspfad gezielt und ohne `audit fix --force` aktualisieren.
   Hono ist am 19.11.2026 auf `hono@4.13.19` und `@hono/node-server@2.1.9` aktualisiert; vollständiger Installationsaudit meldete danach 0 Befunde (BUG-090).
 - [ ] ESLint-Werkzeugausnahmen eng begrenzen und Runnerwarnungen prüfen; die
@@ -179,5 +185,13 @@ werden nicht erfunden oder nachträglich hochgesetzt.
 **Auditfortschreibung 18.11.2026:** Der Runtimecode ist unverändert. Der aktuelle Produktionsaudit meldet einen moderaten Next.js-Paketbefund (BUG-088), ohne hohe/kritische Produktionsbefunde. Der erfolgreiche Stand vom 17.11.2026 ist ein historischer Nachweis; das erforderliche Framework-Patchupdate bleibt separate Folgearbeit.
 
 **BUG-088-Nachlauf 19.11.2026:** Next.js, `eslint-config-next` und `@next/bundle-analyzer` auf 16.4.6 aktualisiert. `npm audit --omit=dev` bestätigt keine Produktionsbefunde. Der vollständige FEAT-034-Queryumfang bleibt unabhängig davon offen.
+
+**Aktualitätsprüfung und FEAT-034-Queryreduktion 19.11.2026:** Unmittelbar vor
+Umsetzung HEAD `9bb2f42`; der Arbeitsbaum enthielt nur den Evaluator-Nachtrag in
+`docs/code-reviews/regressions.md`. Aktuelle Prisma-Felder und sichtbarer Vertrag
+der Eventübersicht geprüft. Ergebnis: Eigentümerfilter, Cache und Abfragegrenzen
+bleiben unverändert; Vorschläge werden auf drei Datensätze und benötigte Felder
+begrenzt. Vollständige FEAT-034-Abnahme und ESLint-Werkzeugbereinigung bleiben
+offen.
 
 Aktueller Review-Regressionscheck am 18.11.2026 bestanden (Exit 0), 9,9/10; docs/code-reviews/history/2026-11-18_0806.json.

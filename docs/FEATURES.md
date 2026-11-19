@@ -307,6 +307,8 @@ bis FEAT-025 weiterhin dauerhaft in die Sammlung übernommen.
 
 Liste aller Spieleabende des Nutzers. Jede Karte zeigt: Titel, Datum, Ort,
 Anzahl Einladungen, Spielvorschlaege mit Stimmenanzahl, ausgewaehltes Spiel.
+Für eine kompakte Übersicht werden höchstens drei Vorschläge je Karte geladen;
+der Gesamtzähler weist auf weitere Vorschläge hin.
 
 Oben: **Offene Einladungen** mit Zusagen-/Absagen-Aktionen. Antworten zeigen ihren Ladezustand; HTTP- und Verbindungsfehler bleiben am jeweiligen Eintrag sichtbar und können mit derselben Antwort wiederholt werden. Erfolgreiche Antworten werden bestätigt und aus der offenen Liste entfernt.
 

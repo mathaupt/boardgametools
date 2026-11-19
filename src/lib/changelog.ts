@@ -12,6 +12,15 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.105",
+    date: "2026-11-19",
+    title: "Eventübersicht lädt nur benötigte Vorschauen",
+    description: "Die Übersicht lädt nur die angezeigten Eventdaten und höchstens drei Spielvorschläge je Spieleabend.",
+    changes: [
+      { type: "improvement", text: "FEAT-034: Eventkarten zeigen weitere Vorschläge weiterhin über den Gesamtzähler an und laden dafür keine vollständigen Einladungs- und Stimmenlisten." },
+    ],
+  },
+  {
     version: "0.50.104",
     date: "2026-11-19",
     title: "Sessions, Gaststimmen und Sicherheit verbessert",
