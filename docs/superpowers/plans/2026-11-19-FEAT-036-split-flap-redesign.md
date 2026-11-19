@@ -29,7 +29,8 @@ Surface-Brief, `DESIGN.md`, `.impeccable/design.json`, Changelog, Backlog und Fe
 - **Render:** Produktionsseite mit echten Navbar- und Dashboardkomponenten, synthetischen Fixtures und klarer Vorschaukennzeichnung bei 1440×1200 und 390×844 CSS-Pixeln gerendert. Beide Viewports: keine horizontale Überbreite, keine Browserfehler; die 3px-Oberkante berechnet sich als Amber `rgb(255, 176, 0)` plus Stahlkante `rgb(59, 62, 66)`. Vorschau-Route und Server anschließend entfernt/gestoppt.
 - **Impeccable:** `concept-seed --check-seed seed:c5f23fe40c3f189d` bestätigt `SEED KNOWN`. Finish-Review nach Korrekturrunde: **ship**; alle vier Materialkorrekturen auf Desktop/Mobil `resolved`, keine Regressionen.
 - **Qualität:** `npm run lint` und abschließender `npm run build` erfolgreich; vollständige Testsuite mit 1.482 Tests bestanden, abschließende gezielte Wiederholung mit 8 Tests in 2 Dateien erfolgreich. Ein früher Buildlauf wurde nur durch veraltete `.next/dev/types` einer bereits entfernten Vorschau-Route verhindert; nach Bereinigung des generierten Dev-Caches bestand der Build.
-- **Grenzen:** `npm audit`/vollständiger Registryaudit und Evaluatorregression erfordern erreichbaren npm-Registryzugriff. Keine Datenbankänderung oder produktive Veröffentlichung.
+- **Grenzen:** Die Vorschau verwendete ausschließlich synthetische Daten. Keine Datenbankänderung oder produktive Veröffentlichung.
+- **Post-Commit:** Pre-Commit-Securitycheck fand 0 Vulnerabilities; Regressionsevaluator und vollständige Reviewwertung bestanden mit 10/10, 0 offenen Findings und ohne Regression. Commit `3049f43`.
 
 ## Abnahmekriterien
 

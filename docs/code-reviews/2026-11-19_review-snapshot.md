@@ -5,9 +5,9 @@
 - Impeccable-Finish-Review: **ship**; Desktop- und Mobilrecaptures bestätigen die korrigierte Kartenoberkante, lokale Display-Schrift und entfernten Kicker. Seed-Prüfung erfolgreich.
 - Vollsuite: 1.482 Tests in 236 Dateien bestanden; die abschließenden gezielten UI-Tests bestanden mit 8 Tests in 2 Dateien.
 - `npm run lint`, Produktionsbuild und `git diff --check` erfolgreich. Vorschauprüfung bei 1440×1200 und 390×844: kein horizontaler Überlauf, keine Browserfehler.
-- Review-Evaluator und Regressionsevaluator: 9.9/10, keine neue Regression. SEC-45 bleibt als einziges offenes Finding, weil der lokale npm-Registryaudit keine gültigen Prüfdaten erhielt; keine Dependencyänderung.
+- Review-Evaluator und Regressionsevaluator nach Pre-Commit: **10/10**, 0 offene oder neue Findings, keine Regression. `npm audit` meldet **0 Vulnerabilities**.
 - Browsercaptures: `.impeccable/review/desktop.png` und `.impeccable/review/mobile.png`; Preview nutzte synthetische Daten, temporäre Route entfernt, Server gestoppt.
-- Verlauf: `history/2026-11-19_2055.json`.
+- Verlauf: `history/2026-11-19_2057.json`.
 
 ## Ergebnis
 

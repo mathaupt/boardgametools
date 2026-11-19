@@ -6,9 +6,10 @@ Der Finish-Review vergibt **ship**. Alle nach der ersten Prüfung benannten
 Materialkorrekturen sind in Desktop-/Mobilrecaptures aufgelöst; keine
 Regressionen wurden gemeldet. `concept-seed --check-seed` bestätigt die
 gewählte Konzeptreferenz. Die Anwendungssuite bestand mit 1.482 Tests,
-Produktionsbuild und Lint liefen erfolgreich. Der Evaluatorwert bleibt 9.9/10;
-das eine offene SEC-45-Ergebnis beruht auf ungültigen npm-Auditdaten ohne
-Registryzugriff und ist kein Befund aus der UI-Änderung.
+Produktionsbuild und Lint liefen erfolgreich. Der Post-Commit-Evaluator erreicht
+10/10 ohne offene Findings oder Regressionen; der vollständige npm-Audit meldet
+0 Vulnerabilities. Der vorläufige SEC-45-Status aus dem vorherigen Lauf wurde
+durch den gültigen Pre-Commit-Registrylauf aufgelöst.
 
 Die fünf aktualisierten Bugfälle schließen die vorherige offene Bugliste ab.
 BUG-080 ergänzt eine kontogebundene Paginierung mit stabiler Reihenfolge und

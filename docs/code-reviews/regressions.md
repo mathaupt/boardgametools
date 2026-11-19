@@ -403,6 +403,7 @@ Jeder Eintrag enthält Felder für Root-Cause-Analyse und Gegenmaßnahmen (manue
 
 ---
 
+
 **Auflösung 2026-11-02:** Regressionsevaluator mit Registryzugriff erfolgreich; 10/10 gesamt, Sicherheit 9,9/10, keine Regressionen. Snapshot `history/2026-11-02_1508.json`.
 
 ## 2026-11-03 11:19:34
@@ -778,5 +779,7 @@ Jeder Eintrag enthält Felder für Root-Cause-Analyse und Gegenmaßnahmen (manue
 **Root-Cause:** Der Review- und Regressionsevaluator erhielt erneut keine gültigen npm-Registry-Auditdaten. Die FEAT-036-Änderung umfasst ausschließlich Webgestaltung, lokale Schriftdateien und UI-Tests; es wurden keine Abhängigkeiten aktualisiert.
 **Gegenmaßnahme:** Vollständigen npm-Audit nach verfügbarem Registryzugriff wiederholen. Bis dahin SEC-45 als Infrastrukturgrenze behandeln und keine Schwachstelle daraus ableiten.
 **Verantwortlich:** BoardGameTools-Wartung.
+
+**Auflösung 19.11.2026:** Der Pre-Commit-Lauf erreichte die npm-Registry. `npm audit` meldet 0 Vulnerabilities; der Regressionsevaluator schloss SEC-45 und bestand mit 10/10 ohne Regression. Snapshot `history/2026-11-19_2057.json`.
 
 ---
