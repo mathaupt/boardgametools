@@ -1,15 +1,12 @@
-# Prozessanpassungen – Bugabschluss 19.11.2026
+# Prozessanpassungen – 19.11.2026
 
-- [x] Offene Bugliste und Backlog gegen aktuellen Commit `2ab7ded` geprüft.
-- [x] Für die Laufzeitfixes BUG-080/081 gezielte Tests vor der Codeänderung erstellt und erwartete RED-Ergebnisse beobachtet; BUG-088/090 als Dependencyänderungen mit Registryaudits verifiziert.
-- [x] Cache-Schlüssel der Sessionseiten separat regressionsgetestet.
-- [x] OpenAPI-YAML und alle lokalen `$ref`-Ziele geprüft.
-- [x] Next.js 16.4.6 und Hono 4.13.19 / `@hono/node-server` 2.1.9 innerhalb kompatibler Bereiche aktualisiert; kein `audit fix --force`.
-- [x] Produktions- und vollständigen npm-Audit mit Registryzugriff geprüft; 0 Befunde.
-- [x] Gerenderte Sessions-Paginierung in Chromium bei 320/390/768/1440 px und Hell/Dunkel geprüft.
-- [x] Vollständige Testsuite, TypeScript, geänderte Dateien mit ESLint `--max-warnings=0`, Build und OWASP-Check bestanden.
-- [x] Commit `2ecbadb` erstellt; Post-Commit-Regressionsevaluator 10/10 ohne Regression.
-- [ ] FEAT-034 separat fortsetzen: Eventlistenquery reduzieren und restliche Lade-/Fehler-/Leer-/Tastatur-/Großschriftzustände vollständig abnehmen.
+## FEAT-034 Eventlistenquery
 
-Erfolgsmessung: 1.478 Tests in 234 Dateien; 0 offene Bugs; 90 behobene Bugs;
-Review 10/10; vollständiger npm-Audit ohne Befunde.
+- RED zuerst für den Queryvertrag und den sichtbaren Gesamtzähler; nach dem Fix 1.479 Tests, Typprüfung, gezieltes ESLint, Securitycheck und Build erfolgreich.
+- Der Browserhost war nicht verfügbar. Eine lokale Vorschau mit synthetischen Daten und Chromium lieferte gerenderte Belege in acht Theme-/Viewportkombinationen; temporäre Route und Server wurden danach entfernt.
+- TypeScript wurde einmal parallel zum Build gestartet und traf auf gerade neu erzeugte `.next/types`. Der anschließende isolierte Typecheck nach beendetem Build bestand. Build und Typecheck künftig nicht parallel starten.
+- Evaluatorreports ohne Registryzugriff nicht als Paketbefund behandeln. Den Reviewlauf nach Registryzugriff wiederholen; dieser Commit-Hook meldete 0 Vulnerabilities und der Evaluator 10/10 ohne Regression.
+
+## Erfolgsmessung
+
+Die Eventlistenquery lädt keine vollständigen Teilnehmer- oder Stimmenlisten mehr. Sichtbare Eventinhalte und Zähler bleiben erhalten; pro Event werden höchstens drei sortierte Vorschläge abgerufen. Keine Schema-, API-, Berechtigungs- oder Produktionsdatenänderung.

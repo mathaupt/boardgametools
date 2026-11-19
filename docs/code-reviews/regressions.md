@@ -739,4 +739,6 @@ Jeder Eintrag enthält Felder für Root-Cause-Analyse und Gegenmaßnahmen (manue
 **Gegenmaßnahme:** <!-- Manuell ausfüllen: Wie wird verhindert, dass es erneut passiert? -->
 **Verantwortlich:** <!-- Manuell ausfüllen -->
 
+**Auflösung 19.11.2026:** Pre-Commit-Audit mit Registryzugriff bestätigt 0 Vulnerabilities. Post-Commit-Evaluator ergibt 10/10 ohne offene Findings; der SEC-45-Zwischenstatus war erneut ein Registryzugriffsfehler und keine Paketregression. Snapshot `history/2026-11-19_1047.json`.
+
 ---
