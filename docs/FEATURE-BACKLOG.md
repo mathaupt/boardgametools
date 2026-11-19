@@ -46,7 +46,6 @@ Abnahmen vorläufig als bestanden anzunehmen. Diese Annahmen sind keine selbst a
 |---|---|---|---|
 | FEAT-007 | Vercel-Firewall für `/api/health` | Firewall-API ohne aktive Konfiguration; externe Monitore, Trafficpeak und 24-h-Beobachtung offen | [Plan](superpowers/plans/2026-10-31-FEAT-007-health-firewall.md) |
 | FEAT-009 | HTML-Entities in Spieldaten | Wartungszugang fehlt; Produktionsmanifest, frisches Backup und separate Apply-Freigabe offen | [Plan](superpowers/plans/2026-10-31-FEAT-009-spieldaten-entities.md) |
-| FEAT-031 | Bei Event-Partien Spiele aus Vorschlägen, Sammlung oder BGG wählen | Code gepusht; Produktionsmigration verifiziert; Vercel-Deployment noch `pending` | [Plan](superpowers/plans/2026-11-05-FEAT-031-event-session-game-selection.md) |
 
 ## Offene Bugs
 
@@ -990,10 +989,10 @@ danach können FEAT-026 und FEAT-027 unabhängig geplant umgesetzt werden.
 
 ## FEAT-031 – Spiele für Event-Partien flexibel auswählen
 
-**Status:** Anforderung aufgenommen; Implementierungsplan und Umsetzung offen.
+**Status:** Web/API-Code und Produktionsmigration am 09.11.2026 freigegeben und umgesetzt; GitHub meldet Vercel-Deployment `success` für Commit `aa52f75` (Nachprüfung 19.11.2026). FEAT-031 für den freigegebenen Webumfang abgeschlossen; iOS bleibt separat.
 **Ziel:** Beim Eintragen einer Partie in einem Event zuerst die Spiele anbieten, die für dieses Event ausgewählt beziehungsweise vorgeschlagen wurden. Falls das gespielte Spiel dort nicht enthalten ist, soll es alternativ in der eigenen Sammlung oder über die BoardGameGeek-Suche gefunden werden können.
 **Abnahmekriterien:** Eventspiele sind die primäre Auswahlquelle. Sammlungssuche und BGG-Suche stehen als Alternativen zur Verfügung, ohne die vorhandene Auswahl unnötig zu überladen. Der Plan klärt, wie BGG-Treffer ohne Sammlungsimport als Session gespeichert werden, welche Spieldaten übernommen werden und welche Berechtigungs-/Datenschutzregeln gelten.
-**Implementierungsplan:** [Event-Partie-Spieleauswahl](superpowers/plans/2026-11-05-FEAT-031-event-session-game-selection.md). Der Plan umfasst Web/API und eine additive Migration; vor jeder Runtime-Änderung ist eine erneute Aktualitätsprüfung vorgeschrieben. Umsetzung erst nach ausdrücklicher Planfreigabe.
+**Implementierungsplan:** [Event-Partie-Spieleauswahl](superpowers/plans/2026-11-05-FEAT-031-event-session-game-selection.md). Der Plan umfasst Web/API und eine additive Migration; die Produktionsmigration und Veröffentlichung sind freigegeben und abgeschlossen. Vercel-Status am 19.11.2026 über den GitHub-Commitstatus für `aa52f75` verifiziert.
 
 
 ## FEAT-033 – Nativen iOS-Client an den Webstand angleichen

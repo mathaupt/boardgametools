@@ -175,3 +175,8 @@ Die additive Migration wurde lokal und nach gesonderter Rolloutfreigabe auch in 
 - **Produktionsnachweis 09.11.2026:** Snapshot `backups/boardgametools_20261109_pre_feat031.snapshot.json.gz`, 34 Tabellen/987 Zeilen, SHA-256 `c913312df7ab7508e9a7fa634f04c8d12d72b4b6b56c9a656610e80c584b10d8`, Modus 0600; in `bgt_test_feat031_restore_20261109` vollständig wiederhergestellt und alle Tabellenzeilenzahlen abgeglichen. Vorheriger Readback: eine offene Migration, `proposalId NOT NULL`, 2/2 vorhandene Links erhalten.
 - Ausschließlich `20261109124500_feat031_optional_event_proposal` über `npm run prisma:deploy` angewendet. Danach read-only bestätigt: `proposalId` nullable, 2/2 vorhandene Links erhalten, 20 Migrationen abgeschlossen, 0 inkonsistent, Status up to date.
 - Commits `bb84e33` und `aa52f75` wurden nach `origin/main` gepusht. GitHub-Commitstatus zeigte Vercel `pending`; lokaler Vercel-API-Check scheiterte an nicht erreichbarer API/Netzwerk, der öffentliche Health-Check an DNS-Auflösung. Deployment nicht als `READY` behaupten.
+
+## Deploymentnachweis – 19.11.2026
+
+- Der GitHub-Commitstatus für `aa52f75` wurde erneut lesend geprüft und meldet Vercel `success` mit verknüpftem Deploymentziel.
+- Damit ist der zuvor offene FEAT-031-Deploymentstatus abgeschlossen. Die damalige Netzwerkgrenze verhinderte nur die lokale Prüfung und war kein Deploymentfehler.

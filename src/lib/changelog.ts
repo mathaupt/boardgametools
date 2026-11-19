@@ -12,6 +12,15 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.108",
+    date: "2026-11-19",
+    title: "Eventpartien flexibel erfassen ist verfügbar",
+    description: "Die freigegebene Auswahl von Eventspielen, Sammlungsspielen und BGG-Spielen ist erfolgreich ausgerollt.",
+    changes: [
+      { type: "internal", text: "FEAT-031: Vercel bestätigt den erfolgreichen Production-Deploy des freigegebenen Commits aa52f75." },
+    ],
+  },
+  {
     version: "0.50.107",
     date: "2026-11-19",
     title: "Sessions bleiben bei starker Vergrößerung bedienbar",

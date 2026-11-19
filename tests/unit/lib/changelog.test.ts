@@ -4,10 +4,10 @@ import { changelog, currentVersion } from "@/lib/changelog";
 describe("changelog", () => {
   it("starts with the latest release entry", () => {
     expect(changelog[0]).toMatchObject({
-      version: "0.50.107",
-      title: "Sessions bleiben bei starker Vergrößerung bedienbar",
+      version: "0.50.108",
+      title: "Eventpartien flexibel erfassen ist verfügbar",
       changes: expect.arrayContaining([
-        expect.objectContaining({ type: "fix", bugRef: "BUG-091" }),
+        expect.objectContaining({ type: "internal", text: expect.stringContaining("FEAT-031") }),
       ]),
     });
   });
