@@ -19,11 +19,7 @@ export default async function EventsPage() {
         proposals: {
           include: {
             game: true,
-            _count: { 
-              select: { 
-                votes: true 
-              } 
-            },
+            _count: { select: { votes: true, guestVotes: true } },
             votes: {
               include: {
                 user: {

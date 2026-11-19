@@ -191,7 +191,9 @@ mit einem Klick importiert werden.
 
 **Route:** `/dashboard/sessions` | **Zugriff:** Angemeldet
 
-Liste der letzten 20 Sessions als Karten. Jede Karte zeigt:
+Die eigenen Sessions werden in Seiten zu je 20 Einträgen angezeigt; die stabile
+Sortierung hält Datum und ID fest. Gesamtzahl und Seitennavigation machen auch
+ältere Partien erreichbar. Jede Karte zeigt:
 - Kleines Spielcover oder Würfelsymbol als Fallback, Spielname, Datum, Dauer und Spieleranzahl
 - Spieler-Ergebnisse: Platzierung (#1, #2...), Punkte, Gewinner (Pokal-Icon)
 - Notizen (falls vorhanden)

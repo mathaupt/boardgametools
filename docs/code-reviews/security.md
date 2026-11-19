@@ -1,5 +1,11 @@
 # Sicherheitsstand – 28.10.2026, Version 0.50.16
 
+## Aktualisierung 19.11.2026 – Next.js und Hono
+
+- `next`, `eslint-config-next` und `@next/bundle-analyzer` auf 16.4.6 aktualisiert. Der Produktionsaudit meldet 0 Befunde.
+- `hono@4.13.19` und `@hono/node-server@2.1.9` in der CodeceptJS-/MCP-SDK-Entwicklungskette beheben die neu festgestellten moderaten Advisory-Befunde. `npm update` meldete danach 0 Befunde im vollständigen Audit.
+- Kein `npm audit fix --force`; der Hono-Update blieb innerhalb der vom MCP SDK deklarierten Semver-Bereiche.
+
 ## BUG-050 behoben – 03.11.2026, Version 0.50.72
 
 - Vor Änderung: 22 moderate und 2 niedrige Dev-Befunde in `minimatch`, `glob` sowie der ungenutzten shadcn-CLI-/`deepmerge`-Kette; Runtime-Audit bereits 0.

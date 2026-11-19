@@ -10,16 +10,34 @@ import { redirect } from "next/navigation";
 import { formatDate } from "@/lib/date";
 import { gameTextForRead } from "@/lib/game-text";
 import { SessionCover } from "@/components/sessions/session-cover";
+import { SessionsPagination } from "@/components/sessions/sessions-pagination";
 
-export default async function SessionsPage() {
+const PAGE_SIZE = 20;
+
+export default async function SessionsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string }>;
+}) {
   const session = await auth();
   const userId = session?.user?.id;
   if (!userId) redirect("/login");
 
+  const params = await searchParams;
+  const requestedPage = Number.parseInt(params?.page ?? "1", 10);
+  const requestedPageNumber = Number.isFinite(requestedPage) ? Math.max(1, requestedPage) : 1;
+  const where = { createdById: userId, deletedAt: null };
+
+  const total = await cachedQuery(
+    () => prisma.gameSession.count({ where }),
+    ["user-sessions-count", userId],
+    { revalidate: 60, tags: [CacheTags.userSessions(userId)] },
+  );
+  const page = Math.min(requestedPageNumber, Math.max(1, Math.ceil(total / PAGE_SIZE)));
   const sessions = await cachedQuery(
     () =>
       prisma.gameSession.findMany({
-        where: { createdById: userId, deletedAt: null },
+        where,
         include: {
           game: { select: { id: true, name: true, imageUrl: true } },
           players: {
@@ -27,10 +45,11 @@ export default async function SessionsPage() {
           },
           guestPlayers: true,
         },
-        orderBy: { playedAt: "desc" },
-        take: 20,
+        orderBy: [{ playedAt: "desc" }, { id: "desc" }],
+        skip: (page - 1) * PAGE_SIZE,
+        take: PAGE_SIZE,
       }),
-    ["user-sessions-list", userId],
+    ["user-sessions-list", userId, `page-${page}`],
     { revalidate: 60, tags: [CacheTags.userSessions(userId)] },
   );
 
@@ -155,6 +174,9 @@ export default async function SessionsPage() {
             </Card>
           ))}
         </div>
+      )}
+      {total > PAGE_SIZE && (
+        <SessionsPagination page={page} total={total} pageSize={PAGE_SIZE} />
       )}
     </div>
   );

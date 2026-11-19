@@ -173,7 +173,7 @@ und den Gespielt-Status, keine Session-, Ergebnis- oder Teilnehmerdetails.
 
 | Komponente | Technologie |
 |------------|-------------|
-| **Framework** | Next.js 16.4.3 (App Router, Turbopack dev, Webpack prod) |
+| **Framework** | Next.js 16.4.6 (App Router, Turbopack dev, Webpack prod) |
 | **React** | React 19.2.8 |
 | **Sprache** | TypeScript 6.0.3 (strict) |
 | **Datenbank** | PostgreSQL (Prisma Postgres) + Prisma 7.10.1 (`@prisma/adapter-pg` + `pg`) |

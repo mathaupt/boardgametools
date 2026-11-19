@@ -289,7 +289,7 @@ export const faqSections: FaqSection[] = [
       {
         question: "Was zeigt die Sessions-Übersicht?",
         answer:
-          "Die Übersicht zeigt deine letzten 20 Partien mit Spielcover, Spielname, Datum, Dauer, Mitspielern und Ergebnissen. Wenn für ein Spiel kein unterstütztes Cover verfügbar ist, erscheint ein Würfelsymbol.",
+          "Die Übersicht zeigt deine Partien seitenweise mit Spielcover, Spielname, Datum, Dauer, Mitspielern und Ergebnissen. Über die Seitennavigation erreichst du auch ältere Sessions. Wenn für ein Spiel kein unterstütztes Cover verfügbar ist, erscheint ein Würfelsymbol.",
       },
       {
         question: "Wie erstelle ich eine Session?",

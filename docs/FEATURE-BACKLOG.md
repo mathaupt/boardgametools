@@ -1007,9 +1007,10 @@ danach können FEAT-026 und FEAT-027 unabhängig geplant umgesetzt werden.
 
 ## FEAT-034 – Belegte Webprobleme und Datenabfragen verbessern
 
-**Status:** Prüfung beauftragt und am 16.11.2026 durchgeführt; Umsetzung des konkreten Plans ausstehend.
+**Status:** Umsetzung am 19.11.2026 nach „arbeite Schritt für Schritt die Bugs ab“ freigegeben. BUG-080, BUG-081 und gezielte Hono-Entwicklungsabhängigkeiten in Version 0.50.104 umgesetzt. Queryreduktion und vollständige FEAT-034-Abnahme bleiben offen.
 **Ziel:** Ältere Sessions erreichbar machen, Gesamtstimmen konsistent anzeigen und unnötige Abfragedaten reduzieren.
 **Plan und Prüfbasis:** Gemeinsamer [Plan FEAT-033/034](superpowers/plans/2026-11-16-FEAT-033-ios-nachzug.md), [Auditbericht](audits/2026-11-16-web-ios-abgleich.md).
+**Aktualitätsprüfung:** 19.11.2026, HEAD `2ab7ded`, Arbeitsbaum vor Beginn sauber. Geprüft: aktuelle Sessions- und Eventseiten, Prisma-Beziehungen für Gaststimmen, bestehende Dashboard-/Voting-Zählung sowie vorhandene Komponenten-Tests. Umfang unverändert; BUG-080/081 zuerst, restliche Queryoptimierung separat.
 **Abnahmekriterien:** Mindestens 21 Sessions vollständig erreichbar; Konto- und Gaststimmen in Eventübersicht korrekt; reduzierte Queryfelder ohne Verlust sichtbarer Inhalte; gezielte Tests und gerenderte Abnahme bei 320/390/768/1440 px in beiden Themes. Werkzeugwarnungen und Entwicklungsabhängigkeiten gezielt behandeln. Bestehende Produktionsdaten bleiben unberührt.
 
 ## FEAT-035 – Einladungen und Dashboard-Navigation fokussieren

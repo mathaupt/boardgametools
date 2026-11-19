@@ -714,3 +714,17 @@ Jeder Eintrag enthält Felder für Root-Cause-Analyse und Gegenmaßnahmen (manue
 **Auflösung 18.11.2026:** Wiederholter `npm run review-evaluate:report` und `npm run review-evaluate:regression` mit Registryzugriff: 10/10 gesamt, SEC-45 teilweise gelöst, keine offenen Findings oder Regressionen. Snapshot `history/2026-11-18_1202.json`.
 
 ---
+
+## 2026-11-19 08:47:38
+
+| Finding | Priorität | Vorher | Jetzt | Detail |
+|---------|-----------|--------|-------|--------|
+| SEC-45: npm audit: Bekannte Vulnerabilities | P2 | partially_resolved | open | npm audit lieferte keine gültigen Prüfdaten |
+
+**Root-Cause:** Der erste Evaluatorlauf wurde ohne Registryzugriff ausgeführt. `npm audit` lieferte deshalb wegen DNS-Fehlern keine gültigen Prüfdaten; der fail-closed Evaluator setzte SEC-45 vorübergehend auf offen.
+**Gegenmaßnahme:** Bei fehlenden Registrydaten den Bericht nicht als Paketbefund werten, sondern den Audit und Review-Evaluator nach bestätigtem Registryzugriff wiederholen.
+**Verantwortlich:** BoardGameTools-Wartung.
+
+**Auflösung 19.11.2026:** Wiederholter vollständiger `npm audit --json` mit Registryzugriff meldet 0 Befunde. `npm run review-evaluate:report` ergibt 10/10, SEC-45 erledigt und keine offenen Findings oder Regressionen; Snapshot `history/2026-11-19_1010.json`.
+
+---

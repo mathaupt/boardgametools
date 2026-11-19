@@ -2,15 +2,18 @@ import { describe, it, expect } from "vitest";
 import { changelog, currentVersion } from "@/lib/changelog";
 
 describe("changelog", () => {
-  it("starts with the implemented dashboard UX entry", () => {
+  it("starts with the latest bug-fix entry", () => {
     expect(changelog[0]).toMatchObject({
-      version: "0.50.103",
-      title: "Einladungen und Navigation fokussiert",
+      version: "0.50.104",
+      title: "Sessions, Gaststimmen und Sicherheit verbessert",
       changes: expect.arrayContaining([
-        expect.objectContaining({ type: "fix", bugRef: "BUG-089" }),
+        expect.objectContaining({ type: "fix", bugRef: "BUG-080" }),
+        expect.objectContaining({ type: "fix", bugRef: "BUG-081" }),
+        expect.objectContaining({ type: "fix", bugRef: "BUG-086" }),
+        expect.objectContaining({ type: "fix", bugRef: "BUG-088" }),
       ]),
     });
-    expect(changelog[0].changes.some((change) => change.text.includes("fünf Hauptziele"))).toBe(true);
+    expect(changelog[0].changes.some((change) => change.bugRef === "BUG-090")).toBe(true);
   });
 
   it("is a non-empty array", () => {

@@ -2216,33 +2216,37 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 ### [BUG-080] Web-Sessions über die ersten 20 Einträge hinaus sind nicht erreichbar
 
-**Status:** `open`
+**Status:** `fixed`
 **Schweregrad:** `medium`
 **Entdeckt:** 2026-11-16
-**Test geschrieben:** Nein – Auditbefund; gezielter Regressionstest vor dem Fix vorgesehen.
+**Behoben:** 2026-11-19
+**Behoben in Version:** 0.50.104
+**Test geschrieben:** Ja – `tests/unit/components/sessions-page.test.tsx` prüft Seite 2 bei 21 Sessions, kontogebundene Abfrage, seitengetrennte Cache-Schlüssel, Navigation in beide Richtungen, stabile Sortierung und Begrenzung ungültig hoher Seitenzahlen.
 
 **Beschreibung:** Web-Sessions über die ersten 20 Einträge hinaus sind nicht erreichbar.
 **Reproduktion:** Mehr als 20 Sessions besitzen und /dashboard/sessions öffnen.
 **Erwartetes Verhalten:** Alle eigenen Sessions sind über eine Seitennavigation erreichbar.
 **Tatsächliches Verhalten:** Die Abfrage lädt nur 20 Einträge; eine weitere Seite wird nicht angeboten.
 **Ursache:** Festes take: 20 ohne URL-Pagination in der Sessions-Seite.
-**Lösung:** Geplant: Kontogebundene Seitennavigation mit stabiler Reihenfolge gemäß FEAT-034 ergänzen.
-**Referenz im Changelog:** Version 0.50.100 – Bestandsprüfung und Nachzugsplanung; noch kein Fix.
+**Lösung:** Serverseitige Seitennavigation mit Gesamtzahl, Kontofilter, stabilem Schlüssel aus `playedAt` und ID sowie isoliertem Cache-Schlüssel je Seite ergänzt.
+**Referenz im Changelog:** Version 0.50.104 – Sessions und Gaststimmen; BUG-080 behoben.
 
 ### [BUG-081] Eventübersicht zählt Gaststimmen nicht mit
 
-**Status:** `open`
+**Status:** `fixed`
 **Schweregrad:** `medium`
 **Entdeckt:** 2026-11-16
-**Test geschrieben:** Nein – Auditbefund; gezielter Regressionstest vor dem Fix vorgesehen.
+**Behoben:** 2026-11-19
+**Behoben in Version:** 0.50.104
+**Test geschrieben:** Ja – `tests/unit/components/events-overview.test.tsx` prüft die Summe aus einer Konto- und zwei Gaststimmen.
 
 **Beschreibung:** Eventübersicht zählt Gaststimmen nicht mit.
 **Reproduktion:** Ein Event mit einer Kontostimme und zwei Gaststimmen in /dashboard/events ansehen.
 **Erwartetes Verhalten:** Der Vorschlag zeigt drei Stimmen wie im Voting und Dashboard.
 **Tatsächliches Verhalten:** Die Eventübersicht zeigt nur die eine Kontostimme.
 **Ursache:** Die Serverquery und EventsOverview verwenden ausschließlich _count.votes.
-**Lösung:** Geplant: Gesamtstimmen aus Konto- und Gaststimmen gemäß FEAT-034 bilden.
-**Referenz im Changelog:** Version 0.50.100 – Bestandsprüfung und Nachzugsplanung; noch kein Fix.
+**Lösung:** Die Eventabfrage zählt Konto- und Gaststimmen; die Übersicht zeigt deren Summe.
+**Referenz im Changelog:** Version 0.50.104 – Sessions und Gaststimmen; BUG-081 behoben.
 
 ### [BUG-082] Event-Vertragstests schlagen nach Ablauf ihrer Fixturetermine fehl
 
@@ -2314,18 +2318,20 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 ### [BUG-086] Ältere OpenAPI-Endpunkte referenzieren fehlende Komponenten
 
-**Status:** `open`
+**Status:** `fixed`
 **Schweregrad:** `low`
 **Entdeckt:** 2026-11-17
-**Test geschrieben:** Nein – Dokumentationsbefund, lokale Referenzprüfung durchgeführt.
+**Behoben:** 2026-11-19
+**Behoben in Version:** 0.50.104
+**Test geschrieben:** Nicht anwendbar – reine Dokumentationskorrektur. YAML-Parser und vollständige lokale `$ref`-Auflösung bestanden.
 
 **Beschreibung:** Die vorhandene OpenAPI-Datei referenziert NotFound, IdParam, Session und GroupPoll ohne zugehörige Komponentendefinition. Die für A–C verwendeten Unauthorized- und BadRequest-Antworten wurden ergänzt und sind auflösbar.
 **Reproduktion:** Alle lokalen $ref-Ziele in docs/openapi.yaml gegen die Datei auflösen.
 **Erwartetes Verhalten:** Jede lokale Referenz besitzt eine passende Definition.
-**Tatsächliches Verhalten:** Vier ältere Referenzziele fehlen weiterhin.
+**Tatsächliches Verhalten:** Vor dem Fix waren vier ältere Referenzziele nicht definiert.
 **Ursache:** Historische Erweiterungen ohne vollständige Referenzvalidierung.
-**Lösung:** Offen: bestehende API-Antworten gegen Implementierung abgleichen und fehlende Definitionen separat vervollständigen.
-**Referenz im Changelog:** Version 0.50.101 – Prüfgrenze dokumentiert; kein vollständiger Fix.
+**Lösung:** `NotFound`, `IdParam`, `Session` und `GroupPoll` ergänzt; Umfrageerstellung erhält ein eigenes Eingabeschema. Alle lokalen Referenzen sind auflösbar.
+**Referenz im Changelog:** Version 0.50.104 – OpenAPI-Referenzen vervollständigt; BUG-086 behoben.
 
 ### [BUG-087] Native Suchleiste schneidet das Suchsymbol bei größter Schrift ab
 
@@ -2346,19 +2352,21 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 
 ### [BUG-088] Aktueller npm-Audit meldet moderate Next.js-Cache-Befunde
 
-**Status:** `open`
+**Status:** `fixed`
 **Schweregrad:** `medium`
 **Entdeckt:** 2026-11-18
-**Test geschrieben:** Nein – Abhängigkeitsbefund, aktueller Registryaudit geprüft.
+**Behoben:** 2026-11-19
+**Behoben in Version:** 0.50.104
+**Test geschrieben:** Kein Laufzeit-Regressionstest – Abhängigkeitsupdate mit Typprüfung, Lint, Tests, Build und Produktionsaudit verifiziert.
 
 **Beschreibung:** Der neue Auditstand führt Next.js 16.4.3 als betroffenes Produktionspaket für zwei moderate Cache-Advisories. Eine konkrete Ausnutzbarkeit in dieser Anwendung wurde nicht nachgewiesen.
 **Reproduktion:** `npm audit --omit=dev --json` mit Registryzugriff ausführen.
 **Erwartetes Verhalten:** Produktionsabhängigkeiten ohne bekannte ungepatchte Sicherheitsbefunde.
-**Tatsächliches Verhalten:** Ein moderater Paketbefund zu `next`; keine hohen oder kritischen Produktionsbefunde.
+**Tatsächliches Verhalten vor Fix:** Ein moderater Paketbefund zu `next`; keine hohen oder kritischen Produktionsbefunde.
 **Ursache:** Nach dem A–C-Prüflauf aktualisierte Advisorydaten für die unveränderte Frameworkversion.
-**Lösung:** Separat ausstehend: Auswirkungen prüfen und Patchupdate auf mindestens 16.4.5 mit Typprüfung, Lint, vollständigen Tests und Build abnehmen. Keine Dependencyänderung im freigegebenen A–C-Abschluss vorgenommen.
+**Lösung:** `next`, `eslint-config-next` und `@next/bundle-analyzer` auf 16.4.6 aktualisiert. Vollständiger npm-Audit und Produktionsaudit melden 0 Befunde; Typprüfung, gezieltes ESLint, vollständige Tests und Build sind bestanden.
 **Quellen:** [GHSA-mfr8-8qww-v76h](https://github.com/advisories/GHSA-mfr8-8qww-v76h), [GHSA-vc7v-qv4w-wrv8](https://github.com/advisories/GHSA-vc7v-qv4w-wrv8).
-**Referenz im Changelog:** Version 0.50.101 – Aktueller Abhängigkeitsbefund dokumentiert; noch kein Fix.
+**Referenz im Changelog:** Version 0.50.104 – Sicherheitsupdate auf Next.js 16.4.6; BUG-088 behoben.
 
 ### [BUG-089] Einladungsantwort im Dashboard meldet Fehler nicht
 
@@ -2377,10 +2385,27 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 **Lösung:** HTTP- und Netzwerkfehler werden am Einladungseintrag angezeigt. Die ursprüngliche Antwort kann wiederholt werden; erfolgreiche Antworten zeigen eine Bestätigung und entfernen den Eintrag.
 **Referenz im Changelog:** Version 0.50.103 – BUG-089 behoben.
 
+### [BUG-090] Hono-Entwicklungsabhängigkeiten enthalten moderate Advisories
+
+**Status:** `fixed`
+**Schweregrad:** `medium`
+**Entdeckt:** 2026-11-19
+**Behoben:** 2026-11-19
+**Behoben in Version:** 0.50.104
+**Test geschrieben:** Nicht anwendbar – reine Entwicklungsabhängigkeiten; npm-Audit und Abhängigkeitsbaum nach dem gezielten Update geprüft.
+
+**Beschreibung:** Der vollständige npm-Audit meldete moderate Advisories in `hono` und `@hono/node-server`, transitiv eingebunden über CodeceptJS und das Model Context Protocol SDK. Die betroffenen Pakete lagen ausschließlich im Entwicklungsbaum.
+**Reproduktion:** `npm audit --json` vor dem Update ausführen.
+**Erwartetes Verhalten:** Keine ungepatchten moderaten oder schwereren Befunde in der Entwicklungsabhängigkeit.
+**Tatsächliches Verhalten vor Fix:** `hono@4.13.14` und `@hono/node-server@2.1.5` waren von mehreren moderaten Advisories betroffen.
+**Ursache:** Die aufgelösten Versionen im Lockfile lagen unter den gepatchten Minor-Versionen.
+**Lösung:** Hono-Abhängigkeiten innerhalb der vom SDK erlaubten Semver-Bereiche auf `hono@4.13.19` und `@hono/node-server@2.1.9` aktualisiert. Der Installationsaudit meldete danach 0 Befunde.
+**Referenz im Changelog:** Version 0.50.104 – Hono-Entwicklungsabhängigkeiten aktualisiert; BUG-090 behoben.
+
 ## Statistik
 
-- **Offene Bugs:** 4
+- **Offene Bugs:** 0
 - **In Bearbeitung:** 0
-- **Behoben:** 85
+- **Behoben:** 90
 - **Wontfix:** 0
-- **Gesamt:** 89
+- **Gesamt:** 90

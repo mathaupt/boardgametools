@@ -64,7 +64,7 @@ Die Impeccable-Design-Hooks sind für das Projekt aktiviert. Sie melden nach Än
 
 ## Tech Stack
 
-- **Framework**: Next.js 16.4.3 (App Router, Turbopack dev, Webpack prod)
+- **Framework**: Next.js 16.4.6 (App Router, Turbopack dev, Webpack prod)
 - **Sprache**: TypeScript 6.0.3 (strict)
 - **Datenbank**: PostgreSQL (Prisma Postgres) + Prisma ORM 7.10.1
 - **Styling**: Tailwind CSS 4.3.3 + `@tailwindcss/postcss` 4.3.3 + shadcn/ui Komponenten
@@ -84,7 +84,7 @@ Die Impeccable-Design-Hooks sind für das Projekt aktiviert. Sie melden nach Än
   - `glob`: `^14.0.3` (gepatchte Version; verifizierter CodeceptJS-/Mocha-Vertrag)
   - `minimatch`: `^11.0.4` (gepatchte Version für ESLint-/CodeceptJS-Werkzeuge)
   - `codeceptjs`: `uuid ^11.1.1`, `axios ^1.19.0`
-- Sicherheitsstand 0.50.72: Produktionsaudit meldet 0 Befunde; Entwicklungs-Audit enthält nur den bekannten niedrigen `deepmerge`-Befund aus shadcn. Gepatchte glob/minimatch-Overrides: Details in `docs/code-reviews/security.md`.
+- Sicherheitsstand 0.50.104: Produktions- und vollständiger npm-Audit melden 0 Befunde. Next.js ist auf 16.4.6 aktualisiert; Hono-Entwicklungsabhängigkeiten und gepatchte glob/minimatch-Overrides: Details in `docs/code-reviews/security.md`.
 - Gezielte Overrides: `undici@>=6 <7` → `^6.29.1`, `zod@>=4 <4.6.6` → `^4.6.7`, `js-yaml@>=4 <5` → `^4.3.2`.
 - GitHub CI benötigt schon für `npm ci` eine global definierte künstliche `SQL_DATABASE_URL`, da postinstall `prisma generate` startet. Niemals Produktionszugangsdaten für Codegenerierung verwenden; Regression: `tests/unit/scripts/ci-install.test.ts`.
 - `npm run build` verändert keine Datenbank. Migrationen nur explizit über `npm run prisma:deploy`; bei Fehlern abbrechen, kein automatisches Baseline oder `db push`.

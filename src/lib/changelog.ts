@@ -12,6 +12,19 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.104",
+    date: "2026-11-19",
+    title: "Sessions, Gaststimmen und Sicherheit verbessert",
+    description: "Ältere Sessions und Gaststimmen werden vollständig angezeigt; die API-Dokumentation ist ergänzt und Next.js aktualisiert.",
+    changes: [
+      { type: "fix", text: "BUG-080: Sessions lassen sich seitenweise vollständig durchsehen; die Reihenfolge bleibt bei gleichen Spieldaten stabil.", bugRef: "BUG-080" },
+      { type: "fix", text: "BUG-081: Vorschläge in der Eventübersicht zeigen Konto- und Gaststimmen zusammen.", bugRef: "BUG-081" },
+      { type: "fix", text: "BUG-086: Fehlende OpenAPI-Komponenten sind ergänzt und die Umfrageeingabe ist beschrieben.", bugRef: "BUG-086" },
+      { type: "fix", text: "BUG-088: Next.js und zugehörige Werkzeuge sind auf Version 16.4.6 aktualisiert; der Produktionsaudit ist sauber.", bugRef: "BUG-088" },
+      { type: "fix", text: "BUG-090: Verwundbare Hono-Versionen in der Testwerkzeugkette sind aktualisiert.", bugRef: "BUG-090" },
+    ],
+  },
+  {
     version: "0.50.103",
     date: "2026-11-18",
     title: "Einladungen und Navigation fokussiert",

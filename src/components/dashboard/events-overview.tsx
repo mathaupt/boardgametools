@@ -13,7 +13,7 @@ export interface EventListItem {
   selectedGame: { name: string } | null;
   winningProposal: { bggName: string | null } | null;
   _count: { invites: number; proposals: number };
-  proposals: { id: string; bggName: string | null; bggImageUrl: string | null; game: { name: string; imageUrl: string | null } | null; _count: { votes: number } }[];
+  proposals: { id: string; bggName: string | null; bggImageUrl: string | null; game: { name: string; imageUrl: string | null } | null; _count: { votes: number; guestVotes: number } }[];
 }
 
 export function EventsOverview({ events, invites }: { events: EventListItem[]; invites: PendingInvite[] }) {
@@ -145,7 +145,7 @@ export function EventsOverview({ events, invites }: { events: EventListItem[]; i
                           <div>
                             <div className="font-medium text-sm truncate max-w-[160px]">{gameName}</div>
                             <div className="text-xs text-muted-foreground">
-                              {proposal._count.votes} Stimmen
+                              {proposal._count.votes + proposal._count.guestVotes} Stimmen
                             </div>
                           </div>
                         </div>

@@ -8,6 +8,14 @@ import { EventsOverview } from "@/components/dashboard/events-overview";
 const event = (overrides: any = {}) => ({ id: "e1", title: "Spieleabend", description: null, eventDate: "2026-11-10T18:00:00.000Z", location: null, selectedGame: null, winningProposal: null, _count: { invites: 2, proposals: 4 }, proposals: [], ...overrides });
 
 describe("EventsOverview", () => {
+  it("zählt Gaststimmen zusätzlich zu Kontostimmen", () => {
+    render(<EventsOverview events={[event({
+      proposals: [{ id: "p1", bggName: "Azul", bggImageUrl: null, game: null, _count: { votes: 1, guestVotes: 2 } }],
+    })]} invites={[]} />);
+
+    expect(screen.getByText("3 Stimmen")).toBeInTheDocument();
+  });
+
   it("zeigt den Erstellungszustand und die Zahl offener Einladungen", () => {
     render(<EventsOverview events={[]} invites={[{} as never]} />);
     expect(screen.getByRole("heading", { name: "Spieleabende & Abstimmungen" })).toBeInTheDocument();
@@ -21,10 +29,10 @@ describe("EventsOverview", () => {
       description: "Bring ein Spiel mit", location: "Vereinsraum", selectedGame: { name: "Catan" },
       winningProposal: { bggName: "Fallback" },
       proposals: [
-        { id: "p1", bggName: null, bggImageUrl: null, game: { name: "Azul", imageUrl: "https://img.test/azul.jpg" }, _count: { votes: 5 } },
-        { id: "p2", bggName: "Carcassonne", bggImageUrl: null, game: null, _count: { votes: 3 } },
-        { id: "p3", bggName: null, bggImageUrl: null, game: null, _count: { votes: 2 } },
-        { id: "p4", bggName: "Skipped", bggImageUrl: null, game: null, _count: { votes: 0 } },
+        { id: "p1", bggName: null, bggImageUrl: null, game: { name: "Azul", imageUrl: "https://img.test/azul.jpg" }, _count: { votes: 5, guestVotes: 0 } },
+        { id: "p2", bggName: "Carcassonne", bggImageUrl: null, game: null, _count: { votes: 3, guestVotes: 0 } },
+        { id: "p3", bggName: null, bggImageUrl: null, game: null, _count: { votes: 2, guestVotes: 0 } },
+        { id: "p4", bggName: "Skipped", bggImageUrl: null, game: null, _count: { votes: 0, guestVotes: 0 } },
       ],
     })]} invites={[]} />);
     expect(screen.getByRole("heading", { name: "Spieleabend" })).toBeInTheDocument();

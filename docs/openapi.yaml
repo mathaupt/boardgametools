@@ -73,6 +73,11 @@ tags:
 
 components:
   responses:
+    NotFound:
+      description: Ressource nicht gefunden
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
     Unauthorized:
       description: Nicht angemeldet oder Anmeldung abgelaufen
       content:
@@ -84,6 +89,42 @@ components:
         application/json:
           schema: { $ref: '#/components/schemas/Error' }
   schemas:
+    Session:
+      $ref: '#/components/schemas/GameSession'
+    GroupPoll:
+      type: object
+      required: [id, groupId, title, type, status, createdById, createdAt]
+      properties:
+        id: { type: string }
+        groupId: { type: string }
+        title: { type: string }
+        description: { type: string, nullable: true }
+        type: { type: string, enum: [single, multiple] }
+        status: { type: string, enum: [open, closed] }
+        createdById: { type: string }
+        closedAt: { type: string, format: date-time, nullable: true }
+        createdAt: { type: string, format: date-time }
+        options:
+          type: array
+          items:
+            type: object
+            required: [id, pollId, text, sortOrder]
+            properties:
+              id: { type: string }
+              pollId: { type: string }
+              text: { type: string }
+              sortOrder: { type: integer }
+    GroupPollCreate:
+      type: object
+      required: [title, options]
+      properties:
+        title: { type: string, minLength: 1 }
+        description: { type: string, nullable: true }
+        type: { type: string, enum: [single, multiple], default: single }
+        options:
+          type: array
+          minItems: 2
+          items: { type: string, minLength: 1 }
     QualityCoverage:
       type: object
       required: [statements, branches, functions, lines]
@@ -331,6 +372,12 @@ components:
       description: Separates HEALTH_READINESS_TOKEN Secret für den Betriebsmonitor
 
   parameters:
+    IdParam:
+      name: id
+      in: path
+      required: true
+      description: ID der Ressource
+      schema: { type: string }
     PageParam:
       name: page
       in: query
@@ -3072,7 +3119,7 @@ paths:
       requestBody:
         required: true
         content:
-          application/json: { schema: { $ref: '#/components/schemas/GroupPoll' } }
+          application/json: { schema: { $ref: '#/components/schemas/GroupPollCreate' } }
       responses:
         '201': { description: Umfrage erstellt }
         '401': { $ref: '#/components/responses/Unauthorized' }

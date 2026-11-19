@@ -113,22 +113,22 @@ ersetzt keine separate Freigabe neuer öffentlicher Datenflüsse oder Audiobearb
 
 ## Webpaket FEAT-034
 
-- [ ] BUG-081 zuerst: **RED** Komponententest mit einer Kontostimme und zwei
+- [x] BUG-081: **RED** Komponententest mit einer Kontostimme und zwei
   Gaststimmen erwartet „3 Stimmen“; **GREEN** Query, Typ und Anzeige zählen beide;
   **REFACTOR** denselben Stimmenvertrag wie Dashboard/Voting verwenden.
-  Befehl: `npx vitest run tests/unit/components/club-dashboard.test.tsx` plus neue
-  zielgerichtete Eventübersichttests in derselben Testsuite.
-- [ ] BUG-080: **RED** Seitentest für mindestens 21 Sessions, Seite 2 und fremde
+  Nachweis 19.11.2026: `npx vitest run tests/unit/components/events-overview.test.tsx` bestanden.
+- [x] BUG-080: **RED** Seitentest für mindestens 21 Sessions, Seite 2 und fremde
   Konten; **GREEN** `page` parsen, serverseitig begrenzen und mit stabiler
   `playedAt`-/ID-Reihenfolge abfragen, URL-Navigation und Gesamtzahl anzeigen;
   **REFACTOR** Paginationdarstellung bei passendem Vertrag wiederverwenden.
-  Befehl: `npx vitest run tests/unit/components/sessions-page.test.tsx`.
+  Nachweis 19.11.2026: `npx vitest run tests/unit/components/sessions-page.test.tsx` bestanden; Seitengrenzen, Eigentümerfilter, seitengetrennte Cache-Schlüssel und Navigation in beide Richtungen abgedeckt. Browserbelege für 320/390/768/1440 px in Hell und Dunkel: `.impeccable/critique/2026-11-19-sessions-pagination/` (emulierte Viewports, Chromium; keine Screenreader-Hardwareabnahme).
 - [ ] Eventlistenquery auf tatsächlich benötigte Felder reduzieren; **RED**
   Queryvertrag und sichtbare Teilnehmer-/Vorschlagszahlen testen, **GREEN** `select`
   und begrenzte Vorschau, **REFACTOR** gemeinsame Summarytypen.
-- [ ] ESLint-Werkzeugausnahmen eng begrenzen und tatsächliche Runnerausgabe prüfen.
-  Hono-Entwicklungspfad gezielt aktualisieren, ohne `audit fix --force`; vorab
-  Dependency-Impact und Evaluatorreport, danach Typprüfung, Lint, Tests und Build.
+- [x] Hono-Entwicklungspfad gezielt und ohne `audit fix --force` aktualisieren.
+  Hono ist am 19.11.2026 auf `hono@4.13.19` und `@hono/node-server@2.1.9` aktualisiert; vollständiger Installationsaudit meldete danach 0 Befunde (BUG-090).
+- [ ] ESLint-Werkzeugausnahmen eng begrenzen und Runnerwarnungen prüfen; die
+  globale ESLint-Ausgabe enthält aktuell 652 Warnungen und 0 Fehler.
 - [ ] Gerenderte Webabnahme auf lokaler isolierter Testdatenbank: 320/390/768/1440 px,
   beide Themes, große Schrift, Tastatur, Laden/Fehler/leer und Pagination. Keine
   Testdaten in Produktionsdatenbanken anlegen.
@@ -177,5 +177,7 @@ werden nicht erfunden oder nachträglich hochgesetzt.
 
 
 **Auditfortschreibung 18.11.2026:** Der Runtimecode ist unverändert. Der aktuelle Produktionsaudit meldet einen moderaten Next.js-Paketbefund (BUG-088), ohne hohe/kritische Produktionsbefunde. Der erfolgreiche Stand vom 17.11.2026 ist ein historischer Nachweis; das erforderliche Framework-Patchupdate bleibt separate Folgearbeit.
+
+**BUG-088-Nachlauf 19.11.2026:** Next.js, `eslint-config-next` und `@next/bundle-analyzer` auf 16.4.6 aktualisiert. `npm audit --omit=dev` bestätigt keine Produktionsbefunde. Der vollständige FEAT-034-Queryumfang bleibt unabhängig davon offen.
 
 Aktueller Review-Regressionscheck am 18.11.2026 bestanden (Exit 0), 9,9/10; docs/code-reviews/history/2026-11-18_0806.json.
