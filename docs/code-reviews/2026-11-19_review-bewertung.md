@@ -40,3 +40,13 @@ Warnungen auf 0. Vollsuite, TypeScript, Build und Security wurden bestätigt;
 die gerenderte UI-Prüfung ergänzt synthetische Zustände. Keine Änderung an
 Review-Scores oder Findings. Eine Datenbankabnahme mit isolierten Testdaten
 bleibt offen.
+
+## FEAT-034 Abschluss – 0.50.107
+
+FEAT-034 ist mit echter lokaler Testdatenbank und authentifiziertem Browserlauf
+abgenommen. 1.480 Tests, TypeScript, Build, globales ESLint und Securitycheck
+bestanden. Die Event- und Sessionansichten funktionieren über vier Viewports
+und zwei Themes; der neue Zoomregressionstest belegt, dass die Aktionslinks bei
+200-%-Zoom innerhalb der 195 CSS-Pixel bleiben. Der vollständige Reviewlauf
+erreicht 10/10 ohne offene Findings oder Regression; npm-Audit meldet 0
+Vulnerabilities. BUG-091 ist behoben.

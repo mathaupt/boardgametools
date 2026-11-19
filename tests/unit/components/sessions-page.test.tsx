@@ -57,6 +57,19 @@ const makeSession = (overrides: Record<string, unknown> = {}) => ({
 });
 
 describe("SessionsPage", () => {
+  it("lässt Aktionslinks bei schmaler Darstellung umbrechen und mindestens 44 px hoch", async () => {
+    mocks.auth.mockResolvedValue({ user: { id: "owner-1" } });
+    mocks.findMany.mockResolvedValue([makeSession()]);
+
+    render(await SessionsPage({ searchParams: Promise.resolve({}) }));
+
+    const details = screen.getByRole("link", { name: "Details" });
+    const edit = screen.getByRole("link", { name: "Bearbeiten" });
+    expect(details.parentElement).toHaveClass("flex-wrap");
+    expect(details).toHaveClass("min-h-11");
+    expect(edit).toHaveClass("min-h-11");
+  });
+
   it("renders each session's own cover and keeps the existing session links", async () => {
     mocks.auth.mockResolvedValue({ user: { id: "owner-1" } });
     mocks.count.mockResolvedValue(2);

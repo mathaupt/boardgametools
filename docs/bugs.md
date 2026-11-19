@@ -2402,10 +2402,27 @@ Version 0.50.11 - Fix: NextAuth `trustHost` für lokale Produktions-Builds und V
 **Lösung:** Hono-Abhängigkeiten innerhalb der vom SDK erlaubten Semver-Bereiche auf `hono@4.13.19` und `@hono/node-server@2.1.9` aktualisiert. Der Installationsaudit meldete danach 0 Befunde.
 **Referenz im Changelog:** Version 0.50.104 – Hono-Entwicklungsabhängigkeiten aktualisiert; BUG-090 behoben.
 
+### [BUG-091] Sessions-Aktionen laufen bei 200-%-Zoom horizontal über
+
+**Status:** `fixed`
+**Schweregrad:** `medium`
+**Entdeckt:** 2026-11-19
+**Behoben:** 2026-11-19
+**Behoben in Version:** 0.50.107
+**Test geschrieben:** Ja – `tests/unit/components/sessions-page.test.tsx`; Regressionstest und gerenderte Browserprüfung bestanden.
+
+**Beschreibung:** Die Aktionslinks „Details“ und „Bearbeiten“ bleiben auf kleinen Ansichten nebeneinander und passen bei 200-%-Browserzoom nicht mehr in den sichtbaren Bereich.
+**Reproduktion:** Mit einem autorisierten lokalen Testkonto und 21 Sessions `/dashboard/sessions?page=2` bei 390 Geräte-Pixeln und zweifacher Geräteskalierung öffnen. Der Browser erhält einen 195-CSS-Pixel-Viewport.
+**Erwartetes Verhalten:** Die Aktionslinks bleiben erreichbar und die Seite hat keinen horizontalen Überlauf.
+**Tatsächliches Verhalten:** `document.documentElement.scrollWidth` beträgt 215 px bei 195 px Viewport; der Link „Bearbeiten“ ragt rechts heraus.
+**Ursache:** Die Sessionaktionsgruppe verwendet eine nicht umbrechende Flexzeile; ihre Linktexte bleiben einzeilig.
+**Lösung:** Aktionsgruppe darf umbrechen; beide Links haben mindestens 44 CSS-Pixel Höhe. Browserprüfung mit authentifizierter Testseite bei 195 CSS-Pixeln bestätigt `scrollWidth=195`, Tastaturfokus funktioniert.
+**Referenz im Changelog:** Version 0.50.107 – Sessions bleiben bei starker Vergrößerung bedienbar.
+
 ## Statistik
 
 - **Offene Bugs:** 0
 - **In Bearbeitung:** 0
-- **Behoben:** 90
+- **Behoben:** 91
 - **Wontfix:** 0
-- **Gesamt:** 90
+- **Gesamt:** 91

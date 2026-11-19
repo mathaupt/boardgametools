@@ -53,3 +53,11 @@ Der Produktions- und vollständige npm-Audit melden 0 Befunde. Review-History:
 - `npx eslint .agents/skills/impeccable/scripts/live-browser.js --max-warnings=0` war vorher mit 15 Warnungen rot und nach der Konfiguration gezielt ignoriert; `npm run lint` besteht.
 - Gefüllte/leere Eventkarten, Laden, Fehler und Paginierung visuell mit synthetischen Daten geprüft; 320/390/768/1440 px Hell/Dunkel, 200-%-Zoom bei 195 CSS-Pixeln und Tastaturfokus ohne Überlauf.
 - Isolierte Testdatenbankabnahme bleibt offen. Produktionsbuild und TypeScript nach dem Konfigurations-/Changelogstand bestanden.
+
+## FEAT-034 Abschluss und BUG-091 – 0.50.107
+
+- 1.480 Tests in 235 Dateien bestanden; TypeScript, globales ESLint (0 Warnungen), Produktionsbuild und Security-Check bestanden.
+- `npm audit --json`: 0 Vulnerabilities. Review-Regressionslauf mit Registryzugriff: 10/10, 0 offene Findings, keine Regression.
+- Authentifizierte Chromium-Prüfung mit isolierten temporären DB-Daten: Event-/Sessionansichten in vier Viewports und beiden Themes, Eventzähler, 21 Sessions, 200-%-Zoom und Tastaturfokus bestanden. Daten bereinigt.
+- BUG-091 Regressionstest vor Fix rot und nach Fix grün; Aktionslinks umbrechen und bei 195 CSS-Pixeln bleibt `scrollWidth=195`.
+- Belege unter `.impeccable/critique/2026-11-19-feat034-db/`.

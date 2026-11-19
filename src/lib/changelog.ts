@@ -12,6 +12,15 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.107",
+    date: "2026-11-19",
+    title: "Sessions bleiben bei starker Vergrößerung bedienbar",
+    description: "Die Aktionen auf Sessionkarten passen sich auch bei 200-%-Zoom an schmale Ansichten an.",
+    changes: [
+      { type: "fix", text: "BUG-091: Details und Bearbeiten umbrechen bei schmaler Darstellung und bleiben mit der Tastatur gut erreichbar.", bugRef: "BUG-091" },
+    ],
+  },
+  {
     version: "0.50.106",
     date: "2026-11-19",
     title: "Qualitätsprüfung fokussiert",

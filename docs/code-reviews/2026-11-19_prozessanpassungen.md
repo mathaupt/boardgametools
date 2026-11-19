@@ -29,3 +29,14 @@ Review 10/10; vollständiger npm-Audit ohne Befunde.
 - ESLint-GREEN nach exakt begrenzten Pfadausnahmen: gezielter Lauf und globales `npm run lint` mit 0 Warnungen.
 - Visueller Nachweis für gefüllte/leere Events, Laden, Fehler und Paginierung in 320/390/768/1440 px Hell/Dunkel; 200-%-Zoom über halbe CSS-Viewportbreite und Tastaturfokus ohne horizontalen Überlauf.
 - Datenbankzugriff/Testsaat wurde nicht verwendet; die Vorschau besteht aus synthetischen lokalen Fixtures. Isolierte DB-Abnahme bleibt offen.
+
+## FEAT-034 Abschluss und BUG-091 – 0.50.107
+
+- [x] BUG-091 im RED-GREEN-Zyklus behoben; 44 px Mindesthöhe und umbrechende Aktionen.
+- [x] Authentifizierte DB-Abnahme ausschließlich in `bgt_test_feat028`; Testkonten und Datensätze kaskadierend bereinigt.
+- [x] Event-/Sessionansichten bei vier Viewports in Hell/Dunkel, Seitenzählung, 200-%-Zoom und Tastaturfokus geprüft.
+- [x] 1.480 Tests, `npm run typecheck`, `npm run lint`, `npm run build` und `npm run security-check:fast` bestanden.
+- [x] Vollständiger npm-Audit meldet 0 Befunde; Regressionsevaluator mit Registryzugriff 10/10 ohne Regression.
+
+Erfolgsmessung: 1.480 Tests in 235 Dateien; 0 offene Bugs; 91 behobene Bugs;
+Review 10/10; keine horizontale Überbreite bei 200-%-Zoom.

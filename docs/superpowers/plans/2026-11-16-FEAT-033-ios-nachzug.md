@@ -202,4 +202,20 @@ bleiben unverändert; Vorschläge werden auf drei Datensätze und benötigte Fel
 begrenzt. Vollständige FEAT-034-Abnahme und ESLint-Werkzeugbereinigung bleiben
 offen.
 
+**Fortsetzung und Aktualitätsprüfung 19.11.2026:** HEAD `06a08b1`, Arbeitsbaum
+sauber. Verifizierte Datenquelle für die fortgesetzte UI-Abnahme ist ausschließlich
+`127.0.0.1/bgt_test_feat028` (vorher 1 User, 0 Events, 0 Sessions). Echter Login
+mit temporären Konten und 21 Sessions reproduziert BUG-091: bei 195 CSS-Pixeln
+hat der Sessionsbildschirm 215 px Scrollbreite. Alle Testkonten wurden kaskadierend
+entfernt. Geplanter Umfang: Sessionaktionen umbrechen lassen; API, Schema und
+Produktionsdatenbank bleiben unberührt.
+
 Aktueller Review-Regressionscheck am 18.11.2026 bestanden (Exit 0), 9,9/10; docs/code-reviews/history/2026-11-18_0806.json.
+
+**BUG-091 umgesetzt und Abnahme abgeschlossen 19.11.2026:** Der gezielte
+Regressionstest für umbrechende Sessionaktionen wurde zunächst rot ausgeführt;
+nach der CSS-Anpassung bestanden. Authentifizierte lokale Chromium-Abnahme mit
+21 Sessions bestätigt 195 px Scrollbreite bei 195 px Viewport, sichtbaren
+Tastaturfokus sowie Events und Sessions bei 320/390/768/1440 px in Hell/Dunkel.
+Die vollständige Suite und Qualitätsprüfungen werden im Abschlussnachweis
+festgehalten. BUG-091 ist in Version 0.50.107 behoben.

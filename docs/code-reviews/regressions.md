@@ -735,10 +735,24 @@ Jeder Eintrag enthält Felder für Root-Cause-Analyse und Gegenmaßnahmen (manue
 |---------|-----------|--------|-------|--------|
 | SEC-45: npm audit: Bekannte Vulnerabilities | P2 | resolved | open | npm audit lieferte keine gültigen Prüfdaten |
 
+**Root-Cause:** Der erste Review-Regressionslauf lief in einer Sandbox ohne Registryzugriff; dadurch waren die Auditdaten ungültig und SEC-45 wurde fail-closed als offen markiert. Es lag keine Paketänderung und keine echte Vulnerability vor.
+**Gegenmaßnahme:** Bei diesem Finding `npm audit --json` und `npm run review-evaluate:regression` mit Registryzugriff wiederholen; bei fehlenden Auditdaten keinen Paketbefund ableiten.
+**Verantwortlich:** BoardGameTools-Wartung.
+
+**Auflösung 19.11.2026:** `npm audit --json` mit Registryzugriff meldet 0 Vulnerabilities. Der wiederholte `npm run review-evaluate:regression` besteht mit 10/10, 0 offenen Findings und ohne Regression. Snapshot `history/2026-11-19_1152.json`.
+
+**Auflösung 19.11.2026:** Pre-Commit-Audit mit Registryzugriff bestätigt 0 Vulnerabilities. Post-Commit-Evaluator ergibt 10/10 ohne offene Findings; der SEC-45-Zwischenstatus war erneut ein Registryzugriffsfehler und keine Paketregression. Snapshot `history/2026-11-19_1047.json`.
+
+---
+
+## 2026-11-19 10:51:42
+
+| Finding | Priorität | Vorher | Jetzt | Detail |
+|---------|-----------|--------|-------|--------|
+| SEC-45: npm audit: Bekannte Vulnerabilities | P2 | resolved | open | npm audit lieferte keine gültigen Prüfdaten |
+
 **Root-Cause:** <!-- Manuell ausfüllen: Warum ist das Finding zurückgekehrt? -->
 **Gegenmaßnahme:** <!-- Manuell ausfüllen: Wie wird verhindert, dass es erneut passiert? -->
 **Verantwortlich:** <!-- Manuell ausfüllen -->
-
-**Auflösung 19.11.2026:** Pre-Commit-Audit mit Registryzugriff bestätigt 0 Vulnerabilities. Post-Commit-Evaluator ergibt 10/10 ohne offene Findings; der SEC-45-Zwischenstatus war erneut ein Registryzugriffsfehler und keine Paketregression. Snapshot `history/2026-11-19_1047.json`.
 
 ---

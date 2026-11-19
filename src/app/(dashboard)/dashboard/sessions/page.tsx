@@ -115,13 +115,13 @@ export default async function SessionsPage({
                       </div>
                     </div>
                   </div>
-                  <div className="flex gap-2">
-                    <Button asChild variant="outline" size="sm">
+                  <div className="flex w-full max-w-full flex-wrap gap-2 sm:w-auto sm:flex-nowrap">
+                    <Button asChild variant="outline" size="sm" className="min-h-11">
                       <Link href={`/dashboard/sessions/${session.id}`}>
                         Details
                       </Link>
                     </Button>
-                    <Button asChild variant="outline" size="sm">
+                    <Button asChild variant="outline" size="sm" className="min-h-11">
                       <Link href={`/dashboard/sessions/${session.id}/edit`}>
                         Bearbeiten
                       </Link>
