@@ -120,7 +120,6 @@ export default async function DashboardPage() {
   const pendingInvites = await getPendingInvites(userId!);
 
   return <DashboardOverview
-    name={session?.user?.name ?? null}
     counts={{ games: gamesCount, sessions: sessionsCount, groups: groupsCount, events: eventsCount }}
     events={upcomingEvents.map((event) => ({
       id: event.id, title: event.title, eventDate: toDashboardISOString(event.eventDate), location: event.location,

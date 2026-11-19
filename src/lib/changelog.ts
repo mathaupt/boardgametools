@@ -12,6 +12,15 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "0.50.109",
+    date: "2026-11-19",
+    title: "Spieleabende erhalten eine neue Anzeigetafel",
+    description: "Die Weboberfläche rückt den nächsten Spieleabend mit dunklem Stahl, klarer Typografie und Bernsteinakzenten in den Mittelpunkt.",
+    changes: [
+      { type: "improvement", text: "FEAT-036: Einheitliches Split-Flap-Design für Navigation, Dashboard, Sammlung und Spieleabende; Termine und Status bleiben auch bei Tastaturbedienung klar erkennbar." },
+    ],
+  },
+  {
     version: "0.50.108",
     date: "2026-11-19",
     title: "Eventpartien flexibel erfassen ist verfügbar",

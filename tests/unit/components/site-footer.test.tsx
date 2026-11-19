@@ -5,6 +5,7 @@ import { axe } from "jest-axe";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { renderToStaticMarkup } from "react-dom/server";
 vi.mock("next/font/google", () => ({ Barlow: () => ({variable:"barlow"}), Geist_Mono: () => ({variable:"mono"}) }));
+vi.mock("next/font/local", () => ({ default: () => ({variable:"condensed"}) }));
 vi.mock("@vercel/speed-insights/next", () => ({ SpeedInsights: () => null }));
 vi.mock("@vercel/analytics/next", () => ({ Analytics: () => null }));
 vi.mock("@/lib/auth", () => ({ auth: vi.fn().mockResolvedValue(null) }));

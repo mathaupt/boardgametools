@@ -12,6 +12,11 @@ describe("Club dashboard", () => {
     expect(screen.getByText("Aktuell keine offenen Einladungen.")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "0 Spieleabende" })).toHaveAttribute("href", "/dashboard/events");
   });
+  it("opens with the primary heading without an eyebrow label", () => {
+    render(<DashboardOverview {...base} />);
+    expect(screen.getByRole("heading", { level: 1, name: "Der nächste Spieleabend wartet." })).toBeInTheDocument();
+    expect(screen.queryByText("Deine Spielrunde")).not.toBeInTheDocument();
+  });
   it("prioritizes answering pending invitations from the dashboard heading", () => {
     render(<DashboardOverview {...base} invites={[{
       id: "invite", eventId: "night", status: "pending",

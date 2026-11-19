@@ -6,7 +6,6 @@ import { EventPreview, type EveningPreview } from "./event-preview";
 import { formatDate } from "@/lib/date";
 
 interface DashboardOverviewProps {
-  name: string | null;
   counts: { games: number; sessions: number; groups: number; events: number };
   events: EveningPreview[];
   recentSessions: { id: string; gameName: string; playedAt: string }[];
@@ -19,9 +18,8 @@ const shortcuts = [
   ["Gruppe erstellen", "/dashboard/groups/new"],
 ];
 
-export function DashboardOverview({ name, counts, events, recentSessions, invites }: DashboardOverviewProps) {
+export function DashboardOverview({ counts, events, recentSessions, invites }: DashboardOverviewProps) {
   return <div>
-    <div className="club-topline"><span className="font-semibold">Deine Spielrunde</span><Link href="/dashboard/profile" className="text-sm text-muted-foreground hover:text-primary">{name ? `Willkommen zurück, ${name}` : "Mein Profil"}</Link></div>
     <div className="club-heading"><div><h1>Der nächste Spieleabend wartet.</h1><p>Deine Termine, Einladungen und zuletzt gespielten Partien.</p></div>
       <Button asChild><Link href={invites.length ? "#dashboard-invites" : "/dashboard/events/new"}><Plus aria-hidden="true" />{invites.length ? "Einladungen beantworten" : "Spieleabend planen"}</Link></Button>
     </div>

@@ -4,10 +4,10 @@ import { changelog, currentVersion } from "@/lib/changelog";
 describe("changelog", () => {
   it("starts with the latest release entry", () => {
     expect(changelog[0]).toMatchObject({
-      version: "0.50.108",
-      title: "Eventpartien flexibel erfassen ist verfügbar",
+      version: "0.50.109",
+      title: "Spieleabende erhalten eine neue Anzeigetafel",
       changes: expect.arrayContaining([
-        expect.objectContaining({ type: "internal", text: expect.stringContaining("FEAT-031") }),
+        expect.objectContaining({ type: "improvement", text: expect.stringContaining("FEAT-036") }),
       ]),
     });
   });

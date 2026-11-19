@@ -756,3 +756,27 @@ Jeder Eintrag enthält Felder für Root-Cause-Analyse und Gegenmaßnahmen (manue
 **Verantwortlich:** <!-- Manuell ausfüllen -->
 
 ---
+
+## 2026-11-19 19:33:14
+
+| Finding | Priorität | Vorher | Jetzt | Detail |
+|---------|-----------|--------|-------|--------|
+| SEC-45: npm audit: Bekannte Vulnerabilities | P2 | resolved | open | npm audit lieferte keine gültigen Prüfdaten |
+
+**Root-Cause:** Der lokale Review-Lauf konnte `npm audit` wegen fehlendem Registryzugriff nicht mit gültigen Daten abschließen. Das ist der bereits dokumentierte Sandbox-/Netzwerkfehler (bei gleicher Sitzung scheiterte auch `fonts.googleapis.com` mit `ENOTFOUND`), keine Dependency-Änderung oder bestätigte Schwachstelle.
+**Gegenmaßnahme:** SEC-45 nicht als echte Paketregression werten, solange der Audit keine gültigen Daten hat. Wiederholte Registryprüfung und Regressionsevaluator nach Wiederherstellung des Zugriffs ausführen; bis dahin bleibt die Review-Evidenz offen.
+**Verantwortlich:** BoardGameTools-Wartung.
+
+---
+
+## 2026-11-19 19:55:42 UTC
+
+| Finding | Priorität | Vorher | Jetzt | Detail |
+|---------|-----------|--------|-------|--------|
+| SEC-45: npm audit: Bekannte Vulnerabilities | P2 | resolved | open | npm audit lieferte keine gültigen Prüfdaten |
+
+**Root-Cause:** Der Review- und Regressionsevaluator erhielt erneut keine gültigen npm-Registry-Auditdaten. Die FEAT-036-Änderung umfasst ausschließlich Webgestaltung, lokale Schriftdateien und UI-Tests; es wurden keine Abhängigkeiten aktualisiert.
+**Gegenmaßnahme:** Vollständigen npm-Audit nach verfügbarem Registryzugriff wiederholen. Bis dahin SEC-45 als Infrastrukturgrenze behandeln und keine Schwachstelle daraus ableiten.
+**Verantwortlich:** BoardGameTools-Wartung.
+
+---

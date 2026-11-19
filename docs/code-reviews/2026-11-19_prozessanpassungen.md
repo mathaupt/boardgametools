@@ -1,5 +1,14 @@
 # Prozessanpassungen – Bugabschluss 19.11.2026
 
+## FEAT-036 – Split-Flap-Redesign
+
+- [x] Freigegebenen FEAT-036-Plan unmittelbar vor Implementierung gegen HEAD und Arbeitsbaum geprüft.
+- [x] Laufzeitänderungen testgetrieben umgesetzt; gezielte Tests einschließlich der neuen Amber-/Stahl-Oberkante bestanden.
+- [x] Impeccable-Detector einmal ausgeführt; nach dem Finish-Review die Oberkante nachgeschärft und Desktop/Mobil bei 1440×1200 und 390×844 neu gerendert.
+- [x] Seedreferenz mit `concept-seed --check-seed seed:c5f23fe40c3f189d` verifiziert; Finish-Review `ship`.
+- [x] Vollsuite (1.482 Tests), Lint, Produktionsbuild und Regressionsevaluator bestanden.
+- [ ] Vollständigen npm-Registryaudit nach Wiederherstellung des Registryzugriffs wiederholen; SEC-45 ist mangels gültiger Auditdaten weiter offen.
+
 - [x] Offene Bugliste und Backlog gegen aktuellen Commit `2ab7ded` geprüft.
 - [x] Für die Laufzeitfixes BUG-080/081 gezielte Tests vor der Codeänderung erstellt und erwartete RED-Ergebnisse beobachtet; BUG-088/090 als Dependencyänderungen mit Registryaudits verifiziert.
 - [x] Cache-Schlüssel der Sessionseiten separat regressionsgetestet.

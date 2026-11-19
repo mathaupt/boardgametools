@@ -62,7 +62,7 @@ Zuletzt gespielte Partien verlinken auf ihre Detailseiten. Kompakte Links zeigen
 
 ### Navigation und Gestaltung
 
-Seit 0.50.20: kobaltblaue Seitennavigation, hellblaue Arbeitsflächen, Barlow und pfirsichfarbene Datumsblöcke. Die Hauptnavigation zeigt Dashboard, Spiele, Sessions, Spieleabende und Gruppen direkt; Reihen, Statistiken und Abzeichen liegen unter „Mehr“. Auf dem Smartphone öffnet ein beschrifteter Menüschalter die Navigation. Escape schließt zuerst „Mehr“ und danach das mobile Menü; der Fokus kehrt zum jeweiligen Schalter zurück. Profil, Hilfe, Versionshistorie und Abmelden bleiben erreichbar; Administratoren sehen ihre zusätzlichen Bereiche. Sammlung und Eventübersicht nutzen dieselbe Gestaltung. Spielecover bleiben vollständig sichtbar, Entfernen-Schaltflächen sind auch ohne Hover erreichbar. Filter, Sortierung, Scanner und Import bleiben erhalten.
+Seit 0.50.109: gemeinsame Split-Flap-Gestaltung mit dunklen Stahlflächen, heller Schrift, Bernstein für Termine und ausgerichteten Datums-/Statusanzeigen. Das Dashboard stellt den nächsten Spieleabend in den Vordergrund. Die Hauptnavigation zeigt Dashboard, Spiele, Sessions, Spieleabende und Gruppen direkt; Reihen, Statistiken und Abzeichen liegen unter „Mehr“. Auf dem Smartphone öffnet ein beschrifteter Menüschalter die Navigation. Escape schließt zuerst „Mehr“ und danach das mobile Menü; der Fokus kehrt zum jeweiligen Schalter zurück. Profil, Hilfe, Versionshistorie und Abmelden bleiben erreichbar; Administratoren sehen ihre zusätzlichen Bereiche. Sammlung und Eventübersicht nutzen dieselbe Gestaltung. Spielecover bleiben vollständig sichtbar, Entfernen-Schaltflächen sind auch ohne Hover erreichbar. Filter, Sortierung, Scanner und Import bleiben erhalten.
 
 ---
 

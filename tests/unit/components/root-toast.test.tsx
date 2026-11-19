@@ -2,6 +2,7 @@ import { cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, expect, it, vi } from "vitest";
 vi.mock("next/font/google", () => ({ Barlow: () => ({ variable: "font-barlow" }), Geist_Mono: () => ({ variable: "font-mono" }) }));
+vi.mock("next/font/local", () => ({ default: () => ({ variable: "font-condensed" }) }));
 vi.mock("@vercel/speed-insights/next", () => ({ SpeedInsights: () => null }));
 vi.mock("@vercel/analytics/next", () => ({ Analytics: () => null }));
 import RootLayout from "@/app/layout";

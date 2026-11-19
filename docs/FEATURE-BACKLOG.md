@@ -1024,3 +1024,13 @@ danach können FEAT-026 und FEAT-027 unabhängig geplant umgesetzt werden.
 **Umfang:** Web-Dashboard, Einladungsinteraktion, gemeinsame Webnavigation und Eventübersicht. Keine iOS-, API-, Datenmodell- oder Berechtigungsänderung.
 **Design:** [Dashboard-UX-Entwurf](superpowers/specs/2026-11-18-dashboard-ux-design.md), Navigation B bestätigt.
 **Abnahmekriterien:** Einladungsfehler bleiben am Eintrag sichtbar und wiederholbar; erfolgreiche Antworten werden bestätigt und erst danach entfernt; ausstehende Einladungen erhalten einen kontextuellen Einstieg; fünf Kernziele bleiben direkt sichtbar und drei sekundäre Ziele sind über eine zugängliche „Mehr“-Gruppe erreichbar; betroffene Nutzertexte sind deutsch; Keyboard-, Screenreader- und 44-px-Zielflächen werden berücksichtigt; gerenderte Abnahme bei 320/390/768/1440 CSS-Pixeln in Hell und Dunkel.
+
+## FEAT-036 – Split-Flap-Redesign für die Weboberfläche
+
+**Status:** Umsetzung am 19.11.2026 freigegeben und abgeschlossen in Version 0.50.109. Impeccable-Finish-Review: `ship`.
+**Priorisierung:** Vom Nutzer als vollständiges Web-Redesign bestätigt. Dashboard im Fokus des nächsten Spieleabends; die bestehende Navigation mit fünf Hauptzielen plus „Mehr“ bleibt bestehen.
+**Ziel:** Die Weboberfläche erhält eine einheitliche dunkle Stahl-/Schwarzgestaltung mit präziser heller Typografie und Bernstein als Terminakzent. Ausgerichtete Datums- und Statusanzeigen greifen die Split-Flap-Anzeigetafel auf.
+**Umfang:** Gemeinsames Webtheme, Navigation, Dashboard, Sammlung und Eventübersicht. Keine Änderung an iOS, Produktdaten, Seitenverträgen, APIs, Schema oder Berechtigungen.
+**Freigabe:** Split-Flap-Karte auf der Impeccable-Entscheidungsseite gewählt; danach „Entscheidung ist getroffen, umsetzen“.
+**Plan:** [FEAT-036-Implementierungsplan](superpowers/plans/2026-11-19-FEAT-036-split-flap-redesign.md); gewählte Skizze: `.impeccable/mocks/decision/full-dashboard-board.html`.
+**Abnahmekriterien:** Navigation, Routen und Bedienverhalten bleiben erhalten; nächster Termin ist klar priorisiert; WCAG-AA-Kontrast, sichtbarer Fokus, Reduced Motion, Touchflächen und responsive Darstellung werden geprüft; RED/GREEN-Nachweis und gerenderte Prüfung sind dokumentiert.
